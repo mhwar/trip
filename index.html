@@ -525,6 +525,93 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .sync-status.ok { background: #d1fae5; color: #065f46; display: block; }
 .sync-status.err { background: #fee2e2; color: #991b1b; display: block; }
 
+/* ── TRIP INFO TAB ── */
+.ti-card {
+  background: var(--paper); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 1rem 1.1rem;
+  margin-bottom: 1rem; box-shadow: var(--sh);
+}
+.ti-card h4 {
+  font-size: 0.92rem; color: var(--accent); margin-bottom: 0.6rem;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.ti-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 0.75rem; }
+@media (max-width: 480px) { .ti-grid { grid-template-columns: 1fr; } }
+.ti-fld label { font-size: 0.7rem; color: var(--muted); display: block; margin-bottom: 0.2rem; }
+.ti-fld .input { font-size: 0.85rem; padding: 0.45rem 0.6rem; }
+.ti-flight {
+  background: var(--cream); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 0.65rem 0.8rem; margin-bottom: 0.5rem;
+  display: grid; grid-template-columns: auto 1fr auto; gap: 0.5rem; align-items: center;
+}
+.ti-flight-no { font-weight: 700; color: var(--accent); font-size: 0.78rem; }
+.ti-flight-r { font-size: 0.78rem; color: var(--ink-soft); }
+.ti-flight-r strong { color: var(--ink); font-weight: 600; }
+.ti-flight-t { text-align: left; font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+.ti-flight-x {
+  background: transparent; color: var(--err); padding: 0.2rem 0.4rem;
+  border-radius: var(--r-sm); font-size: 0.85rem;
+}
+.ti-add {
+  width: 100%; padding: 0.55rem; border: 1.5px dashed var(--border);
+  border-radius: var(--r-md); color: var(--muted); font-size: 0.78rem;
+  background: transparent; transition: all 0.15s;
+}
+.ti-add:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── HOTEL BANNER (in day) ── */
+.day-hotel {
+  background: linear-gradient(135deg, rgba(26,77,74,0.08), rgba(184,146,74,0.05));
+  border: 1px solid var(--accent); border-radius: var(--r-md);
+  padding: 0.7rem 0.9rem; margin-bottom: 0.85rem;
+  display: flex; gap: 0.65rem; align-items: flex-start;
+}
+.day-hotel-ic { font-size: 1.3rem; flex-shrink: 0; }
+.day-hotel-bd { flex: 1; min-width: 0; }
+.day-hotel-n { font-weight: 700; color: var(--accent); font-size: 0.88rem; margin-bottom: 0.15rem; }
+.day-hotel-m {
+  display: flex; gap: 0.65rem; flex-wrap: wrap;
+  font-size: 0.7rem; color: var(--ink-soft); margin-top: 0.2rem;
+}
+.day-hotel-m span { display: inline-flex; align-items: center; gap: 0.2rem; }
+.day-hotel-act {
+  font-size: 0.7rem; padding: 0.25rem 0.5rem;
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  background: var(--paper); color: var(--ink-soft);
+}
+.day-hotel-night-pill {
+  display: inline-block; background: var(--accent); color: var(--paper);
+  padding: 0.1rem 0.45rem; border-radius: 0.7rem; font-size: 0.62rem; font-weight: 600;
+  margin-right: 0.25rem;
+}
+
+/* ── DAY NOTES ── */
+.day-notes {
+  background: rgba(245,158,11,0.08); border-right: 3px solid var(--gold);
+  padding: 0.55rem 0.8rem; border-radius: var(--r-sm);
+  font-size: 0.78rem; color: var(--ink-soft); margin-bottom: 0.85rem;
+  white-space: pre-wrap;
+}
+
+/* ── ITEM EXTRAS (notes, link, ticket badge) ── */
+.tl-card-link {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  font-size: 0.7rem; color: var(--accent); margin-top: 0.3rem;
+  text-decoration: none; padding: 0.15rem 0.4rem;
+  border: 1px solid rgba(26,77,74,0.3); border-radius: var(--r-sm);
+}
+.tl-card-link:hover { background: rgba(26,77,74,0.08); }
+.tl-card-link svg { width: 11px; height: 11px; }
+.pill-ticket {
+  background: rgba(201,68,43,0.15); color: var(--persimmon);
+  border-color: rgba(201,68,43,0.4);
+}
+.tl-item-notes {
+  background: rgba(184,146,74,0.1); border-right: 2px solid var(--gold);
+  padding: 0.35rem 0.55rem; margin-top: 0.4rem; border-radius: var(--r-sm);
+  font-size: 0.72rem; color: var(--ink-soft); white-space: pre-wrap;
+}
+
 /* ═════════════════════════════════════════
    CURRENCY CONVERTER MODAL
    ═════════════════════════════════════════ */
@@ -1940,6 +2027,7 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   <section class="sec" id="sec-map"></section>
   <section class="sec" id="sec-budget"></section>
   <section class="sec" id="sec-info"></section>
+  <section class="sec" id="sec-tripinfo"></section>
 </main>
 
 <button class="fab" id="fab" hidden onclick="quickAdd()" title="إضافة سريعة">
@@ -2648,6 +2736,7 @@ const APPS = [
 
 const TABS = [
   { id: "overview", label: "نظرة عامة", svg: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>' },
+  { id: "tripinfo", label: "بيانات الرحلة", svg: '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/>' },
   { id: "tasks", label: "مهام التجهيز", svg: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>' },
   { id: "itinerary", label: "الجدول", svg: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' },
   { id: "cities", label: "المدن", svg: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>' },
@@ -2734,6 +2823,25 @@ const $ = (id) => document.getElementById(id);
 const cityById = (id) => CITIES.find(c => c.id === id);
 const libById = (id) => LIB.find(l => l.id === id);
 
+const TRIP_INFO_DEFAULT = {
+  destination: "كوريا الجنوبية",
+  startDate: "2026-05-14",
+  endDate: "2026-05-24",
+  travelers: 2,
+  ticketRef: "9T7ZEZ",
+  outboundFlights: [
+    { airline: "Flynas XY426", from: "أبها (AHB)", to: "جدة (JED)", depDate: "2026-05-13", depTime: "08:35", arrTime: "09:50", pnr: "" },
+    { airline: "Etihad EY616", from: "جدة (JED)", to: "أبوظبي (AUH)", depDate: "2026-05-13", depTime: "15:20", arrTime: "19:05", pnr: "" },
+    { airline: "Etihad EY822", from: "أبوظبي (AUH)", to: "سيول (ICN)", depDate: "2026-05-13", depTime: "21:10", arrTime: "10:50", pnr: "" }
+  ],
+  returnFlights: [
+    { airline: "Etihad EY823", from: "سيول (ICN)", to: "أبوظبي (AUH)", depDate: "2026-05-24", depTime: "17:50", arrTime: "22:35", pnr: "" },
+    { airline: "Etihad EY603", from: "أبوظبي (AUH)", to: "جدة (JED)", depDate: "2026-05-25", depTime: "02:05", arrTime: "03:55", pnr: "" },
+    { airline: "Flynas XY425", from: "جدة (JED)", to: "أبها (AHB)", depDate: "2026-05-25", depTime: "06:35", arrTime: "07:55", pnr: "" }
+  ],
+  notes: ""
+};
+
 const state = {
   active: Storage.get("kt2_tab", "overview"),
   itinerary: Storage.get("kt2_itin", makeEmptyItinerary()),
@@ -2741,6 +2849,7 @@ const state = {
   budget: Storage.get("kt2_bud", BUDGET_DEFAULT),
   tasks: Storage.get("kt2_tasks", TASKS_DEFAULT),
   favs: Storage.get("kt2_favs", []),
+  tripInfo: Storage.get("kt2_tripinfo", TRIP_INFO_DEFAULT),
   // UI state
   activeDayIdx: 0,
   activeCity: "seoul",
@@ -2760,6 +2869,7 @@ function saveItin() { Storage.set("kt2_itin", state.itinerary); }
 function saveLib() { Storage.set("kt2_clib", state.customLib); }
 function saveFavs() { Storage.set("kt2_favs", state.favs); }
 function saveTasks() { Storage.set("kt2_tasks", state.tasks); }
+function saveTripInfo() { Storage.set("kt2_tripinfo", state.tripInfo); }
 
 // All POIs (built-in + custom)
 function allLib() { return [...LIB, ...state.customLib]; }
@@ -2799,6 +2909,7 @@ function renderSection(id) {
   else if (id === "map") renderMapSec();
   else if (id === "budget") renderBudget();
   else if (id === "info") renderInfo();
+  else if (id === "tripinfo") renderTripInfo();
 }
 
 function updateCountdown() {
@@ -3100,6 +3211,39 @@ function renderDayContent() {
     </div>`;
   }
 
+  // ─── Hotel banner ───
+  if (day.hotel && day.hotel.name) {
+    const h = day.hotel;
+    const isCheckIn = h.isFirst;
+    const isCheckOut = h.isLast && h.totalNights > 1;
+    const mapsLink = h.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.address)}` : null;
+    html += `<div class="day-hotel">
+      <div class="day-hotel-ic">🏨</div>
+      <div class="day-hotel-bd">
+        <div class="day-hotel-n">
+          ${h.totalNights > 1 ? `<span class="day-hotel-night-pill">ليلة ${h.nightIndex}/${h.totalNights}</span>` : ''}
+          ${h.name}
+        </div>
+        ${h.address ? `<div class="txs clm">📍 ${h.address}</div>` : ''}
+        <div class="day-hotel-m">
+          ${isCheckIn ? `<span>🟢 دخول ${h.checkIn || '15:00'}</span>` : ''}
+          ${isCheckOut ? `<span>🔴 خروج ${h.checkOut || '11:00'}</span>` : ''}
+          ${!isCheckIn && !isCheckOut ? `<span>🛏️ مبيت</span>` : ''}
+        </div>
+        ${h.notes ? `<div class="txs cls" style="margin-top:0.3rem">${h.notes}</div>` : ''}
+        <div style="display:flex;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap">
+          ${mapsLink ? `<a class="day-hotel-act" href="${mapsLink}" target="_blank">📍 خرائط</a>` : ''}
+          ${h.bookingLink ? `<a class="day-hotel-act" href="${h.bookingLink}" target="_blank">🔗 الحجز</a>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ─── Day-level personal notes ───
+  if (day.notes) {
+    html += `<div class="day-notes">📒 ${day.notes}</div>`;
+  }
+
   // ─── Narrative card (description of the day) ───
   if (day.narrative) {
     html += `<div class="narrative-card">
@@ -3228,8 +3372,14 @@ function renderTimelineItem(it) {
             ${typePill}
             ${pillExtra}
             ${ref?.price ? `<span class="pill pill-sm">${ref.price}</span>` : ''}
+            ${it.requiresTicket ? '<span class="pill pill-sm pill-ticket">🎟️ يحتاج تذكرة</span>' : ''}
           </div>
           ${noteText ? `<div class="tl-tr-note">${noteText}</div>` : ''}
+          ${it.notes ? `<div class="tl-item-notes">📒 ${it.notes}</div>` : ''}
+          ${it.bookingLink ? `<a class="tl-card-link" href="${it.bookingLink}" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            فتح رابط الحجز
+          </a>` : ''}
           <div class="tl-card-acts">
             ${lat && lng ? `<a class="tl-card-act" href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>
@@ -4509,8 +4659,195 @@ function saveNewItem() {
 //   DAY META EDIT (title, type, flight)
 // ═══════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════
+//   TRIP INFO TAB
+// ═══════════════════════════════════════════════════════════
+
+function renderTripInfo() {
+  const t = state.tripInfo;
+  $("sec-tripinfo").innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>
+        <h2>بيانات الرحلة</h2>
+      </div>
+      <p>تذكرة الطيران، تواريخ الرحلة، وأرقام المراجع — تُحفظ تلقائياً</p>
+    </div>
+
+    <div class="ti-card">
+      <h4>📋 المعلومات الأساسية</h4>
+      <div class="ti-grid">
+        <div class="ti-fld">
+          <label>الوجهة</label>
+          <input type="text" class="input" id="ti-dest" value="${t.destination || ''}">
+        </div>
+        <div class="ti-fld">
+          <label>عدد المسافرين</label>
+          <input type="number" class="input" id="ti-trav" value="${t.travelers || 1}" min="1" max="20">
+        </div>
+        <div class="ti-fld">
+          <label>تاريخ بداية الرحلة</label>
+          <input type="date" class="input" id="ti-sdate" value="${t.startDate || ''}">
+        </div>
+        <div class="ti-fld">
+          <label>تاريخ نهاية الرحلة</label>
+          <input type="date" class="input" id="ti-edate" value="${t.endDate || ''}">
+        </div>
+        <div class="ti-fld" style="grid-column:1/-1">
+          <label>مرجع التذكرة (PNR)</label>
+          <input type="text" class="input" id="ti-ref" value="${t.ticketRef || ''}" placeholder="مثال: 9T7ZEZ">
+        </div>
+      </div>
+    </div>
+
+    <div class="ti-card">
+      <h4>🛫 رحلات الذهاب</h4>
+      <div id="ti-out-list">
+        ${(t.outboundFlights || []).map((f, i) => renderFlightRow(f, "out", i)).join('')}
+      </div>
+      <button class="ti-add" onclick="addFlight('out')">+ إضافة رحلة ذهاب</button>
+    </div>
+
+    <div class="ti-card">
+      <h4>🛬 رحلات العودة</h4>
+      <div id="ti-ret-list">
+        ${(t.returnFlights || []).map((f, i) => renderFlightRow(f, "ret", i)).join('')}
+      </div>
+      <button class="ti-add" onclick="addFlight('ret')">+ إضافة رحلة عودة</button>
+    </div>
+
+    <div class="ti-card">
+      <h4>📝 ملاحظات عامة عن الرحلة</h4>
+      <textarea class="input" id="ti-notes" rows="3" placeholder="ملاحظات، تنبيهات، تذكيرات...">${t.notes || ''}</textarea>
+    </div>
+
+    <div style="display:flex;gap:0.5rem;margin-top:1rem">
+      <button class="btn btn-pri" style="flex:1" onclick="saveTripInfoForm()">💾 حفظ التغييرات</button>
+    </div>
+  `;
+
+  // Auto-save on input change for basic fields
+  ["ti-dest","ti-trav","ti-sdate","ti-edate","ti-ref","ti-notes"].forEach(id => {
+    const el = $(id);
+    if (el) el.addEventListener("change", saveTripInfoForm);
+  });
+}
+
+function renderFlightRow(f, kind, i) {
+  return `
+    <div class="ti-flight">
+      <div class="ti-flight-no">✈️ ${f.airline || 'رحلة'}</div>
+      <div class="ti-flight-r">
+        <strong>${f.from || '?'}</strong> → <strong>${f.to || '?'}</strong>
+        ${f.depDate ? `<div style="font-size:0.7rem;color:var(--muted);margin-top:0.15rem">📅 ${f.depDate}</div>` : ''}
+      </div>
+      <div class="ti-flight-t">
+        ${f.depTime || '--:--'} → ${f.arrTime || '--:--'}
+      </div>
+      <button class="ti-flight-x" onclick="editFlight('${kind}', ${i})" title="تعديل">✎</button>
+      <button class="ti-flight-x" onclick="deleteFlight('${kind}', ${i})" title="حذف">×</button>
+    </div>
+  `;
+}
+
+function addFlight(kind) {
+  editFlightModal(kind, -1, { airline: "", from: "", to: "", depDate: "", depTime: "", arrTime: "", pnr: "" });
+}
+
+function editFlight(kind, i) {
+  const list = kind === "out" ? state.tripInfo.outboundFlights : state.tripInfo.returnFlights;
+  editFlightModal(kind, i, list[i]);
+}
+
+function editFlightModal(kind, i, f) {
+  const isNew = i < 0;
+  openModal(`
+    <div class="modal-h">
+      <h3>${isNew ? 'إضافة رحلة' : 'تعديل رحلة'}</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="fld">
+      <label>اسم/رقم الرحلة</label>
+      <input type="text" class="input" id="fl-air" value="${f.airline || ''}" placeholder="مثال: Etihad EY822">
+    </div>
+    <div class="fld-row">
+      <div class="fld">
+        <label>من</label>
+        <input type="text" class="input" id="fl-from" value="${f.from || ''}" placeholder="جدة (JED)">
+      </div>
+      <div class="fld">
+        <label>إلى</label>
+        <input type="text" class="input" id="fl-to" value="${f.to || ''}" placeholder="سيول (ICN)">
+      </div>
+    </div>
+    <div class="fld">
+      <label>تاريخ الانطلاق</label>
+      <input type="date" class="input" id="fl-date" value="${f.depDate || ''}">
+    </div>
+    <div class="fld-row">
+      <div class="fld">
+        <label>وقت الانطلاق</label>
+        <input type="time" class="input" id="fl-dep" value="${f.depTime || ''}">
+      </div>
+      <div class="fld">
+        <label>وقت الوصول</label>
+        <input type="time" class="input" id="fl-arr" value="${f.arrTime || ''}">
+      </div>
+    </div>
+    <div class="fld">
+      <label>رقم الحجز / PNR (اختياري)</label>
+      <input type="text" class="input" id="fl-pnr" value="${f.pnr || ''}">
+    </div>
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-pri" onclick="saveFlightFromModal('${kind}', ${i})">حفظ</button>
+    </div>
+  `);
+}
+
+function saveFlightFromModal(kind, i) {
+  const f = {
+    airline: $("fl-air").value.trim(),
+    from: $("fl-from").value.trim(),
+    to: $("fl-to").value.trim(),
+    depDate: $("fl-date").value,
+    depTime: $("fl-dep").value,
+    arrTime: $("fl-arr").value,
+    pnr: $("fl-pnr").value.trim()
+  };
+  const key = kind === "out" ? "outboundFlights" : "returnFlights";
+  if (!state.tripInfo[key]) state.tripInfo[key] = [];
+  if (i < 0) state.tripInfo[key].push(f);
+  else state.tripInfo[key][i] = f;
+  saveTripInfo();
+  closeModal();
+  renderTripInfo();
+}
+
+function deleteFlight(kind, i) {
+  if (!confirm("حذف هذه الرحلة؟")) return;
+  const key = kind === "out" ? "outboundFlights" : "returnFlights";
+  state.tripInfo[key].splice(i, 1);
+  saveTripInfo();
+  renderTripInfo();
+}
+
+function saveTripInfoForm() {
+  state.tripInfo.destination = $("ti-dest")?.value.trim() || state.tripInfo.destination;
+  state.tripInfo.travelers = parseInt($("ti-trav")?.value, 10) || 1;
+  state.tripInfo.startDate = $("ti-sdate")?.value || state.tripInfo.startDate;
+  state.tripInfo.endDate = $("ti-edate")?.value || state.tripInfo.endDate;
+  state.tripInfo.ticketRef = $("ti-ref")?.value.trim() || "";
+  state.tripInfo.notes = $("ti-notes")?.value.trim() || "";
+  saveTripInfo();
+}
+
+// ═══════════════════════════════════════════════════════════
+
 function setDayMeta() {
   const day = state.itinerary[state.activeDayIdx];
+  const h = day.hotel || {};
+  const remainingDays = state.itinerary.length - state.activeDayIdx;
   openModal(`
     <div class="modal-h">
       <h3>بيانات يوم ${day.day}</h3>
@@ -4530,13 +4867,18 @@ function setDayMeta() {
     </div>
 
     <div class="fld">
-      <label>📝 وصف اليوم (اختياري - يظهر تحت العنوان)</label>
-      <textarea class="input" id="dm-narrative" rows="3" placeholder="مثال: يوم القصور التراثية - تنقل بالمشي بين المعالم القريبة، استئجار هانبوك للدخول مجاناً">${day.narrative || ''}</textarea>
+      <label>📝 وصف اليوم (اختياري)</label>
+      <textarea class="input" id="dm-narrative" rows="2" placeholder="مثال: يوم القصور التراثية">${day.narrative || ''}</textarea>
+    </div>
+
+    <div class="fld">
+      <label>📒 ملاحظات شخصية لليوم (اختياري)</label>
+      <textarea class="input" id="dm-notes" rows="2" placeholder="مثال: تذكير بحجوزات، تنبيهات...">${day.notes || ''}</textarea>
     </div>
 
     <div class="fld">
       <label>نوع اليوم</label>
-      <select class="input" id="dm-type" onchange="document.getElementById('flight-fields').hidden = this.value === 'normal'">
+      <select class="input" id="dm-type" onchange="updateDayMetaSections()">
         <option value="normal" ${day.type === 'normal' ? 'selected' : ''}>عادي</option>
         <option value="arrival" ${day.type === 'arrival' ? 'selected' : ''}>🛬 وصول للبلد</option>
         <option value="transit" ${day.type === 'transit' ? 'selected' : ''}>✈️ تنقل بين المدن</option>
@@ -4546,7 +4888,7 @@ function setDayMeta() {
 
     <div id="flight-fields" ${day.type === 'normal' ? 'hidden' : ''}>
       <div class="card card-cream mb3">
-        <strong class="txs cli mb2" style="display:block">معلومات الرحلة</strong>
+        <strong class="txs cli mb2" style="display:block">✈️ معلومات الانتقال</strong>
         <div class="fld-row">
           <div class="fld">
             <label>من</label>
@@ -4567,6 +4909,61 @@ function setDayMeta() {
             <input type="time" class="input" id="dm-arr" value="${day.flight?.arrTime || ''}">
           </div>
         </div>
+        <div class="fld">
+          <label>وسيلة النقل</label>
+          <select class="input" id="dm-mode">
+            <option value="flight" ${(day.flight?.mode || 'flight') === 'flight' ? 'selected' : ''}>✈️ طائرة</option>
+            <option value="train" ${day.flight?.mode === 'train' ? 'selected' : ''}>🚄 قطار (KTX)</option>
+            <option value="bus" ${day.flight?.mode === 'bus' ? 'selected' : ''}>🚌 حافلة</option>
+            <option value="ferry" ${day.flight?.mode === 'ferry' ? 'selected' : ''}>⛴️ عبّارة</option>
+            <option value="car" ${day.flight?.mode === 'car' ? 'selected' : ''}>🚗 سيارة</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>رقم الرحلة / مرجع الحجز (اختياري)</label>
+          <input type="text" class="input" id="dm-flref" value="${day.flight?.ref || ''}" placeholder="مثال: KE1234">
+        </div>
+        <div class="fld">
+          <label>وقت المغادرة من الفندق الحالي</label>
+          <input type="time" class="input" id="dm-checkout-time" value="${day.flight?.checkoutTime || ''}">
+        </div>
+      </div>
+    </div>
+
+    <!-- ── HOTEL SECTION ── -->
+    <div class="card card-cream mb3" style="border-color:var(--accent)">
+      <strong class="txs cli mb2" style="display:block">🏨 الفندق / السكن</strong>
+
+      <div class="fld">
+        <label>اسم الفندق (اتركه فارغاً لإلغاء)</label>
+        <input type="text" class="input" id="dm-hotel-name" value="${h.name || ''}" placeholder="مثال: Lotte Hotel Seoul">
+      </div>
+      <div class="fld">
+        <label>العنوان (اختياري)</label>
+        <input type="text" class="input" id="dm-hotel-addr" value="${h.address || ''}" placeholder="Myeongdong, Jung-gu">
+      </div>
+      <div class="fld-row">
+        <div class="fld">
+          <label>وقت الدخول (Check-in)</label>
+          <input type="time" class="input" id="dm-hotel-cin" value="${h.checkIn || '15:00'}">
+        </div>
+        <div class="fld">
+          <label>وقت الخروج (Check-out)</label>
+          <input type="time" class="input" id="dm-hotel-cout" value="${h.checkOut || '11:00'}">
+        </div>
+      </div>
+      <div class="fld">
+        <label>عدد الليالي (يطبّق نفس الفندق على الأيام التالية)</label>
+        <input type="number" class="input" id="dm-hotel-nights" value="${h.nights || 1}" min="1" max="${remainingDays}">
+        <p class="txs clm" style="margin-top:0.3rem">سيتم نسخ الفندق تلقائياً للأيام المتتالية ابتداءً من هذا اليوم</p>
+      </div>
+      <div class="fld">
+        <label>رابط الحجز (اختياري)</label>
+        <input type="url" class="input" id="dm-hotel-link" value="${h.bookingLink || ''}" placeholder="https://...">
+      </div>
+      <div class="fld">
+        <label>ملاحظات الفندق (مرجع الحجز، رقم الغرفة...)</label>
+        <textarea class="input" id="dm-hotel-notes" rows="2">${h.notes || ''}</textarea>
       </div>
     </div>
 
@@ -4577,22 +4974,61 @@ function setDayMeta() {
   `);
 }
 
+function updateDayMetaSections() {
+  const v = $("dm-type").value;
+  $("flight-fields").hidden = v === 'normal';
+}
+
 function saveDayMeta() {
   const day = state.itinerary[state.activeDayIdx];
   day.title = $("dm-title").value.trim();
   day.city = $("dm-city").value;
   day.type = $("dm-type").value;
   day.narrative = $("dm-narrative").value.trim() || null;
+  day.notes = $("dm-notes").value.trim() || null;
+
   if (day.type !== "normal") {
     day.flight = {
       from: $("dm-from").value.trim(),
       to: $("dm-to").value.trim(),
       depTime: $("dm-dep").value,
-      arrTime: $("dm-arr").value
+      arrTime: $("dm-arr").value,
+      mode: $("dm-mode").value,
+      ref: $("dm-flref").value.trim(),
+      checkoutTime: $("dm-checkout-time").value
     };
   } else {
     day.flight = null;
   }
+
+  // Hotel handling — apply to N consecutive days
+  const hotelName = $("dm-hotel-name").value.trim();
+  if (hotelName) {
+    const nights = Math.max(1, parseInt($("dm-hotel-nights").value, 10) || 1);
+    const hotel = {
+      name: hotelName,
+      address: $("dm-hotel-addr").value.trim(),
+      checkIn: $("dm-hotel-cin").value || "15:00",
+      checkOut: $("dm-hotel-cout").value || "11:00",
+      nights,
+      bookingLink: $("dm-hotel-link").value.trim(),
+      notes: $("dm-hotel-notes").value.trim()
+    };
+    const startIdx = state.activeDayIdx;
+    const endIdx = Math.min(state.itinerary.length - 1, startIdx + nights - 1);
+    for (let i = startIdx; i <= endIdx; i++) {
+      state.itinerary[i].hotel = {
+        ...hotel,
+        nightIndex: i - startIdx + 1,
+        totalNights: nights,
+        isFirst: i === startIdx,
+        isLast: i === endIdx
+      };
+    }
+  } else {
+    day.hotel = null;
+  }
+
   saveItin();
   closeModal();
   renderItinerary();
@@ -4628,6 +5064,20 @@ function editItem(id) {
         </select>
       </div>
     </div>
+    <div class="fld">
+      <label>📒 ملاحظات (اختياري)</label>
+      <textarea class="input" id="ei-notes" rows="2" placeholder="ملاحظات خاصة، تذكيرات، تنبيهات...">${item.notes || ''}</textarea>
+    </div>
+    <div class="fld">
+      <label>🔗 رابط الحجز / المعلومات (اختياري)</label>
+      <input type="url" class="input" id="ei-link" value="${item.bookingLink || ''}" placeholder="https://...">
+    </div>
+    <div class="fld">
+      <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
+        <input type="checkbox" id="ei-ticket" ${item.requiresTicket ? 'checked' : ''} style="width:1rem;height:1rem">
+        <span>🎟️ يحتاج تذكرة / حجز مسبق</span>
+      </label>
+    </div>
     <div class="modal-act">
       <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
       <button class="btn btn-pri" onclick="saveEditItem('${id}')">حفظ</button>
@@ -4642,6 +5092,9 @@ function saveEditItem(id) {
   item.text = $("ei-text").value.trim();
   item.time = $("ei-time").value;
   item.type = $("ei-type").value;
+  item.notes = $("ei-notes").value.trim() || null;
+  item.bookingLink = $("ei-link").value.trim() || null;
+  item.requiresTicket = $("ei-ticket").checked;
   saveItin();
   closeModal();
   renderDayContent();
@@ -5630,7 +6083,8 @@ function syncGetAllState() {
     customLib: state.customLib,
     budget: state.budget,
     tasks: state.tasks,
-    favs: state.favs
+    favs: state.favs,
+    tripInfo: state.tripInfo
   };
 }
 
@@ -5640,6 +6094,7 @@ function syncApplyState(data) {
   if (data.budget)     { state.budget     = data.budget;     Storage.set("kt2_bud",  data.budget); }
   if (data.tasks)      { state.tasks      = data.tasks;      Storage.set("kt2_tasks", data.tasks); }
   if (data.favs)       { state.favs       = data.favs;       Storage.set("kt2_favs", data.favs); }
+  if (data.tripInfo)   { state.tripInfo   = data.tripInfo;   Storage.set("kt2_tripinfo", data.tripInfo); }
   switchTab(state.active);
 }
 
