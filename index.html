@@ -155,8 +155,13 @@ input, select, textarea {
 .hdr-tools {
   display: flex; gap: 0.4rem;
   margin-top: 0.75rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
 }
+.hdr-tools::-webkit-scrollbar { display: none; }
 .ht-btn {
   display: inline-flex; align-items: center; gap: 0.35rem;
   padding: 0.45rem 0.85rem;
@@ -278,8 +283,9 @@ nav {
 main {
   max-width: 75rem;
   margin: 0 auto;
-  padding: 1.25rem 0.875rem 6rem;
+  padding: 0.75rem 0.75rem 6rem;
 }
+@media (min-width: 480px) { main { padding: 1rem 1rem 6rem; } }
 @media (min-width: 768px) { main { padding: 2rem 1.5rem; } }
 @media (min-width: 1024px) {
   /* Reserve space for the right sidebar — only when viewing a trip */
@@ -419,9 +425,14 @@ textarea.input { resize: vertical; min-height: 60px; }
 
 /* ─── Filter bar ─── */
 .fb {
-  display: flex; flex-wrap: wrap; gap: 0.35rem;
+  display: flex; flex-wrap: nowrap; gap: 0.35rem;
   margin-bottom: 0.875rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
 }
+.fb::-webkit-scrollbar { display: none; }
 .fb-btn {
   padding: 0.4rem 0.7rem;
   border-radius: var(--r-sm);
@@ -721,18 +732,35 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .day-hotel-empty svg { color: var(--accent); flex-shrink: 0; }
 
 /* Hotel picker modal */
+.hotel-pick-nights {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--accent-soft); border-radius: var(--r-md);
+  padding: 0.65rem 1rem; margin-bottom: 1rem;
+  border: 1px solid var(--accent-lt);
+}
+.hotel-pick-nights-l { font-size: 0.82rem; font-weight: 600; color: var(--accent-dk); }
+.hotel-pick-nights-ctrl { display: flex; align-items: center; gap: 0.5rem; }
+.hotel-pick-nights-val { font-size: 1.1rem; font-weight: 700; color: var(--accent-dk); min-width: 1.5rem; text-align: center; }
+.hotel-pick-nights-btn {
+  width: 2rem; height: 2rem; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; font-weight: 700; cursor: pointer;
+  border: none; transition: background 0.15s;
+  flex-shrink: 0;
+}
+.hotel-pick-nights-btn:hover { background: var(--accent-dk); }
 .hotel-pick-sec { margin-bottom: 1rem; }
 .hotel-pick-sec-l {
   font-size: 0.78rem; font-weight: 600; color: var(--ink-soft);
-  margin-bottom: 0.5rem;
-  display: block;
+  margin-bottom: 0.5rem; display: block;
 }
-.hotel-pick-grid { display: flex; flex-direction: column; gap: 0.4rem; }
+.hotel-pick-grid { display: flex; flex-direction: column; gap: 0.5rem; }
 .hotel-pick-card {
   display: flex; align-items: center; gap: 0.6rem;
-  padding: 0.65rem 0.85rem;
+  padding: 0.75rem 0.85rem;
   background: var(--paper);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--r-md);
   text-align: right;
   cursor: pointer;
@@ -740,12 +768,24 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   font-family: inherit;
   width: 100%;
 }
+.hotel-pick-card:active { transform: scale(0.98); }
 .hotel-pick-card:hover { border-color: var(--accent); background: var(--accent-soft); }
-.hotel-pick-ic { font-size: 1.2rem; flex-shrink: 0; }
+.hotel-pick-ic { font-size: 1.3rem; flex-shrink: 0; }
 .hotel-pick-bd { flex: 1; min-width: 0; }
-.hotel-pick-n { font-weight: 600; font-size: 0.85rem; color: var(--ink); }
-.hotel-pick-a { font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
-.hotel-pick-p { font-size: 0.72rem; color: var(--accent-dk); margin-top: 0.15rem; }
+.hotel-pick-n { font-weight: 600; font-size: 0.88rem; color: var(--ink); }
+.hotel-pick-a { font-size: 0.73rem; color: var(--muted); margin-top: 0.1rem; }
+.hotel-pick-p { font-size: 0.73rem; color: var(--accent-dk); margin-top: 0.15rem; }
+.hotel-pick-arr { color: var(--accent); flex-shrink: 0; }
+.hotel-pick-manual-toggle {
+  width: 100%; text-align: center; padding: 0.6rem;
+  font-size: 0.8rem; color: var(--ink-soft);
+  border: 1px dashed var(--border-strong); border-radius: var(--r-md);
+  background: none; cursor: pointer; margin-bottom: 0.75rem;
+  transition: all 0.15s;
+}
+.hotel-pick-manual-toggle:hover { border-color: var(--accent); color: var(--accent-dk); background: var(--accent-soft); }
+.hotel-pick-manual-body { display: none; }
+.hotel-pick-manual-body.open { display: block; }
 
 /* ── DAY NOTES ── */
 .day-notes {
@@ -5204,7 +5244,7 @@ function openTasksModal() {
       <h3>✅ مهام التجهيز للسفر</h3>
       <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div id="modal-tasks-content" style="overflow-y:auto;max-height:65vh"></div>
+    <div id="modal-tasks-content" style="overflow-y:auto;max-height:calc(85vh - 5rem)"></div>
   `);
   renderTasks();
 }
@@ -5215,7 +5255,7 @@ function openBudgetModal() {
       <h3>💰 الميزانية</h3>
       <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div id="modal-budget-content" style="overflow-y:auto;max-height:65vh"></div>
+    <div id="modal-budget-content" style="overflow-y:auto;max-height:calc(85vh - 5rem)"></div>
   `);
   renderBudget();
 }
@@ -6881,45 +6921,62 @@ function openDayHotelPicker(dayIdx) {
   const h = day.hotel || {};
   const remainingDays = state.itinerary.length - dayIdx;
   const cityKey = day.city || "";
+  const defaultNights = h.nights || Math.min(3, remainingDays);
 
   // Get hotels from library matching the day's city
   const allHotels = (typeof allLib === "function" ? allLib() : (typeof LIB !== "undefined" ? LIB : []))
     .filter(it => it.type === "hotel");
   const cityHotels = allHotels.filter(h2 => (h2.city || "").toLowerCase() === cityKey.toLowerCase());
   const otherHotels = allHotels.filter(h2 => (h2.city || "").toLowerCase() !== cityKey.toLowerCase());
+  const hasLib = cityHotels.length > 0 || otherHotels.length > 0;
 
   const hotelCard = (it) => `
-    <button class="hotel-pick-card" onclick="_pickHotelFromLib('${it.id}')">
+    <button class="hotel-pick-card" onclick="_pickHotelFromLib('${it.id}', ${dayIdx})">
       <div class="hotel-pick-ic">🏨</div>
       <div class="hotel-pick-bd">
         <div class="hotel-pick-n">${it.name}</div>
-        ${it.area ? `<div class="hotel-pick-a">${it.area}${it.city?` · ${LIB_CITY_NAMES?.[it.city] || it.city}`:''}</div>` : ''}
+        ${it.area ? `<div class="hotel-pick-a">📍 ${it.area}${it.city ? ` · ${LIB_CITY_NAMES?.[it.city] || it.city}` : ''}</div>` : ''}
         ${it.price ? `<div class="hotel-pick-p">⭐ ${it.price}</div>` : ''}
       </div>
+      <svg class="hotel-pick-arr" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
   `;
 
   openModal(`
     <div class="modal-h">
-      <h3>🏨 فندق يوم ${day.day}</h3>
+      <h3>🏨 فندق · يوم ${day.day} (${day.dateLabel || ''})</h3>
       <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+
+    <div class="hotel-pick-nights">
+      <div class="hotel-pick-nights-l">🌙 عدد الليالي</div>
+      <div class="hotel-pick-nights-ctrl">
+        <button class="hotel-pick-nights-btn" onclick="dhNightsAdj(-1,${remainingDays})">−</button>
+        <span class="hotel-pick-nights-val" id="dh-nights-val">${defaultNights}</span>
+        <button class="hotel-pick-nights-btn" onclick="dhNightsAdj(1,${remainingDays})">+</button>
+      </div>
     </div>
 
     ${cityHotels.length > 0 ? `
       <div class="hotel-pick-sec">
-        <div class="hotel-pick-sec-l">من المكتبة · ${LIB_CITY_NAMES?.[cityKey] || cityKey}</div>
+        <div class="hotel-pick-sec-l">🏙️ من المكتبة · ${LIB_CITY_NAMES?.[cityKey] || cityKey}</div>
         <div class="hotel-pick-grid">${cityHotels.map(hotelCard).join('')}</div>
       </div>
     ` : ''}
     ${otherHotels.length > 0 ? `
       <details class="hotel-pick-sec">
-        <summary class="hotel-pick-sec-l" style="cursor:pointer">من مدن أخرى (${otherHotels.length})</summary>
+        <summary class="hotel-pick-sec-l" style="cursor:pointer;list-style:none;display:flex;align-items:center;gap:0.4rem">
+          <span>📚 فنادق مدن أخرى (${otherHotels.length})</span>
+        </summary>
         <div class="hotel-pick-grid" style="margin-top:0.5rem">${otherHotels.map(hotelCard).join('')}</div>
       </details>
     ` : ''}
 
-    <div class="hotel-pick-sec">
-      <div class="hotel-pick-sec-l">${cityHotels.length || otherHotels.length ? 'أو أدخل يدوياً' : 'أدخل بيانات الفندق'}</div>
+    <button class="hotel-pick-manual-toggle" onclick="document.getElementById('dh-manual').classList.toggle('open');this.textContent=document.getElementById('dh-manual').classList.contains('open')?'▲ إخفاء الإدخال اليدوي':'✏️ إدخال يدوي (اسم + تفاصيل)'">
+      ✏️ إدخال يدوي (اسم + تفاصيل)
+    </button>
+
+    <div class="hotel-pick-manual-body ${!hasLib ? 'open' : ''}" id="dh-manual">
       <div class="fld">
         <label>اسم الفندق</label>
         <input type="text" class="input" id="dh-name" value="${h.name || ''}" placeholder="مثال: Lotte Hotel Seoul">
@@ -6930,17 +6987,13 @@ function openDayHotelPicker(dayIdx) {
       </div>
       <div class="fld-row">
         <div class="fld">
-          <label>دخول (Check-in)</label>
+          <label>Check-in</label>
           <input type="time" class="input" id="dh-cin" value="${h.checkIn || '15:00'}">
         </div>
         <div class="fld">
-          <label>خروج (Check-out)</label>
+          <label>Check-out</label>
           <input type="time" class="input" id="dh-cout" value="${h.checkOut || '11:00'}">
         </div>
-      </div>
-      <div class="fld">
-        <label>عدد الليالي (يطبّق على الأيام التالية)</label>
-        <input type="number" class="input" id="dh-nights" value="${h.nights || 1}" min="1" max="${remainingDays}">
       </div>
       <div class="fld">
         <label>رابط الحجز (اختياري)</label>
@@ -6950,25 +7003,48 @@ function openDayHotelPicker(dayIdx) {
         <label>ملاحظات (رقم الغرفة، مرجع الحجز...)</label>
         <textarea class="input" id="dh-notes" rows="2">${h.notes || ''}</textarea>
       </div>
-    </div>
-
-    <div class="modal-act">
-      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
-      <button class="btn btn-pri" onclick="_saveDayHotelManual(${dayIdx})">حفظ</button>
+      <div class="modal-act" style="margin-top:0.75rem;padding-top:0.75rem">
+        <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-pri" onclick="_saveDayHotelManual(${dayIdx})">💾 حفظ</button>
+      </div>
     </div>
   `);
 }
 
-function _pickHotelFromLib(libId) {
+let _dhNights = null;
+function dhNightsAdj(delta, max) {
+  const el = $("dh-nights-val");
+  if (!el) return;
+  const cur = parseInt(el.textContent, 10) || 1;
+  el.textContent = Math.max(1, Math.min(max, cur + delta));
+}
+
+function _pickHotelFromLib(libId, dayIdx) {
   const it = (typeof allLib === "function" ? allLib() : LIB).find(x => x.id === libId);
   if (!it) return;
-  const nameEl = document.getElementById("dh-name");
-  const addrEl = document.getElementById("dh-addr");
-  if (nameEl) nameEl.value = it.name || '';
-  if (addrEl) addrEl.value = it.area || '';
-  // Highlight - scroll to name field
-  nameEl?.focus();
-  nameEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const nights = parseInt($("dh-nights-val")?.textContent, 10) || 1;
+  const hotel = {
+    name: it.name,
+    address: it.area || '',
+    checkIn: '15:00',
+    checkOut: '11:00',
+    nights,
+    bookingLink: it.bookingLink || '',
+    notes: ''
+  };
+  const endIdx = Math.min(state.itinerary.length - 1, dayIdx + nights - 1);
+  for (let i = dayIdx; i <= endIdx; i++) {
+    state.itinerary[i].hotel = {
+      ...hotel,
+      nightIndex: i - dayIdx + 1,
+      totalNights: nights,
+      isFirst: i === dayIdx,
+      isLast: i === endIdx
+    };
+  }
+  saveItin();
+  closeModal();
+  renderItinerary();
 }
 
 function _saveDayHotelManual(dayIdx) {
@@ -6977,7 +7053,7 @@ function _saveDayHotelManual(dayIdx) {
     alert("⚠️ أدخل اسم الفندق أولاً");
     return;
   }
-  const nights = Math.max(1, parseInt($("dh-nights").value, 10) || 1);
+  const nights = Math.max(1, parseInt($("dh-nights-val")?.textContent, 10) || 1);
   const hotel = {
     name,
     address: $("dh-addr").value.trim(),
