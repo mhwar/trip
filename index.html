@@ -3944,21 +3944,34 @@ const state = {
 };
 
 let _saveIndicatorTimer = null;
-function _showSaveIndicator() {
+let _autoCloudTimer = null;
+
+function _showSaveIndicator(text) {
   const el = $("auto-sync-indicator");
   if (!el) return;
-  el.textContent = "✓ محفوظ";
+  el.textContent = text || "✓ محفوظ";
   el.style.opacity = "1";
   if (_saveIndicatorTimer) clearTimeout(_saveIndicatorTimer);
-  _saveIndicatorTimer = setTimeout(() => { el.style.opacity = "0"; }, 1800);
+  _saveIndicatorTimer = setTimeout(() => { el.style.opacity = "0"; }, 2500);
 }
 
-function saveItin() { Trip.save("itin", state.itinerary); _showSaveIndicator(); }
-function saveLib() { Trip.save("clib", state.customLib); }
+function _scheduleCloudSave() {
+  if (!isOwner()) return;
+  const code = syncGetCode();
+  if (_autoCloudTimer) clearTimeout(_autoCloudTimer);
+  _autoCloudTimer = setTimeout(async () => {
+    _showSaveIndicator("↻ حفظ سحابي...");
+    const ok = await syncSave(code);
+    _showSaveIndicator(ok ? "✓ محفوظ في السحابة" : "✓ محفوظ محلياً");
+  }, 2000);
+}
+
+function saveItin() { Trip.save("itin", state.itinerary); _showSaveIndicator(); _scheduleCloudSave(); }
+function saveLib() { Trip.save("clib", state.customLib); _scheduleCloudSave(); }
 function saveFavs() { Trip.save("favs", state.favs); }
-function saveTasks() { Trip.save("tasks", state.tasks); _showSaveIndicator(); }
-function saveTripInfo() { Trip.save("tripinfo", state.tripInfo); _showSaveIndicator(); }
-function saveCityColors() { Trip.save("citycolors", state.cityColors); CITY_COLORS = { ...state.cityColors }; }
+function saveTasks() { Trip.save("tasks", state.tasks); _showSaveIndicator(); _scheduleCloudSave(); }
+function saveTripInfo() { Trip.save("tripinfo", state.tripInfo); _showSaveIndicator(); _scheduleCloudSave(); }
+function saveCityColors() { Trip.save("citycolors", state.cityColors); CITY_COLORS = { ...state.cityColors }; _scheduleCloudSave(); }
 function saveCustomCities() { Trip.save("customcities", state.customCities); }
 
 // All POIs (built-in + custom) — respects countryLib of current trip
