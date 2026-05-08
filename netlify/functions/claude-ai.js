@@ -1,3 +1,4 @@
+// DeepSeek AI proxy (OpenAI-compatible API)
 exports.handler = async (event) => {
   const cors = {
     "Access-Control-Allow-Origin": "*",
@@ -17,28 +18,43 @@ exports.handler = async (event) => {
   catch { return { statusCode: 400, headers: cors, body: JSON.stringify({ error: "Invalid JSON" }) }; }
 
   const { prompt, system, model, apiKey } = body;
-  const key = process.env.ANTHROPIC_API_KEY || apiKey;
+  const key = process.env.DEEPSEEK_API_KEY || apiKey;
 
   if (!key) return { statusCode: 400, headers: cors, body: JSON.stringify({ error: "No API key provided" }) };
   if (!prompt) return { statusCode: 400, headers: cors, body: JSON.stringify({ error: "No prompt" }) };
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": key,
-        "anthropic-version": "2023-06-01"
+        "Authorization": `Bearer ${key}`
       },
       body: JSON.stringify({
-        model: model || "claude-haiku-4-5-20251001",
-        max_tokens: 8192,
-        system: system || "You are a helpful assistant.",
-        messages: [{ role: "user", content: prompt }]
+        model: model || "deepseek-chat",
+        max_tokens: 8000,
+        temperature: 0.4,
+        messages: [
+          { role: "system", content: system || "You are a helpful assistant." },
+          { role: "user", content: prompt }
+        ]
       })
     });
 
     const data = await res.json();
+    // Normalize response shape so client code keeps working with `content[0].text`
+    if (res.ok && data.choices?.[0]?.message?.content) {
+      const text = data.choices[0].message.content;
+      return {
+        statusCode: 200,
+        headers: cors,
+        body: JSON.stringify({
+          content: [{ type: "text", text }],
+          usage: data.usage,
+          model: data.model
+        })
+      };
+    }
     return { statusCode: res.status, headers: cors, body: JSON.stringify(data) };
   } catch (err) {
     return { statusCode: 500, headers: cors, body: JSON.stringify({ error: err.message }) };

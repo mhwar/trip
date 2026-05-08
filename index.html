@@ -8219,7 +8219,7 @@ const GEMINI_COUNTRIES = {
 };
 
 function openGeminiAssistant(preselectedLib) {
-  const savedKey = localStorage.getItem("kt2_claude_key") || "";
+  const savedKey = localStorage.getItem("kt2_ds_key") || localStorage.getItem("kt2_claude_key") || "";
   const libs = getGlobalLibs();
   const existingLibIds = Object.keys(libs);
 
@@ -8244,18 +8244,18 @@ function openGeminiAssistant(preselectedLib) {
 
     <div style="background:var(--cream);border-radius:10px;padding:0.6rem 0.8rem;margin-bottom:0.75rem;font-size:0.75rem;color:var(--ink-soft)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
-        <strong>🔑 مفتاح Claude API (Anthropic)</strong>
-        <a href="https://console.anthropic.com/settings/keys" target="_blank" style="font-size:0.68rem;color:var(--accent)">+ مفتاح جديد</a>
+        <strong>🔑 مفتاح DeepSeek API</strong>
+        <a href="https://platform.deepseek.com/api_keys" target="_blank" style="font-size:0.68rem;color:var(--accent)">+ مفتاح جديد</a>
       </div>
-      <input type="password" class="input" id="gem-key" value="${savedKey}" placeholder="sk-ant-..." autocomplete="off" style="padding:0.3rem 0.5rem;font-size:0.8rem">
+      <input type="password" class="input" id="gem-key" value="${savedKey}" placeholder="sk-..." autocomplete="off" style="padding:0.3rem 0.5rem;font-size:0.8rem">
       <div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.4rem;flex-wrap:wrap">
         <select class="input" id="gem-model" style="padding:0.25rem 0.4rem;font-size:0.72rem;flex:1;min-width:160px">
-          <option value="claude-haiku-4-5-20251001">Haiku 4.5 ← الأسرع والأرخص</option>
-          <option value="claude-sonnet-4-6">Sonnet 4.6 · الأدق</option>
+          <option value="deepseek-chat">DeepSeek Chat ← الأرخص والأسرع</option>
+          <option value="deepseek-reasoner">DeepSeek Reasoner · الأدق</option>
         </select>
       </div>
       <div style="margin-top:0.4rem;font-size:0.68rem;color:var(--muted)">
-        💡 Haiku 4.5: ~$0.001 لكل طلب · Sonnet 4.6: ~$0.01 · احصل على مفتاحك من <strong>console.anthropic.com</strong>
+        💡 DeepSeek API رخيص جداً (~$0.0001 للطلب) · احصل على مفتاحك من <strong>platform.deepseek.com</strong>
       </div>
     </div>
 
@@ -8308,7 +8308,7 @@ function openGeminiAssistant(preselectedLib) {
     document.head.appendChild(s);
   }
 
-  const savedModel = localStorage.getItem("kt2_claude_model") || "claude-haiku-4-5-20251001";
+  const savedModel = localStorage.getItem("kt2_ds_model") || "deepseek-chat";
   const modelSel = document.getElementById("gem-model");
   if (modelSel) modelSel.value = savedModel;
 
@@ -8392,11 +8392,11 @@ async function runGeminiAssistant() {
   const libId = isNew ? libVal.replace("new:","") : libVal;
   if (!libId)  { status.textContent="⚠️ اختر المكتبة أولاً"; return; }
 
-  const model = ($("gem-model")||{}).value || "claude-haiku-4-5-20251001";
-  localStorage.setItem("kt2_claude_key", key);
-  localStorage.setItem("kt2_claude_model", model);
+  const model = ($("gem-model")||{}).value || "deepseek-chat";
+  localStorage.setItem("kt2_ds_key", key);
+  localStorage.setItem("kt2_ds_model", model);
   btn.disabled = true;
-  status.textContent = `⏳ جاري الإرسال إلى Claude (${model.includes("haiku")?"Haiku":"Sonnet"})...`;
+  status.textContent = `⏳ جاري الإرسال إلى DeepSeek (${model.includes("reasoner")?"Reasoner":"Chat"})...`;
   preview.innerHTML = "";
 
   const systemInstr = `أنت مساعد متخصص في بناء مكتبات مواقع سياحية بصيغة JSON.
@@ -8458,14 +8458,16 @@ async function runGeminiAssistant() {
     const rawMsg = e.message || "";
     const code = e.apiCode || "";
     let hint = "";
-    if (code === 401 || rawMsg.includes("authentication") || rawMsg.includes("api_key")) {
-      hint = "💡 تحقق من المفتاح في console.anthropic.com — يجب أن يبدأ بـ sk-ant-";
+    if (code === 401 || rawMsg.includes("authentication") || rawMsg.includes("api_key") || rawMsg.includes("Invalid")) {
+      hint = "💡 تحقق من المفتاح في platform.deepseek.com/api_keys";
+    } else if (code === 402 || rawMsg.includes("balance") || rawMsg.includes("Insufficient")) {
+      hint = "💡 رصيدك غير كافٍ — أضف رصيداً في platform.deepseek.com";
     } else if (code === 429) {
-      hint = "💡 تجاوزت الحد — انتظر قليلاً أو تحقق من رصيدك في console.anthropic.com";
+      hint = "💡 تجاوزت الحد — انتظر قليلاً";
     } else if (rawMsg.includes("fetch") || rawMsg.includes("network")) {
       hint = "💡 تحقق من اتصالك بالإنترنت";
     }
-    status.innerHTML = `<details open><summary style="cursor:pointer;color:var(--danger)">❌ خطأ من Claude API (HTTP ${code||'?'})</summary><pre style="font-size:0.68rem;white-space:pre-wrap;margin:0.4rem 0;background:var(--cream);padding:0.5rem;border-radius:6px;max-height:120px;overflow-y:auto">${rawMsg.replace(/</g,'&lt;')}</pre>${hint?`<div style="font-size:0.75rem;color:var(--muted);margin-top:0.3rem">${hint}</div>`:''}</details>`;
+    status.innerHTML = `<details open><summary style="cursor:pointer;color:var(--danger)">❌ خطأ من DeepSeek API (HTTP ${code||'?'})</summary><pre style="font-size:0.68rem;white-space:pre-wrap;margin:0.4rem 0;background:var(--cream);padding:0.5rem;border-radius:6px;max-height:120px;overflow-y:auto">${rawMsg.replace(/</g,'&lt;')}</pre>${hint?`<div style="font-size:0.75rem;color:var(--muted);margin-top:0.3rem">${hint}</div>`:''}</details>`;
   }
   btn.disabled = false;
 }
