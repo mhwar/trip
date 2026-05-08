@@ -5192,98 +5192,137 @@ function saveMealItem() {
 // ─── 📍 ACTIVITY (attraction/mosque/shop/entertainment/festival) ───
 function renderActivityForm(suggestedTime) {
   const day = state.itinerary[state.pendingInsert.dayIdx];
+  const lib = allLib();
+  const hasLib = lib.length > 0;
+
+  // Normalize day city for matching (handle Arabic city names too)
+  const dayCityNorm = (day.city || "").toLowerCase().trim();
+  const cityAliases = {
+    "إسطنبول":"istanbul","اسطنبول":"istanbul","istanbul":"istanbul",
+    "كابادوكيا":"cappadocia","cappadocia":"cappadocia","غوريمي":"cappadocia",
+    "أنطاليا":"antalya","انطاليا":"antalya","antalya":"antalya",
+    "طرابزون":"trabzon","trabzon":"trabzon",
+    "أنقرة":"ankara","انقرة":"ankara","ankara":"ankara",
+    "بورصة":"bursa","bursa":"bursa",
+    "إزمير":"izmir","ازمير":"izmir","izmir":"izmir",
+    "لندن":"london","london":"london",
+    "إدنبرة":"edinburgh","ادنبره":"edinburgh","edinburgh":"edinburgh",
+    "مانشستر":"manchester","manchester":"manchester",
+    "سيول":"seoul","seoul":"seoul",
+    "بوسان":"busan","busan":"busan",
+    "جيجو":"jeju","jeju":"jeju",
+  };
+  const normalizedDayCity = cityAliases[dayCityNorm] || dayCityNorm;
+  const cityLabel = LIB_CITY_NAMES?.[normalizedDayCity] || day.city || "المدينة";
+
+  // Count items per city for hint
+  const cityCounts = {};
+  lib.forEach(l => { const c = l.city||""; cityCounts[c] = (cityCounts[c]||0)+1; });
+  const hasThisCity = lib.some(l => (cityAliases[l.city]||l.city) === normalizedDayCity);
+
   return `
     <div class="picker-tabs">
-      ${isKoreaTrip() ? `<button class="picker-tab act" onclick="this.parentElement.querySelectorAll('.picker-tab').forEach(t=>t.classList.remove('act'));this.classList.add('act');document.getElementById('act-from-lib-section').hidden=false;document.getElementById('act-new-section').hidden=true">📚 من المكتبة</button>` : ''}
-      <button class="picker-tab${!isKoreaTrip() ? ' act' : ''}" onclick="this.parentElement.querySelectorAll('.picker-tab').forEach(t=>t.classList.remove('act'));this.classList.add('act');document.getElementById('act-from-lib-section').hidden=true;document.getElementById('act-new-section').hidden=false">✨ ${isKoreaTrip() ? 'موقع جديد' : 'إضافة نشاط'}</button>
+      ${hasLib ? `<button class="picker-tab act" id="tab-lib" onclick="_switchActTab('lib')">📚 من المكتبة</button>` : ''}
+      <button class="picker-tab${!hasLib ? ' act' : ''}" id="tab-new" onclick="_switchActTab('new')">✏️ نشاط جديد</button>
     </div>
 
-    <div id="act-from-lib-section" ${!isKoreaTrip() ? 'hidden' : ''}>
-      <p class="txs clm mb2">المواقع في <strong>${cityById(day.city)?.name || day.city || 'المدينة'}</strong> فقط</p>
-      <div class="s-row mb2">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="input s-inp" id="act-search" placeholder="ابحث بالاسم..." oninput="renderActLibList()">
+    <div id="act-from-lib-section" ${!hasLib ? 'hidden' : ''}>
+      <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem;align-items:center;flex-wrap:wrap">
+        <input class="input" id="act-search" placeholder="ابحث في المكتبة..." oninput="renderActLibList('${normalizedDayCity}')" style="flex:1;min-width:120px;padding:0.35rem 0.5rem;font-size:0.8rem">
+        <select class="input" id="act-city-filter" onchange="renderActLibList('${normalizedDayCity}')" style="padding:0.35rem 0.4rem;font-size:0.75rem;max-width:130px">
+          <option value="${normalizedDayCity}">${cityLabel} فقط</option>
+          <option value="">كل المدن</option>
+          ${[...new Set(lib.map(l=>l.city).filter(Boolean))].filter(c=>c!==normalizedDayCity).map(c=>`<option value="${c}">${LIB_CITY_NAMES?.[c]||c}</option>`).join('')}
+        </select>
       </div>
-      <div class="fb mb2" id="act-type-filter">
+      <div class="fb mb2" id="act-type-filter" style="flex-wrap:wrap;gap:0.25rem">
         <button class="fb-btn act" data-t="all" onclick="setActFilter('all',event)">الكل</button>
+        <button class="fb-btn" data-t="food" onclick="setActFilter('food',event)">🍽️ مطاعم</button>
         <button class="fb-btn" data-t="attraction" onclick="setActFilter('attraction',event)">📍 معالم</button>
         <button class="fb-btn" data-t="mosque" onclick="setActFilter('mosque',event)">🕌 مساجد</button>
         <button class="fb-btn" data-t="shop" onclick="setActFilter('shop',event)">🛍️ تسوق</button>
+        <button class="fb-btn" data-t="hotel" onclick="setActFilter('hotel',event)">🏨 فنادق</button>
         <button class="fb-btn" data-t="entertainment" onclick="setActFilter('entertainment',event)">🎢 ترفيه</button>
-        <button class="fb-btn" data-t="festival" onclick="setActFilter('festival',event)">🎉 فعاليات</button>
       </div>
-      <div id="act-lib-list"></div>
+      ${!hasThisCity && normalizedDayCity ? `<p style="font-size:0.72rem;color:var(--muted);margin-bottom:0.4rem">💡 لا توجد مواقع لـ "${cityLabel}" في المكتبة — اختر "كل المدن" أو أضف نشاطاً يدوياً</p>` : ''}
+      <div id="act-lib-list" style="max-height:38vh;overflow-y:auto"></div>
     </div>
 
-    <div id="act-new-section" ${!isKoreaTrip() ? '' : 'hidden'}>
-      <div class="fld">
-        <label>اسم الموقع *</label>
-        <input type="text" class="input" id="act-name" placeholder="مثال: مقهى Anthracite">
-      </div>
+    <div id="act-new-section" ${hasLib ? 'hidden' : ''}>
       <div class="fld-row">
-        <div class="fld">
-          <label>التصنيف *</label>
-          <select class="input" id="act-type">
-            <option value="attraction">📍 معلم</option>
-            <option value="mosque">🕌 مسجد</option>
-            <option value="shop">🛍️ تسوق</option>
-            <option value="entertainment">🎢 ترفيه</option>
-            <option value="festival">🎉 فعالية</option>
-          </select>
+        <div class="fld" style="flex:2">
+          <label>اسم الموقع / النشاط *</label>
+          <input type="text" class="input" id="act-name" placeholder="مثال: آيا صوفيا" autofocus>
         </div>
-        <div class="fld">
-          <label>الوقت *</label>
+        <div class="fld" style="flex:1">
+          <label>الوقت</label>
           <input type="time" class="input" id="act-time" value="${suggestedTime}">
         </div>
       </div>
-      <div class="fld">
-        <label>المنطقة (اختياري)</label>
-        <input type="text" class="input" id="act-area" placeholder="مثال: هاوندي">
-      </div>
       <div class="fld-row">
         <div class="fld">
-          <label>تذكرة محجوزة؟ (اختياري)</label>
-          <input type="text" class="input" id="act-ticket" placeholder="رقم التذكرة">
+          <label>التصنيف</label>
+          <select class="input" id="act-type">
+            <option value="attraction">📍 معلم</option>
+            <option value="food">🍽️ مطعم</option>
+            <option value="mosque">🕌 مسجد/صلاة</option>
+            <option value="hotel">🏨 فندق</option>
+            <option value="shop">🛍️ تسوق</option>
+            <option value="entertainment">🎢 ترفيه</option>
+            <option value="transport">🚗 مواصلات</option>
+            <option value="other">⭐ أخرى</option>
+          </select>
         </div>
+        <div class="fld">
+          <label>المنطقة / الحي</label>
+          <input type="text" class="input" id="act-area" placeholder="مثال: السلطان أحمد">
+        </div>
+      </div>
+      <div class="fld-row">
         <div class="fld">
           <label>السعر / الدخول</label>
-          <input type="text" class="input" id="act-price" placeholder="₩15,000">
+          <input type="text" class="input" id="act-price" placeholder="مثال: مجاني / 50 ليرة">
         </div>
-      </div>
-      <div class="fld-row">
         <div class="fld">
           <label>المدة المتوقعة</label>
-          <input type="text" class="input" id="act-dur" placeholder="ساعتان">
-        </div>
-        <div class="fld">
-          <label>وقت الإغلاق (اختياري)</label>
-          <input type="time" class="input" id="act-close">
-        </div>
-      </div>
-      <div class="fld-row">
-        <div class="fld">
-          <label>خط العرض (اختياري)</label>
-          <input type="number" step="any" class="input" id="act-lat" placeholder="37.5">
-        </div>
-        <div class="fld">
-          <label>خط الطول (اختياري)</label>
-          <input type="number" step="any" class="input" id="act-lng" placeholder="127.0">
+          <input type="text" class="input" id="act-dur" placeholder="مثال: ساعتان">
         </div>
       </div>
       <div class="fld">
-        <label>ملاحظات (اختياري)</label>
-        <textarea class="input" id="act-note" rows="2" placeholder="نصيحة، تنبيه..."></textarea>
+        <label>ملاحظات</label>
+        <textarea class="input" id="act-note" rows="2" placeholder="نصيحة، رابط، تنبيه..."></textarea>
       </div>
       <label class="flx itm g25 mb2" style="cursor:pointer">
         <input type="checkbox" id="act-save" style="width:1rem;height:1rem" checked>
-        <span class="txs cls">احفظ في المكتبة لإعادة الاستخدام</span>
+        <span class="txs cls">احفظ في المكتبة الشخصية للرحلة</span>
       </label>
       <div class="modal-act">
         <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
-        <button class="btn btn-pri" onclick="saveActivityNew()">إضافة للجدول</button>
+        <button class="btn btn-pri" onclick="saveActivityNew()">إضافة للجدول ✓</button>
       </div>
     </div>
   `;
+}
+
+function _switchActTab(tab) {
+  const libSec = document.getElementById("act-from-lib-section");
+  const newSec = document.getElementById("act-new-section");
+  const tabLib = document.getElementById("tab-lib");
+  const tabNew = document.getElementById("tab-new");
+  if (tab === 'lib') {
+    if (libSec) libSec.hidden = false;
+    if (newSec) newSec.hidden = true;
+    tabLib?.classList.add('act'); tabNew?.classList.remove('act');
+    const day = state.itinerary[state.pendingInsert?.dayIdx];
+    const dayCityNorm = (day?.city||"").toLowerCase();
+    const cityAliases = {"إسطنبول":"istanbul","اسطنبول":"istanbul","أنطاليا":"antalya","انطاليا":"antalya","طرابزون":"trabzon","أنقرة":"ankara","انقرة":"ankara","بورصة":"bursa","إزمير":"izmir","كابادوكيا":"cappadocia","لندن":"london","إدنبرة":"edinburgh","ادنبره":"edinburgh","مانشستر":"manchester","سيول":"seoul","بوسان":"busan","جيجو":"jeju"};
+    renderActLibList(cityAliases[dayCityNorm]||dayCityNorm);
+  } else {
+    if (libSec) libSec.hidden = true;
+    if (newSec) newSec.hidden = false;
+    tabLib?.classList.remove('act'); tabNew?.classList.add('act');
+    setTimeout(()=>document.getElementById("act-name")?.focus(), 50);
+  }
 }
 
 let actFilter = "all";
@@ -5294,15 +5333,19 @@ function setActFilter(t, ev) {
 }
 
 function renderActLibList() {
-  const day = state.itinerary[state.pendingInsert.dayIdx];
   const q = ($("act-search")?.value || "").toLowerCase();
+  const cityFilter = $("act-city-filter")?.value ?? "";
   const list = $("act-lib-list");
   if (!list) return;
 
-  const types = ["attraction", "mosque", "shop", "entertainment", "festival"];
+  const cityAliases = {"إسطنبول":"istanbul","اسطنبول":"istanbul","أنطاليا":"antalya","انطاليا":"antalya","طرابزون":"trabzon","أنقرة":"ankara","انقرة":"ankara","بورصة":"bursa","إزمير":"izmir","كابادوكيا":"cappadocia","لندن":"london","إدنبرة":"edinburgh","ادنبره":"edinburgh","مانشستر":"manchester","سيول":"seoul","بوسان":"busan","جيجو":"jeju"};
+
   const filtered = allLib().filter(l => {
-    if (l.city !== day.city) return false;
-    if (!types.includes(l.type)) return false;
+    if (cityFilter) {
+      const lCity = cityAliases[l.city] || l.city;
+      const fCity = cityAliases[cityFilter] || cityFilter;
+      if (lCity !== fCity) return false;
+    }
     if (actFilter !== "all" && l.type !== actFilter) return false;
     if (q && !((l.name || '') + ' ' + (l.area || '')).toLowerCase().includes(q)) return false;
     return true;
@@ -5337,21 +5380,15 @@ function saveActivityNew() {
   if (!name) { alert("الاسم مطلوب"); return; }
   const type = $("act-type").value;
   const time = $("act-time").value;
-  const area = $("act-area").value.trim();
-  const ticket = $("act-ticket").value.trim();
-  const price = $("act-price").value.trim();
-  const dur = $("act-dur").value.trim();
-  const close = $("act-close").value;
-  const lat = parseFloat($("act-lat").value) || null;
-  const lng = parseFloat($("act-lng").value) || null;
-  const note = $("act-note").value.trim();
-  const save = $("act-save").checked;
+  const area = ($("act-area")?.value || "").trim();
+  const price = ($("act-price")?.value || "").trim();
+  const dur = ($("act-dur")?.value || "").trim();
+  const note = ($("act-note")?.value || "").trim();
+  const save = $("act-save")?.checked ?? false;
 
   const meta = [];
-  if (ticket) meta.push(`🎫 ${ticket}`);
   if (price) meta.push(price);
   if (dur) meta.push(`⏱️ ${dur}`);
-  if (close) meta.push(`يغلق ${close}`);
 
   const day = state.itinerary[state.pendingInsert.dayIdx];
 
@@ -5360,17 +5397,17 @@ function saveActivityNew() {
     state.customLib.push({
       id: customId, name, type, area,
       icon: TYPES[type]?.icon || "📍",
-      city: day.city, lat, lng, note, price, custom: true
+      city: day.city, note, price, custom: true
     });
     saveLib();
     day.items.push({
       id: "i_" + Date.now(), time, text: name, type, refId: customId,
-      lat, lng, note: [note, meta.join(" · ")].filter(Boolean).join(" — ") || null
+      note: [note, meta.join(" · ")].filter(Boolean).join(" — ") || null
     });
   } else {
     day.items.push({
       id: "i_" + Date.now(), time, text: name, type,
-      lat, lng, note: [note, meta.join(" · ")].filter(Boolean).join(" — ") || null
+      note: [note, meta.join(" · ")].filter(Boolean).join(" — ") || null
     });
   }
   saveItin();
