@@ -3943,11 +3943,21 @@ const state = {
   pendingInsert: null // { dayIdx, time }
 };
 
-function saveItin() { Trip.save("itin", state.itinerary); }
+let _saveIndicatorTimer = null;
+function _showSaveIndicator() {
+  const el = $("auto-sync-indicator");
+  if (!el) return;
+  el.textContent = "✓ محفوظ";
+  el.style.opacity = "1";
+  if (_saveIndicatorTimer) clearTimeout(_saveIndicatorTimer);
+  _saveIndicatorTimer = setTimeout(() => { el.style.opacity = "0"; }, 1800);
+}
+
+function saveItin() { Trip.save("itin", state.itinerary); _showSaveIndicator(); }
 function saveLib() { Trip.save("clib", state.customLib); }
 function saveFavs() { Trip.save("favs", state.favs); }
-function saveTasks() { Trip.save("tasks", state.tasks); }
-function saveTripInfo() { Trip.save("tripinfo", state.tripInfo); }
+function saveTasks() { Trip.save("tasks", state.tasks); _showSaveIndicator(); }
+function saveTripInfo() { Trip.save("tripinfo", state.tripInfo); _showSaveIndicator(); }
 function saveCityColors() { Trip.save("citycolors", state.cityColors); CITY_COLORS = { ...state.cityColors }; }
 function saveCustomCities() { Trip.save("customcities", state.customCities); }
 
@@ -10151,7 +10161,31 @@ function openShareModal() {
   `);
 }
 
-function _genShareLink(btn) {
+async function _compressToBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  const cs = new CompressionStream("deflate-raw");
+  const writer = cs.writable.getWriter();
+  writer.write(bytes);
+  writer.close();
+  const buf = await new Response(cs.readable).arrayBuffer();
+  const arr = new Uint8Array(buf);
+  let bin = "";
+  for (let i = 0; i < arr.length; i++) bin += String.fromCharCode(arr[i]);
+  return btoa(bin);
+}
+
+async function _decompressFromBase64(b64) {
+  const bin = atob(b64);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  const ds = new DecompressionStream("deflate-raw");
+  const writer = ds.writable.getWriter();
+  writer.write(arr);
+  writer.close();
+  return await new Response(ds.readable).text();
+}
+
+async function _genShareLink(btn) {
   btn.textContent = "جاري التجهيز...";
   btn.disabled = true;
   try {
@@ -10160,18 +10194,18 @@ function _genShareLink(btn) {
       tripInfo: state.tripInfo,
       cityColors: state.cityColors
     };
-    const json = JSON.stringify(data);
-    const b64 = btoa(unescape(encodeURIComponent(json)));
+    const b64 = await _compressToBase64(JSON.stringify(data));
     const url = `${location.origin}/?trip=${encodeURIComponent(Trip.current)}&share=${encodeURIComponent(b64)}`;
     const el = document.getElementById("share-link-result");
     if (el) {
       el.style.display = "block";
+      const safeUrl = url.replace(/'/g, "\\'");
       el.innerHTML = `
         <div style="background:var(--cream);border-radius:var(--r-sm);padding:0.5rem 0.65rem;font-size:0.7rem;direction:ltr;word-break:break-all;cursor:pointer;border:1px solid var(--border);margin-bottom:0.4rem"
-             onclick="navigator.clipboard?.writeText('${url.replace(/'/g,"\\'")}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='${url.replace(/'/g,"\\'")}',1500)">
+             onclick="navigator.clipboard?.writeText('${safeUrl}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='${url.length > 200 ? url.slice(0,200)+'…' : url}',1500)">
           ${url.length > 200 ? url.slice(0,200)+'…' : url}
         </div>
-        <button class="btn btn-pri" style="width:100%" onclick="navigator.clipboard?.writeText('${url.replace(/'/g,"\\'")}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='📋 نسخ الرابط',1500)">
+        <button class="btn btn-pri" style="width:100%" onclick="navigator.clipboard?.writeText('${safeUrl}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='📋 نسخ الرابط',1500)">
           📋 نسخ الرابط
         </button>
       `;
@@ -10263,10 +10297,16 @@ async function initApp() {
   // Specific trip view
   Trip.current = route.tripId || "korea";
 
-  // If a share param is in URL, decode and apply (no server needed)
+  // If a share param is in URL, decompress+decode and apply (no server needed)
   if (route.shareData) {
     try {
-      const json = decodeURIComponent(escape(atob(route.shareData)));
+      let json;
+      try {
+        json = await _decompressFromBase64(route.shareData);
+      } catch {
+        // fallback: old uncompressed format
+        json = decodeURIComponent(escape(atob(route.shareData)));
+      }
       const data = JSON.parse(json);
       if (data.itinerary)  Trip.save("itin", data.itinerary);
       if (data.tripInfo)   Trip.save("tripinfo", data.tripInfo);
