@@ -903,6 +903,141 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .color-swatch.selected { border-color: var(--ink); transform: scale(1.1); }
 .color-custom { width: 1.6rem; height: 1.6rem; padding: 0; border: none; border-radius: 50%; cursor: pointer; background: none; }
 
+/* ═════════════════════════════════════════
+   DASHBOARD
+   ═════════════════════════════════════════ */
+.dash-page {
+  min-height: 100vh; padding: 1.5rem 1rem 4rem;
+  max-width: 75rem; margin: 0 auto;
+}
+.dash-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;
+  padding-bottom: 1rem; border-bottom: 2px solid var(--border);
+}
+.dash-hdr-title { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+.dash-hdr-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+.dash-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.dash-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.trip-card {
+  background: var(--paper); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 1.1rem; box-shadow: var(--sh);
+  display: flex; flex-direction: column; gap: 0.65rem;
+  transition: all 0.15s; position: relative; overflow: hidden;
+}
+.trip-card::before {
+  content: ''; position: absolute; top: 0; right: 0; left: 0;
+  height: 4px; background: var(--accent);
+}
+.trip-card:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+.trip-card-h { display: flex; align-items: center; gap: 0.6rem; }
+.trip-card-icon {
+  font-size: 1.8rem; width: 2.6rem; height: 2.6rem;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--cream); border-radius: var(--r-md); flex-shrink: 0;
+}
+.trip-card-name { font-size: 1.05rem; font-weight: 700; color: var(--ink); }
+.trip-card-dest { font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
+.trip-card-stats { display: flex; gap: 1.25rem; font-size: 0.72rem; color: var(--ink-soft); }
+.trip-card-stats div strong { display: block; font-size: 0.95rem; color: var(--accent); }
+.trip-card-dates {
+  font-size: 0.75rem; color: var(--ink-soft);
+  background: var(--cream); padding: 0.4rem 0.6rem;
+  border-radius: var(--r-sm); border: 1px solid var(--border);
+}
+.trip-card-acts { display: flex; gap: 0.4rem; margin-top: 0.4rem; flex-wrap: wrap; }
+.trip-card-act {
+  flex: 1; padding: 0.45rem 0.5rem; font-size: 0.75rem;
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  background: var(--paper); display: inline-flex; align-items: center; justify-content: center; gap: 0.3rem;
+  text-decoration: none; color: var(--ink); transition: all 0.12s;
+}
+.trip-card-act svg { width: 13px; height: 13px; }
+.trip-card-act-pri { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+.trip-card-act-pri:hover { background: var(--accent-dk); }
+.trip-card-act-danger { color: var(--err); border-color: rgba(239,68,68,0.3); }
+
+.dash-create-card {
+  background: var(--bg); border: 2px dashed var(--border);
+  border-radius: var(--r-lg); padding: 2rem 1rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.75rem; min-height: 220px; cursor: pointer;
+  transition: all 0.15s; color: var(--muted);
+}
+.dash-create-card:hover { border-color: var(--accent); color: var(--accent); background: rgba(26,77,74,0.03); }
+.dash-create-card svg { width: 36px; height: 36px; }
+.dash-create-card-l { font-size: 1rem; font-weight: 600; }
+
+/* ═════════════════════════════════════════
+   TRIP SETTINGS PANEL (replaces color picker)
+   ═════════════════════════════════════════ */
+.ts-section {
+  background: var(--cream); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 0.8rem 0.9rem; margin-bottom: 0.85rem;
+}
+.ts-section h4 {
+  font-size: 0.85rem; color: var(--accent); margin-bottom: 0.5rem;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.ts-city-row {
+  background: var(--paper); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 0.55rem 0.7rem;
+  margin-bottom: 0.4rem;
+  display: grid; grid-template-columns: auto 1fr auto auto; gap: 0.5rem; align-items: center;
+}
+.ts-city-color {
+  width: 1.3rem; height: 1.3rem; border-radius: 50%;
+  border: 2px solid var(--paper); box-shadow: 0 0 0 1px var(--border);
+  cursor: pointer; flex-shrink: 0;
+}
+.ts-city-name { font-size: 0.85rem; font-weight: 600; }
+.ts-city-meta { font-size: 0.7rem; color: var(--muted); margin-top: 0.1rem; }
+.ts-city-x {
+  background: transparent; color: var(--err); padding: 0.25rem 0.45rem;
+  border-radius: var(--r-sm); font-size: 1rem;
+}
+
+/* ═════════════════════════════════════════
+   HEADER REDESIGN
+   ═════════════════════════════════════════ */
+.hdr-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 0.5rem; gap: 0.5rem; flex-wrap: wrap;
+}
+.hdr-back-btn {
+  background: rgba(255,255,255,0.15); color: var(--paper);
+  font-size: 0.72rem; padding: 0.35rem 0.7rem;
+  border-radius: 1rem; display: inline-flex; align-items: center; gap: 0.3rem;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.hdr-back-btn:hover { background: rgba(255,255,255,0.25); }
+.hdr-back-btn svg { width: 14px; height: 14px; }
+.hdr-share-btn {
+  background: rgba(184,146,74,0.3); color: var(--paper);
+  font-size: 0.72rem; padding: 0.35rem 0.7rem;
+  border-radius: 1rem; display: inline-flex; align-items: center; gap: 0.3rem;
+  border: 1px solid rgba(184,146,74,0.5);
+}
+.hdr-share-btn:hover { background: rgba(184,146,74,0.5); }
+.hdr-share-btn svg { width: 14px; height: 14px; }
+
+/* + between days (visual separator) */
+.day-tabs-wrap .day-tabs { gap: 0.15rem; }
+.dt-between {
+  flex-shrink: 0; align-self: center; height: 2rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.dt-between-btn {
+  width: 1.3rem; height: 1.3rem; border-radius: 50%;
+  background: var(--bg); border: 1px solid var(--border);
+  color: var(--muted); font-size: 0.85rem; line-height: 1;
+  font-weight: 700; padding: 0; transition: all 0.12s;
+}
+.dt-between-btn:hover { background: var(--accent); color: var(--paper); border-color: var(--accent); transform: scale(1.15); }
+
 /* Day header */
 .day-hdr {
   display: flex; align-items: flex-start; gap: 0.75rem;
@@ -2024,17 +2159,34 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 </head>
 <body>
 
+<!-- Dashboard view (shown when in dashboard mode) -->
+<div id="dashboard-view" hidden></div>
+
+<!-- Trip view (shown when viewing a specific trip) -->
+<div id="trip-view">
 <header class="hdr">
   <div class="hdr-c">
-    <div class="hdr-tag">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3L12 3z"/>
-      </svg>
-      <span>MHWAR · KOREA TRIP</span>
+    <div class="hdr-top">
+      <div class="hdr-tag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3L12 3z"/>
+        </svg>
+        <span id="hdr-tag-text">MHWAR · KOREA TRIP</span>
+      </div>
+      <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
+        <button class="hdr-share-btn" onclick="openShareModal()" title="رابط المشاركة">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          مشاركة
+        </button>
+        <button class="hdr-back-btn" id="hdr-back-btn" onclick="navTo({dashboard:true})" hidden title="لوحة التحكم">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          الداشبورد
+        </button>
+      </div>
     </div>
-    <h1>كوريا الجنوبية</h1>
-    <p class="hdr-sub">11 يوم · 10 ليالٍ · 14-24 مايو 2026 · مرجع التذكرة: 9T7ZEZ</p>
-    <div class="hdr-stats">
+    <h1 id="hdr-title">كوريا الجنوبية</h1>
+    <p class="hdr-sub" id="hdr-sub">11 يوم · 10 ليالٍ · 14-24 مايو 2026 · مرجع التذكرة: 9T7ZEZ</p>
+    <div class="hdr-stats" id="hdr-stats">
       <div class="sb"><div class="sb-l">الوصول</div><div class="sb-v">14 مايو · 10:50ص</div></div>
       <div class="sb"><div class="sb-l">المغادرة</div><div class="sb-v">24 مايو · 17:50م</div></div>
       <div class="sb sb-acc" id="cd-box"><div class="sb-l">العد التنازلي</div><div class="sb-v" id="cd-val">— يوم</div></div>
@@ -2049,9 +2201,9 @@ footer p { font-size: 0.7rem; color: var(--muted); }
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
         <span>الجدول</span>
       </button>
-      <button class="ht-btn" onclick="switchTab('library')" title="المكتبة">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        <span>المكتبة</span>
+      <button class="ht-btn" onclick="openTripSettings()" title="إعدادات الرحلة">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>إعدادات</span>
       </button>
     </div>
   </div>
@@ -2086,7 +2238,9 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   مزامنة
 </button>
 
-<footer><p>رحلة كوريا الجنوبية · 14-24 مايو 2026 · مرجع التذكرة: 9T7ZEZ · يُحفظ تلقائياً في متصفحك</p></footer>
+<footer><p id="footer-text">رحلة كوريا الجنوبية · 14-24 مايو 2026 · مرجع التذكرة: 9T7ZEZ · يُحفظ تلقائياً في متصفحك</p></footer>
+
+</div><!-- /trip-view -->
 
 <!-- Modal container -->
 <div class="modal-bk" id="modal-bk">
@@ -2097,7 +2251,119 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//   CITIES
+//   MULTI-TRIP ROUTING & STORAGE
+// ═══════════════════════════════════════════════════════════
+
+const OWNER_KEY = "mhwar2026"; // Owner secret. Set via ?owner=mhwar2026
+
+const Trip = {
+  current: "korea", // current trip ID
+
+  storageKey(suffix) {
+    return this.current === "korea" ? `kt2_${suffix}` : `kt2_trip_${this.current}_${suffix}`;
+  },
+  load(suffix, def) {
+    try { const v = localStorage.getItem(this.storageKey(suffix)); return v !== null ? JSON.parse(v) : def; }
+    catch { return def; }
+  },
+  save(suffix, val) {
+    try { localStorage.setItem(this.storageKey(suffix), JSON.stringify(val)); } catch {}
+  },
+  delete(suffix) { try { localStorage.removeItem(this.storageKey(suffix)); } catch {} }
+};
+
+const TripsRegistry = {
+  KOREA_DEFAULT: {
+    id: "korea", name: "كوريا الجنوبية", destination: "كوريا الجنوبية",
+    icon: "🇰🇷", color: "#1a4d4a", isBuiltIn: true,
+    startDate: "2026-05-14", endDate: "2026-05-24",
+    createdAt: "2026-01-01"
+  },
+  list() {
+    const stored = (() => {
+      try { return JSON.parse(localStorage.getItem("kt2_trips_registry") || "[]"); } catch { return []; }
+    })();
+    if (!stored.find(t => t.id === "korea")) stored.unshift(this.KOREA_DEFAULT);
+    return stored;
+  },
+  save(list) { localStorage.setItem("kt2_trips_registry", JSON.stringify(list)); },
+  get(id) { return this.list().find(t => t.id === id); },
+  upsert(trip) {
+    const list = this.list().filter(t => t.id !== trip.id);
+    list.push(trip);
+    this.save(list);
+  },
+  remove(id) {
+    if (id === "korea") return false;
+    const list = this.list().filter(t => t.id !== id);
+    this.save(list);
+    // Clean up trip data
+    Object.keys(localStorage).filter(k => k.startsWith(`kt2_trip_${id}_`)).forEach(k => localStorage.removeItem(k));
+    return true;
+  }
+};
+
+function isOwner() {
+  return localStorage.getItem("kt2_is_owner") === "1";
+}
+
+function getRouteParams() {
+  const u = new URL(location.href);
+  return {
+    trip: u.searchParams.get("trip"),
+    dashboard: u.searchParams.get("dashboard") === "1",
+    owner: u.searchParams.get("owner"),
+    loadCode: u.searchParams.get("code")
+  };
+}
+
+function applyRoute() {
+  const p = getRouteParams();
+
+  // 1. Owner key check
+  if (p.owner !== null) {
+    if (p.owner === OWNER_KEY) {
+      localStorage.setItem("kt2_is_owner", "1");
+      // Clean URL
+      const url = new URL(location.href); url.searchParams.delete("owner");
+      history.replaceState(null, "", url.toString());
+      alert("✓ تم تفعيل وضع المالك");
+    } else {
+      alert("مفتاح المالك غير صحيح");
+    }
+  }
+
+  // 2. Determine view
+  const showDashboard = p.dashboard && isOwner();
+  const tripId = p.trip || (isOwner() ? null : "korea");
+
+  return { showDashboard, tripId, loadCode: p.loadCode };
+}
+
+function navTo({ trip, dashboard, code }) {
+  const u = new URL(location.href);
+  u.searchParams.delete("trip");
+  u.searchParams.delete("dashboard");
+  u.searchParams.delete("code");
+  if (dashboard) u.searchParams.set("dashboard", "1");
+  if (trip) u.searchParams.set("trip", trip);
+  if (code) u.searchParams.set("code", code);
+  location.href = u.toString();
+}
+
+function generateTripId(name) {
+  const base = (name || "trip").toLowerCase()
+    .replace(/[؀-ۿ]+/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 24) || "trip";
+  let id = base;
+  let n = 1;
+  const existing = TripsRegistry.list().map(t => t.id);
+  while (existing.includes(id)) { id = `${base}-${++n}`; }
+  return id;
+}
+
 // ═══════════════════════════════════════════════════════════
 
 const CITIES = [
@@ -2885,14 +3151,14 @@ const TRIP_INFO_DEFAULT = {
 };
 
 const state = {
-  active: Storage.get("kt2_tab", "overview"),
-  itinerary: Storage.get("kt2_itin", makeEmptyItinerary()),
-  customLib: Storage.get("kt2_clib", []),
-  budget: Storage.get("kt2_bud", BUDGET_DEFAULT),
-  tasks: Storage.get("kt2_tasks", TASKS_DEFAULT),
-  favs: Storage.get("kt2_favs", []),
-  tripInfo: Storage.get("kt2_tripinfo", TRIP_INFO_DEFAULT),
-  cityColors: Storage.get("kt2_citycolors", { ...CITY_COLORS_DEFAULT }),
+  active: Trip.load("tab", "overview"),
+  itinerary: Trip.load("itin", makeEmptyItinerary()),
+  customLib: Trip.load("clib", []),
+  budget: Trip.load("bud", BUDGET_DEFAULT),
+  tasks: Trip.load("tasks", TASKS_DEFAULT),
+  favs: Trip.load("favs", []),
+  tripInfo: Trip.load("tripinfo", TRIP_INFO_DEFAULT),
+  cityColors: Trip.load("citycolors", { ...CITY_COLORS_DEFAULT }),
   // UI state
   activeDayIdx: 0,
   activeCity: "seoul",
@@ -2908,12 +3174,12 @@ const state = {
   pendingInsert: null // { dayIdx, time }
 };
 
-function saveItin() { Storage.set("kt2_itin", state.itinerary); }
-function saveLib() { Storage.set("kt2_clib", state.customLib); }
-function saveFavs() { Storage.set("kt2_favs", state.favs); }
-function saveTasks() { Storage.set("kt2_tasks", state.tasks); }
-function saveTripInfo() { Storage.set("kt2_tripinfo", state.tripInfo); }
-function saveCityColors() { Storage.set("kt2_citycolors", state.cityColors); CITY_COLORS = { ...state.cityColors }; }
+function saveItin() { Trip.save("itin", state.itinerary); }
+function saveLib() { Trip.save("clib", state.customLib); }
+function saveFavs() { Trip.save("favs", state.favs); }
+function saveTasks() { Trip.save("tasks", state.tasks); }
+function saveTripInfo() { Trip.save("tripinfo", state.tripInfo); }
+function saveCityColors() { Trip.save("citycolors", state.cityColors); CITY_COLORS = { ...state.cityColors }; }
 
 // All POIs (built-in + custom)
 function allLib() { return [...LIB, ...state.customLib]; }
@@ -2934,7 +3200,7 @@ function renderNav() {
 
 function switchTab(id) {
   state.active = id;
-  Storage.set("kt2_tab", id);
+  Trip.save("tab", id);
   document.querySelectorAll(".sec").forEach(s => s.classList.remove("act"));
   $("sec-" + id).classList.add("act");
   document.querySelectorAll(".nav-t").forEach(t => t.classList.toggle("act", t.dataset.tab === id));
@@ -3182,7 +3448,7 @@ function renderItinerary() {
     <div class="day-tabs-wrap">
       <div class="day-tabs" id="day-tabs"></div>
       <div class="day-tabs-actions">
-        <button class="day-tabs-clr-btn" onclick="openCityColorPicker()" title="تخصيص ألوان المدن">🎨</button>
+        <button class="day-tabs-clr-btn" onclick="openTripSettings()" title="إعدادات الرحلة (مدن، ألوان، فنادق...)">⚙️</button>
         <button class="dt-add" onclick="addNewDay(state.itinerary.length - 1)" title="إضافة يوم في النهاية">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
@@ -3209,25 +3475,27 @@ function renderItinerary() {
 
 function renderDayTabs() {
   const tabs = $("day-tabs");
-  // Group consecutive days by city for color display
-  tabs.innerHTML = state.itinerary.map((d, i) => {
+  let html = '';
+  state.itinerary.forEach((d, i) => {
     const col = state.cityColors[d.city] || CITY_COLORS_DEFAULT[d.city] || "#1a4d4a";
     const isAct = i === state.activeDayIdx;
     const borderType = d.type !== 'normal' ? ` ${d.type}` : '';
     const cityShort = (cityById(d.city)?.name || d.city).replace('جزيرة ','');
-    return `
-      <div class="dt-wrap">
-        <button class="dt${borderType}${isAct ? ' act' : ''}"
-          onclick="state.activeDayIdx=${i};renderItinerary()"
-          style="${isAct ? `background:${col};border-color:${col}` : `border-top:3px solid ${col}`}">
-          <div class="dt-d">يوم</div>
-          <div class="dt-n">${d.day}</div>
-          <div class="dt-c">${cityShort}</div>
-        </button>
-        <button class="dt-inline-add" onclick="addNewDay(${i})" title="إضافة يوم بعد اليوم ${d.day}">+</button>
-      </div>
+    html += `
+      <button class="dt${borderType}${isAct ? ' act' : ''}"
+        onclick="state.activeDayIdx=${i};renderItinerary()"
+        style="${isAct ? `background:${col};border-color:${col}` : `border-top:3px solid ${col}`}">
+        <div class="dt-d">يوم</div>
+        <div class="dt-n">${d.day}</div>
+        <div class="dt-c">${cityShort}</div>
+      </button>
     `;
-  }).join('');
+    // "+" between days (except after last day, that gets its own end-of-strip button)
+    if (i < state.itinerary.length - 1) {
+      html += `<div class="dt-between"><button class="dt-between-btn" onclick="addNewDay(${i})" title="إضافة يوم بين اليوم ${d.day} و${d.day + 1}">+</button></div>`;
+    }
+  });
+  tabs.innerHTML = html;
 }
 
 // ── Welcome: add first day ──
@@ -6414,13 +6682,471 @@ async function doSyncLoad() {
   setTimeout(closeModal, 1500);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// ═══════════════════════════════════════════════════════════
+//   DASHBOARD VIEW
+// ═══════════════════════════════════════════════════════════
+
+function renderDashboard() {
+  const trips = TripsRegistry.list();
+  const dash = $("dashboard-view");
+  dash.innerHTML = `
+    <div class="dash-page">
+      <div class="dash-hdr">
+        <div>
+          <div class="dash-hdr-title">🗺️ لوحة التحكم</div>
+          <div class="dash-hdr-sub">إدارة الرحلات · ${trips.length} رحلة</div>
+        </div>
+        <div class="dash-actions">
+          <button class="btn btn-out btn-sm" onclick="exitOwnerMode()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            خروج
+          </button>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        ${trips.map(t => renderTripCard(t)).join('')}
+        <button class="dash-create-card" onclick="openCreateTripModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <div class="dash-create-card-l">إنشاء رحلة جديدة</div>
+          <div class="txs clm">ابدأ تخطيط وجهة جديدة</div>
+        </button>
+      </div>
+
+      <div style="margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--border);text-align:center;font-size:0.72rem;color:var(--muted)">
+        💡 شارك رحلة مع شخص: افتح الرحلة → زر مشاركة → انسخ الرابط
+      </div>
+    </div>
+  `;
+}
+
+function renderTripCard(t) {
+  // Load trip stats from its storage
+  const prevCurrent = Trip.current;
+  Trip.current = t.id;
+  const itin = Trip.load("itin", []);
+  const tripInfo = Trip.load("tripinfo", null);
+  Trip.current = prevCurrent;
+
+  const totalItems = itin.reduce((s, d) => s + (d.items?.length || 0), 0);
+  const startDate = (tripInfo && tripInfo.startDate) || t.startDate;
+  const endDate = (tripInfo && tripInfo.endDate) || t.endDate;
+  const datesText = startDate && endDate
+    ? `${startDate} ← ${endDate}`
+    : "بدون تواريخ";
+
+  return `
+    <div class="trip-card" style="--card-color:${t.color || '#1a4d4a'}">
+      <style>.trip-card[style*="${t.color}"]::before{background:${t.color || '#1a4d4a'}}</style>
+      <div class="trip-card-h">
+        <div class="trip-card-icon">${t.icon || "🗺️"}</div>
+        <div style="flex:1;min-width:0">
+          <div class="trip-card-name">${t.name}</div>
+          <div class="trip-card-dest">${t.destination || ''}</div>
+        </div>
+      </div>
+      <div class="trip-card-dates">📅 ${datesText}</div>
+      <div class="trip-card-stats">
+        <div><strong>${itin.length}</strong> يوم</div>
+        <div><strong>${totalItems}</strong> نشاط</div>
+      </div>
+      <div class="trip-card-acts">
+        <button class="trip-card-act trip-card-act-pri" onclick="navTo({trip:'${t.id}'})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          فتح
+        </button>
+        <button class="trip-card-act" onclick="openShareModalFor('${t.id}')" title="رابط المشاركة">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </button>
+        ${!t.isBuiltIn ? `
+          <button class="trip-card-act trip-card-act-danger" onclick="deleteTrip('${t.id}')" title="حذف">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+          </button>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function openCreateTripModal() {
+  openModal(`
+    <div class="modal-h">
+      <h3>✨ إنشاء رحلة جديدة</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="fld">
+      <label>اسم الرحلة</label>
+      <input type="text" class="input" id="ct-name" placeholder="مثال: اليابان 2026" autofocus>
+    </div>
+    <div class="fld">
+      <label>الوجهة</label>
+      <input type="text" class="input" id="ct-dest" placeholder="مثال: اليابان">
+    </div>
+    <div class="fld">
+      <label>الأيقونة (إيموجي)</label>
+      <input type="text" class="input" id="ct-icon" value="🗺️" maxlength="4">
+    </div>
+    <div class="fld">
+      <label>اللون المميز</label>
+      <input type="color" class="input" id="ct-color" value="#0891b2" style="height:2.5rem">
+    </div>
+    <div class="fld-row">
+      <div class="fld">
+        <label>تاريخ البدء (اختياري)</label>
+        <input type="date" class="input" id="ct-sdate">
+      </div>
+      <div class="fld">
+        <label>تاريخ الانتهاء (اختياري)</label>
+        <input type="date" class="input" id="ct-edate">
+      </div>
+    </div>
+    <p class="txs clm" style="margin-top:0.5rem">سيتم إنشاء جدول فارغ يمكنك ملؤه تدريجياً</p>
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-pri" onclick="createNewTrip()">إنشاء</button>
+    </div>
+  `);
+}
+
+function createNewTrip() {
+  const name = $("ct-name").value.trim();
+  if (!name) { alert("اسم الرحلة مطلوب"); return; }
+  const id = generateTripId(name);
+  const trip = {
+    id, name,
+    destination: $("ct-dest").value.trim() || name,
+    icon: $("ct-icon").value.trim() || "🗺️",
+    color: $("ct-color").value || "#0891b2",
+    startDate: $("ct-sdate").value || "",
+    endDate: $("ct-edate").value || "",
+    isBuiltIn: false,
+    createdAt: new Date().toISOString().split('T')[0]
+  };
+  TripsRegistry.upsert(trip);
+
+  // Initialize empty trip data
+  const oldCurrent = Trip.current;
+  Trip.current = id;
+  Trip.save("itin", []);
+  Trip.save("clib", []);
+  Trip.save("favs", []);
+  Trip.save("tasks", []);
+  Trip.save("tripinfo", {
+    destination: trip.destination,
+    startDate: trip.startDate, endDate: trip.endDate,
+    travelers: 1, ticketRef: "",
+    outboundFlights: [], returnFlights: [], notes: ""
+  });
+  Trip.save("citycolors", { [id]: trip.color });
+  Trip.current = oldCurrent;
+
+  closeModal();
+  navTo({ trip: id });
+}
+
+function deleteTrip(id) {
+  const t = TripsRegistry.get(id);
+  if (!t || t.isBuiltIn) return;
+  if (!confirm(`حذف رحلة "${t.name}" نهائياً؟ لا يمكن التراجع.`)) return;
+  TripsRegistry.remove(id);
+  renderDashboard();
+}
+
+function exitOwnerMode() {
+  if (!confirm("الخروج من وضع المالك؟ ستحتاج المفتاح للدخول مرة أخرى.")) return;
+  localStorage.removeItem("kt2_is_owner");
+  location.href = "/";
+}
+
+// ═══════════════════════════════════════════════════════════
+//   TRIP SETTINGS PANEL
+// ═══════════════════════════════════════════════════════════
+
+function openTripSettings() {
+  const trip = TripsRegistry.get(Trip.current) || TripsRegistry.KOREA_DEFAULT;
+  const t = state.tripInfo;
+  const cities = getTripCities();
+
+  openModal(`
+    <div class="modal-h">
+      <h3>⚙️ إعدادات الرحلة</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+
+    <div class="ts-section">
+      <h4>📋 معلومات أساسية</h4>
+      <div class="fld">
+        <label>اسم الرحلة</label>
+        <input type="text" class="input" id="ts-name" value="${trip.name || ''}">
+      </div>
+      <div class="fld-row">
+        <div class="fld">
+          <label>تاريخ البدء</label>
+          <input type="date" class="input" id="ts-sdate" value="${t.startDate || ''}">
+        </div>
+        <div class="fld">
+          <label>تاريخ الانتهاء</label>
+          <input type="date" class="input" id="ts-edate" value="${t.endDate || ''}">
+        </div>
+      </div>
+      <div class="fld">
+        <label>عدد أيام الرحلة (يضبط طول الجدول تلقائياً)</label>
+        <input type="number" class="input" id="ts-days" min="0" max="60" value="${state.itinerary.length}">
+      </div>
+    </div>
+
+    <div class="ts-section">
+      <h4>🏙️ المدن المراد زيارتها</h4>
+      <div id="ts-cities-list">
+        ${cities.map(c => `
+          <div class="ts-city-row">
+            <input type="color" class="ts-city-color" value="${state.cityColors[c.id] || c.color || '#1a4d4a'}"
+              onchange="setCityColor('${c.id}', this.value)" title="لون المدينة">
+            <div>
+              <div class="ts-city-name">${c.name}</div>
+              <div class="ts-city-meta">${c.daysCount} يوم${c.firstDate ? ` · من ${c.firstDate}` : ''}${c.hotel ? ` · 🏨 ${c.hotel}` : ''}</div>
+            </div>
+            <button class="day-tabs-clr-btn" onclick="editCityInSettings('${c.id}')" title="تعديل">✎</button>
+          </div>
+        `).join('') || '<p class="txs clm">لا توجد مدن — أضف يوماً وحدد مدينته</p>'}
+      </div>
+    </div>
+
+    <div class="ts-section">
+      <h4>🎨 لوحة الألوان السريعة</h4>
+      <p class="txs clm mb2">إعادة ضبط لجميع المدن أو استخدم منتقي اللون أعلاه لكل مدينة</p>
+      <button class="btn btn-out btn-sm" onclick="resetCityColors()">↻ إعادة ضبط الألوان</button>
+    </div>
+
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-pri" onclick="saveTripSettings()">حفظ التغييرات</button>
+    </div>
+  `);
+}
+
+function getTripCities() {
+  // Aggregate cities from itinerary
+  const map = {};
+  state.itinerary.forEach(d => {
+    if (!d.city) return;
+    if (!map[d.city]) {
+      const cityInfo = cityById(d.city);
+      map[d.city] = {
+        id: d.city,
+        name: cityInfo?.name || d.city,
+        color: state.cityColors[d.city] || CITY_COLORS_DEFAULT[d.city] || '#1a4d4a',
+        daysCount: 0,
+        firstDate: d.dateLabel || '',
+        hotel: ''
+      };
+    }
+    map[d.city].daysCount++;
+    if (d.hotel?.name && !map[d.city].hotel) map[d.city].hotel = d.hotel.name;
+  });
+  return Object.values(map);
+}
+
+function editCityInSettings(cityId) {
+  // Find first day with that city and trigger setDayMeta on it
+  const idx = state.itinerary.findIndex(d => d.city === cityId);
+  if (idx < 0) return;
+  state.activeDayIdx = idx;
+  closeModal();
+  switchTab('itinerary');
+  setTimeout(() => setDayMeta(), 200);
+}
+
+function saveTripSettings() {
+  const newName = $("ts-name").value.trim();
+  const sdate = $("ts-sdate").value;
+  const edate = $("ts-edate").value;
+  const targetDays = Math.max(0, parseInt($("ts-days").value, 10) || 0);
+
+  // Update tripInfo
+  if (sdate) state.tripInfo.startDate = sdate;
+  if (edate) state.tripInfo.endDate = edate;
+  saveTripInfo();
+
+  // Update trip registry
+  if (newName) {
+    const trip = TripsRegistry.get(Trip.current) || { ...TripsRegistry.KOREA_DEFAULT };
+    trip.name = newName;
+    if (sdate) trip.startDate = sdate;
+    if (edate) trip.endDate = edate;
+    TripsRegistry.upsert(trip);
+  }
+
+  // Adjust days count
+  while (state.itinerary.length < targetDays) {
+    addNewDayQuiet();
+  }
+  while (state.itinerary.length > targetDays && state.itinerary.length > 0) {
+    state.itinerary.pop();
+  }
+  if (state.activeDayIdx >= state.itinerary.length) state.activeDayIdx = Math.max(0, state.itinerary.length - 1);
+  saveItin();
+
+  closeModal();
+  updateHeaderForTrip();
+  renderItinerary();
+}
+
+function addNewDayQuiet() {
+  const last = state.itinerary[state.itinerary.length - 1];
+  const newDay = {
+    day: 0, date: "", dateLabel: "", weekday: "",
+    city: last?.city || "seoul", title: "", type: "normal",
+    flight: null, narrative: null, notes: null, hotel: null, items: []
+  };
+  state.itinerary.push(newDay);
+  renumberDays();
+}
+
+// ═══════════════════════════════════════════════════════════
+//   SHARE MODAL
+// ═══════════════════════════════════════════════════════════
+
+function openShareModalFor(tripId) {
+  const oldCurrent = Trip.current;
+  Trip.current = tripId;
+  let code = Trip.load("sync_code", null);
+  Trip.current = oldCurrent;
+  if (!code) {
+    if (confirm("هذه الرحلة لم تُرفع للسحابة بعد. افتح الرحلة وارفعها أولاً.")) {
+      navTo({ trip: tripId });
+    }
+    return;
+  }
+  showShareLink(tripId, code);
+}
+
+function openShareModal() {
+  let code = Trip.load("sync_code", null);
+  if (!code) {
+    // Auto-generate
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    code = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+    Trip.save("sync_code", code);
+  }
+  showShareLink(Trip.current, code);
+}
+
+function showShareLink(tripId, code) {
+  const url = `${location.origin}/?trip=${encodeURIComponent(tripId)}&code=${encodeURIComponent(code)}`;
+  openModal(`
+    <div class="modal-h">
+      <h3>🔗 رابط مشاركة الرحلة</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="sync-box">
+      <p class="sync-sub">شارك هذا الرابط مع أي شخص لمشاهدة الرحلة</p>
+
+      <div class="sync-code-display" style="font-size:0.75rem;letter-spacing:0;text-align:center;direction:ltr;cursor:pointer;word-break:break-all;font-weight:500"
+           onclick="navigator.clipboard?.writeText('${url}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='${url}',1500)">
+        ${url}
+      </div>
+      <p class="sync-hint">اضغط لنسخ الرابط</p>
+
+      <button class="btn btn-pri" style="width:100%;margin-bottom:0.5rem" onclick="syncSave('${code}').then(ok=>{const st=document.getElementById('sync-status');if(st){st.className='sync-status '+(ok?'ok':'err');st.textContent=ok?'✓ تم رفع آخر التحديثات للسحابة':'✗ فشل الرفع'}})">
+        ☁️ رفع آخر التحديثات قبل المشاركة
+      </button>
+      <p class="txs clm" style="text-align:center">رمز المزامنة: <strong>${code}</strong></p>
+      <div class="sync-status" id="sync-status"></div>
+    </div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════════════
+//   HEADER UPDATE BASED ON TRIP
+// ═══════════════════════════════════════════════════════════
+
+function updateHeaderForTrip() {
+  const trip = TripsRegistry.get(Trip.current) || TripsRegistry.KOREA_DEFAULT;
+  const t = state.tripInfo || {};
+  const start = t.startDate || trip.startDate;
+  const end = t.endDate || trip.endDate;
+  const days = state.itinerary.length;
+
+  $("hdr-tag-text") && ($("hdr-tag-text").textContent = `MHWAR · ${(trip.name || '').toUpperCase()}`);
+  $("hdr-title") && ($("hdr-title").textContent = trip.name || trip.destination || 'رحلة');
+
+  let subText = '';
+  if (days) subText += `${days} يوم`;
+  if (start && end) subText += (subText ? ' · ' : '') + `${start} ← ${end}`;
+  if (t.ticketRef) subText += (subText ? ' · ' : '') + `مرجع التذكرة: ${t.ticketRef}`;
+  $("hdr-sub") && ($("hdr-sub").textContent = subText || 'ابدأ تخطيط رحلتك من تبويب الجدول');
+
+  $("footer-text") && ($("footer-text").textContent = `${trip.name || 'رحلة'} · يُحفظ تلقائياً ومُزامَن عبر الأجهزة`);
+
+  // Show "Back to dashboard" only for owner
+  const back = $("hdr-back-btn");
+  if (back) back.hidden = !isOwner();
+}
+
+// ═══════════════════════════════════════════════════════════
+//   INIT
+// ═══════════════════════════════════════════════════════════
+
+async function initApp() {
+  const route = applyRoute();
+
+  // Owner with no trip → dashboard
+  if (route.showDashboard || (isOwner() && !route.tripId)) {
+    $("trip-view").hidden = true;
+    $("dashboard-view").hidden = false;
+    $("fab").hidden = true;
+    $("sync-fab").hidden = true;
+    renderDashboard();
+    return;
+  }
+
+  // Specific trip view
+  Trip.current = route.tripId || "korea";
+
+  // If a load code is in URL, fetch from cloud first
+  if (route.loadCode) {
+    try {
+      const res = await fetch(`/.netlify/functions/load?code=${encodeURIComponent(route.loadCode)}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data) {
+          // Apply to current trip's storage
+          if (json.data.itinerary)  Trip.save("itin", json.data.itinerary);
+          if (json.data.customLib)  Trip.save("clib", json.data.customLib);
+          if (json.data.budget)     Trip.save("bud",  json.data.budget);
+          if (json.data.tasks)      Trip.save("tasks", json.data.tasks);
+          if (json.data.favs)       Trip.save("favs", json.data.favs);
+          if (json.data.tripInfo)   Trip.save("tripinfo", json.data.tripInfo);
+          if (json.data.cityColors) Trip.save("citycolors", json.data.cityColors);
+          Trip.save("sync_code", route.loadCode);
+        }
+      }
+    } catch {}
+  }
+
+  // Reload state from current trip's storage
+  state.itinerary = Trip.load("itin", makeEmptyItinerary());
+  state.customLib = Trip.load("clib", []);
+  state.budget    = Trip.load("bud",  BUDGET_DEFAULT);
+  state.tasks     = Trip.load("tasks", TASKS_DEFAULT);
+  state.favs      = Trip.load("favs", []);
+  state.tripInfo  = Trip.load("tripinfo", TRIP_INFO_DEFAULT);
+  state.cityColors = Trip.load("citycolors", { ...CITY_COLORS_DEFAULT });
+  state.active    = Trip.load("tab", "overview");
+  CITY_COLORS = { ...state.cityColors };
+
+  $("trip-view").hidden = false;
+  $("dashboard-view").hidden = true;
+
   renderNav();
   updateCountdown();
   setInterval(updateCountdown, 60 * 60 * 1000);
-  // Render initial section
   switchTab(state.active);
+  updateHeaderForTrip();
+}
 
+document.addEventListener("DOMContentLoaded", () => {
   // Modal close on backdrop click
   $("modal-bk").addEventListener("click", (e) => {
     if (e.target === $("modal-bk")) closeModal();
@@ -6430,6 +7156,8 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeModal();
   });
+
+  initApp();
 });
 
 </script>
