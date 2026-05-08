@@ -90,14 +90,22 @@ input, select, textarea {
 }
 .hdr-hero-upload {
   position: absolute; bottom: 0.5rem; left: 0.5rem;
-  background: rgba(0,0,0,0.45); color: #fff;
-  font-size: 0.65rem; padding: 0.25rem 0.5rem;
+  background: rgba(0,0,0,0.5); color: #fff;
+  font-size: 0.65rem; padding: 0.3rem 0.65rem;
   border-radius: 999px; border: none; cursor: pointer;
   display: flex; align-items: center; gap: 0.3rem;
-  backdrop-filter: blur(4px);
-  opacity: 0; transition: opacity 0.2s;
+  backdrop-filter: blur(6px);
+  transition: opacity 0.2s, background 0.15s;
 }
-.hdr-hero:hover .hdr-hero-upload { opacity: 1; }
+.hdr-hero-upload:hover { background: rgba(0,0,0,0.7); }
+/* Show always on touch, on hover on desktop */
+@media (hover: hover) {
+  .hdr-hero-upload { opacity: 0; }
+  .hdr-hero:hover .hdr-hero-upload { opacity: 1; }
+}
+@media (hover: none) {
+  .hdr-hero-upload { opacity: 0.85; }
+}
 .hdr-hero::before {
   content: '';
   position: absolute; inset: 0;
@@ -9703,8 +9711,26 @@ function openTripSettings() {
     <div class="ts-section">
       <h4>📋 معلومات أساسية</h4>
       <div class="fld">
-        <label>اسم الرحلة</label>
+        <label>اسم الدولة / الوجهة <span style="font-size:0.68rem;color:var(--muted)">(يظهر في الشريط العلوي)</span></label>
         <input type="text" class="input" id="ts-name" value="${trip.name || ''}">
+      </div>
+      <div class="fld">
+        <label>عنوان الرحلة <span style="font-size:0.68rem;color:var(--muted)">(يظهر كعنوان رئيسي)</span></label>
+        <input type="text" class="input" id="ts-custom-title" value="${t.customTitle || ''}" placeholder="مثال: رحلة كوريا — مايو 2026">
+      </div>
+      <div class="fld">
+        <label>صورة الغلاف <span style="font-size:0.68rem;color:var(--muted)">(موصى به: 1200 × 400 بكسل)</span></label>
+        <div style="display:flex;gap:0.5rem;align-items:center">
+          <label class="btn btn-out" style="cursor:pointer;font-size:0.78rem;flex:1;text-align:center">
+            📷 اختر صورة
+            <input type="file" accept="image/*" style="display:none" onchange="handleHeroUpload(this);openTripSettings()">
+          </label>
+          ${localStorage.getItem('kt2_hero_img') ? `
+          <button class="btn btn-sec" style="font-size:0.78rem" onclick="localStorage.removeItem('kt2_hero_img');applyHeroImage(null);openTripSettings()">
+            🗑️ حذف
+          </button>` : ''}
+        </div>
+        ${localStorage.getItem('kt2_hero_img') ? `<div style="margin-top:0.4rem;border-radius:var(--r-sm);overflow:hidden;height:70px"><img src="${localStorage.getItem('kt2_hero_img')}" style="width:100%;height:100%;object-fit:cover"></div>` : '<p class="txs clm mt1">لم تُضف صورة بعد — اضغط لاختيار صورة من جهازك</p>'}
       </div>
       <div class="fld">
         <label>📚 المكتبة المرتبطة</label>
@@ -9985,6 +10011,8 @@ function saveTripSettings() {
   const ticketRef = $("ts-pnr")?.value.trim() || "";
   if (ticketRef) state.tripInfo.ticketRef = ticketRef;
   state.tripInfo.notes = $("ts-notes")?.value.trim() || "";
+  const customTitle = $("ts-custom-title")?.value.trim() || "";
+  state.tripInfo.customTitle = customTitle;
   saveTripInfo();
 
   // Update trip registry
@@ -10133,9 +10161,12 @@ function updateHeaderForTrip() {
   const end = t.endDate || trip.endDate;
   const days = state.itinerary.length;
 
-  // Tag: just the trip icon + name (no MHWAR prefix)
-  $("hdr-tag-text") && ($("hdr-tag-text").textContent = `${trip.icon || '✈️'} ${trip.name || 'رحلة'}`);
-  $("hdr-title") && ($("hdr-title").textContent = trip.name || trip.destination || 'رحلة');
+  // Tag: country/destination name
+  const countryName = trip.destination || trip.name || 'رحلة';
+  $("hdr-tag-text") && ($("hdr-tag-text").textContent = `${trip.icon || '✈️'} ${countryName}`);
+  // H1: custom trip title (editable) — separate from country name
+  const customTitle = t.customTitle || trip.name || countryName;
+  $("hdr-title") && ($("hdr-title").textContent = customTitle);
   // Hero strip: themed by country
   const hero = $("hdr-hero");
   if (hero) hero.setAttribute("data-country", trip.countryLib || "");
