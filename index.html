@@ -6439,6 +6439,14 @@ function renderCityTabBody() {
 //   LIBRARY SECTION (browse all POIs)
 // ═══════════════════════════════════════════════════════════
 
+function _linkLibToTrip(libId) {
+  const trip = TripsRegistry.get(Trip.current);
+  if (!trip) return;
+  trip.countryLib = libId;
+  TripsRegistry.upsert(trip);
+  renderLibrary();
+}
+
 function renderLibrary() {
   const trip = TripsRegistry.get(Trip.current);
   const linkedLib = trip?.countryLib || null;
@@ -6446,6 +6454,35 @@ function renderLibrary() {
   const hasLib = all.length > 0 || state.customLib.length > 0;
 
   if (!hasLib) {
+    // Auto-detect matching library from trip name / destination / country
+    const globalLibs = getGlobalLibs();
+    const availableLibIds = ["korea", ...Object.keys(globalLibs)];
+    const tripText = ((trip?.name || "") + " " + (trip?.destination || "") + " " + (state.tripInfo?.arrCity || "")).toLowerCase();
+    const countryKeywords = {
+      turkey: ["تركيا","turkey","turkish","اسطنبول","إسطنبول","istanbul","ankara","antalya"],
+      uk: ["بريطانيا","britain","uk","england","london","لندن","ادنبره","edinburgh"],
+      korea: ["كوريا","korea","korean","seoul","سيول","busan"],
+      japan: ["اليابان","japan","japanese","tokyo","طوكيو"],
+      malaysia: ["ماليزيا","malaysia","kuala","كوالا"],
+      uae: ["الإمارات","امارات","uae","dubai","دبي","abudhabi"],
+      egypt: ["مصر","egypt","cairo","القاهرة"],
+      morocco: ["المغرب","morocco","marrakech","مراكش"],
+      france: ["فرنسا","france","paris","باريس"],
+      italy: ["إيطاليا","italy","rome","روما"],
+      spain: ["إسبانيا","spain","barcelona","برشلونة"],
+    };
+    let suggestedLib = null;
+    for (const [key, keywords] of Object.entries(countryKeywords)) {
+      if (keywords.some(k => tripText.includes(k)) && availableLibIds.includes(key)) {
+        suggestedLib = key;
+        break;
+      }
+    }
+    const suggestedMeta = suggestedLib ? (LIB_META[suggestedLib] || {}) : null;
+    const libCount = suggestedLib === "korea"
+      ? (typeof LIB !== 'undefined' ? LIB.length : 0)
+      : (globalLibs[suggestedLib] || []).length;
+
     $("sec-library").innerHTML = `
       <div class="sec-t">
         <div class="sec-t-r">
@@ -6456,8 +6493,20 @@ function renderLibrary() {
       </div>
       <div class="itin-welcome">
         <div class="itin-welcome-icon">📚</div>
-        <h3 class="itin-welcome-title">لا توجد مكتبة مرتبطة</h3>
-        <p class="itin-welcome-desc">لم تُحدَّد مكتبة لهذه الرحلة. افتح الداشبورد ← المكتبات لإنشاء أو إضافة مكتبة، ثم اربطها بالرحلة من إعدادات الرحلة.</p>
+        ${suggestedLib ? `
+          <h3 class="itin-welcome-title">${suggestedMeta.icon||'🌍'} تم اكتشاف مكتبة ${suggestedMeta.name||suggestedLib}</h3>
+          <p class="itin-welcome-desc">يوجد ${libCount} موقع في مكتبة ${suggestedMeta.name||suggestedLib} جاهزة للربط بهذه الرحلة.</p>
+          <div style="display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;margin-top:1rem">
+            <button class="btn btn-pri" onclick="_linkLibToTrip('${suggestedLib}')">
+              ${suggestedMeta.icon||'📚'} ربط مكتبة ${suggestedMeta.name||suggestedLib}
+            </button>
+            <button class="btn btn-out" onclick="openTripSettings()">⚙️ إعدادات الرحلة</button>
+          </div>
+        ` : `
+          <h3 class="itin-welcome-title">لا توجد مكتبة مرتبطة</h3>
+          <p class="itin-welcome-desc">اختر مكتبة لربطها بهذه الرحلة من الإعدادات.</p>
+          <button class="btn btn-pri" onclick="openTripSettings()" style="margin-top:1rem">⚙️ إعدادات الرحلة → المكتبة المرتبطة</button>
+        `}
       </div>
     `;
     return;
