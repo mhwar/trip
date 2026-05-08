@@ -7616,9 +7616,25 @@ function openLibBrowser(libId) {
       <div id="lb-results" style="display:flex;flex-direction:column;gap:0.5rem;max-height:55vh;overflow-y:auto">
         ${renderItems(cityF, typeF, q)}
       </div>
-      <div style="margin-top:0.75rem;display:flex;gap:0.5rem;justify-content:space-between;flex-wrap:wrap">
-        ${!isKorea?`<button class="btn btn-out btn-sm" onclick="openAddLibItemModal('${libId}')">+ إضافة موقع</button>`:'<div></div>'}
-        <span class="txs clm" style="font-size:0.72rem;align-self:center">${allItems.length} موقع إجمالاً</span>
+      <div style="margin-top:0.75rem;display:flex;gap:0.5rem;justify-content:space-between;flex-wrap:wrap;align-items:center">
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
+          ${!isKorea?`<button class="btn btn-out btn-sm" onclick="openAddLibItemModal('${libId}')">+ إضافة موقع</button>`:''}
+          ${!isKorea?`
+            <button class="btn btn-pri btn-sm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)" onclick="closeModal();setTimeout(()=>openGeminiAssistant('${libId}'),80)">
+              🤖 توليد بـ AI
+            </button>
+            <div style="position:relative;display:inline-block">
+              <button class="btn btn-out btn-sm" id="lb-ai-menu-btn" onclick="_toggleLibAiMenu('${libId}')" title="مهام AI سريعة">▾</button>
+              <div id="lb-ai-menu" style="display:none;position:absolute;bottom:2rem;right:0;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:999;min-width:170px;padding:0.4rem 0">
+                ${['hotels','halal_food','mosques','attractions','shopping','enrich'].map(tid => {
+                  const t = GEMINI_TASKS.find(x=>x.id===tid);
+                  return t ? `<button onclick="_libQuickGenerate('${libId}','${tid}')" style="display:flex;gap:0.5rem;align-items:center;width:100%;padding:0.45rem 0.75rem;background:none;border:none;cursor:pointer;font-size:0.78rem;text-align:right;color:var(--ink)"><span>${t.icon}</span><span>${t.label}</span></button>` : '';
+                }).join('')}
+              </div>
+            </div>
+          `:''}
+        </div>
+        <span class="txs clm" style="font-size:0.72rem">${allItems.length} موقع إجمالاً</span>
       </div>
     `;
   }
@@ -7904,15 +7920,31 @@ function openGeminiAssistant(preselectedLib) {
     </div>
 
     <div style="background:var(--cream);border-radius:10px;padding:0.6rem 0.8rem;margin-bottom:0.75rem;font-size:0.75rem;color:var(--ink-soft)">
-      🔑 <strong>مفتاح Gemini API</strong>
-      <input type="password" class="input" id="gem-key" value="${savedKey}" placeholder="AIza..." autocomplete="off" style="margin-top:0.3rem;padding:0.3rem 0.5rem;font-size:0.8rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
+        <strong>🔑 مفتاح Gemini API</strong>
+        <button onclick="document.getElementById('gem-setup-guide').style.display=document.getElementById('gem-setup-guide').style.display==='none'?'block':'none'" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.7rem">❓ إعداد الحساب المدفوع</button>
+      </div>
+      <input type="password" class="input" id="gem-key" value="${savedKey}" placeholder="AIza..." autocomplete="off" style="padding:0.3rem 0.5rem;font-size:0.8rem">
       <div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.4rem;flex-wrap:wrap">
         <select class="input" id="gem-model" style="padding:0.25rem 0.4rem;font-size:0.72rem;flex:1;min-width:160px">
-          <option value="gemini-2.0-flash-lite">gemini-2.0-flash-lite ✓ مجاني · الأنسب</option>
-          <option value="gemini-2.0-flash">gemini-2.0-flash (حصة محدودة)</option>
-          <option value="gemini-2.5-flash-preview-05-20">gemini-2.5-flash-preview (مدفوع · الأحدث)</option>
+          <optgroup label="مجاني (موصى به)">
+            <option value="gemini-2.0-flash-lite">gemini-2.0-flash-lite ✓ مجاني · الأنسب</option>
+            <option value="gemini-2.0-flash">gemini-2.0-flash · مجاني محدود</option>
+          </optgroup>
+          <optgroup label="مدفوع (Gemini Pro / Cloud)">
+            <option value="gemini-2.5-flash-preview-05-20">gemini-2.5-flash-preview · الأسرع</option>
+            <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro-preview · الأدق</option>
+          </optgroup>
         </select>
-        <span style="font-size:0.65rem;color:var(--muted)"><a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent)">احصل على مفتاح</a></span>
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.65rem;color:var(--accent)">+ مفتاح جديد</a>
+      </div>
+      <div id="gem-setup-guide" style="display:none;margin-top:0.6rem;font-size:0.72rem;background:white;border-radius:8px;padding:0.6rem;line-height:1.7;border:1px solid var(--border)">
+        <strong>⚙️ ربط اشتراك Gemini Pro بالـ API:</strong><br>
+        1. افتح <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent)">aistudio.google.com/app/apikey</a><br>
+        2. اضغط <strong>"Create API key"</strong> → اختر <strong>"Create API key in new project"</strong><br>
+        3. أو اختر مشروعاً موجوداً مع فوترة مفعّلة<br>
+        4. انسخ المفتاح والصقه هنا<br>
+        <span style="color:var(--muted)">💡 اشتراك Gemini Pro (Google One) يعطيك وصولاً لـ Gemini Advanced في الواجهة، لكن الـ API يحتاج مفتاح منفصل من AI Studio مرتبط بمشروع Cloud.</span>
       </div>
     </div>
 
@@ -7974,6 +8006,29 @@ function openGeminiAssistant(preselectedLib) {
   window._gemState = { task: "enrich", lib: preselectedLib || ($("gem-lib")||{}).value || "" };
   _geminiLibChange();
   _geminiRefreshPrompt();
+}
+
+function _toggleLibAiMenu(libId) {
+  const menu = document.getElementById("lb-ai-menu");
+  if (!menu) return;
+  menu.style.display = menu.style.display === "none" ? "block" : "none";
+  // Close on outside click
+  setTimeout(() => {
+    document.addEventListener("click", function _close(e) {
+      if (!e.target.closest("#lb-ai-menu") && !e.target.closest("#lb-ai-menu-btn")) {
+        menu.style.display = "none";
+        document.removeEventListener("click", _close);
+      }
+    });
+  }, 10);
+}
+
+function _libQuickGenerate(libId, taskId) {
+  closeModal();
+  setTimeout(() => {
+    openGeminiAssistant(libId);
+    setTimeout(() => _geminiSelectTask(taskId), 150);
+  }, 80);
 }
 
 function _geminiLibChange() {
