@@ -8111,7 +8111,13 @@ async function runGeminiAssistant() {
       })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+    if (!res.ok) {
+      // Preserve exact API error for debugging
+      const apiMsg = data.error?.message || JSON.stringify(data.error || data);
+      const apiCode = data.error?.code || res.status;
+      const apiStatus = data.error?.status || "";
+      throw Object.assign(new Error(apiMsg), { apiCode, apiStatus, rawData: data });
+    }
 
     const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
     const jsonMatch = raw.match(/\[[\s\S]*?\]/s) || raw.match(/\[[\s\S]*/);
@@ -8146,12 +8152,18 @@ async function runGeminiAssistant() {
       </div>
     `;
   } catch(e) {
-    let msg = e.message;
-    if (msg.includes("quota") || msg.includes("Quota") || msg.includes("RESOURCE_EXHAUSTED")) {
-      msg = "⚠️ تجاوزت الحد المجاني — اختر gemini-2.0-flash-lite من القائمة (الأعلى حصة مجانية)";
-    } else if (msg.includes("API_KEY") || msg.includes("invalid") || msg.includes("401")) {
-      msg = "⚠️ مفتاح API غير صحيح — تحقق منه في aistudio.google.com";
+    const rawMsg = e.message || "";
+    const code = e.apiCode || "";
+    // Show exact API error + short hint
+    let hint = "";
+    if (e.apiStatus === "RESOURCE_EXHAUSTED" || rawMsg.includes("RESOURCE_EXHAUSTED")) {
+      hint = "💡 تجاوزت حصة هذا الموديل — بدّل الموديل أو انتظر إعادة تعيين الحصة اليومية.";
+    } else if (code === 400 || rawMsg.includes("not found") || rawMsg.includes("not supported")) {
+      hint = "💡 الموديل غير متاح — جرّب موديلاً آخر من القائمة.";
+    } else if (code === 403 || rawMsg.includes("API_KEY") || rawMsg.includes("permission")) {
+      hint = "💡 تحقق من المفتاح في aistudio.google.com — قد يكون محدود الصلاحيات.";
     }
+    status.innerHTML = `<details open><summary style="cursor:pointer;color:var(--danger)">❌ خطأ من Gemini API (HTTP ${code||'?'})</summary><pre style="font-size:0.68rem;white-space:pre-wrap;margin:0.4rem 0;background:var(--cream);padding:0.5rem;border-radius:6px;max-height:120px;overflow-y:auto">${rawMsg.replace(/</g,'&lt;')}</pre>${hint?`<div style="font-size:0.75rem;color:var(--muted);margin-top:0.3rem">${hint}</div>`:''}</details>`;
     status.textContent = "❌ " + msg;
   }
   btn.disabled = false;
