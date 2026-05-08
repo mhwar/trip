@@ -3442,7 +3442,7 @@ const Storage = {
 
 const $ = (id) => document.getElementById(id);
 const cityById = (id) => CITIES.find(c => c.id === id);
-const libById = (id) => LIB.find(l => l.id === id);
+const libById = (id) => allLib().find(l => l.id === id) || LIB.find(l => l.id === id);
 
 const TRIP_INFO_DEFAULT = {
   destination: "كوريا الجنوبية",
@@ -4808,6 +4808,10 @@ function renderPickerBody() {
     body.innerHTML = renderCategoryGrid();
   } else if (state.pickerStep === "details") {
     body.innerHTML = renderCategoryFlow();
+    // Populate library list after DOM is ready
+    if (state.pickerCategory === "activity") {
+      setTimeout(() => { actFilter = "all"; renderActLibList(); }, 0);
+    }
   }
 }
 
@@ -5078,7 +5082,9 @@ function saveTransportItem() {
 // ─── 🍽️ MEAL ───
 function renderMealForm(suggestedTime) {
   const day = state.itinerary[state.pendingInsert.dayIdx];
-  const cityFood = LIB.filter(l => l.type === "food" && l.city === day.city);
+  const _mealAliases = {"إسطنبول":"istanbul","اسطنبول":"istanbul","أنطاليا":"antalya","انطاليا":"antalya","طرابزون":"trabzon","أنقرة":"ankara","انقرة":"ankara","بورصة":"bursa","إزمير":"izmir","كابادوكيا":"cappadocia","لندن":"london","إدنبرة":"edinburgh","ادنبره":"edinburgh","مانشستر":"manchester","سيول":"seoul","بوسان":"busan","جيجو":"jeju"};
+  const _dayCity = _mealAliases[(day.city||"").toLowerCase().trim()] || (day.city||"").toLowerCase().trim();
+  const cityFood = allLib().filter(l => l.type === "food" && (_mealAliases[l.city]||l.city) === _dayCity);
 
   return `
     <div class="fld-row">
