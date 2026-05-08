@@ -1031,8 +1031,8 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .day-tabs::-webkit-scrollbar { display: none; }
 .dt {
   flex-shrink: 0;
-  min-width: 4.75rem;
-  padding: 0.6rem 0.65rem;
+  min-width: 3.8rem;
+  padding: 0.45rem 0.5rem;
   border-radius: var(--r-md);
   background: var(--paper);
   border: 1px solid var(--border);
@@ -1048,13 +1048,13 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   box-shadow: var(--sh-md);
 }
 .dt.act:hover { background: var(--accent-dk); }
-.dt.transit { border-top: 3px solid var(--warn); }
-.dt.arrival { border-top: 3px solid var(--ok); }
-.dt.departure { border-top: 3px solid var(--err); }
-.dt.act.transit, .dt.act.arrival, .dt.act.departure { border-top-color: rgba(255,255,255,0.85); }
-.dt-d { font-size: 0.6rem; opacity: 0.7; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
-.dt-n { font-size: 1.1rem; font-weight: 700; line-height: 1.05; margin: 0.15rem 0; }
-.dt-c { font-size: 0.68rem; opacity: 0.9; font-weight: 500; }
+.dt.transit { border-top: 2px solid var(--warn); }
+.dt.arrival { border-top: 2px solid var(--ok); }
+.dt.departure { border-top: 2px solid var(--err); }
+.dt.act.transit, .dt.act.arrival, .dt.act.departure { border-top-color: rgba(255,255,255,0.6); }
+.dt-d { font-size: 0.55rem; opacity: 0.65; font-weight: 500; letter-spacing: 0.03em; text-transform: uppercase; }
+.dt-n { font-size: 0.95rem; font-weight: 700; line-height: 1.05; margin: 0.1rem 0; }
+.dt-c { font-size: 0.6rem; opacity: 0.85; font-weight: 500; }
 .dt-add {
   flex-shrink: 0;
   min-width: 2.6rem;
@@ -2036,24 +2036,24 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .tl-row.t-mosque .tl-dot { background: #0891b2; }
 
 .tl-card.tl-hotel {
-  background: rgba(26,77,74,0.04);
-  border-right: 3px solid var(--accent);
+  background: rgba(26,77,74,0.03);
+  border-color: rgba(26,77,74,0.2);
 }
 .tl-card.tl-food {
-  background: rgba(22,163,74,0.04);
-  border-right: 3px solid #16a34a;
+  background: rgba(22,163,74,0.03);
+  border-color: rgba(22,163,74,0.2);
 }
 .tl-card.tl-mosque {
-  background: rgba(8,145,178,0.04);
-  border-right: 3px solid #0891b2;
+  background: rgba(8,145,178,0.03);
+  border-color: rgba(8,145,178,0.2);
 }
 .tl-card.tl-rest {
-  background: rgba(217,119,6,0.04);
-  border-right: 3px solid #d97706;
+  background: rgba(217,119,6,0.03);
+  border-color: rgba(217,119,6,0.2);
 }
 .tl-card.tl-note {
-  background: rgba(100,116,139,0.04);
-  border-right: 3px solid #64748b;
+  background: rgba(100,116,139,0.03);
+  border-color: rgba(100,116,139,0.2);
 }
 
 .poi-ic.t-hotel { background: rgba(26,77,74,0.12); color: var(--accent); }
@@ -4285,7 +4285,7 @@ function renderDayTabs() {
     html += `
       <button class="dt${borderType}${isAct ? ' act' : ''}"
         onclick="state.activeDayIdx=${i};renderItinerary()"
-        style="${isAct ? `background:${col};border-color:${col}` : `border-top:3px solid ${col}`}">
+        style="${isAct ? `background:${col};border-color:${col}` : ''}">
         <div class="dt-d">يوم</div>
         <div class="dt-n">${d.day}</div>
         <div class="dt-c">${cityShort}</div>
@@ -6923,9 +6923,32 @@ function openDayHotelPicker(dayIdx) {
   const cityKey = day.city || "";
   const defaultNights = h.nights || Math.min(3, remainingDays);
 
-  // Get hotels from library matching the day's city
-  const allHotels = (typeof allLib === "function" ? allLib() : (typeof LIB !== "undefined" ? LIB : []))
+  // Pull hotels from LIB (AI-generated) and from CITIES districts (built-in)
+  const libHotels = (typeof allLib === "function" ? allLib() : (typeof LIB !== "undefined" ? LIB : []))
     .filter(it => it.type === "hotel");
+
+  // Flatten CITIES districts hotels into a unified format
+  const districtHotels = [];
+  if (typeof CITIES !== "undefined") {
+    CITIES.forEach(c => {
+      (c.districts || []).forEach(dist => {
+        (dist.hotels || []).forEach((dh, idx) => {
+          districtHotels.push({
+            id: `dist_${c.id}_${dist.id}_${idx}`,
+            name: dh.name,
+            area: dist.name,
+            city: c.id,
+            price: dh.price,
+            note: dh.note,
+            lat: dh.lat, lng: dh.lng,
+            _isDist: true
+          });
+        });
+      });
+    });
+  }
+
+  const allHotels = [...libHotels, ...districtHotels];
   const cityHotels = allHotels.filter(h2 => (h2.city || "").toLowerCase() === cityKey.toLowerCase());
   const otherHotels = allHotels.filter(h2 => (h2.city || "").toLowerCase() !== cityKey.toLowerCase());
   const hasLib = cityHotels.length > 0 || otherHotels.length > 0;
@@ -6934,9 +6957,10 @@ function openDayHotelPicker(dayIdx) {
     <button class="hotel-pick-card" onclick="_pickHotelFromLib('${it.id}', ${dayIdx})">
       <div class="hotel-pick-ic">🏨</div>
       <div class="hotel-pick-bd">
-        <div class="hotel-pick-n">${it.name}</div>
-        ${it.area ? `<div class="hotel-pick-a">📍 ${it.area}${it.city ? ` · ${LIB_CITY_NAMES?.[it.city] || it.city}` : ''}</div>` : ''}
-        ${it.price ? `<div class="hotel-pick-p">⭐ ${it.price}</div>` : ''}
+        <div class="hotel-pick-n">${it.name.replace(/^✨ /,'')}</div>
+        ${it.area ? `<div class="hotel-pick-a">📍 ${it.area}</div>` : ''}
+        ${it.price ? `<div class="hotel-pick-p">${it.price}</div>` : ''}
+        ${it.note ? `<div class="hotel-pick-a" style="color:var(--ink-soft)">${it.note.substring(0,60)}${it.note.length>60?'…':''}</div>` : ''}
       </div>
       <svg class="hotel-pick-arr" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
@@ -7020,7 +7044,16 @@ function dhNightsAdj(delta, max) {
 }
 
 function _pickHotelFromLib(libId, dayIdx) {
-  const it = (typeof allLib === "function" ? allLib() : LIB).find(x => x.id === libId);
+  // Search in LIB first, then in CITIES districts (dist_ prefix)
+  let it = (typeof allLib === "function" ? allLib() : LIB).find(x => x.id === libId);
+  if (!it && libId.startsWith("dist_")) {
+    const parts = libId.split("_"); // dist_cityId_distId_idx
+    const cityId = parts[1], distId = parts[2], idx = parseInt(parts[3]);
+    const city = (typeof CITIES !== "undefined" ? CITIES : []).find(c => c.id === cityId);
+    const dist = city?.districts?.find(d => d.id === distId);
+    const dh = dist?.hotels?.[idx];
+    if (dh) it = { id: libId, name: dh.name, area: dist.name, city: cityId, price: dh.price, note: dh.note };
+  }
   if (!it) return;
   const nights = parseInt($("dh-nights-val")?.textContent, 10) || 1;
   const hotel = {
