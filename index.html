@@ -997,6 +997,41 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   border: 2px solid var(--paper); box-shadow: 0 0 0 1px var(--border);
   cursor: pointer; flex-shrink: 0;
 }
+/* Required field highlight */
+.ts-required label::after {
+  content: " *"; color: #dc2626; font-weight: 700;
+}
+.ts-required .input:invalid,
+.ts-required .input[data-empty="1"] {
+  border-color: #dc2626; background: #fef2f2;
+}
+.ts-warn-banner {
+  background: #fef2f2; border: 1px solid #fca5a5;
+  border-radius: var(--r-sm); padding: 0.55rem 0.7rem;
+  margin-bottom: 0.85rem; font-size: 0.78rem; color: #991b1b;
+}
+.ts-warn-banner ul { margin: 0.3rem 0 0; padding-right: 1rem; }
+.ts-warn-banner li { line-height: 1.7; }
+/* Trip info button (replaces ⚙️) */
+.day-tabs-settings {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.35rem 0.7rem; border-radius: var(--r-sm);
+  background: var(--paper); border: 1px solid var(--border);
+  color: var(--accent); cursor: pointer;
+  font-size: 0.75rem; font-weight: 600; position: relative;
+  transition: all 0.15s;
+}
+.day-tabs-settings:hover { background: var(--cream); border-color: var(--accent); }
+.day-tabs-settings .badge-dot {
+  position: absolute; top: -3px; right: -3px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #dc2626; border: 2px solid var(--paper);
+  animation: pulse-red 2s infinite;
+}
+@keyframes pulse-red {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.15); }
+}
 .ts-city-name { font-size: 0.85rem; font-weight: 600; }
 .ts-city-meta { font-size: 0.7rem; color: var(--muted); margin-top: 0.1rem; }
 .ts-city-x {
@@ -3473,15 +3508,15 @@ function renderItinerary() {
       <div class="itin-welcome">
         <div class="itin-welcome-icon">🗓️</div>
         <h3 class="itin-welcome-title">ابدأ تخطيط رحلتك</h3>
-        <p class="itin-welcome-desc">الجدول فارغ — أضف أول يوم وابنِ رحلتك خطوة بخطوة، أو استورد قالباً جاهزاً فيه 11 يوماً مقترحاً</p>
+        <p class="itin-welcome-desc">عبِّئ بيانات الرحلة (التواريخ، مدينة الوصول، الفندق) — وسيتم بناء الجدول تلقائياً يوماً بيوم</p>
         <div class="itin-welcome-acts">
-          <button class="btn btn-pri itin-welcome-btn" onclick="switchTab('tripinfo')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
-            إعدادات الرحلة الأساسية
+          <button class="btn btn-pri itin-welcome-btn" onclick="openTripSettings()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            عبِّئ بيانات الرحلة (الموصى به)
           </button>
           <button class="btn btn-out itin-welcome-btn" onclick="addFirstDay()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            إضافة أول يوم
+            إضافة أول يوم يدوياً
           </button>
           ${isKoreaTrip() ? `
           <button class="btn btn-out itin-welcome-btn" onclick="importTemplate()">
@@ -3509,7 +3544,10 @@ function renderItinerary() {
     <div class="day-tabs-wrap">
       <div class="day-tabs" id="day-tabs"></div>
       <div class="day-tabs-actions">
-        <button class="day-tabs-clr-btn" onclick="openTripSettings()" title="إعدادات الرحلة (مدن، ألوان، فنادق...)">⚙️</button>
+        <button class="day-tabs-settings" onclick="openTripSettings()" title="إعدادات الرحلة وبياناتها">
+          ⚙️ <span>إعدادات</span>
+          ${getMissingTripFields().length > 0 ? '<span class="badge-dot" title="بيانات ناقصة"></span>' : ''}
+        </button>
         <button class="dt-add" onclick="addNewDay(state.itinerary.length - 1)" title="إضافة يوم في النهاية">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
@@ -3992,16 +4030,20 @@ function renumberDays() {
 
 function addNewDay(afterIdx) {
   const sourceDay = state.itinerary[afterIdx];
+  const t = state.tripInfo || {};
+  const defaultCity = isKoreaTrip() ? "seoul" : (t.arrCity || "");
   const newDay = {
     day: 0, // will be renumbered
     date: "",
     dateLabel: "",
     weekday: "",
-    city: sourceDay?.city || "seoul",
+    city: sourceDay?.city || defaultCity,
     title: "",
     type: "normal",
     flight: null,
     narrative: null,
+    notes: null,
+    hotel: sourceDay?.hotel ? { ...sourceDay.hotel } : null,
     items: []
   };
   state.itinerary.splice(afterIdx + 1, 0, newDay);
@@ -7034,7 +7076,38 @@ function createNewTrip() {
 
   const oldCurrent = Trip.current;
   Trip.current = id;
-  Trip.save("itin", []);
+
+  // Auto-generate skeleton days from dates (if provided)
+  const skeletonDays = [];
+  if (sdate && edate) {
+    const start = new Date(sdate);
+    const end = new Date(edate);
+    const ms = end - start;
+    const dayCount = Math.round(ms / 86400000) + 1;
+    if (dayCount > 0 && dayCount <= 60) {
+      const weekdays = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+      const months = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+      const cityForDay = arrCity || "";
+      for (let i = 0; i < dayCount; i++) {
+        const dt = new Date(start);
+        dt.setDate(start.getDate() + i);
+        const isFirst = i === 0;
+        const isLast = i === dayCount - 1;
+        skeletonDays.push({
+          day: i + 1,
+          date: dt.toISOString().split('T')[0],
+          dateLabel: `${dt.getDate()} ${months[dt.getMonth()]}`,
+          weekday: weekdays[dt.getDay()],
+          city: cityForDay,
+          title: "",
+          type: isFirst ? "arrival" : (isLast ? "departure" : "normal"),
+          flight: null, narrative: null, notes: null, hotel: null, items: []
+        });
+      }
+    }
+  }
+
+  Trip.save("itin", skeletonDays);
   Trip.save("clib", []);
   Trip.save("favs", []);
   Trip.save("tasks", []);
@@ -7071,10 +7144,23 @@ function exitOwnerMode() {
 //   TRIP SETTINGS PANEL
 // ═══════════════════════════════════════════════════════════
 
+function getMissingTripFields() {
+  const t = state.tripInfo || {};
+  const trip = TripsRegistry.get(Trip.current) || {};
+  const missing = [];
+  if (!(t.arrCity || trip.arrCity)) missing.push("مدينة الوصول");
+  if (!t.startDate) missing.push("تاريخ المغادرة");
+  if (!t.endDate) missing.push("تاريخ العودة");
+  if (state.itinerary.length === 0) missing.push("أيام الجدول");
+  else if (!state.itinerary[0]?.hotel?.name) missing.push("فندق الوصول");
+  return missing;
+}
+
 function openTripSettings() {
   const trip = TripsRegistry.get(Trip.current) || TripsRegistry.KOREA_DEFAULT;
   const t = state.tripInfo;
   const cities = getTripCities();
+  const missing = getMissingTripFields();
 
   // Compute auto days from dates
   let autoDays = state.itinerary.length;
@@ -7084,11 +7170,21 @@ function openTripSettings() {
     if (d > 0) autoDays = d + 1;
   }
 
+  // Get current first-day hotel for the arrival hotel field
+  const firstHotel = state.itinerary[0]?.hotel || {};
+
   openModal(`
     <div class="modal-h">
-      <h3>⚙️ إعدادات الرحلة</h3>
+      <h3>⚙️ إعدادات وبيانات الرحلة</h3>
       <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
+
+    ${missing.length > 0 ? `
+    <div class="ts-warn-banner">
+      ⚠️ <strong>بيانات ناقصة لتكتمل الرحلة:</strong>
+      <ul>${missing.map(m => `<li>${m}</li>`).join('')}</ul>
+    </div>
+    ` : ''}
 
     <div class="ts-section">
       <h4>📋 معلومات أساسية</h4>
@@ -7111,13 +7207,13 @@ function openTripSettings() {
         </div>
       </div>
       <div class="fld-row">
-        <div class="fld">
-          <label>مدينة الوصول</label>
-          <input type="text" class="input" id="ts-arrcity" value="${t.arrCity || trip.arrCity || ''}" placeholder="مثال: سيول">
+        <div class="fld ${!(t.arrCity || trip.arrCity) ? 'ts-required' : ''}">
+          <label>مدينة الوصول${!(t.arrCity || trip.arrCity) ? '' : ''}</label>
+          <input type="text" class="input" id="ts-arrcity" value="${t.arrCity || trip.arrCity || ''}" placeholder="مثال: إسطنبول" ${!(t.arrCity || trip.arrCity) ? 'data-empty="1"' : ''}>
         </div>
         <div class="fld">
           <label>مطار الوصول</label>
-          <input type="text" class="input" id="ts-arrair" value="${t.arrAirport || trip.arrAir || ''}" placeholder="مثال: ICN">
+          <input type="text" class="input" id="ts-arrair" value="${t.arrAirport || trip.arrAir || ''}" placeholder="مثال: IST">
         </div>
       </div>
       ${(t.outboundFlights && t.outboundFlights.length > 0) ? `
@@ -7128,18 +7224,37 @@ function openTripSettings() {
     <div class="ts-section">
       <h4>📅 مدة الرحلة</h4>
       <div class="fld-row">
-        <div class="fld">
+        <div class="fld ${!t.startDate ? 'ts-required' : ''}">
           <label>تاريخ المغادرة</label>
-          <input type="date" class="input" id="ts-sdate" value="${t.startDate || ''}" onchange="tsSyncDays()">
+          <input type="date" class="input" id="ts-sdate" value="${t.startDate || ''}" onchange="tsSyncDays()" ${!t.startDate ? 'data-empty="1"' : ''}>
         </div>
-        <div class="fld">
+        <div class="fld ${!t.endDate ? 'ts-required' : ''}">
           <label>تاريخ العودة</label>
-          <input type="date" class="input" id="ts-edate" value="${t.endDate || ''}" onchange="tsSyncDays()">
+          <input type="date" class="input" id="ts-edate" value="${t.endDate || ''}" onchange="tsSyncDays()" ${!t.endDate ? 'data-empty="1"' : ''}>
         </div>
       </div>
       <div class="fld">
-        <label>عدد الأيام في الجدول <span class="txs clm" id="ts-days-hint"></span></label>
-        <input type="number" class="input" id="ts-days" min="0" max="60" value="${state.itinerary.length}" placeholder="عدد الأيام">
+        <label>عدد الأيام في الجدول <span class="txs clm" id="ts-days-hint">${(t.startDate && t.endDate) ? `(محسوب من التاريخين: ${autoDays} يوم)` : ''}</span></label>
+        <input type="number" class="input" id="ts-days" min="0" max="60" value="${state.itinerary.length || autoDays}" placeholder="عدد الأيام">
+        <p class="txs clm mt1">💡 عند الحفظ: تُنشأ الأيام تلقائياً بمدينة الوصول وفندقها، وتاريخ كل يوم محسوب</p>
+      </div>
+    </div>
+
+    <div class="ts-section">
+      <h4>🏨 فندق الوصول الافتراضي</h4>
+      <div class="fld ${(state.itinerary.length > 0 && !firstHotel.name) ? 'ts-required' : ''}">
+        <label>اسم الفندق (يُطبَّق على كل الأيام تلقائياً ما لم تُعدَّل)</label>
+        <input type="text" class="input" id="ts-hotel-name" value="${firstHotel.name || ''}" placeholder="مثال: Hilton Istanbul Bosphorus" ${(state.itinerary.length > 0 && !firstHotel.name) ? 'data-empty="1"' : ''}>
+      </div>
+      <div class="fld-row">
+        <div class="fld">
+          <label>الحي / المنطقة</label>
+          <input type="text" class="input" id="ts-hotel-area" value="${firstHotel.area || ''}" placeholder="مثال: Beşiktaş">
+        </div>
+        <div class="fld">
+          <label>رابط الحجز (اختياري)</label>
+          <input type="url" class="input" id="ts-hotel-link" value="${firstHotel.bookingLink || ''}" placeholder="https://...">
+        </div>
       </div>
     </div>
 
@@ -7244,6 +7359,9 @@ function saveTripSettings() {
   const arrAirport = $("ts-arrair")?.value.trim() || "";
   const retDepCity = $("ts-retdepcity")?.value.trim() || "";
   const retAirport = $("ts-retair")?.value.trim() || "";
+  const hotelName = $("ts-hotel-name")?.value.trim() || "";
+  const hotelArea = $("ts-hotel-area")?.value.trim() || "";
+  const hotelLink = $("ts-hotel-link")?.value.trim() || "";
 
   // Update tripInfo
   if (sdate) state.tripInfo.startDate = sdate;
@@ -7269,13 +7387,48 @@ function saveTripSettings() {
     TripsRegistry.upsert(trip);
   }
 
-  // Adjust days count
+  // Auto-generate days from sdate/targetDays with proper city + hotel
+  const defaultCity = arrCity || (state.itinerary[0]?.city || (isKoreaTrip() ? "seoul" : ""));
+  const defaultHotel = hotelName ? { name: hotelName, area: hotelArea, bookingLink: hotelLink || null } : null;
+
+  // Add days if needed
   while (state.itinerary.length < targetDays) {
-    addNewDayQuiet();
+    state.itinerary.push({
+      day: 0, date: "", dateLabel: "", weekday: "",
+      city: state.itinerary[state.itinerary.length - 1]?.city || defaultCity,
+      title: "", type: "normal",
+      flight: null, narrative: null, notes: null,
+      hotel: state.itinerary[state.itinerary.length - 1]?.hotel || (defaultHotel ? { ...defaultHotel } : null),
+      items: []
+    });
   }
+  // Remove from end
   while (state.itinerary.length > targetDays && state.itinerary.length > 0) {
     state.itinerary.pop();
   }
+
+  // Apply default city/hotel to days that don't have them yet (smart: only fill blanks)
+  if (state.itinerary.length > 0 && sdate) {
+    const start = new Date(sdate);
+    const weekdays = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+    const months = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+    state.itinerary.forEach((d, i) => {
+      const dt = new Date(start);
+      dt.setDate(start.getDate() + i);
+      const iso = dt.toISOString().split('T')[0];
+      if (!d.date) d.date = iso;
+      if (!d.weekday) d.weekday = weekdays[dt.getDay()];
+      if (!d.dateLabel) d.dateLabel = `${dt.getDate()} ${months[dt.getMonth()]}`;
+      if (!d.city && defaultCity) d.city = defaultCity;
+      if (!d.hotel?.name && defaultHotel) d.hotel = { ...defaultHotel };
+    });
+    // Mark first day as arrival, last as departure (if not already set)
+    if (state.itinerary[0] && state.itinerary[0].type === 'normal') state.itinerary[0].type = 'arrival';
+    const last = state.itinerary[state.itinerary.length - 1];
+    if (last && last.type === 'normal' && state.itinerary.length > 1) last.type = 'departure';
+  }
+
+  renumberDays();
   if (state.activeDayIdx >= state.itinerary.length) state.activeDayIdx = Math.max(0, state.itinerary.length - 1);
   saveItin();
 
@@ -7286,11 +7439,15 @@ function saveTripSettings() {
 
 function addNewDayQuiet() {
   const last = state.itinerary[state.itinerary.length - 1];
-  const defaultCity = isKoreaTrip() ? "seoul" : "";
+  const t = state.tripInfo || {};
+  const defaultCity = isKoreaTrip() ? "seoul" : (t.arrCity || "");
   const newDay = {
     day: 0, date: "", dateLabel: "", weekday: "",
-    city: last?.city || defaultCity, title: "", type: "normal",
-    flight: null, narrative: null, notes: null, hotel: null, items: []
+    city: last?.city || defaultCity,
+    title: "", type: "normal",
+    flight: null, narrative: null, notes: null,
+    hotel: last?.hotel ? { ...last.hotel } : null,
+    items: []
   };
   state.itinerary.push(newDay);
   renumberDays();
