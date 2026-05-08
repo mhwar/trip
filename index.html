@@ -3192,7 +3192,10 @@ function saveTripInfo() { Trip.save("tripinfo", state.tripInfo); }
 function saveCityColors() { Trip.save("citycolors", state.cityColors); CITY_COLORS = { ...state.cityColors }; }
 
 // All POIs (built-in + custom)
-function allLib() { return [...LIB, ...state.customLib]; }
+function allLib() {
+  if (!isKoreaTrip()) return [...state.customLib];
+  return [...LIB, ...state.customLib];
+}
 
 // ═══════════════════════════════════════════════════════════
 //   NAV
@@ -3245,8 +3248,12 @@ function updateCountdown() {
 function renderOverview() {
   const totalItems = state.itinerary.reduce((s, d) => s + d.items.length, 0);
   const filledDays = state.itinerary.filter(d => d.items.length > 0).length;
-  const halalCount = LIB.filter(l => l.halal).length;
-  const gfCount = LIB.filter(l => l.gf).length;
+  const totalDays = state.itinerary.length || 1;
+  const lib = allLib();
+  const halalCount = lib.filter(l => l.halal).length;
+  const gfCount = lib.filter(l => l.gf).length;
+  const trip = TripsRegistry.get(Trip.current) || TripsRegistry.KOREA_DEFAULT;
+  const tripCities = getTripCities();
 
   $("sec-overview").innerHTML = `
     <div class="sec-t">
@@ -3254,11 +3261,11 @@ function renderOverview() {
         <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
         <h2>لوحة الرحلة</h2>
       </div>
-      <p>ابدأ من هنا - مكتبة المواقع جاهزة، الجدول فارغ، أنت تختار</p>
+      <p>${isKoreaTrip() ? 'ابدأ من هنا - مكتبة المواقع جاهزة، الجدول فارغ، أنت تختار' : `لوحة معلومات رحلة ${trip.name}`}</p>
     </div>
 
     <div class="lib-stats">
-      <div class="lib-stat"><div class="lib-stat-i">📅</div><div class="lib-stat-v">${filledDays}/12</div><div class="lib-stat-l">أيام مخططة</div></div>
+      <div class="lib-stat"><div class="lib-stat-i">📅</div><div class="lib-stat-v">${filledDays}/${totalDays}</div><div class="lib-stat-l">أيام مخططة</div></div>
       <div class="lib-stat"><div class="lib-stat-i">📌</div><div class="lib-stat-v">${totalItems}</div><div class="lib-stat-l">نشاط مضاف</div></div>
       <div class="lib-stat"><div class="lib-stat-i">🥩</div><div class="lib-stat-v">${halalCount}</div><div class="lib-stat-l">مطعم حلال</div></div>
       <div class="lib-stat"><div class="lib-stat-i">🌾</div><div class="lib-stat-v">${gfCount}</div><div class="lib-stat-l">خيار GF</div></div>
@@ -3313,6 +3320,7 @@ function renderOverview() {
     </div>
 
     <h3 class="fb7 cli mb2 mt3" style="font-size:1rem">🗺️ خطة الرحلة العامة</h3>
+    ${isKoreaTrip() ? `
     <div class="card card-acc mb3">
       <div class="trip-flow">
         <div class="trip-leg">
@@ -3347,10 +3355,31 @@ function renderOverview() {
           </div>
         </div>
       </div>
-      <p class="txs clm mt2" style="border-top:1px dashed var(--border);padding-top:0.6rem">💡 <strong>منطق الترتيب:</strong> وصول مباشر لسيول 10:50ص (يوم كامل!)، استشفاء + مهرجان الفوانيس + DMZ + Nami، ثم تنقل ذكي بـ✈️ للجزيرة و🚄 KTX للعودة. تجنّب 3 طيرانات داخلية واستثمار آخر يوم في سيول قبل المغادرة.</p>
+      <p class="txs clm mt2" style="border-top:1px dashed var(--border);padding-top:0.6rem">💡 <strong>منطق الترتيب:</strong> وصول مباشر لسيول 10:50ص (يوم كامل!)، استشفاء + مهرجان الفوانيس + DMZ + Nami، ثم تنقل ذكي بـ✈️ للجزيرة و🚄 KTX للعودة.</p>
     </div>
+    ` : (tripCities.length > 0 ? `
+    <div class="card card-acc mb3">
+      <div class="trip-flow">
+        ${tripCities.map((c, i) => `
+          <div class="trip-leg">
+            <div class="trip-leg-num"${i > 0 ? ` style="background:${state.cityColors[c.id] || 'var(--persimmon)'}"` : ''}>${i + 1}</div>
+            <div class="trip-leg-info">
+              <div class="trip-leg-t">${c.name} · ${c.daysCount} ${c.daysCount === 1 ? 'يوم' : 'أيام'}</div>
+              <div class="trip-leg-d">${c.firstDate ? `يبدأ ${c.firstDate}` : 'بدون تاريخ'}${c.hotel ? ` · 🏨 ${c.hotel}` : ''}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    ` : `
+    <div class="card mb3">
+      <p class="txs clm">لم تُحدد المدن بعد. أضف أياماً للجدول وسيتم بناء خطة الرحلة تلقائياً هنا.</p>
+      <button class="btn btn-out btn-sm mt2" onclick="switchTab('itinerary')">الانتقال للجدول</button>
+    </div>
+    `)}
 
-    <h3 class="fb7 cli mb2 mt3" style="font-size:1rem">✈️ تذاكر الطيران المؤكدة (مرجع: 9T7ZEZ)</h3>
+    <h3 class="fb7 cli mb2 mt3" style="font-size:1rem">✈️ تذاكر الطيران</h3>
+    ${isKoreaTrip() ? `
     <div class="gr mdg2 mb3">
       <div class="card card-acc">
         <div class="flx itm g5 mb2">
@@ -3361,10 +3390,8 @@ function renderOverview() {
           <li><strong>XY 426</strong>: أبها <span class="cli fb6">08:35</span> → جدة <span class="cli fb6">09:50</span> (13 مايو)</li>
           <li><strong>EY 616</strong>: جدة <span class="cli fb6">15:20</span> → أبوظبي <span class="cli fb6">19:05</span> (13 مايو)</li>
           <li><strong>EY 822</strong>: أبوظبي <span class="cli fb6">21:10</span> → سيول ICN <span class="cli fb6">10:50ص</span> ✨ (14 مايو)</li>
-          <li>💡 <strong>الوصول 10:50 ص</strong> = يوم كامل! Early Check-in موصى به</li>
         </ul>
       </div>
-
       <div class="card card-orng">
         <div class="flx itm g5 mb2">
           <div style="font-size:1.5rem">🛫</div>
@@ -3374,11 +3401,33 @@ function renderOverview() {
           <li><strong>EY 823</strong>: سيول ICN <span class="cli fb6">17:50م</span> → أبوظبي <span class="cli fb6">22:35</span> (24 مايو)</li>
           <li><strong>EY 603</strong>: أبوظبي <span class="cli fb6">02:05</span> → جدة <span class="cli fb6">03:55</span> (25 مايو)</li>
           <li><strong>XY 425</strong>: جدة <span class="cli fb6">06:35</span> → أبها <span class="cli fb6">07:55</span> (25 مايو)</li>
-          <li>💡 <strong>المغادرة 17:50</strong> = الوصول للمطار 14:50 (3س قبل)</li>
         </ul>
       </div>
     </div>
+    ` : `
+    <div class="gr mdg2 mb3">
+      <div class="card card-acc">
+        <div class="flx itm g5 mb2">
+          <div style="font-size:1.5rem">🛬</div>
+          <strong class="fb7 cla">الذهاب</strong>
+        </div>
+        ${(state.tripInfo.outboundFlights && state.tripInfo.outboundFlights.length > 0)
+          ? `<ul class="tip-list" style="margin-top:0.5rem">${state.tripInfo.outboundFlights.map(f => `<li><strong>${f.flight || ''}</strong>${f.dep ? ` ${f.dep}` : ''}${f.arr ? ` → ${f.arr}` : ''}</li>`).join('')}</ul>`
+          : `<p class="txs clm">لم تُضف رحلة الذهاب بعد. <button class="btn btn-out btn-sm" onclick="switchTab('tripinfo')">إضافة الآن</button></p>`}
+      </div>
+      <div class="card card-orng">
+        <div class="flx itm g5 mb2">
+          <div style="font-size:1.5rem">🛫</div>
+          <strong class="fb7 clp">العودة</strong>
+        </div>
+        ${(state.tripInfo.returnFlights && state.tripInfo.returnFlights.length > 0)
+          ? `<ul class="tip-list" style="margin-top:0.5rem">${state.tripInfo.returnFlights.map(f => `<li><strong>${f.flight || ''}</strong>${f.dep ? ` ${f.dep}` : ''}${f.arr ? ` → ${f.arr}` : ''}</li>`).join('')}</ul>`
+          : `<p class="txs clm">لم تُضف رحلة العودة بعد. <button class="btn btn-out btn-sm" onclick="switchTab('tripinfo')">إضافة الآن</button></p>`}
+      </div>
+    </div>
+    `}
 
+    ${isKoreaTrip() ? `
     <h3 class="fb7 cli mb2 mt3" style="font-size:1rem">🎉 مهرجانات تتزامن مع رحلتك</h3>
     <div class="card mb4">
       ${LIB.filter(l => l.type === 'festival').slice(0, 5).map(f => `
@@ -3391,6 +3440,7 @@ function renderOverview() {
         </div>
       `).join('')}
     </div>
+    ` : ''}
   `;
 }
 
