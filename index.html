@@ -2900,6 +2900,195 @@ const LIB = [
   { id: "tx5", name: "🚄 ITX Cheongchun (لـNami)", type: "transport", city: "seoul", area: "Yongsan/Cheongnyangni", icon: "🚄", price: "₩7,800/شخص", note: "1س 20د لـChuncheon - حجز Korail Talk", lat: 37.5800, lng: 127.0470 }
 ];
 
+// ═══════════════════════════════════════════════════════════
+//   TURKEY LIBRARY  🇹🇷
+// ═══════════════════════════════════════════════════════════
+const TURKEY_LIB = [
+  // ─── إسطنبول · معالم ───
+  { id:"tr_a1", name:"آيا صوفيا", type:"attraction", city:"istanbul", area:"السلطان أحمد", icon:"🕌", note:"تحفة معمارية بيزنطية عثمانية - مسجد ومتحف سابق، مفتوح 24ساعة للزوار غير المصلين", lat:41.0086, lng:28.9802 },
+  { id:"tr_a2", name:"المسجد الأزرق (سلطان أحمد)", type:"mosque", city:"istanbul", area:"السلطان أحمد", icon:"🕌", note:"أشهر مساجد إسطنبول - 6 مآذن - مفتوح للزوار بين أوقات الصلاة", lat:41.0054, lng:28.9768 },
+  { id:"tr_a3", name:"قصر توبقابي", type:"attraction", city:"istanbul", area:"السلطان أحمد", icon:"🏯", note:"مقر السلاطين العثمانيين 400 سنة - يحتوي آثار النبي ﷺ - يغلق الثلاثاء", lat:41.0115, lng:28.9833 },
+  { id:"tr_a4", name:"البازار الكبير (كاپالي چارشي)", type:"shop", city:"istanbul", area:"السلطان أحمد", icon:"🛍️", note:"أكبر سوق مسقوف في العالم - 4000+ دكان - توابل وسجاد وتذكارات", lat:41.0106, lng:28.9682 },
+  { id:"tr_a5", name:"بازار التوابل (مصري چارشي)", type:"shop", city:"istanbul", area:"إيمينونو", icon:"🌶️", note:"سوق البهارات العثماني التاريخي - حلويات وأعشاب وتوابل", lat:41.0168, lng:28.9703 },
+  { id:"tr_a6", name:"برج غلطة", type:"attraction", city:"istanbul", area:"بيوغلو", icon:"🗼", note:"برج جنوي القرن 14م - إطلالة بانورامية على البوسفور - تذكرة مدفوعة", lat:41.0256, lng:28.9741 },
+  { id:"tr_a7", name:"جسر البوسفور (رحلة بحرية)", type:"attraction", city:"istanbul", area:"البوسفور", icon:"⛵", note:"رحلة بحرية تربط أوروبا وآسيا - مناظر خلابة - تستغرق 1.5 ساعة", lat:41.0451, lng:29.0340 },
+  { id:"tr_a8", name:"قصر دولمة بهشة", type:"attraction", city:"istanbul", area:"بشيكتاش", icon:"🏛️", note:"قصر عثماني نيوكلاسيكي على البوسفور - يغلق الاثنين والخميس", lat:41.0392, lng:29.0007 },
+  { id:"tr_a9", name:"جزر الأمراء", type:"attraction", city:"istanbul", area:"مرمرة", icon:"🏝️", note:"جزر هادئة بدون سيارات - عربات حصان وشوارع هادئة - رحلة 1.5ساعة بالعبّارة", lat:40.8704, lng:29.0785 },
+  { id:"tr_a10", name:"حي بالات (Balat)", type:"attraction", city:"istanbul", area:"الفاتح", icon:"🎨", note:"حي تاريخي ملون - جداريات جمالية وكافيهات عصرية ومنازل عثمانية", lat:41.0280, lng:28.9455 },
+  { id:"tr_a11", name:"ميدان تقسيم وشارع الاستقلال", type:"attraction", city:"istanbul", area:"بيوغلو", icon:"🚃", note:"قلب إسطنبول الحديث - ترام تاريخي ومحلات ومطاعم", lat:41.0369, lng:28.9850 },
+  { id:"tr_a12", name:"الصهريج البازيليكا (يريباتان)", type:"attraction", city:"istanbul", area:"السلطان أحمد", icon:"💧", note:"صهريج بيزنطي تحت الأرض القرن 6م - أعمدة رخامية وأسماك", lat:41.0084, lng:28.9779 },
+  { id:"tr_a13", name:"مسجد السليمانية", type:"mosque", city:"istanbul", area:"الفاتح", icon:"🕌", note:"من أجمل مساجد سنان المعماري العثماني - مقبرة السلطان سليمان القانوني", lat:41.0163, lng:28.9639 },
+  { id:"tr_a14", name:"مسجد أيوب سلطان", type:"mosque", city:"istanbul", area:"إيوب", icon:"🕌", note:"من أقدس المساجد في تركيا - قبر الصحابي أبي أيوب الأنصاري رضي الله عنه", lat:41.0477, lng:28.9348 },
+  { id:"tr_a15", name:"حي كاديكوي", type:"attraction", city:"istanbul", area:"الجانب الآسيوي", icon:"🧆", note:"سوق الجانب الآسيوي - طعام شعبي وأسواق عصرية ومقاهي", lat:40.9900, lng:29.0231 },
+  { id:"tr_a16", name:"متحف إسطنبول للآثار", type:"attraction", city:"istanbul", area:"السلطان أحمد", icon:"🏺", note:"من أهم متاحف الآثار - آثار من حضارات مختلفة", lat:41.0118, lng:28.9800 },
+  { id:"tr_a17", name:"حي أورتاكوي", type:"attraction", city:"istanbul", area:"بشيكتاش", icon:"🌉", note:"مسجد صغير على البوسفور - أكشاك الكستناء والدردار المشهورة", lat:41.0481, lng:29.0293 },
+  { id:"tr_a18", name:"مسجد الفاتح", type:"mosque", city:"istanbul", area:"الفاتح", icon:"🕌", note:"مسجد السلطان محمد الفاتح - تاريخي ومهيب", lat:41.0197, lng:28.9500 },
+  { id:"tr_a19", name:"مسجد يني جامع (الجامع الجديد)", type:"mosque", city:"istanbul", area:"إيمينونو", icon:"🕌", note:"مسجد عثماني القرن 17م مقابل بازار التوابل", lat:41.0169, lng:28.9706 },
+
+  // ─── إسطنبول · مطاعم ───
+  { id:"tr_f1", name:"حامدي رستوران", type:"food", city:"istanbul", area:"إيمينونو", icon:"🍢", halal:true, note:"كباب ومشاوي عثمانية تقليدية - إطلالة البوسفور - موصى به بشدة", lat:41.0180, lng:28.9740 },
+  { id:"tr_f2", name:"كاراكوي كولّوغلو (بقلاوة)", type:"food", city:"istanbul", area:"كاراكوي", icon:"🍯", halal:true, note:"✨ أشهر محل بقلاوة في إسطنبول منذ 1949م - طازجة يومياً", lat:41.0228, lng:28.9758 },
+  { id:"tr_f3", name:"حافظ مصطفى", type:"food", city:"istanbul", area:"السلطان أحمد", icon:"🍮", halal:true, note:"حلويات شرقية ومثلجات تركية - أفرع متعددة", lat:41.0100, lng:28.9730 },
+  { id:"tr_f4", name:"دوروم زاده (الدونر الأصلي)", type:"food", city:"istanbul", area:"بيوغلو", icon:"🌯", halal:true, note:"✨ أشهر دونر دجاج لففة في إسطنبول - طابور دائم ومجهود يستحق", lat:41.0315, lng:28.9764 },
+  { id:"tr_f5", name:"نصرت ستيك هاوس", type:"food", city:"istanbul", area:"نيشانتاشي", icon:"🥩", halal:true, note:"لحوم فاخرة - الأصل قبل الشهرة العالمية - حجز مسبق ضروري", lat:41.0473, lng:28.9945 },
+  { id:"tr_f6", name:"مطعم السلطان أحمد", type:"food", city:"istanbul", area:"السلطان أحمد", icon:"🍽️", halal:true, note:"مطبخ تركي تقليدي بمكان مثالي قرب المعالم", lat:41.0070, lng:28.9770 },
+  { id:"tr_f7", name:"تشيا صوفراسي (Çiya Sofrası)", type:"food", city:"istanbul", area:"كاديكوي", icon:"🥘", halal:true, note:"✨ أفضل مطبخ أناضولي - وصفات نادرة - جانب آسيوي", lat:40.9905, lng:29.0230 },
+  { id:"tr_f8", name:"بالق صمبالاجي (شطيرة السمك)", type:"food", city:"istanbul", area:"إيمينونو", icon:"🐟", halal:true, note:"شطيرة السمك الشهيرة على الرصيف - قوارب صيد على الجسر - رخيصة وشعبية", lat:41.0167, lng:28.9717 },
+  { id:"tr_f9", name:"حلوى وورك (Wörk)", type:"food", city:"istanbul", area:"كاراكوي", icon:"☕", halal:true, note:"كافيه عصري - قهوة تركية مميزة وحلويات خاصة", lat:41.0231, lng:28.9763 },
+
+  // ─── إسطنبول · تسوق ───
+  { id:"tr_s1", name:"ماكرو مول", type:"shop", city:"istanbul", area:"بيليك دوزو", icon:"🛒", note:"من أكبر مراكز التسوق - ماركات عالمية ومحلية", lat:40.9913, lng:28.6530 },
+  { id:"tr_s2", name:"كانيون مول", type:"shop", city:"istanbul", area:"ليفنت", icon:"🏬", note:"مول راقٍ في قلب الأعمال - تصميم معماري مميز", lat:41.0769, lng:29.0127 },
+  { id:"tr_s3", name:"نيشانتاشي (شارع التسوق)", type:"shop", city:"istanbul", area:"شيشلي", icon:"👗", note:"أرقى حي تسوق - ماركات فاخرة وتركية أصيلة", lat:41.0473, lng:28.9945 },
+
+  // ─── كابادوكيا · معالم ───
+  { id:"tr_a20", name:"رحلة المنطاد الحراري", type:"attraction", city:"cappadocia", area:"غوريمي", icon:"🎈", note:"✨ تجربة لا تُنسى - شروق الشمس فوق الأودية - احجز مسبقاً (Kapadokya Balloons أو Butterfly Balloons)", lat:38.6432, lng:34.8281 },
+  { id:"tr_a21", name:"متحف غوريمي المفتوح (UNESCO)", type:"attraction", city:"cappadocia", area:"غوريمي", icon:"⛪", note:"كنائس منحوتة في الصخر - لوحات بيزنطية القرن 10-12م - مدرج في يونسكو", lat:38.6432, lng:34.8281 },
+  { id:"tr_a22", name:"مدينة ديرينكويو التحت أرضية", type:"attraction", city:"cappadocia", area:"ديرينكويو", icon:"🕳️", note:"مدينة تحت الأرض لـ20,000 شخص - 8 طوابق - أعمق مدينة تحت أرضية في كابادوكيا", lat:38.3782, lng:34.7351 },
+  { id:"tr_a23", name:"قلعة أوتشيسار", type:"attraction", city:"cappadocia", area:"أوتشيسار", icon:"🏰", note:"أعلى نقطة في كابادوكيا - إطلالة بانورامية - منحوتة في الصخر الطبيعي", lat:38.6255, lng:34.7975 },
+  { id:"tr_a24", name:"وادي باشاباغ (مداخن الجن)", type:"attraction", city:"cappadocia", area:"زيلفي", icon:"🍄", note:"مداخن الجن الشهيرة ذات الرؤوس الثلاثية - من أجمل مناطق كابادوكيا", lat:38.7074, lng:34.8050 },
+  { id:"tr_a25", name:"وادي إيهلارا", type:"attraction", city:"cappadocia", area:"أكساراي", icon:"🏞️", note:"وادي نهري طويل 14كم - كنائس منحوتة - مشي وطبيعة خلابة", lat:38.2563, lng:34.1010 },
+  { id:"tr_a26", name:"وادي ديفرنت (خيال الغيب)", type:"attraction", city:"cappadocia", area:"أورغوب", icon:"🐪", note:"أشكال صخرية تشبه الحيوانات - أبرزها شكل الجمل الشهير", lat:38.6363, lng:34.8832 },
+  { id:"tr_a27", name:"أفانوس (صناعة الفخار)", type:"attraction", city:"cappadocia", area:"أفانوس", icon:"🏺", note:"مدينة الفخار الشهيرة - ورش تعليمية - هدايا وتذكارات مميزة", lat:38.7231, lng:34.8485 },
+  { id:"tr_a28", name:"غروب الشمس في وادي كيزيلتشيكور", type:"attraction", city:"cappadocia", area:"غوريمي", icon:"🌅", note:"✨ من أجمل نقاط مشاهدة الغروب في العالم - اللون الأحمر يضيء الوادي", lat:38.6405, lng:34.8640 },
+
+  // ─── كابادوكيا · مطاعم ───
+  { id:"tr_f10", name:"توبديك كيف رستوران (كهف)", type:"food", city:"cappadocia", area:"غوريمي", icon:"🍖", halal:true, note:"مطعم داخل كهف حقيقي - مشاوي تركية أصيلة - تجربة فريدة", lat:38.6432, lng:34.8290 },
+  { id:"tr_f11", name:"ديبيك كافيه", type:"food", city:"cappadocia", area:"غوريمي", icon:"☕", halal:true, note:"قهوة وأكل في منزل قديم - أجواء عثمانية أصيلة", lat:38.6430, lng:34.8260 },
+  { id:"tr_f12", name:"Old Greek House Restaurant", type:"food", city:"cappadocia", area:"موستافا باشا", icon:"🥘", halal:true, note:"في قرية عثمانية يونانية قديمة - مطبخ أناضولي أصيل", lat:38.5730, lng:34.9100 },
+
+  // ─── أنطاليا · معالم ───
+  { id:"tr_a29", name:"بوابة هادريان", type:"attraction", city:"antalya", area:"كاليتشي", icon:"🏛️", note:"بوابة رومانية القرن 2م - مدخل المدينة القديمة - مجاني", lat:36.8869, lng:30.7010 },
+  { id:"tr_a30", name:"كاليتشي (المدينة القديمة)", type:"attraction", city:"antalya", area:"كاليتشي", icon:"🏘️", note:"حي تاريخي روماني بيزنطي عثماني - ميناء قديم وأزقة ملونة", lat:36.8847, lng:30.7044 },
+  { id:"tr_a31", name:"شلالات دودن", type:"attraction", city:"antalya", area:"دودن", icon:"💦", note:"شلال يصب مباشرة في البحر - رحلة بحرية للمشاهدة من الأسفل", lat:36.9010, lng:30.7698 },
+  { id:"tr_a32", name:"شاطئ كونيالتي", type:"attraction", city:"antalya", area:"كونيالتي", icon:"🏖️", note:"شاطئ طويل - مجاني - حصى دقيق وماء نظيف", lat:36.8740, lng:30.6580 },
+  { id:"tr_a33", name:"متحف أنطاليا", type:"attraction", city:"antalya", area:"وسط المدينة", icon:"🏺", note:"من أهم متاحف البحر الأبيض المتوسط - آثار رومانية وإغريقية رائعة", lat:36.8875, lng:30.6866 },
+  { id:"tr_a34", name:"مدينة بيرغي الأثرية", type:"attraction", city:"antalya", area:"أكسو", icon:"🏛️", note:"مدينة رومانية أثرية خارج أنطاليا - ملعب رائع ومسرح - 15كم من المدينة", lat:36.9611, lng:30.8548 },
+  { id:"tr_a35", name:"كورنيش أنطاليا", type:"attraction", city:"antalya", area:"وسط المدينة", icon:"🌊", note:"ممشى الكورنيش المطل على البحر الأبيض المتوسط - جلسات ومطاعم", lat:36.8862, lng:30.7044 },
+  { id:"tr_a36", name:"مسجد يوللو مينارة", type:"mosque", city:"antalya", area:"كاليتشي", icon:"🕌", note:"مسجد تاريخي بمئذنة خشبية مميزة في قلب المدينة القديمة", lat:36.8863, lng:30.7031 },
+
+  // ─── أنطاليا · مطاعم ───
+  { id:"tr_f13", name:"7 مهمت رستوران", type:"food", city:"antalya", area:"كاليتشي", icon:"🍽️", halal:true, note:"✨ الأشهر في أنطاليا - مطبخ تركي أصيل - جلسة على الشرفة", lat:36.8862, lng:30.7043 },
+  { id:"tr_f14", name:"مطاعم كاليتشي الشعبية", type:"food", city:"antalya", area:"الميناء القديم", icon:"🐟", halal:true, note:"مأكولات بحرية طازجة بمنظر الميناء التاريخي", lat:36.8844, lng:30.7038 },
+
+  // ─── طرابزون · معالم ───
+  { id:"tr_a37", name:"دير سوميلا", type:"attraction", city:"trabzon", area:"ماتشكا", icon:"⛪", note:"دير بيزنطي القرن 4م منحوت في جبل شاهق - 1200م فوق مستوى البحر - 55كم من المدينة", lat:40.6917, lng:39.6575 },
+  { id:"tr_a38", name:"بحيرة أوزونغول", type:"attraction", city:"trabzon", area:"تشاييلي", icon:"🏔️", note:"✨ من أجمل المناطق الطبيعية في تركيا - بحيرة جبلية مع مسجد عائم", lat:40.6038, lng:40.2922 },
+  { id:"tr_a39", name:"جناح أتاتورك (قصر أتاتورك)", type:"attraction", city:"trabzon", area:"طرابزون", icon:"🏡", note:"قصر صغير أقام فيه أتاتورك 1934م - حديقة جميلة وإطلالة على البحر", lat:40.9924, lng:39.7434 },
+  { id:"tr_a40", name:"آيا صوفيا طرابزون", type:"attraction", city:"trabzon", area:"طرابزون", icon:"🕌", note:"كنيسة بيزنطية القرن 13م حولت إلى مسجد - لوحات جدارية نادرة", lat:41.0024, lng:39.7169 },
+  { id:"tr_a41", name:"بوزتيبي (نقطة المشاهدة)", type:"attraction", city:"trabzon", area:"طرابزون", icon:"🌄", note:"إطلالة بانورامية على طرابزون والبحر الأسود - مقهى على القمة", lat:41.0021, lng:39.7307 },
+  { id:"tr_a42", name:"مسجد التشارشي (الفاتح)", type:"mosque", city:"trabzon", area:"وسط طرابزون", icon:"🕌", note:"أكبر مساجد طرابزون التاريخية - كنيسة بيزنطية سابقة", lat:41.0050, lng:39.7218 },
+
+  // ─── طرابزون · مطاعم ───
+  { id:"tr_f15", name:"بيدة طرابزون (Trabzon Pidesi)", type:"food", city:"trabzon", area:"وسط المدينة", icon:"🫓", halal:true, note:"✨ الخبز التركي الشهير بالبيض واللحم - أصله من طرابزون", lat:41.0055, lng:39.7228 },
+  { id:"tr_f16", name:"كويماك (Kuymak)", type:"food", city:"trabzon", area:"وسط المدينة", icon:"🧀", halal:true, note:"طبق نحاسي شهير - ذرة مع جبن مذاب - من أشهر أكلات البحر الأسود", lat:41.0050, lng:39.7220 },
+
+  // ─── أنقرة · معالم ───
+  { id:"tr_a43", name:"أنيتكابير (ضريح أتاتورك)", type:"attraction", city:"ankara", area:"أنيتتيبي", icon:"🏛️", note:"ضريح مؤسس الجمهورية التركية - تحفة معمارية - مجاني - مغلق الاثنين", lat:39.9255, lng:32.8368 },
+  { id:"tr_a44", name:"قلعة أنقرة", type:"attraction", city:"ankara", area:"أولوس", icon:"🏰", note:"قلعة بيزنطية على تل مشرف - حي قديم ملتوٍ داخلها - إطلالة على المدينة", lat:39.9416, lng:32.8616 },
+  { id:"tr_a45", name:"متحف الحضارات الأناضولية", type:"attraction", city:"ankara", area:"أولوس", icon:"🏺", note:"✨ من أهم متاحف العالم - آثار حثية وأشورية وفريجية - مجاور للقلعة", lat:39.9395, lng:32.8627 },
+  { id:"tr_a46", name:"حي هاماموني", type:"attraction", city:"ankara", area:"أولتوس", icon:"🏡", note:"حي عثماني مرمم - دور تاريخية ملونة ومطاعم ومقاهي أنيقة", lat:39.9369, lng:32.8619 },
+  { id:"tr_a47", name:"مسجد خوجة تبة (كوتشاتيبة)", type:"mosque", city:"ankara", area:"كيزيلاي", icon:"🕌", note:"أكبر مساجد أنقرة الحديثة - يتسع لـ20,000 مصلٍّ", lat:39.9172, lng:32.8629 },
+
+  // ─── أنقرة · مطاعم ───
+  { id:"tr_f17", name:"مطاعم منطقة كيزيلاي", type:"food", city:"ankara", area:"كيزيلاي", icon:"🍽️", halal:true, note:"قلب أنقرة - خيارات متنوعة من الطعام الشعبي التركي", lat:39.9198, lng:32.8543 },
+  { id:"tr_f18", name:"مشاوي حي هاماموني", type:"food", city:"ankara", area:"هاماموني", icon:"🍢", halal:true, note:"مطاعم عثمانية أصيلة في الحي التاريخي المرمم", lat:39.9369, lng:32.8619 },
+
+  // ─── بورصة · معالم ───
+  { id:"tr_a48", name:"الجامع الكبير (أولو جامع)", type:"mosque", city:"bursa", area:"وسط بورصة", icon:"🕌", note:"✨ مسجد عثماني ضخم القرن 14م - 20 قبة - نقطة ارتكاز المدينة", lat:40.1826, lng:29.0600 },
+  { id:"tr_a49", name:"المسجد الأخضر (يشيل جامع)", type:"mosque", city:"bursa", area:"يشيل", icon:"🕌", note:"تحفة معمارية عثمانية القرن 15م - بلاط إزنيك الخضراء الشهيرة", lat:40.1817, lng:29.0754 },
+  { id:"tr_a50", name:"جبل أولوداغ", type:"attraction", city:"bursa", area:"أولوداغ", icon:"⛷️", note:"أشهر جبال التزلج التركية - تلفريك يصل القمة - مناظر رائعة صيفاً وشتاءً", lat:40.0972, lng:29.1264 },
+  { id:"tr_a51", name:"بازار قبالي تشارشي بورصة", type:"shop", city:"bursa", area:"وسط بورصة", icon:"🛍️", note:"سوق بورصة التاريخي - منسوجات وحرير وتوابل - بجوار الجامع الكبير", lat:40.1820, lng:29.0610 },
+  { id:"tr_a52", name:"قرية كوماليكيزيك", type:"attraction", city:"bursa", area:"نيلوفر", icon:"🏡", note:"قرية عثمانية أثرية - مدرجة في اليونسكو - طبيعة ومنازل تاريخية", lat:40.2143, lng:29.2167 },
+  { id:"tr_a53", name:"مجمع مرادية العثماني", type:"attraction", city:"bursa", area:"مرادية", icon:"🏛️", note:"أضرحة وأربطة عثمانية القرن 15م - مدخل مجاني", lat:40.1860, lng:29.0540 },
+
+  // ─── بورصة · مطاعم ───
+  { id:"tr_f19", name:"إسكندر كباب (أصله بورصة)", type:"food", city:"bursa", area:"وسط بورصة", icon:"🍖", halal:true, note:"✨ مطعم إسكندر كباب الأصلي منذ 1867م - لحم دوار على خبز طازج ويوغرت", lat:40.1825, lng:29.0600 },
+  { id:"tr_f20", name:"كيمالي بيدة", type:"food", city:"bursa", area:"بورصة", icon:"🫓", halal:true, note:"خبز بورصة باللحم المفروم - وجبة شعبية تقليدية", lat:40.1820, lng:29.0595 },
+
+  // ─── إزمير · معالم ───
+  { id:"tr_a54", name:"كوردون إزمير", type:"attraction", city:"izmir", area:"الواجهة البحرية", icon:"🌊", note:"واجهة بحرية طويلة - مقاهٍ ومطاعم بإطلالة جميلة - قلب إزمير العصري", lat:38.4323, lng:27.1400 },
+  { id:"tr_a55", name:"بازار كيميرالتي", type:"shop", city:"izmir", area:"كيميرالتي", icon:"🛍️", note:"سوق إزمير التاريخي العثماني - توابل وتذكارات وأقمشة", lat:38.4242, lng:27.1379 },
+  { id:"tr_a56", name:"أغورا الأثرية", type:"attraction", city:"izmir", area:"كيميرالتي", icon:"🏛️", note:"ساحة رومانية القرن 2م في قلب المدينة - حفريات أثرية لا تزال جارية", lat:38.4228, lng:27.1432 },
+  { id:"tr_a57", name:"أسانسور (المصعد التاريخي)", type:"attraction", city:"izmir", area:"كاراتاش", icon:"🛗", note:"مصعد تاريخي القرن 1907م يربط الحي القديم بالقمة - إطلالة على إزمير", lat:38.4118, lng:27.1333 },
+  { id:"tr_a58", name:"أفسوس (جولة يومية)", type:"attraction", city:"izmir", area:"سلجوق", icon:"🏛️", note:"✨ أعظم مدينة رومانية في آسيا الصغرى - مكتبة سيلسوس الأسطورية - 75كم من إزمير", lat:37.9396, lng:27.3402 },
+  { id:"tr_a59", name:"مسجد حسار (الإزمير)", type:"mosque", city:"izmir", area:"كيميرالتي", icon:"🕌", note:"أقدم مساجد إزمير - في قلب السوق التاريخي", lat:38.4245, lng:27.1388 },
+
+  // ─── إزمير · مطاعم ───
+  { id:"tr_f21", name:"بويوزمة إزمير (كيفتة)", type:"food", city:"izmir", area:"بويراباشي", icon:"🍖", halal:true, note:"كفتة إزمير التقليدية - محشوة بالجبن والطماطم - من أشهر أطباق المدينة", lat:38.4233, lng:27.1400 }
+];
+
+// ═══════════════════════════════════════════════════════════
+//   BRITAIN / UK LIBRARY  🇬🇧
+// ═══════════════════════════════════════════════════════════
+const UK_LIB = [
+  // ─── لندن · معالم ───
+  { id:"uk_a1", name:"برج لندن", type:"attraction", city:"london", area:"تاور هيل", icon:"🏰", note:"قلعة نورمانية القرن 11م - التاج الملكي والملكة - احجز أونلاين لتفادي الطوابير", lat:51.5081, lng:-0.0759 },
+  { id:"uk_a2", name:"جسر برج لندن", type:"attraction", city:"london", area:"تاور برج", icon:"🌉", note:"الجسر الشهير مع أبراجه الفيكتورية - يمكن دخول الأبراج", lat:51.5055, lng:-0.0754 },
+  { id:"uk_a3", name:"متحف البريطاني", type:"attraction", city:"london", area:"بلومزبري", icon:"🏛️", note:"مجاني - آثار مصرية وإغريقية ورومانية - حجر رشيد - لا تفوته", lat:51.5194, lng:-0.1270 },
+  { id:"uk_a4", name:"قصر باكنغهام", type:"attraction", city:"london", area:"ويستمنستر", icon:"👑", note:"تغيير الحرس 11ص - الداخل مفتوح صيفاً فقط", lat:51.5014, lng:-0.1419 },
+  { id:"uk_a5", name:"دير ويستمنستر", type:"attraction", city:"london", area:"ويستمنستر", icon:"⛪", note:"كنيسة الملوك - تتويج ودفن الملوك البريطانيين منذ 1066م", lat:51.4994, lng:-0.1273 },
+  { id:"uk_a6", name:"برلمان لندن ومئذنة بيغ بن", type:"attraction", city:"london", area:"ويستمنستر", icon:"🕰️", note:"رمز لندن الأشهر - مبنى نيو غوثيك على نهر التيمز", lat:51.4999, lng:-0.1246 },
+  { id:"uk_a7", name:"المتحف الوطني للفنون (ناشيونال غاليري)", type:"attraction", city:"london", area:"تراغالر سكوير", icon:"🎨", note:"مجاني - من أعظم مجموعات الفن الأوروبي - فان غوخ ورافائيل وليوناردو", lat:51.5089, lng:-0.1283 },
+  { id:"uk_a8", name:"جسر واترلو", type:"attraction", city:"london", area:"ساوث بانك", icon:"🌊", note:"أجمل إطلالة على التيمز وسكاي لاين لندن", lat:51.5065, lng:-0.1165 },
+  { id:"uk_a9", name:"تيت مودرن", type:"attraction", city:"london", area:"ساوث بانك", icon:"🖼️", note:"مجاني - فن معاصر - في محطة كهرباء قديمة على التيمز", lat:51.5076, lng:-0.0994 },
+  { id:"uk_a10", name:"حديقة هايد بارك", type:"attraction", city:"london", area:"كينسينغتون", icon:"🌳", note:"أكبر حدائق لندن - بحيرة سيربنتاين - ركن الخطباء (Speakers Corner)", lat:51.5073, lng:-0.1657 },
+  { id:"uk_a11", name:"سوق بوروه ماركت", type:"shop", city:"london", area:"ساوث بانك", icon:"🥖", note:"أشهر سوق طعام في لندن - حلال متوفر - جولة بين أكشاك الطعام", lat:51.5055, lng:-0.0910 },
+  { id:"uk_a12", name:"حي نوتينغ هيل", type:"attraction", city:"london", area:"كينسينغتون", icon:"🌈", note:"منازل ملونة - سوق بورتوبيلو السبت - بائعو الكتب والقهوة", lat:51.5142, lng:-0.1961 },
+
+  // ─── لندن · مساجد ───
+  { id:"uk_m1", name:"مسجد لندن المركزي (ريجنت بارك)", type:"mosque", city:"london", area:"ريجنت بارك", icon:"🕌", note:"✨ أكبر مساجد لندن - يسع 5000 مصلٍّ - مطعم حلال بالمبنى", lat:51.5287, lng:-0.1598 },
+  { id:"uk_m2", name:"مسجد شرق لندن", type:"mosque", city:"london", area:"وايتشابل", icon:"🕌", note:"في قلب الحي الإسلامي - صلاة الجمعة بكثير من المصليين", lat:51.5178, lng:-0.0590 },
+
+  // ─── لندن · مطاعم حلال ───
+  { id:"uk_f1", name:"مطاعم بريكستون ماركت", type:"food", city:"london", area:"بريكستون", icon:"🍽️", halal:true, note:"تنوع غير عادي - مطاعم أفريقية وعربية وآسيوية حلال", lat:51.4613, lng:-0.1156 },
+  { id:"uk_f2", name:"بانغلا سيتي (شارع بريك لين)", type:"food", city:"london", area:"شورديتش", icon:"🍛", halal:true, note:"✨ صف من المطاعم البنغلاديشية والهندية الحلال - رخيصة ولذيذة", lat:51.5209, lng:-0.0718 },
+  { id:"uk_f3", name:"مطاعم وايتشابل الحلال", type:"food", city:"london", area:"وايتشابل", icon:"🥙", halal:true, note:"منطقة يهيمن عليها الطعام الحلال - كباب ومشاوي وحلال فودز", lat:51.5178, lng:-0.0590 },
+  { id:"uk_f4", name:"قهوة كوستا وكافيه نيرو", type:"food", city:"london", area:"عموم لندن", icon:"☕", halal:true, note:"سلاسل قهوة بريطانية - أكثر فروعها تقدم حليب حلال على الطلب", lat:51.5074, lng:-0.1278 },
+
+  // ─── إدنبرة · معالم ───
+  { id:"uk_a13", name:"قلعة إدنبرة", type:"attraction", city:"edinburgh", area:"وسط المدينة", icon:"🏰", note:"✨ شعار إسكتلندا - على صخرة بركانية - تاج إسكتلندا الملكي بداخلها", lat:55.9485, lng:-3.1999 },
+  { id:"uk_a14", name:"رويال مايل (شارع الملوك)", type:"attraction", city:"edinburgh", area:"المدينة القديمة", icon:"🏰", note:"الشارع التاريخي الرئيسي - متاجر وهوادج ومعالم بين القلعة وقصر هوليرود", lat:55.9498, lng:-3.1885 },
+  { id:"uk_a15", name:"قصر هوليرود", type:"attraction", city:"edinburgh", area:"المدينة القديمة", icon:"👑", note:"الإقامة الرسمية للملك في إسكتلندا - متحف تاريخي - يغلق إبان الإقامة الملكية", lat:55.9523, lng:-3.1722 },
+  { id:"uk_a16", name:"آرثر سيت (جبل البركان)", type:"attraction", city:"edinburgh", area:"هوليرود بارك", icon:"🗻", note:"قمة بركانية 251م داخل المدينة - تسلق 45د - إطلالة ذات 360 درجة", lat:55.9444, lng:-3.1617 },
+  { id:"uk_a17", name:"شارع جورج (Old Town)", type:"attraction", city:"edinburgh", area:"المدينة الجديدة", icon:"🛍️", note:"قلب التسوق في إدنبرة - ماركات وكافيهات ومباني جورجية", lat:55.9525, lng:-3.1978 },
+  { id:"uk_a18", name:"المتحف الوطني الإسكتلندي", type:"attraction", city:"edinburgh", area:"وسط المدينة", icon:"🏛️", note:"مجاني - تاريخ إسكتلندا والعلوم والفنون - دولي المستوى", lat:55.9471, lng:-3.1902 },
+  { id:"uk_a19", name:"فرينج فيستيفال إدنبرة (أغسطس)", type:"attraction", city:"edinburgh", area:"عموم إدنبرة", icon:"🎭", note:"أكبر مهرجان فنون في العالم - عروض في كل زاوية من المدينة - أغسطس فقط", lat:55.9533, lng:-3.1883 },
+
+  // ─── إدنبرة · مساجد ───
+  { id:"uk_m3", name:"مسجد إدنبرة والمركز الإسلامي", type:"mosque", city:"edinburgh", area:"نيودينغتون", icon:"🕌", note:"المسجد الرئيسي في إدنبرة - مطعم حلال بالمبنى - مفتوح للزوار", lat:55.9338, lng:-3.1713 },
+
+  // ─── إدنبرة · مطاعم ───
+  { id:"uk_f5", name:"Mosque Kitchen", type:"food", city:"edinburgh", area:"نيودينغتون", icon:"🍛", halal:true, note:"✨ مطعم حلال ملحق بالمسجد - طعام بكميات كبيرة وأسعار رمزية - من المفضلات المحلية", lat:55.9340, lng:-3.1714 },
+  { id:"uk_f6", name:"مطاعم نيكولسون ستريت الحلال", type:"food", city:"edinburgh", area:"نيودينغتون", icon:"🥘", halal:true, note:"شارع فيه عدد من المطاعم الحلال القريبة من المسجد", lat:55.9395, lng:-3.1831 },
+
+  // ─── مانشستر · معالم ───
+  { id:"uk_a20", name:"متحف رجال الكفاح (Manchester Museum)", type:"attraction", city:"manchester", area:"أكسفورد رود", icon:"🏛️", note:"مجاني - تاريخ طبيعي وآثار مصرية وثقافات العالم", lat:53.4667, lng:-2.2335 },
+  { id:"uk_a21", name:"المدينة القديمة (النورثرن كوارتر)", type:"attraction", city:"manchester", area:"شمال المدينة", icon:"🎨", note:"حي فني عصري - غرافيتي وكافيهات وموسيقى", lat:53.4843, lng:-2.2334 },
+  { id:"uk_a22", name:"ملعب أولد ترافورد (مانشستر يونايتد)", type:"attraction", city:"manchester", area:"ترافورد", icon:"⚽", note:"جولة الملعب متاحة يومياً - متحف النادي - أيقونة كرة القدم", lat:53.4631, lng:-2.2913 },
+  { id:"uk_a23", name:"ملعب الاتحاد (مانشستر سيتي)", type:"attraction", city:"manchester", area:"إيست مانشستر", icon:"⚽", note:"جولات الملعب ومتحف مانشستر سيتي", lat:53.4831, lng:-2.2004 },
+
+  // ─── مانشستر · مساجد ───
+  { id:"uk_m4", name:"مسجد مانشستر المركزي", type:"mosque", city:"manchester", area:"وسط المدينة", icon:"🕌", note:"مسجد تاريخي في قلب مانشستر - صلوات جماعة منتظمة", lat:53.4788, lng:-2.2415 },
+
+  // ─── مانشستر · مطاعم حلال ───
+  { id:"uk_f7", name:"منطقة رشدالي رود (Rusholme) - شارع كاري مايل", type:"food", city:"manchester", area:"رشولم", icon:"🍛", halal:true, note:"✨ شارع الكاري الشهير - عشرات المطاعم الجنوب آسيوية الحلال - حي مسلم صميم", lat:53.4558, lng:-2.2145 },
+  { id:"uk_f8", name:"مطاعم لونزايت (Longsight)", type:"food", city:"manchester", area:"لونزايت", icon:"🥩", halal:true, note:"جزار حلال ومطاعم عربية وجنوب آسيوية - تسوق ومطاعم في نفس المنطقة", lat:53.4608, lng:-2.2001 }
+];
+
+// ═══════════════════════════════════════════════════════════
+//   BUILTIN LIBRARY SEEDER
+// ═══════════════════════════════════════════════════════════
+function seedBuiltinLibraries() {
+  try {
+    const libs = JSON.parse(localStorage.getItem("kt2_global_libs") || "{}");
+    let changed = false;
+    if (!libs.turkey) { libs.turkey = TURKEY_LIB; changed = true; }
+    if (!libs.uk)     { libs.uk     = UK_LIB;     changed = true; }
+    if (changed) localStorage.setItem("kt2_global_libs", JSON.stringify(libs));
+  } catch {}
+}
+
 // Type definitions
 const TYPES = {
   food: { label: "مطعم/طعام", icon: "🍽️", color: "var(--persimmon)" },
@@ -7271,124 +7460,394 @@ function renderDashTabBody(trips) {
   `;
 }
 
+// Library metadata for known built-in libs
+const LIB_META = {
+  korea:   { name:"كوريا الجنوبية", icon:"🇰🇷", color:"#e74c3c", cities:["seoul","busan","jeju"], builtIn:true },
+  turkey:  { name:"تركيا",          icon:"🇹🇷", color:"#c0392b", cities:["istanbul","cappadocia","antalya","trabzon","ankara","bursa","izmir"], builtIn:true },
+  uk:      { name:"بريطانيا",       icon:"🇬🇧", color:"#2c3e50", cities:["london","edinburgh","manchester"], builtIn:true }
+};
+const LIB_CITY_NAMES = {
+  seoul:"سيول", busan:"بوسان", jeju:"جيجو",
+  istanbul:"إسطنبول", cappadocia:"كابادوكيا", antalya:"أنطاليا",
+  trabzon:"طرابزون", ankara:"أنقرة", bursa:"بورصة", izmir:"إزمير",
+  london:"لندن", edinburgh:"إدنبرة", manchester:"مانشستر"
+};
+
+function getGlobalLibs() {
+  try { return JSON.parse(localStorage.getItem("kt2_global_libs") || "{}"); } catch { return {}; }
+}
+function saveGlobalLibs(libs) {
+  localStorage.setItem("kt2_global_libs", JSON.stringify(libs));
+}
+
 function renderLibrariesTab() {
-  const customLibs = (() => { try { return JSON.parse(localStorage.getItem("kt2_global_libs") || "{}"); } catch { return {}; } })();
-  const allLibs = [
-    { id: "korea", name: "كوريا الجنوبية", icon: "🇰🇷", count: typeof LIB !== 'undefined' ? LIB.length : 0, builtIn: true },
-    ...Object.entries(customLibs).map(([id, items]) => ({
-      id, name: id, icon: "🌍", count: (items || []).length, builtIn: false
-    }))
-  ];
+  const customLibs = getGlobalLibs();
+  const allLibIds = ["korea", ...Object.keys(customLibs)];
+
+  function libInfo(id) {
+    const items = id === "korea" ? (typeof LIB !== 'undefined' ? LIB : []) : (customLibs[id] || []);
+    const meta = LIB_META[id] || {};
+    const cities = [...new Set(items.map(x => x.city).filter(Boolean))];
+    const byType = {};
+    items.forEach(x => { byType[x.type] = (byType[x.type]||0)+1; });
+    return { items, meta, cities, byType,
+      name: meta.name || id,
+      icon: meta.icon || "🌍",
+      color: meta.color || "#1a4d4a",
+      builtIn: !!meta.builtIn
+    };
+  }
 
   return `
-    <div style="margin-bottom:1rem">
-      <p class="txs clm">المكتبات تحتوي على مواقع ومطاعم ومعالم مقترحة لكل وجهة. عند إنشاء رحلة، تُربط المكتبة بالدولة تلقائياً.</p>
+    <div style="margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
+      <p class="txs clm" style="margin:0">المكتبات تحتوي مواقع ومطاعم ومعالم لكل وجهة — تُربط بالرحلة تلقائياً.</p>
+      <div style="display:flex;gap:0.5rem">
+        <button class="btn btn-out btn-sm" onclick="openGeminiAssistant()">🤖 مساعد AI</button>
+        <button class="btn btn-pri btn-sm" onclick="openAddLibModal()">+ مكتبة جديدة</button>
+      </div>
     </div>
 
-    ${allLibs.map(lib => `
-      <div class="lib-card">
-        <div class="lib-card-icon">${lib.icon}</div>
-        <div class="lib-card-info">
-          <div class="lib-card-name">${lib.name} ${lib.builtIn ? '<span class="pill pill-sm" style="margin-right:0.4rem">مدمجة</span>' : ''}</div>
-          <div class="lib-card-meta">${lib.count} موقع${lib.builtIn ? ' · مطاعم حلال، معالم، فعاليات، أسواق، مساجد' : ''}</div>
+    ${allLibIds.map(id => {
+      const L = libInfo(id);
+      const typeIcons = {food:"🍽️",attraction:"📍",mosque:"🕌",shop:"🛍️",entertainment:"🎢",transport:"🚄",other:"⭐"};
+      const typeSummary = Object.entries(L.byType).slice(0,4).map(([t,n])=>`${typeIcons[t]||"•"}${n}`).join(" ");
+      return `
+        <div class="lib-card" style="--lib-c:${L.color};border-right:3px solid ${L.color}">
+          <div class="lib-card-icon" style="font-size:1.6rem">${L.icon}</div>
+          <div class="lib-card-info" style="flex:1;min-width:0">
+            <div class="lib-card-name">${L.name}${L.builtIn?' <span class="pill pill-sm" style="font-size:0.6rem;padding:1px 5px;margin-right:3px">مدمجة</span>':''}</div>
+            <div class="lib-card-meta">${L.items.length} موقع · ${L.cities.length} مدينة</div>
+            <div class="lib-card-meta" style="margin-top:2px;font-size:0.68rem">${typeSummary}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.35rem;align-items:flex-end">
+            <button class="btn btn-pri btn-sm" onclick="openLibBrowser('${id}')">استعراض</button>
+            ${!L.builtIn ? `<button class="btn btn-out btn-sm" style="color:var(--danger);font-size:0.7rem" onclick="deleteCustomLib('${id}')">حذف</button>` : ''}
+          </div>
         </div>
-        <div style="display:flex;gap:0.4rem">
-          ${lib.builtIn
-            ? `<button class="btn btn-out btn-sm" onclick="alert('مكتبة كوريا مدمجة في الكود ولا يمكن تعديلها من هنا. القادم: عرض/تعديل المكتبة.')">عرض</button>`
-            : `<button class="btn btn-out btn-sm" onclick="viewCustomLib('${lib.id}')">عرض/تعديل</button>
-               <button class="btn btn-out btn-sm" style="color:var(--danger)" onclick="deleteCustomLib('${lib.id}')">حذف</button>`}
-        </div>
-      </div>
-    `).join('')}
+      `;
+    }).join('')}
 
-    <div class="lib-card" style="border-style:dashed;cursor:pointer;background:var(--cream)" onclick="openAddLibModal()">
-      <div class="lib-card-icon">+</div>
-      <div class="lib-card-info">
-        <div class="lib-card-name">إضافة مكتبة لدولة جديدة</div>
-        <div class="lib-card-meta">استورد قائمة مواقع من JSON أو ابدأ بمكتبة فارغة</div>
+    <div class="lib-card" style="border-style:dashed;cursor:pointer;background:var(--cream);justify-content:center" onclick="openAddLibModal()">
+      <div style="text-align:center;padding:0.5rem 0">
+        <div style="font-size:1.5rem;margin-bottom:0.3rem">+</div>
+        <div class="fb6" style="font-size:0.85rem">إضافة مكتبة لوجهة جديدة</div>
+        <div class="txs clm" style="font-size:0.72rem">JSON أو ابدأ فارغة</div>
       </div>
     </div>
   `;
 }
 
+// ─── Library Browser Modal ───
+function openLibBrowser(libId) {
+  const isKorea = libId === "korea";
+  const allItems = isKorea
+    ? (typeof LIB !== 'undefined' ? LIB : [])
+    : (getGlobalLibs()[libId] || []);
+  const meta = LIB_META[libId] || {};
+  const name = meta.name || libId;
+  const icon = meta.icon || "🌍";
+
+  const cities = [...new Set(allItems.map(x=>x.city).filter(Boolean))];
+  const types  = [...new Set(allItems.map(x=>x.type).filter(Boolean))];
+  const typeLabels = {food:"مطاعم",attraction:"معالم",mosque:"مساجد",shop:"تسوق",entertainment:"ترفيه",transport:"مواصلات",tour:"جولات",cafe:"مقاهي",hotel:"فنادق",festival:"فعاليات",other:"أخرى"};
+  const typeIcons  = {food:"🍽️",attraction:"📍",mosque:"🕌",shop:"🛍️",entertainment:"🎢",transport:"🚄",tour:"🎯",cafe:"☕",hotel:"🏨",festival:"🎉",other:"⭐"};
+
+  function renderItems(cityF, typeF, q) {
+    let items = allItems;
+    if (cityF) items = items.filter(x=>x.city===cityF);
+    if (typeF) items = items.filter(x=>x.type===typeF);
+    if (q) { const lq=q.toLowerCase(); items = items.filter(x=>(x.name+x.area+x.note).toLowerCase().includes(lq)); }
+    if (!items.length) return `<p style="text-align:center;color:var(--muted);padding:2rem">لا توجد نتائج</p>`;
+    return items.map(it => `
+      <div style="background:var(--cream);border-radius:10px;padding:0.75rem;display:flex;gap:0.7rem;align-items:flex-start">
+        <div style="font-size:1.4rem;line-height:1">${it.icon||typeIcons[it.type]||"📍"}</div>
+        <div style="flex:1;min-width:0">
+          <div class="fb6" style="font-size:0.85rem">${it.name}${it.halal?'<span style="color:#047857;font-size:0.65rem;margin-right:4px">● حلال</span>':''}</div>
+          ${it.area?`<div style="font-size:0.7rem;color:var(--muted)">${LIB_CITY_NAMES[it.city]||it.city||''} · ${it.area}</div>`:''}
+          ${it.note?`<div style="font-size:0.72rem;color:var(--ink-soft);margin-top:2px">${it.note}</div>`:''}
+          ${it.price?`<div style="font-size:0.68rem;color:var(--gold);margin-top:2px">${it.price}</div>`:''}
+        </div>
+        ${!isKorea?`<button title="حذف" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.75rem;padding:2px 4px" onclick="deleteLibItem('${libId}','${it.id}')">✕</button>`:''}
+      </div>
+    `).join('');
+  }
+
+  function buildModal(cityF='', typeF='', q='') {
+    return `
+      <div class="modal-h">
+        <h3>${icon} مكتبة ${name}</h3>
+        <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem">
+        <input type="text" class="input" id="lb-search" placeholder="بحث..." value="${q}" oninput="_libFilter('${libId}')" style="flex:1;min-width:120px;padding:0.4rem 0.6rem;font-size:0.8rem">
+        <select class="input" id="lb-city" onchange="_libFilter('${libId}')" style="padding:0.4rem 0.6rem;font-size:0.8rem">
+          <option value="">كل المدن</option>
+          ${cities.map(c=>`<option value="${c}"${cityF===c?' selected':''}>${LIB_CITY_NAMES[c]||c}</option>`).join('')}
+        </select>
+        <select class="input" id="lb-type" onchange="_libFilter('${libId}')" style="padding:0.4rem 0.6rem;font-size:0.8rem">
+          <option value="">كل الأنواع</option>
+          ${types.map(t=>`<option value="${t}"${typeF===t?' selected':''}>${typeIcons[t]||''} ${typeLabels[t]||t}</option>`).join('')}
+        </select>
+      </div>
+      <div id="lb-results" style="display:flex;flex-direction:column;gap:0.5rem;max-height:55vh;overflow-y:auto">
+        ${renderItems(cityF, typeF, q)}
+      </div>
+      <div style="margin-top:0.75rem;display:flex;gap:0.5rem;justify-content:space-between;flex-wrap:wrap">
+        ${!isKorea?`<button class="btn btn-out btn-sm" onclick="openAddLibItemModal('${libId}')">+ إضافة موقع</button>`:'<div></div>'}
+        <span class="txs clm" style="font-size:0.72rem;align-self:center">${allItems.length} موقع إجمالاً</span>
+      </div>
+    `;
+  }
+
+  window._libFilter = function(lid) {
+    const q  = ($("lb-search")||{value:''}).value.trim();
+    const cf = ($("lb-city")||{value:''}).value;
+    const tf = ($("lb-type")||{value:''}).value;
+    const res = document.getElementById("lb-results");
+    if (res) {
+      const items2 = lid==="korea"
+        ? (typeof LIB!=='undefined'?LIB:[])
+        : (getGlobalLibs()[lid]||[]);
+      let fil = items2;
+      if (cf) fil = fil.filter(x=>x.city===cf);
+      if (tf) fil = fil.filter(x=>x.type===tf);
+      if (q) { const lq=q.toLowerCase(); fil=fil.filter(x=>(x.name+x.area+x.note).toLowerCase().includes(lq)); }
+      if (!fil.length) { res.innerHTML='<p style="text-align:center;color:var(--muted);padding:2rem">لا توجد نتائج</p>'; return; }
+      res.innerHTML = fil.map(it=>`
+        <div style="background:var(--cream);border-radius:10px;padding:0.75rem;display:flex;gap:0.7rem;align-items:flex-start">
+          <div style="font-size:1.4rem;line-height:1">${it.icon||typeIcons[it.type]||"📍"}</div>
+          <div style="flex:1;min-width:0">
+            <div class="fb6" style="font-size:0.85rem">${it.name}${it.halal?'<span style="color:#047857;font-size:0.65rem;margin-right:4px">● حلال</span>':''}</div>
+            ${it.area?`<div style="font-size:0.7rem;color:var(--muted)">${LIB_CITY_NAMES[it.city]||it.city||''} · ${it.area}</div>`:''}
+            ${it.note?`<div style="font-size:0.72rem;color:var(--ink-soft);margin-top:2px">${it.note}</div>`:''}
+          </div>
+          ${lid!=="korea"?`<button title="حذف" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.75rem;padding:2px 4px" onclick="deleteLibItem('${lid}','${it.id}')">✕</button>`:''}
+        </div>`).join('');
+    }
+  };
+
+  openModal(buildModal());
+}
+
+function deleteLibItem(libId, itemId) {
+  const libs = getGlobalLibs();
+  if (!libs[libId]) return;
+  libs[libId] = libs[libId].filter(x=>x.id!==itemId);
+  saveGlobalLibs(libs);
+  openLibBrowser(libId);
+}
+
+function openAddLibItemModal(libId) {
+  const meta = LIB_META[libId] || {};
+  const cities = meta.cities || [];
+  openModal(`
+    <div class="modal-h">
+      <h3>➕ إضافة موقع جديد</h3>
+      <button class="modal-x" onclick="openLibBrowser('${libId}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">
+      <div class="fld" style="grid-column:1/-1"><label>الاسم *</label><input type="text" class="input" id="ali-name" placeholder="مثال: آيا صوفيا"></div>
+      <div class="fld"><label>النوع</label><select class="input" id="ali-type">
+        <option value="attraction">📍 معلم</option><option value="food">🍽️ مطعم</option>
+        <option value="mosque">🕌 مسجد</option><option value="shop">🛍️ تسوق</option>
+        <option value="entertainment">🎢 ترفيه</option><option value="other">⭐ أخرى</option>
+      </select></div>
+      <div class="fld"><label>المدينة</label>
+        <input type="text" class="input" id="ali-city" list="ali-city-list" placeholder="اسم المدينة">
+        <datalist id="ali-city-list">${cities.map(c=>`<option value="${c}">`).join('')}</datalist>
+      </div>
+      <div class="fld"><label>المنطقة/الحي</label><input type="text" class="input" id="ali-area" placeholder="مثال: السلطان أحمد"></div>
+      <div class="fld"><label>الأيقونة</label><input type="text" class="input" id="ali-icon" placeholder="🏛️" style="width:70px"></div>
+      <div class="fld"><label>حلال؟</label><select class="input" id="ali-halal"><option value="">لا / غير محدد</option><option value="1">نعم حلال</option></select></div>
+      <div class="fld" style="grid-column:1/-1"><label>ملاحظة</label><textarea class="input" id="ali-note" rows="2" placeholder="وصف قصير..."></textarea></div>
+    </div>
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="openLibBrowser('${libId}')">رجوع</button>
+      <button class="btn btn-pri" onclick="saveLibItem('${libId}')">حفظ</button>
+    </div>
+  `);
+}
+
+function saveLibItem(libId) {
+  const name = ($("ali-name")||{}).value?.trim();
+  if (!name) { alert("الاسم مطلوب"); return; }
+  const libs = getGlobalLibs();
+  if (!libs[libId]) libs[libId] = [];
+  const item = {
+    id: `${libId}_${Date.now()}`,
+    name,
+    type: ($("ali-type")||{}).value || "attraction",
+    city: ($("ali-city")||{}).value?.trim().toLowerCase() || "",
+    area: ($("ali-area")||{}).value?.trim() || "",
+    icon: ($("ali-icon")||{}).value?.trim() || "",
+    note: ($("ali-note")||{}).value?.trim() || "",
+    halal: ($("ali-halal")||{}).value === "1"
+  };
+  libs[libId].push(item);
+  saveGlobalLibs(libs);
+  openLibBrowser(libId);
+}
+
 function openAddLibModal() {
   openModal(`
     <div class="modal-h">
-      <h3>📚 إضافة مكتبة لدولة جديدة</h3>
+      <h3>📚 إضافة مكتبة لوجهة جديدة</h3>
       <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="fld">
-      <label>اسم الدولة / الوجهة *</label>
-      <input type="text" class="input" id="al-name" placeholder="مثال: تركيا" autofocus>
+      <label>اسم الوجهة *</label>
+      <input type="text" class="input" id="al-name" placeholder="مثال: اليابان" autofocus>
     </div>
     <div class="fld">
       <label>JSON للمكتبة (اختياري)</label>
-      <textarea class="input" id="al-json" rows="6" placeholder='[{"name":"آيا صوفيا","type":"attraction","city":"istanbul","area":"السلطان أحمد","icon":"🏛️","note":"معلم بيزنطي عثماني","lat":41.0086,"lng":28.9802}]' style="font-family:monospace;font-size:0.75rem"></textarea>
-      <p class="txs clm mt1">الحقول: name, type (food/attraction/mosque/shop/entertainment/festival), city, area, icon, note, lat, lng, halal, gf</p>
+      <textarea class="input" id="al-json" rows="5" placeholder='[{"name":"...","type":"attraction","city":"tokyo","area":"...","icon":"🏛️","note":"..."}]' style="font-family:monospace;font-size:0.75rem"></textarea>
+      <p class="txs clm mt1">الحقول: name, type (food/attraction/mosque/shop/entertainment), city, area, icon, note, lat, lng, halal</p>
     </div>
     <div class="modal-act">
       <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
-      <button class="btn btn-pri" onclick="saveNewLib()">إنشاء المكتبة</button>
+      <button class="btn btn-pri" onclick="saveNewLib()">إنشاء</button>
     </div>
   `);
 }
 
 function saveNewLib() {
-  const name = $("al-name").value.trim();
-  if (!name) { alert("اسم الدولة مطلوب"); return; }
-  const id = name.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9؀-ۿ-]/g,"").slice(0,30) || ("lib_"+Date.now());
-  const jsonStr = $("al-json").value.trim();
+  const name = ($("al-name")||{}).value?.trim();
+  if (!name) { alert("اسم الوجهة مطلوب"); return; }
+  const id = name.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"").slice(0,30) || ("lib_"+Date.now());
+  const jsonStr = ($("al-json")||{}).value?.trim();
   let items = [];
   if (jsonStr) {
     try { items = JSON.parse(jsonStr); if (!Array.isArray(items)) throw new Error("ليس مصفوفة"); }
-    catch (e) { alert("JSON غير صحيح: " + e.message); return; }
+    catch (e) { alert("JSON غير صحيح: "+e.message); return; }
   }
-  // Add IDs to items if missing
-  items = items.map((it, i) => ({ id: it.id || `${id}_${i+1}`, ...it }));
-  const libs = (() => { try { return JSON.parse(localStorage.getItem("kt2_global_libs") || "{}"); } catch { return {}; } })();
+  items = items.map((it,i)=>({ id:it.id||`${id}_${i+1}`, ...it }));
+  const libs = getGlobalLibs();
   libs[id] = items;
-  localStorage.setItem("kt2_global_libs", JSON.stringify(libs));
-  closeModal();
-  renderDashboard();
-}
-
-function viewCustomLib(id) {
-  const libs = (() => { try { return JSON.parse(localStorage.getItem("kt2_global_libs") || "{}"); } catch { return {}; } })();
-  const items = libs[id] || [];
-  openModal(`
-    <div class="modal-h">
-      <h3>📚 مكتبة ${id} (${items.length} عنصر)</h3>
-      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="fld">
-      <label>JSON البيانات (يمكن تعديله مباشرة)</label>
-      <textarea class="input" id="vl-json" rows="14" style="font-family:monospace;font-size:0.7rem">${JSON.stringify(items, null, 2)}</textarea>
-    </div>
-    <div class="modal-act">
-      <button class="btn btn-sec" onclick="closeModal()">إغلاق</button>
-      <button class="btn btn-pri" onclick="updateCustomLib('${id}')">حفظ التعديلات</button>
-    </div>
-  `);
-}
-
-function updateCustomLib(id) {
-  const txt = $("vl-json").value.trim();
-  let items;
-  try { items = JSON.parse(txt); if (!Array.isArray(items)) throw new Error("ليس مصفوفة"); }
-  catch (e) { alert("JSON غير صحيح: " + e.message); return; }
-  const libs = (() => { try { return JSON.parse(localStorage.getItem("kt2_global_libs") || "{}"); } catch { return {}; } })();
-  libs[id] = items;
-  localStorage.setItem("kt2_global_libs", JSON.stringify(libs));
+  saveGlobalLibs(libs);
   closeModal();
   renderDashboard();
 }
 
 function deleteCustomLib(id) {
-  if (!confirm(`حذف مكتبة "${id}" نهائياً؟`)) return;
-  const libs = (() => { try { return JSON.parse(localStorage.getItem("kt2_global_libs") || "{}"); } catch { return {}; } })();
+  if (!confirm(`حذف مكتبة "${LIB_META[id]?.name||id}" نهائياً؟`)) return;
+  const libs = getGlobalLibs();
   delete libs[id];
-  localStorage.setItem("kt2_global_libs", JSON.stringify(libs));
+  saveGlobalLibs(libs);
   renderDashboard();
+}
+
+// ─── Gemini AI Assistant ───
+function openGeminiAssistant() {
+  const savedKey = localStorage.getItem("kt2_gemini_key") || "";
+  const libs = getGlobalLibs();
+  const libOptions = [
+    {id:"turkey",  name:"🇹🇷 تركيا"},
+    {id:"uk",      name:"🇬🇧 بريطانيا"},
+    ...Object.keys(libs).filter(k=>!["turkey","uk"].includes(k)).map(k=>({id:k,name:`🌍 ${LIB_META[k]?.name||k}`}))
+  ];
+
+  openModal(`
+    <div class="modal-h">
+      <h3>🤖 مساعد الذكاء الاصطناعي للمكتبات</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="fld">
+      <label>🔑 مفتاح Gemini API</label>
+      <input type="password" class="input" id="gem-key" value="${savedKey}" placeholder="AIza..." autocomplete="off">
+      <p class="txs clm mt1">يُحفظ المفتاح محلياً فقط. <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent)">احصل على مفتاح مجاني</a></p>
+    </div>
+    <div class="fld">
+      <label>المكتبة المستهدفة</label>
+      <select class="input" id="gem-lib">
+        ${libOptions.map(l=>`<option value="${l.id}">${l.name}</option>`).join('')}
+      </select>
+    </div>
+    <div class="fld">
+      <label>الطلب بالعربية أو الإنجليزية</label>
+      <textarea class="input" id="gem-prompt" rows="3" placeholder="مثال: أضف أبرز المعالم السياحية في إسطنبول مع وصف مختصر لكل منها"></textarea>
+    </div>
+    <div id="gem-status" style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem;min-height:1.2em"></div>
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إغلاق</button>
+      <button class="btn btn-pri" id="gem-btn" onclick="runGeminiAssistant()">✨ توليد</button>
+    </div>
+    <div id="gem-preview" style="margin-top:0.75rem"></div>
+  `);
+}
+
+async function runGeminiAssistant() {
+  const key    = ($("gem-key")||{}).value?.trim();
+  const libId  = ($("gem-lib")||{}).value;
+  const prompt = ($("gem-prompt")||{}).value?.trim();
+  const status = document.getElementById("gem-status");
+  const btn    = document.getElementById("gem-btn");
+  const preview= document.getElementById("gem-preview");
+
+  if (!key)    { status.textContent="⚠️ أدخل مفتاح API أولاً"; return; }
+  if (!prompt) { status.textContent="⚠️ اكتب طلبك أولاً"; return; }
+
+  localStorage.setItem("kt2_gemini_key", key);
+  btn.disabled = true;
+  status.textContent = "⏳ جاري الإرسال إلى Gemini...";
+  preview.innerHTML = "";
+
+  const systemInstr = `أنت مساعد لبناء مكتبات مواقع سياحية. أجب دائماً بـ JSON فقط (مصفوفة).
+كل عنصر يحتوي: name (اسم عربي أو إنجليزي), type (food|attraction|mosque|shop|entertainment|other),
+city (اسم المدينة بالإنجليزية بدون مسافات), area (الحي/المنطقة), icon (إيموجي واحد),
+note (وصف مختصر مفيد), halal (true/false للمطاعم), lat, lng (إحداثيات تقريبية).
+لا تضف أي كلام خارج JSON. مثال: [{"name":"آيا صوفيا","type":"attraction","city":"istanbul","area":"السلطان أحمد","icon":"🕌","note":"تحفة معمارية بيزنطية عثمانية","halal":false,"lat":41.0086,"lng":28.9802}]`;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        systemInstruction: { parts: [{text: systemInstr}] },
+        contents: [{parts:[{text: prompt}]}],
+        generationConfig: { temperature: 0.4, maxOutputTokens: 4096 }
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const jsonMatch = raw.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error("لم يُرجع Gemini JSON صحيحاً");
+    const items = JSON.parse(jsonMatch[0]);
+    if (!Array.isArray(items) || !items.length) throw new Error("المصفوفة فارغة");
+
+    status.textContent = `✓ تم استلام ${items.length} موقع جديد`;
+    preview.innerHTML = `
+      <div style="background:var(--cream);border-radius:10px;padding:0.75rem;max-height:200px;overflow-y:auto">
+        ${items.slice(0,5).map(it=>`<div style="font-size:0.78rem;padding:3px 0;border-bottom:1px solid var(--border)">${it.icon||"📍"} <strong>${it.name}</strong> — ${it.city||''} · ${it.area||''}</div>`).join('')}
+        ${items.length>5?`<div style="font-size:0.72rem;color:var(--muted);margin-top:4px">... و${items.length-5} إضافية</div>`:''}
+      </div>
+      <div style="margin-top:0.6rem;display:flex;gap:0.5rem">
+        <button class="btn btn-pri btn-sm" onclick="_geminiAppend(${JSON.stringify(items).replace(/"/g,'&quot;')},'${libId}')">✓ إضافة للمكتبة</button>
+        <button class="btn btn-out btn-sm" onclick="document.getElementById('gem-preview').innerHTML='';document.getElementById('gem-status').textContent=''">تجاهل</button>
+      </div>
+    `;
+  } catch(e) {
+    status.textContent = "❌ خطأ: " + e.message;
+  }
+  btn.disabled = false;
+}
+
+function _geminiAppend(items, libId) {
+  const libs = getGlobalLibs();
+  if (!libs[libId]) libs[libId] = [];
+  const existing = new Set(libs[libId].map(x=>x.name?.toLowerCase()));
+  let added = 0;
+  items.forEach((it,i) => {
+    if (!existing.has((it.name||"").toLowerCase())) {
+      libs[libId].push({ id:`${libId}_gem_${Date.now()}_${i}`, ...it });
+      added++;
+    }
+  });
+  saveGlobalLibs(libs);
+  closeModal();
+  renderDashboard();
+  setTimeout(()=>openLibBrowser(libId), 100);
 }
 
 function renderPermissionsTab() {
@@ -8201,6 +8660,7 @@ function updateHeaderForTrip() {
 // ═══════════════════════════════════════════════════════════
 
 async function initApp() {
+  seedBuiltinLibraries();
   const route = applyRoute();
 
   // Owner with no trip → dashboard
