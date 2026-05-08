@@ -7908,11 +7908,9 @@ function openGeminiAssistant(preselectedLib) {
       <input type="password" class="input" id="gem-key" value="${savedKey}" placeholder="AIza..." autocomplete="off" style="margin-top:0.3rem;padding:0.3rem 0.5rem;font-size:0.8rem">
       <div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.4rem;flex-wrap:wrap">
         <select class="input" id="gem-model" style="padding:0.25rem 0.4rem;font-size:0.72rem;flex:1;min-width:160px">
-          <option value="gemini-1.5-flash">gemini-1.5-flash (مجاني · الأسرع)</option>
-          <option value="gemini-1.5-flash-8b">gemini-1.5-flash-8b (مجاني · خفيف)</option>
-          <option value="gemini-1.5-pro">gemini-1.5-pro (مجاني · أدق)</option>
-          <option value="gemini-2.0-flash">gemini-2.0-flash (مدفوع)</option>
-          <option value="gemini-2.5-flash-preview-05-20">gemini-2.5-flash (مدفوع · الأحدث)</option>
+          <option value="gemini-2.0-flash-lite">gemini-2.0-flash-lite ✓ مجاني · الأنسب</option>
+          <option value="gemini-2.0-flash">gemini-2.0-flash (حصة محدودة)</option>
+          <option value="gemini-2.5-flash-preview-05-20">gemini-2.5-flash-preview (مدفوع · الأحدث)</option>
         </select>
         <span style="font-size:0.65rem;color:var(--muted)"><a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent)">احصل على مفتاح</a></span>
       </div>
@@ -7968,7 +7966,7 @@ function openGeminiAssistant(preselectedLib) {
   }
 
   // Restore saved model
-  const savedModel = localStorage.getItem("kt2_gemini_model") || "gemini-1.5-flash";
+  const savedModel = localStorage.getItem("kt2_gemini_model") || "gemini-2.0-flash-lite";
   const modelSel = document.getElementById("gem-model");
   if (modelSel) modelSel.value = savedModel;
 
@@ -8029,7 +8027,7 @@ async function runGeminiAssistant() {
   const libId = isNew ? libVal.replace("new:","") : libVal;
   if (!libId)  { status.textContent="⚠️ اختر المكتبة أولاً"; return; }
 
-  const model = ($("gem-model")||{}).value || "gemini-1.5-flash";
+  const model = ($("gem-model")||{}).value || "gemini-2.0-flash-lite";
   localStorage.setItem("kt2_gemini_key", key);
   localStorage.setItem("kt2_gemini_model", model);
   btn.disabled = true;
@@ -8095,7 +8093,7 @@ async function runGeminiAssistant() {
   } catch(e) {
     let msg = e.message;
     if (msg.includes("quota") || msg.includes("Quota") || msg.includes("RESOURCE_EXHAUSTED")) {
-      msg = "⚠️ تجاوزت الحد المجاني لهذا الموديل — جرّب موديلاً آخر من القائمة (gemini-1.5-flash أو gemini-1.5-flash-8b)";
+      msg = "⚠️ تجاوزت الحد المجاني — اختر gemini-2.0-flash-lite من القائمة (الأعلى حصة مجانية)";
     } else if (msg.includes("API_KEY") || msg.includes("invalid") || msg.includes("401")) {
       msg = "⚠️ مفتاح API غير صحيح — تحقق منه في aistudio.google.com";
     }
