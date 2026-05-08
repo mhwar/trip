@@ -2633,6 +2633,14 @@ footer p { font-size: 0.7rem; color: var(--muted); }
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
         <span>الجدول</span>
       </button>
+      <button class="ht-btn" onclick="openTasksModal()" title="مهام التجهيز">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>مهام</span>
+      </button>
+      <button class="ht-btn" onclick="openBudgetModal()" title="الميزانية">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/></svg>
+        <span>ميزانية</span>
+      </button>
       <button class="ht-btn" onclick="openTripSettings()" title="إعدادات الرحلة">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <span>إعدادات</span>
@@ -3498,9 +3506,9 @@ function makeSkeletonDays() {
     d.setDate(d.getDate() + i);
     const weekdays = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
     let city;
-    if (i < 4) city = "seoul";
-    else if (i < 7) city = "jeju";
-    else if (i < 9) city = "busan";
+    if (i < 3) city = "seoul";
+    else if (i < 6) city = "busan";
+    else if (i < 9) city = "jeju";
     else city = "seoul";
     days.push({
       day: i + 1,
@@ -3534,17 +3542,17 @@ function makeTemplateItinerary() {
   //   • Etihad EY603: أبوظبي 02:05 → جدة 03:55 (25 مايو)
   //   • Flynas XY425: جدة 06:35 → أبها 07:55 (25 مايو)
   //
-  // التوزيع:
-  //   • Seoul (4 ليالٍ): 14-17 مايو
-  //   • Jeju (3 ليالٍ): 18-20 مايو
-  //   • Busan (2 ليلة): 21-22 مايو
-  //   • Seoul (1 ليلة): 23 مايو
+  // التوزيع الجديد (سيول → بوسان → جيجو → سيول):
+  //   • Seoul (3 ليالٍ): 14-16 مايو
+  //   • Busan (3 ليالٍ): 17-19 مايو - بالـKTX
+  //   • Jeju (3 ليالٍ): 20-22 مايو - بالطائرة
+  //   • Seoul (ليلة): 23 مايو - بالطائرة
   //   • مغادرة (24 مايو 17:50)
   // ═══════════════════════════════════════════════════════════
 
   // ── يوم 1 (14 مايو، خميس): الوصول 10:50 صباحاً ──
   it[0] = { ...it[0], title: "الوصول إلى سيول واستكشاف خفيف",
-    narrative: "🛬 وصولك المبكر (10:50ص) ميزة كبيرة! لديك يوم كامل. بعد تخليص الجوازات (~45د) و AREX (43د)، ستكون في الفندق ~1:30م. اطلب Early Check-in بـKakaoTalk قبل السفر. يوم خفيف: المسجد + إنسادونغ + عشاء مبكر + نوم 9م = جيت لاج أخف. تجنّب القصور اليوم لأنها مرهقة بعد سفر طويل.",
+    narrative: "🛬 وصولك المبكر (10:50ص) ميزة كبيرة! بعد تخليص الجوازات (~45د) و AREX Express (43د)، ستكون في الفندق ~1:00م. اطلب Early Check-in مسبقاً. يوم خفيف: المسجد + إنسادونغ + عشاء مبكر + نوم 9م = جيت لاج أخف.",
     type: "arrival",
     flight: { from: "Abu Dhabi (EY 822)", to: "Seoul ICN", arrTime: "10:50" }, items: [
     { id: "t1", time: "10:50", text: "🛬 الوصول لمطار إنتشون - رحلة EY822", type: "transport", lat: 37.4602, lng: 126.4407 },
@@ -3558,138 +3566,143 @@ function makeTemplateItinerary() {
   ]};
 
   // ── يوم 2 (15 مايو، جمعة): قصور سيول + 🏮 فوانيس اللوتس ──
-  it[1] = { ...it[1], title: "✨ القصور + مهرجان فوانيس اللوتس",
-    narrative: "يوم تاريخي ثقيل بالفعاليات! القصور صباحاً، صلاة الجمعة في المسجد المركزي ظهراً، ومساءً مهرجان الفوانيس (15-16 مايو) - الحدث الأبرز. تنقل بالمشي أو محطة مترو واحدة بين القصور.",
+  it[1] = { ...it[1], title: "✨ القصور التاريخية + مهرجان فوانيس اللوتس",
+    narrative: "يوم مثالي للجمعة! القصور صباحاً، صلاة الجمعة في المسجد المركزي ظهراً، ومساءً مهرجان الفوانيس الأسطوري (15-16 مايو) - 100,000 فانوس في شوارع سيول. لا تفوته!",
     type: "normal", items: [
     { id: "t9", time: "08:30", text: "🏯 قصر غيونغبوكغونغ + استئجار هانبوك", type: "attraction", refId: "a1", lat: 37.5796, lng: 126.9770 },
     { id: "t10", time: "10:00", text: "👮 مراسم تغيير الحرس الملكي", type: "attraction", lat: 37.5796, lng: 126.9770 },
     { id: "t11", time: "11:30", text: "🏘️ قرية بوكتشون هانوك", type: "attraction", refId: "a2", lat: 37.5826, lng: 126.9831 },
     { id: "t12", time: "12:30", text: "🕌 صلاة الجمعة في المسجد المركزي", type: "mosque", refId: "mq1", lat: 37.5347, lng: 126.9929 },
     { id: "t13", time: "14:00", text: "🥩 غداء Busan Jib (غرفة صلاة)", type: "food", refId: "f2", lat: 37.5636, lng: 126.9836 },
-    { id: "t14", time: "16:00", text: "🛍️ تسوق ميونغ‌دونغ", type: "shop", refId: "s1", lat: 37.5636, lng: 126.9826 },
+    { id: "t14", time: "15:30", text: "🛍️ تسوق ميونغ‌دونغ + تذكارات", type: "shop", refId: "s1", lat: 37.5636, lng: 126.9826 },
     { id: "t15", time: "19:00", text: "🏮 ✨ استعراض فوانيس اللوتس - 100,000 فانوس", type: "festival", refId: "fs2", lat: 37.5723, lng: 126.9831 }
   ]};
 
-  // ── يوم 3 (16 مايو، سبت): DMZ ──
-  it[2] = { ...it[2], title: "DMZ - المنطقة منزوعة السلاح",
-    narrative: "يوم تاريخي مكثف. جولة DMZ منظمة (8 ساعات) تحجز عبر Klook/Trazy. الجواز إلزامي. مساءً نصب الحرب قرب الفندق + عشاء Yang Good الحلال.",
+  // ── يوم 3 (16 مايو، سبت): Nami Island + Garden of Morning Calm ──
+  it[2] = { ...it[2], title: "جزيرة نامي + حديقة Morning Calm",
+    narrative: "هروب رومانسي من المدينة! ITX-Cheongchun من سيول لـChuncheon (1س 20د). Gangchon Rail Bike (8.5كم على السكة) ثم جزيرة نامي بالعبّارة ثم حديقة الصباح الهادئ. عودة للفندق + تجهيز حقائب بوسان غداً (KTX).",
     type: "normal", items: [
-    { id: "t16", time: "07:30", text: "🎯 جولة DMZ كاملة منظمة (يوم كامل)", type: "tour", refId: "tr1", lat: 37.9285, lng: 126.6868 },
-    { id: "t17", time: "15:30", text: "⚔️ نصب الحرب War Memorial (إيتيوون)", type: "attraction", refId: "a43", lat: 37.5369, lng: 126.9774 },
-    { id: "t18", time: "18:00", text: "🌃 برج N سيول + غروب", type: "attraction", refId: "a3", lat: 37.5512, lng: 126.9882 },
-    { id: "t19", time: "20:00", text: "🥩 عشاء Yang Good Halal BBQ", type: "food", refId: "f3", lat: 37.5006, lng: 127.0364 }
+    { id: "t16", time: "08:30", text: "🚄 ITX-Cheongchun → Chuncheon (سيول → تشونتشيون)", type: "transport", refId: "tx5", lat: 37.5800, lng: 127.0470 },
+    { id: "t17", time: "10:30", text: "🚲 Gangchon Rail Bike (8.5كم على السكة الحديدية)", type: "entertainment", refId: "a38", lat: 37.8467, lng: 127.6147 },
+    { id: "t18", time: "12:30", text: "🥩 غداء خفيف + استراحة", type: "food" },
+    { id: "t19", time: "14:00", text: "🌳 جزيرة Nami - أشجار الميتاسيكويا الخلابة", type: "attraction", refId: "a37", lat: 37.7906, lng: 127.5256 },
+    { id: "t20", time: "16:30", text: "🌸 Garden of Morning Calm - الحديقة الهادئة", type: "attraction", refId: "a39", lat: 37.7795, lng: 127.4495 },
+    { id: "t21", time: "19:00", text: "🚄 العودة بالقطار لسيول", type: "transport" },
+    { id: "t22", time: "21:00", text: "🏨 الفندق + تجهيز حقائب بوسان", type: "hotel" }
   ]};
 
-  // ── يوم 4 (17 مايو، أحد): Nami Island + Garden of Morning Calm ──
-  it[3] = { ...it[3], title: "Nami Island + Garden of Morning Calm",
-    narrative: "هروب من المدينة. ITX-Cheongchun من سيول لـChuncheon (1س 20د، ₩7,800). دراجة سكة Gangchon ثم Nami بالعبارة ثم الحديقة. يوم رومانسي مريح. عودة للفندق + تجهيز حقائب جيجو.",
-    type: "normal", items: [
-    { id: "t20", time: "08:30", text: "🚄 ITX-Cheongchun → Chuncheon", type: "transport", refId: "tx5", lat: 37.5800, lng: 127.0470 },
-    { id: "t21", time: "10:30", text: "🚲 Gangchon Rail Bike (8.5كم)", type: "entertainment", refId: "a38", lat: 37.8467, lng: 127.6147 },
-    { id: "t22", time: "12:30", text: "🥩 غداء + استراحة", type: "food" },
-    { id: "t23", time: "14:00", text: "🌳 جزيرة Nami - شجرات الميتاسيكويا", type: "attraction", refId: "a37", lat: 37.7906, lng: 127.5256 },
-    { id: "t24", time: "16:30", text: "🌸 Garden of Morning Calm", type: "attraction", refId: "a39", lat: 37.7795, lng: 127.4495 },
-    { id: "t25", time: "19:00", text: "🚄 العودة لسيول", type: "transport" },
-    { id: "t26", time: "21:00", text: "🏨 الفندق + تجهيز حقائب جيجو", type: "hotel" }
-  ]};
-
-  // ── يوم 5 (18 مايو، إثنين): سيول → جيجو + الوسط/الجنوب ──
-  it[4] = { ...it[4], title: "الانتقال لجيجو + الجنوب",
-    narrative: "بداية فصل الجزيرة! ✈️ Gimpo→Jeju (1س 15د، ₩60-90k). احجز الرحلة الصباحية لتستفيد من اليوم. استلام السيارة (رخصة دولية إلزامية، $50-90/يوم). جولة الجنوب في الطريق للفندق - استثمار ذكي للوقت.",
+  // ── يوم 4 (17 مايو، أحد): سيول → بوسان بالـKTX ──
+  it[3] = { ...it[3], title: "🚄 سيول → بوسان بالـKTX + Songdo",
+    narrative: "KTX أسرع قطار في كوريا! ينطلق من محطة سيول ويصل بوسان في ~2س 15د. اترك حقائبك بالفندق وخذ حقيبة اليوم فقط. بعد الوصول: Songdo Skywalk على البحر + تلفريك ملوّن. مساءً شاطئ غوانغالي وجسره المضيء.",
     type: "transit",
-    flight: { from: "Gimpo (GMP)", to: "Jeju (CJU)", depTime: "09:30", arrTime: "10:45" }, items: [
-    { id: "t27", time: "07:30", text: "🚇 المترو لـGimpo (35د)", type: "transport" },
-    { id: "t28", time: "09:30", text: "✈️ طيران Gimpo → Jeju", type: "transport", refId: "tx1", lat: 37.5586, lng: 126.7942 },
-    { id: "t29", time: "11:30", text: "🚗 استلام السيارة المستأجرة", type: "transport" },
-    { id: "t30", time: "13:00", text: "🥩 غداء Asalam (شهادة حلال + مصلى)", type: "food", refId: "f17", lat: 33.5106, lng: 126.5219 },
-    { id: "t31", time: "14:30", text: "🌺 حديقة Camellia Hill النباتية", type: "attraction", refId: "a24", lat: 33.2770, lng: 126.3614 },
-    { id: "t32", time: "16:00", text: "💧 شلال Cheonjeyeon (3 طوابق)", type: "attraction", refId: "a25", lat: 33.2528, lng: 126.4192 },
-    { id: "t33", time: "17:30", text: "🪨 منحدرات Jusangjeollidae البازلتية", type: "attraction", refId: "a26", lat: 33.2381, lng: 126.4264 },
-    { id: "t34", time: "19:30", text: "🏨 تسجيل في فندق جيجو", type: "hotel" }
+    flight: { from: "Seoul Station", to: "Busan Station", depTime: "10:00", arrTime: "12:15", mode: "train" }, items: [
+    { id: "t23", time: "08:00", text: "⚔️ نصب الحرب War Memorial of Korea (إيتيوون)", type: "attraction", refId: "a43", lat: 37.5369, lng: 126.9774 },
+    { id: "t24", time: "09:30", text: "🏨 Check-out + إرسال الحقائب لمحطة سيول", type: "hotel" },
+    { id: "t25", time: "10:00", text: "🚄 KTX سيول → بوسان (2س 15د، ₩59,800)", type: "transport", refId: "tx3", lat: 37.5563, lng: 126.9723 },
+    { id: "t26", time: "12:15", text: "🏨 تسجيل في فندق بوسان (هاوندي)", type: "hotel" },
+    { id: "t27", time: "13:30", text: "🥩 غداء Cappadocia Turkish Halal", type: "food", refId: "f12", lat: 35.2196, lng: 129.0888 },
+    { id: "t28", time: "15:00", text: "🌉 Songdo Skywalk + تلفريك Songdo Beach", type: "entertainment", refId: "e19", lat: 35.0735, lng: 129.0231 },
+    { id: "t29", time: "17:00", text: "🏖️ شاطئ غوانغالي (Gwangalli) + جسر غوانغان", type: "attraction", refId: "a21", lat: 35.1531, lng: 129.1187 },
+    { id: "t30", time: "19:30", text: "🥩 عشاء Namaste Haeundae (حلال)", type: "food", refId: "f13", lat: 35.1614, lng: 129.1652 }
   ]};
 
-  // ── يوم 6 (19 مايو، ثلاثاء): شرق جيجو ──
-  it[5] = { ...it[5], title: "شرق جيجو - شروق وغطاسات",
-    narrative: "ابدأ مبكراً (5:30ص) لشروق Seongsan ⭐ - تجربة لا تُنسى. السيارة المستأجرة ضرورية - المسافات بين المعالم 20-40د. غداء بحري على الإطلالة في Bada Punggyeong.",
+  // ── يوم 5 (18 مايو، إثنين): قلب بوسان - معبد البحر + Sky Capsule ──
+  it[4] = { ...it[4], title: "معبد Haedong Yonggungsa + Sky Capsule",
+    narrative: "ابدأ بأيقونة بوسان: معبد Haedong Yonggungsa على الصخور فوق البحر مباشرة - مشهد لا يُنسى! ثم تجربة Sky Capsule الزجاجية فوق الشاطئ. قرية غامتشون الملونة بعد الظهر ثم سوق جاغالتشي الشهير.",
     type: "normal", items: [
-    { id: "t35", time: "05:30", text: "🚗 الانطلاق المبكر إلى Seongsan", type: "transport" },
-    { id: "t36", time: "06:30", text: "🌅 شروق الشمس من Seongsan Ilchulbong ✨", type: "attraction", refId: "a9", lat: 33.4582, lng: 126.9415 },
-    { id: "t37", time: "09:00", text: "🌊 Seopjikoji - رأس الجزيرة الشرقي", type: "attraction", refId: "a26b", lat: 33.4587, lng: 126.9301 },
-    { id: "t38", time: "11:00", text: "🤿 عرض غطاسات Haenyeo التراثيات", type: "attraction", refId: "a28", lat: 33.4660, lng: 126.9381 },
-    { id: "t39", time: "13:00", text: "🥩 غداء Bada Punggyeong (إطلالة بحر)", type: "food", refId: "f20", lat: 33.4404, lng: 126.7176 },
-    { id: "t40", time: "15:00", text: "🏚️ قرية Seongeup التقليدية", type: "attraction", refId: "a29", lat: 33.3949, lng: 126.7905 },
-    { id: "t41", time: "16:30", text: "🏖️ شاطئ Hamdeok (مياه فيروزية)", type: "attraction", refId: "a27", lat: 33.5436, lng: 126.6700 },
-    { id: "t42", time: "18:30", text: "🏨 العودة للفندق + استرخاء", type: "hotel" }
+    { id: "t31", time: "08:00", text: "⛩️ معبد Haedong Yonggungsa على البحر ✨", type: "attraction", refId: "a17", lat: 35.1884, lng: 129.2236 },
+    { id: "t32", time: "10:30", text: "🚞 Haeundae Sky Capsule + Blueline Park", type: "entertainment", refId: "a19", lat: 35.1574, lng: 129.1684 },
+    { id: "t33", time: "12:30", text: "🥩 غداء حلال في هاوندي", type: "food", refId: "f14", lat: 35.1620, lng: 129.1640 },
+    { id: "t34", time: "14:00", text: "🎨 قرية غامتشون الملونة", type: "attraction", refId: "a20", lat: 35.0972, lng: 129.0107 },
+    { id: "t35", time: "16:30", text: "🐟 سوق Jagalchi (أكبر سوق أسماك) + BIFF Square", type: "shop", refId: "s5", lat: 35.0966, lng: 129.0306 },
+    { id: "t36", time: "18:30", text: "🌃 Busan X the Sky - أعلى منصة مراقبة", type: "entertainment", refId: "e12", lat: 35.1591, lng: 129.1606 },
+    { id: "t37", time: "20:00", text: "🥩 عشاء في BIFF Square أو هاوندي", type: "food" }
   ]};
 
-  // ── يوم 7 (20 مايو، أربعاء): غرب جيجو ──
-  it[6] = { ...it[6], title: "غرب جيجو - الشاي والشاطئ",
-    narrative: "يوم أهدأ في الغرب. متحف الشاي الأخضر O'Sulloc يستحق ساعتين. الكهف البركاني (Hyeopjae) و Hallim Park متجاورين. مساءً عودة لجيجو سيتي للسوق الليلي + تجهيز حقائب بوسان.",
+  // ── يوم 6 (19 مايو، ثلاثاء): بوسان - Beomeosa + فوانيس Samgwangsa ──
+  it[5] = { ...it[5], title: "معبد Beomeosa الجبلي + فوانيس Samgwangsa",
+    narrative: "صباح روحاني في معبد Beomeosa الجبلي (القرن 7م). ظهراً سوق Gukje الشعبي وحي الثقافة. مساءً مهرجان فوانيس Samgwangsa السنوي الرائع في مايو. تجهيز الحقائب لجيجو غداً بالطائرة.",
     type: "normal", items: [
-    { id: "t43", time: "09:30", text: "🍵 متحف O'Sulloc + حقول الشاي", type: "attraction", refId: "a14", lat: 33.3061, lng: 126.2898 },
-    { id: "t44", time: "11:30", text: "🌬️ طريق Sinchang الساحلي والطواحين", type: "attraction", lat: 33.4042, lng: 126.2018 },
-    { id: "t45", time: "13:00", text: "🥩 غداء Bagdad Halal", type: "food", refId: "f18", lat: 33.4996, lng: 126.5312 },
-    { id: "t46", time: "14:30", text: "🕳️ كهف Hyeopjae (أنبوب حمم بركاني)", type: "attraction", refId: "a10b", lat: 33.3947, lng: 126.2553 },
-    { id: "t47", time: "16:00", text: "🌴 حديقة Hallim - متعددة الحدائق", type: "attraction", refId: "a12", lat: 33.3942, lng: 126.2391 },
-    { id: "t48", time: "17:30", text: "🏖️ شاطئ هيوبجاي (مياه كريستالية)", type: "attraction", lat: 33.3942, lng: 126.2391 },
-    { id: "t49", time: "19:30", text: "🛍️ سوق دونغمون الليلي + عشاء", type: "shop", refId: "s4", lat: 33.5126, lng: 126.5266 }
+    { id: "t38", time: "08:30", text: "⛩️ معبد Beomeosa الجبلي (القرن السابع الميلادي)", type: "attraction", lat: 35.2940, lng: 129.0564 },
+    { id: "t39", time: "11:00", text: "🕌 مسجد Al-Fatah بوسان + صلاة الضحى", type: "mosque", refId: "mq2", lat: 35.2196, lng: 129.0888 },
+    { id: "t40", time: "12:30", text: "🥩 غداء Bombay Brau (حلال)", type: "food", refId: "f14", lat: 35.1620, lng: 129.1640 },
+    { id: "t41", time: "14:00", text: "🛍️ سوق Gukje الشعبي + Bupyeong Tunnel Market", type: "shop", lat: 35.1009, lng: 129.0275 },
+    { id: "t42", time: "15:30", text: "🗼 برج بوسان + حديقة Yongdusan", type: "attraction", lat: 35.0998, lng: 129.0316 },
+    { id: "t43", time: "17:30", text: "🏖️ شاطئ هاوندي - آخر جلسة بحر في بوسان", type: "attraction", lat: 35.1587, lng: 129.1604 },
+    { id: "t44", time: "19:30", text: "🏮 مهرجان فوانيس Samgwangsa السنوي ✨", type: "festival", refId: "fs3", lat: 35.1480, lng: 129.0411 },
+    { id: "t45", time: "21:30", text: "🏨 الفندق + تجهيز حقائب جيجو", type: "hotel" }
   ]};
 
-  // ── يوم 8 (21 مايو، خميس): جيجو → بوسان + Songdo + هاوندي ──
-  it[7] = { ...it[7], title: "الانتقال لبوسان + Songdo والشاطئ",
-    narrative: "✈️ Jeju→Busan/Gimhae (1س، ₩70-100k). تسليم السيارة في مطار جيجو. بوصول بوسان، Songdo Skywalk + تلفريك على الطريق + شاطئ هاوندي مساءً. ليلة في فندق هاوندي.",
+  // ── يوم 7 (20 مايو، أربعاء): بوسان → جيجو بالطائرة + جنوب الجزيرة ──
+  it[6] = { ...it[6], title: "✈️ بوسان → جيجو + جنوب الجزيرة",
+    narrative: "رحلة داخلية Busan→Jeju (1س). استلام السيارة (رخصة دولية إلزامية). جولة الجنوب في طريقك للفندق: Camellia Hill الساحرة + شلال Cheonjeyeon الثلاثي + أعمدة Jusangjeollidae البازلتية على الساحل.",
     type: "transit",
-    flight: { from: "Jeju (CJU)", to: "Busan (PUS)", depTime: "10:30", arrTime: "11:30" }, items: [
-    { id: "t50", time: "08:30", text: "🚗 تسليم السيارة في مطار جيجو", type: "transport" },
-    { id: "t51", time: "10:30", text: "✈️ طيران Jeju → Busan", type: "transport", refId: "tx2", lat: 33.5113, lng: 126.4930 },
-    { id: "t52", time: "12:30", text: "🚖 تاكسي إلى Songdo (30د)", type: "transport" },
-    { id: "t53", time: "13:30", text: "🥩 غداء Cappadocia Turkish (قرب المسجد)", type: "food", refId: "f12", lat: 35.2196, lng: 129.0888 },
-    { id: "t54", time: "15:00", text: "🌉 Songdo Skywalk + التلفريك", type: "entertainment", refId: "e19", lat: 35.0735, lng: 129.0231 },
-    { id: "t55", time: "16:30", text: "🏨 تسجيل في فندق هاوندي", type: "hotel" },
-    { id: "t56", time: "18:00", text: "🏖️ شاطئ Gwangalli (غروب)", type: "attraction", refId: "a21", lat: 35.1531, lng: 129.1187 },
-    { id: "t57", time: "19:30", text: "🥩 عشاء Namaste Haeundae", type: "food", refId: "f13", lat: 35.1614, lng: 129.1652 }
+    flight: { from: "Busan (PUS)", to: "Jeju (CJU)", depTime: "10:30", arrTime: "11:30" }, items: [
+    { id: "t46", time: "08:30", text: "🚖 تاكسي لمطار بوسان Gimhae (PUS)", type: "transport" },
+    { id: "t47", time: "10:30", text: "✈️ طيران Busan (PUS) → Jeju (CJU)", type: "transport", refId: "tx2", lat: 35.1795, lng: 128.9384 },
+    { id: "t48", time: "11:30", text: "🚗 استلام السيارة المستأجرة في مطار جيجو", type: "transport" },
+    { id: "t49", time: "13:00", text: "🥩 غداء Asalam (شهادة حلال + مصلى)", type: "food", refId: "f17", lat: 33.5106, lng: 126.5219 },
+    { id: "t50", time: "14:30", text: "🌺 حديقة Camellia Hill النباتية", type: "attraction", refId: "a24", lat: 33.2770, lng: 126.3614 },
+    { id: "t51", time: "16:00", text: "💧 شلال Cheonjeyeon (3 طوابق متتالية)", type: "attraction", refId: "a25", lat: 33.2528, lng: 126.4192 },
+    { id: "t52", time: "17:30", text: "🪨 منحدرات Jusangjeollidae البازلتية الأسطورية", type: "attraction", refId: "a26", lat: 33.2381, lng: 126.4264 },
+    { id: "t53", time: "19:30", text: "🏨 تسجيل في فندق جيجو", type: "hotel" }
   ]};
 
-  // ── يوم 9 (22 مايو، جمعة): قلب بوسان مكثف ──
-  it[8] = { ...it[8], title: "قلب بوسان - يوم مكثف",
-    narrative: "يوم بوسان الأبرز - مكثف لأنه ليلتنا الأخيرة. صباحاً Yonggungsa والمعابد، صلاة الجمعة في مسجد Al-Fatah ضرورية، ظهراً Sky Capsule، ومساءً غامتشون + عرض الدرونز Gwangalli (الجمعة لا يوجد - السبت). تنقّل بالمترو + تاكسي.",
+  // ── يوم 8 (21 مايو، خميس): شرق جيجو - شروق سيونغسان ──
+  it[7] = { ...it[7], title: "شروق شمس سيونغسان + غطاسات Haenyeo",
+    narrative: "استيقظ قبل الفجر (5:30ص) لشروق Seongsan Ilchulbong ⭐ - أجمل شروق في كوريا من فوهة بركان عمرها 100,000 سنة! السيارة ضرورية للانطلاق المبكر. غطاسات Haenyeo التراثيات تعرض مهارتهن للزوار.",
     type: "normal", items: [
-    { id: "t58", time: "08:00", text: "⛩️ معبد Haedong Yonggungsa على البحر", type: "attraction", refId: "a17", lat: 35.1884, lng: 129.2236 },
-    { id: "t59", time: "10:30", text: "🚞 Haeundae Sky Capsule + Blueline", type: "entertainment", refId: "a19", lat: 35.1574, lng: 129.1684 },
-    { id: "t60", time: "12:30", text: "🕌 صلاة الجمعة - مسجد Al-Fatah", type: "mosque", refId: "mq2", lat: 35.2196, lng: 129.0888 },
-    { id: "t61", time: "14:00", text: "🥩 غداء Bombay Brau", type: "food", refId: "f14", lat: 35.1620, lng: 129.1640 },
-    { id: "t62", time: "15:30", text: "🎨 قرية غامتشون الملونة", type: "attraction", refId: "a20", lat: 35.0972, lng: 129.0107 },
-    { id: "t63", time: "17:30", text: "🐟 سوق Jagalchi + BIFF Square", type: "shop", refId: "s5", lat: 35.0966, lng: 129.0306 },
-    { id: "t64", time: "19:00", text: "🌃 Busan X the Sky (أعلى منصة)", type: "entertainment", refId: "e12", lat: 35.1591, lng: 129.1606 },
-    { id: "t65", time: "20:30", text: "🏮 مهرجان فوانيس Samgwangsa", type: "festival", refId: "fs3", lat: 35.1480, lng: 129.0411 }
+    { id: "t54", time: "05:30", text: "🚗 الانطلاق المبكر نحو شرق الجزيرة", type: "transport" },
+    { id: "t55", time: "06:30", text: "🌅 شروق الشمس من Seongsan Ilchulbong ✨", type: "attraction", refId: "a9", lat: 33.4582, lng: 126.9415 },
+    { id: "t56", time: "09:00", text: "🌊 Seopjikoji - رأس الجزيرة الشرقي (مناظر خلابة)", type: "attraction", refId: "a26b", lat: 33.4587, lng: 126.9301 },
+    { id: "t57", time: "11:00", text: "🤿 عرض غطاسات Haenyeo التراثيات", type: "attraction", refId: "a28", lat: 33.4660, lng: 126.9381 },
+    { id: "t58", time: "13:00", text: "🥩 غداء Bada Punggyeong (إطلالة البحر)", type: "food", refId: "f20", lat: 33.4404, lng: 126.7176 },
+    { id: "t59", time: "15:00", text: "🏚️ قرية Seongeup التقليدية (يونسكو)", type: "attraction", refId: "a29", lat: 33.3949, lng: 126.7905 },
+    { id: "t60", time: "16:30", text: "🏖️ شاطئ Hamdeok (مياه فيروزية صافية)", type: "attraction", refId: "a27", lat: 33.5436, lng: 126.6700 },
+    { id: "t61", time: "18:30", text: "🏨 العودة للفندق + استراحة واسترخاء", type: "hotel" }
   ]};
 
-  // ── يوم 10 (23 مايو، سبت): KTX → سيول + تسوق نهائي ──
-  it[9] = { ...it[9], title: "🚄 العودة لسيول + Lotte Tower",
-    narrative: "🚄 KTX صباحي مريح من بوسان (8ص → 10:15ص سيول). تسجيل الدخول في فندق سيول الأخير (قريب من ICN). بعد الظهر: Lotte World Tower + DDP + تسوق نهائي. Gwangalli الدرونز السبت لكنك في سيول. آخر ليلة استمتع بنهر Cheonggyecheon ليلاً.",
-    type: "transit", items: [
-    { id: "t66", time: "07:00", text: "🚐 الفطور المبكر + تسليم الفندق", type: "transport" },
-    { id: "t67", time: "08:00", text: "🚄 KTX بوسان → سيول (2س 15د)", type: "transport", refId: "tx3", lat: 35.1156, lng: 129.0423 },
-    { id: "t68", time: "10:30", text: "🚖 إلى الفندق الأخير + إيداع الحقائب", type: "transport" },
-    { id: "t69", time: "12:00", text: "🥩 غداء Petra (مذاق عربي)", type: "food", refId: "f8", lat: 37.5344, lng: 126.9952 },
-    { id: "t70", time: "13:30", text: "🗼 برج Lotte World + Seoul Sky", type: "attraction", refId: "a32", lat: 37.5126, lng: 127.1025 },
-    { id: "t71", time: "16:00", text: "🛸 DDP - Dongdaemun Design Plaza", type: "attraction", refId: "a35", lat: 37.5673, lng: 127.0094 },
-    { id: "t72", time: "17:30", text: "🛍️ تسوق ختامي ميونغ‌دونغ + الهدايا", type: "shop", refId: "s1", lat: 37.5636, lng: 126.9826 },
-    { id: "t73", time: "20:00", text: "🌊 نهر Cheonggyecheon ليلاً + عشاء وداعي", type: "attraction", refId: "a33", lat: 37.5687, lng: 126.9783 }
+  // ── يوم 9 (22 مايو، جمعة): غرب جيجو - شاي O'Sulloc + Hallim ──
+  it[8] = { ...it[8], title: "غرب جيجو - حقول الشاي والكهف البركاني",
+    narrative: "يوم أهدأ في الغرب. O'Sulloc متحف الشاي الأخضر يستحق ساعتين في حقول يانعة. صلاة الجمعة في مسجد جيجو (Jeju Sagye Mosque). الكهف البركاني Hyeopjae وحديقة Hallim متجاورين. سوق Dongmun الليلي للعشاء.",
+    type: "normal", items: [
+    { id: "t62", time: "08:30", text: "🕌 صلاة الجمعة - Jeju Sagye Mosque", type: "mosque", lat: 33.2449, lng: 126.5694 },
+    { id: "t63", time: "09:30", text: "🍵 متحف O'Sulloc + حقول الشاي الأخضر", type: "attraction", refId: "a14", lat: 33.3061, lng: 126.2898 },
+    { id: "t64", time: "11:30", text: "🌬️ طريق Sinchang الساحلي والطواحين الهوائية", type: "attraction", lat: 33.4042, lng: 126.2018 },
+    { id: "t65", time: "13:00", text: "🥩 غداء Bagdad Halal Restaurant", type: "food", refId: "f18", lat: 33.4996, lng: 126.5312 },
+    { id: "t66", time: "14:30", text: "🕳️ كهف Hyeopjae البركاني (أنبوب حمم بركاني)", type: "attraction", refId: "a10b", lat: 33.3947, lng: 126.2553 },
+    { id: "t67", time: "16:00", text: "🌴 حديقة Hallim Park - متعددة المناطق", type: "attraction", refId: "a12", lat: 33.3942, lng: 126.2391 },
+    { id: "t68", time: "17:30", text: "🏖️ شاطئ هيوبجاي (مياه كريستالية شفافة)", type: "attraction", lat: 33.3942, lng: 126.2391 },
+    { id: "t69", time: "19:30", text: "🛍️ سوق Dongmun الليلي + عشاء + تجهيز للعودة", type: "shop", refId: "s4", lat: 33.5126, lng: 126.5266 }
+  ]};
+
+  // ── يوم 10 (23 مايو، سبت): جيجو → سيول + ختام ──
+  it[9] = { ...it[9], title: "✈️ جيجو → سيول Gimpo + Lotte Tower",
+    narrative: "رحلة Jeju→Gimpo (1س 15د). تسليم السيارة في مطار جيجو. بعد الوصول لسيول: Lotte World Tower + DDP + تسوق نهائي ميونغدونغ. آخر ليلة: نهر Cheonggyecheon المضاء ليلاً + عشاء الوداع.",
+    type: "transit",
+    flight: { from: "Jeju (CJU)", to: "Seoul Gimpo (GMP)", depTime: "10:00", arrTime: "11:15" }, items: [
+    { id: "t70", time: "08:30", text: "🚗 تسليم السيارة في مطار جيجو", type: "transport" },
+    { id: "t71", time: "10:00", text: "✈️ طيران Jeju (CJU) → Seoul Gimpo (GMP)", type: "transport", refId: "tx1", lat: 33.5113, lng: 126.4930 },
+    { id: "t72", time: "12:00", text: "🚇 المترو من Gimpo لمركز سيول", type: "transport" },
+    { id: "t73", time: "13:00", text: "🥩 غداء Petra (نكهة عربية في إيتيوون)", type: "food", refId: "f8", lat: 37.5344, lng: 126.9952 },
+    { id: "t74", time: "14:30", text: "🗼 برج Lotte World + Seoul Sky (أعلى مبنى)", type: "attraction", refId: "a32", lat: 37.5126, lng: 127.1025 },
+    { id: "t75", time: "16:30", text: "🛸 DDP - Dongdaemun Design Plaza المستقبلي", type: "attraction", refId: "a35", lat: 37.5673, lng: 127.0094 },
+    { id: "t76", time: "17:30", text: "🛍️ تسوق ختامي ميونغ‌دونغ + الهدايا الأخيرة", type: "shop", refId: "s1", lat: 37.5636, lng: 126.9826 },
+    { id: "t77", time: "20:00", text: "🌊 نهر Cheonggyecheon ليلاً + عشاء الوداع", type: "attraction", refId: "a33", lat: 37.5687, lng: 126.9783 }
   ]};
 
   // ── يوم 11 (24 مايو، أحد): المغادرة 17:50 ──
   it[10] = { ...it[10], title: "🛫 المغادرة - رحلة EY823 (17:50)",
-    narrative: "💡 رحلة EY823 الساعة 17:50 → يجب الوصول للمطار 14:50 (3 ساعات قبل). معنى ذلك: استيقاظ مريح + Ikseon-dong صباحاً + غداء + AREX. لا تترك حقائبك في الفندق - استلمها بعد Check-out 11ص ثم اتركها في خزائن سيول Station أثناء التجوّل.",
+    narrative: "💡 رحلة EY823 الساعة 17:50 → الوصول للمطار 14:50 (3 ساعات قبل). استيقاظ مريح، صباح في Ikseon-dong التاريخية، غداء أخير، ثم AREX لإنتشون (43د). اترك حقائبك في خزائن محطة سيول أثناء التجوّل الصباحي.",
     type: "departure",
     flight: { from: "Seoul ICN (EY 823)", to: "Abu Dhabi", depTime: "17:50" }, items: [
-    { id: "t74", time: "08:30", text: "🥩 فطور هادئ + تجهيز الحقائب", type: "food" },
-    { id: "t75", time: "10:00", text: "🏨 Check-out + إيداع الحقائب لاحقاً", type: "hotel" },
-    { id: "t76", time: "10:30", text: "🏘️ Ikseon-dong - أزقة هانوك للصور النهائية", type: "attraction", refId: "a36", lat: 37.5736, lng: 126.9889 },
-    { id: "t77", time: "12:30", text: "🥩 غداء أخير + شراء آخر التذكارات", type: "food" },
-    { id: "t78", time: "14:00", text: "🚄 AREX من سيول لإنتشون (43د)", type: "transport", refId: "tx4", lat: 37.4602, lng: 126.4407 },
-    { id: "t79", time: "14:50", text: "✈️ تسجيل الرحلة EY823 + Duty-Free", type: "transport", lat: 37.4602, lng: 126.4407 },
-    { id: "t80", time: "17:50", text: "🛫 المغادرة من ICN → أبوظبي → جدة → أبها", type: "transport" }
+    { id: "t78", time: "08:30", text: "🥩 فطور هادئ + تجهيز الحقائب النهائي", type: "food" },
+    { id: "t79", time: "10:00", text: "🏨 Check-out + خزائن محطة سيول للحقائب", type: "hotel" },
+    { id: "t80", time: "10:30", text: "🏘️ Ikseon-dong - أزقة هانوك للصور الأخيرة", type: "attraction", refId: "a36", lat: 37.5736, lng: 126.9889 },
+    { id: "t81", time: "12:30", text: "🥩 غداء أخير + شراء آخر التذكارات", type: "food" },
+    { id: "t82", time: "14:00", text: "🚄 AREX من سيول → إنتشون (43د)", type: "transport", refId: "tx4", lat: 37.4602, lng: 126.4407 },
+    { id: "t83", time: "14:50", text: "✈️ تسجيل EY823 + أمن + Duty-Free", type: "transport", lat: 37.4602, lng: 126.4407 },
+    { id: "t84", time: "17:50", text: "🛫 المغادرة ICN → أبوظبي → جدة → أبها", type: "transport" }
   ]};
 
   return it;
@@ -3729,13 +3742,10 @@ const APPS = [
 
 const TABS = [
   { id: "overview", label: "نظرة عامة", svg: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>' },
-  { id: "tripinfo", label: "بيانات الرحلة", svg: '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/>' },
-  { id: "tasks", label: "مهام التجهيز", svg: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>' },
   { id: "itinerary", label: "الجدول", svg: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' },
   { id: "cities", label: "المدن", svg: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>' },
   { id: "library", label: "المكتبة", svg: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' },
   { id: "map", label: "الخريطة", svg: '<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>' },
-  { id: "budget", label: "الميزانية", svg: '<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>' },
   { id: "info", label: "معلومات", svg: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>' }
 ];
 
@@ -3754,13 +3764,13 @@ const TASKS_DEFAULT = [
   // الحجوزات
   { id: "pt5", cat: "booking", catLabel: "✈️ الحجوزات", label: "✅ تذاكر الطيران محجوزة (Etihad 9T7ZEZ)", priority: "high", timing: "✓ مكتمل", done: true },
   { id: "pt6", cat: "booking", catLabel: "✈️ الحجوزات", label: "اختيار المقاعد على Etihad.com (EY822/EY823)", priority: "med", timing: "قبل أسبوع", done: false },
-  { id: "pt7", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز فنادق سيول (4 ليالٍ: 14-17 مايو)", priority: "high", timing: "قبل 4-6 أسابيع", done: false },
-  { id: "pt8", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز فنادق جيجو (3 ليالٍ: 18-20 مايو)", priority: "high", timing: "قبل 4-6 أسابيع", done: false },
-  { id: "pt9", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز فندق بوسان (ليلتان: 21-22 مايو)", priority: "high", timing: "قبل 4-6 أسابيع", done: false },
-  { id: "pt9b", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز فندق سيول الأخير (ليلة 23 - قرب ICN)", priority: "high", timing: "قبل 4-6 أسابيع", done: false },
-  { id: "pt10", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز رحلة Gimpo→Jeju (Jeju Air/T'way)", priority: "high", timing: "قبل 3-4 أسابيع", done: false },
-  { id: "pt11", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز رحلة Jeju→Busan", priority: "high", timing: "قبل 3-4 أسابيع", done: false },
-  { id: "pt12", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز KTX بوسان→سيول عبر Korail", priority: "med", timing: "قبل 2-3 أسابيع", done: false },
+  { id: "pt7", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز فنادق سيول (3 ليالٍ: 14-16 مايو)", priority: "high", timing: "قبل 4-6 أسابيع", done: false },
+  { id: "pt8", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز فنادق بوسان (3 ليالٍ: 17-19 مايو)", priority: "high", timing: "قبل 4-6 أسابيع", done: false },
+  { id: "pt9", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز فنادق جيجو (3 ليالٍ: 20-22 مايو)", priority: "high", timing: "قبل 4-6 أسابيع", done: false },
+  { id: "pt9b", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز فندق سيول الأخير (ليلة 23 مايو - قرب ICN)", priority: "high", timing: "قبل 4-6 أسابيع", done: false },
+  { id: "pt10", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز رحلة Busan→Jeju (بوسان لجيجو، Jeju Air/T'way)", priority: "high", timing: "قبل 3-4 أسابيع", done: false },
+  { id: "pt11", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز رحلة Jeju→Seoul Gimpo (جيجو لسيول)", priority: "high", timing: "قبل 3-4 أسابيع", done: false },
+  { id: "pt12", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز KTX سيول→بوسان عبر Korail (ذهاب فقط)", priority: "med", timing: "قبل 2-3 أسابيع", done: false },
   { id: "pt13", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز سيارة جيجو (Lotte/SK Rent-a-Car)", priority: "high", timing: "قبل 3 أسابيع", done: false },
   { id: "pt14", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز جولة DMZ (Klook/Trazy)", priority: "high", timing: "قبل أسبوع", done: false },
   { id: "pt15", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز Sky Capsule في هاوندي مسبقاً", priority: "med", timing: "قبل 1-2 أسبوع", done: false },
@@ -4100,7 +4110,7 @@ function renderOverview() {
         </div>
         ${(state.tripInfo.outboundFlights && state.tripInfo.outboundFlights.length > 0)
           ? `<ul class="tip-list" style="margin-top:0.5rem">${state.tripInfo.outboundFlights.map(f => `<li><strong>${f.flight || ''}</strong>${f.dep ? ` ${f.dep}` : ''}${f.arr ? ` → ${f.arr}` : ''}</li>`).join('')}</ul>`
-          : `<p class="txs clm">لم تُضف رحلة الذهاب بعد. <button class="btn btn-out btn-sm" onclick="switchTab('tripinfo')">إضافة الآن</button></p>`}
+          : `<p class="txs clm">لم تُضف رحلة الذهاب بعد. <button class="btn btn-out btn-sm" onclick="openTripSettings()">إضافة الآن</button></p>`}
       </div>
       <div class="card card-orng">
         <div class="flx itm g5 mb2">
@@ -4109,7 +4119,7 @@ function renderOverview() {
         </div>
         ${(state.tripInfo.returnFlights && state.tripInfo.returnFlights.length > 0)
           ? `<ul class="tip-list" style="margin-top:0.5rem">${state.tripInfo.returnFlights.map(f => `<li><strong>${f.flight || ''}</strong>${f.dep ? ` ${f.dep}` : ''}${f.arr ? ` → ${f.arr}` : ''}</li>`).join('')}</ul>`
-          : `<p class="txs clm">لم تُضف رحلة العودة بعد. <button class="btn btn-out btn-sm" onclick="switchTab('tripinfo')">إضافة الآن</button></p>`}
+          : `<p class="txs clm">لم تُضف رحلة العودة بعد. <button class="btn btn-out btn-sm" onclick="openTripSettings()">إضافة الآن</button></p>`}
       </div>
     </div>
     `}
@@ -5186,6 +5196,28 @@ function openModal(html) {
 function closeModal() {
   $("modal-bk").classList.remove("show");
   document.body.style.overflow = '';
+}
+
+function openTasksModal() {
+  openModal(`
+    <div class="modal-h">
+      <h3>✅ مهام التجهيز للسفر</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div id="modal-tasks-content" style="overflow-y:auto;max-height:65vh"></div>
+  `);
+  renderTasks();
+}
+
+function openBudgetModal() {
+  openModal(`
+    <div class="modal-h">
+      <h3>💰 الميزانية</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div id="modal-budget-content" style="overflow-y:auto;max-height:65vh"></div>
+  `);
+  renderBudget();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -6624,8 +6656,7 @@ function saveFlightFromModal(kind, i) {
   if (i < 0) state.tripInfo[key].push(f);
   else state.tripInfo[key][i] = f;
   saveTripInfo();
-  closeModal();
-  renderTripInfo();
+  openTripSettings();
 }
 
 function deleteFlight(kind, i) {
@@ -6633,7 +6664,7 @@ function deleteFlight(kind, i) {
   const key = kind === "out" ? "outboundFlights" : "returnFlights";
   state.tripInfo[key].splice(i, 1);
   saveTripInfo();
-  renderTripInfo();
+  openTripSettings();
 }
 
 function saveTripInfoForm() {
@@ -7700,7 +7731,9 @@ function renderBudget() {
   const remaining = totalEst - totalAct;
   const usdToSar = 3.75;
 
-  $("sec-budget").innerHTML = `
+  const _budgetTarget = $("modal-budget-content") || $("sec-budget");
+  if (!_budgetTarget) return;
+  _budgetTarget.innerHTML = `
     <div class="sec-t">
       <div class="sec-t-r">
         <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/></svg></div>
@@ -7811,7 +7844,9 @@ function renderTasks() {
   const target = new Date("2026-05-13");
   const daysLeft = Math.max(0, Math.ceil((target - new Date()) / 86400000));
 
-  $("sec-tasks").innerHTML = `
+  const _tasksTarget = $("modal-tasks-content") || $("sec-tasks");
+  if (!_tasksTarget) return;
+  _tasksTarget.innerHTML = `
     <div class="sec-t">
       <div class="sec-t-r">
         <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
@@ -9581,6 +9616,44 @@ function openTripSettings() {
       </div>
     </div>
 
+    <div class="ts-section">
+      <h4>📋 تفاصيل إضافية</h4>
+      <div class="fld-row">
+        <div class="fld">
+          <label>مرجع التذكرة (PNR)</label>
+          <input type="text" class="input" id="ts-pnr" value="${t.ticketRef || ''}" placeholder="مثال: 9T7ZEZ">
+        </div>
+        <div class="fld">
+          <label>عدد المسافرين</label>
+          <input type="number" class="input" id="ts-travelers" min="1" max="20" value="${t.travelers || 1}">
+        </div>
+      </div>
+      <div class="fld">
+        <label>ملاحظات عامة</label>
+        <textarea class="input" id="ts-notes" rows="2" placeholder="ملاحظات، تنبيهات، تذكيرات...">${t.notes || ''}</textarea>
+      </div>
+    </div>
+
+    <div class="ts-section">
+      <h4>🛫 تفاصيل رحلات الذهاب</h4>
+      <div id="ts-out-list">
+        ${(t.outboundFlights || []).length > 0
+          ? (t.outboundFlights || []).map((f, i) => renderFlightRow(f, "out", i)).join('')
+          : '<p class="txs clm">لم تُضف رحلات الذهاب بعد.</p>'}
+      </div>
+      <button class="ti-add" onclick="addFlight('out')">+ إضافة رحلة ذهاب</button>
+    </div>
+
+    <div class="ts-section">
+      <h4>🛬 تفاصيل رحلات العودة</h4>
+      <div id="ts-ret-list">
+        ${(t.returnFlights || []).length > 0
+          ? (t.returnFlights || []).map((f, i) => renderFlightRow(f, "ret", i)).join('')
+          : '<p class="txs clm">لم تُضف رحلات العودة بعد.</p>'}
+      </div>
+      <button class="ti-add" onclick="addFlight('ret')">+ إضافة رحلة عودة</button>
+    </div>
+
     <div class="modal-act">
       <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
       <button class="btn btn-pri" onclick="saveTripSettings()">حفظ التغييرات</button>
@@ -9679,6 +9752,11 @@ function saveTripSettings() {
   if (arrAirport) state.tripInfo.arrAirport = arrAirport;
   if (retDepCity) state.tripInfo.retDepCity = retDepCity;
   if (retAirport) state.tripInfo.retAirport = retAirport;
+  const travelers = parseInt($("ts-travelers")?.value, 10) || 1;
+  state.tripInfo.travelers = travelers;
+  const ticketRef = $("ts-pnr")?.value.trim() || "";
+  if (ticketRef) state.tripInfo.ticketRef = ticketRef;
+  state.tripInfo.notes = $("ts-notes")?.value.trim() || "";
   saveTripInfo();
 
   // Update trip registry
