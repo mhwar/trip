@@ -3496,10 +3496,19 @@ function saveTripInfo() { Trip.save("tripinfo", state.tripInfo); }
 function saveCityColors() { Trip.save("citycolors", state.cityColors); CITY_COLORS = { ...state.cityColors }; }
 function saveCustomCities() { Trip.save("customcities", state.customCities); }
 
-// All POIs (built-in + custom)
+// All POIs (built-in + custom) — respects countryLib of current trip
 function allLib() {
-  if (!isKoreaTrip()) return [...state.customLib];
-  return [...LIB, ...state.customLib];
+  const t = TripsRegistry.get(Trip.current);
+  const lib = t?.countryLib || null;
+  let base = [];
+  if (lib === "korea") {
+    base = typeof LIB !== 'undefined' ? [...LIB] : [];
+  } else if (lib) {
+    // Non-Korea global library (turkey, uk, or any custom)
+    const libs = (() => { try { return JSON.parse(localStorage.getItem("kt2_global_libs") || "{}"); } catch { return {}; } })();
+    base = libs[lib] || [];
+  }
+  return [...base, ...state.customLib];
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -6431,7 +6440,12 @@ function renderCityTabBody() {
 // ═══════════════════════════════════════════════════════════
 
 function renderLibrary() {
-  if (!isKoreaTrip()) {
+  const trip = TripsRegistry.get(Trip.current);
+  const linkedLib = trip?.countryLib || null;
+  const all = allLib();
+  const hasLib = all.length > 0 || state.customLib.length > 0;
+
+  if (!hasLib) {
     $("sec-library").innerHTML = `
       <div class="sec-t">
         <div class="sec-t-r">
@@ -6442,14 +6456,14 @@ function renderLibrary() {
       </div>
       <div class="itin-welcome">
         <div class="itin-welcome-icon">📚</div>
-        <h3 class="itin-welcome-title">المكتبة فارغة</h3>
-        <p class="itin-welcome-desc">مكتبة المواقع مخصصة لكل وجهة على حدة. ستُضاف مكتبة هذه الرحلة قريباً — يمكنك حالياً إضافة مواقع يدوياً من الجدول.</p>
+        <h3 class="itin-welcome-title">لا توجد مكتبة مرتبطة</h3>
+        <p class="itin-welcome-desc">لم تُحدَّد مكتبة لهذه الرحلة. افتح الداشبورد ← المكتبات لإنشاء أو إضافة مكتبة، ثم اربطها بالرحلة من إعدادات الرحلة.</p>
       </div>
     `;
     return;
   }
 
-  const all = allLib();
+  const meta = LIB_META[linkedLib] || {};
   const stats = {
     total: all.length,
     halal: all.filter(l => l.halal).length,
@@ -6457,16 +6471,26 @@ function renderLibrary() {
     custom: state.customLib.length
   };
 
+  // Build city list from the library items (not hardcoded CITIES)
+  const libCities = linkedLib === "korea"
+    ? CITIES
+    : [...new Set(all.map(x=>x.city).filter(Boolean))].map(c => ({
+        id: c,
+        name: LIB_CITY_NAMES?.[c] || c
+      }));
+
   // Initialize sort if missing
   if (!state.libFilters.sort) state.libFilters.sort = "default";
+
+  const libLabel = meta.name ? `${meta.icon||''} مكتبة ${meta.name}` : "مكتبة المواقع";
 
   $("sec-library").innerHTML = `
     <div class="sec-t">
       <div class="sec-t-r">
         <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
-        <h2>مكتبة المواقع</h2>
+        <h2>${libLabel}</h2>
       </div>
-      <p>كل المعالم والمطاعم والترفيه والأسواق - ${stats.total} موقع جاهز للاختيار</p>
+      <p>${stats.total} موقع جاهز للاختيار</p>
     </div>
 
     <div class="lib-stats">
@@ -6486,7 +6510,7 @@ function renderLibrary() {
       <div class="flt-row">
         <span class="flt-lbl">المدينة</span>
         <button class="flt-chip ${state.libFilters.city === 'all' ? 'act' : ''}" onclick="state.libFilters.city='all';renderLibList()">الكل</button>
-        ${CITIES.map(c => `<button class="flt-chip ${state.libFilters.city === c.id ? 'act' : ''}" onclick="state.libFilters.city='${c.id}';renderLibList()">${c.name}</button>`).join('')}
+        ${libCities.map(c => `<button class="flt-chip ${state.libFilters.city === c.id ? 'act' : ''}" onclick="state.libFilters.city='${c.id}';renderLibList()">${c.name}</button>`).join('')}
       </div>
 
       <div class="flt-row">
@@ -7737,117 +7761,349 @@ function deleteCustomLib(id) {
 }
 
 // ─── Gemini AI Assistant ───
-function openGeminiAssistant() {
+// ═══════════════════════════════════════════════════════════
+//   GEMINI AI LIBRARY ASSISTANT — Structured Tasks
+// ═══════════════════════════════════════════════════════════
+
+// Predefined task templates
+const GEMINI_TASKS = [
+  {
+    id: "hotels",
+    icon: "🏨",
+    label: "إضافة فنادق",
+    desc: "فنادق مناسبة للعائلات المسلمة بتقييمات وموقع",
+    prompt: (lib, cities) =>
+      `أضف قائمة فنادق مناسبة للسياح المسلمين في ${lib} تشمل هذه المدن: ${cities}.
+      لكل فندق: اسم الفندق الرسمي، المدينة، الحي، نجوم التصنيف في حقل price ("⭐⭐⭐⭐⭐" أو "⭐⭐⭐⭐" أو "⭐⭐⭐")،
+      ملاحظة مفيدة تشمل: موقعه النسبي من المعالم، إن كان يوجد مطعم حلال فيه، مستوى السعر.
+      أضف 12 فندقاً متنوعة على الأقل موزعة على المدن. type="hotel", icon="🏨"`,
+    type: "hotel"
+  },
+  {
+    id: "halal_food",
+    icon: "🍽️",
+    label: "مطاعم حلال",
+    desc: "أفضل المطاعم الحلال مع تفاصيل الشهادة والسعر",
+    prompt: (lib, cities) =>
+      `أضف قائمة أفضل المطاعم الحلال في ${lib} موزعة على: ${cities}.
+      لكل مطعم: الاسم، المدينة، الحي، نوع الطعام، مستوى السعر ("$" رخيص / "$$" متوسط / "$$$" مرتفع) في حقل price،
+      ملاحظة تذكر: نوع المطبخ، الأطباق المميزة، هل يوجد شهادة حلال رسمية، قرب من المعالم.
+      halal=true لجميعها. أضف 15 مطعماً على الأقل.`,
+    type: "food"
+  },
+  {
+    id: "mosques",
+    icon: "🕌",
+    label: "مساجد ومصليات",
+    desc: "مساجد تاريخية ومصليات قريبة من المعالم السياحية",
+    prompt: (lib, cities) =>
+      `أضف قائمة مساجد ومصليات في ${lib} تشمل: ${cities}.
+      ركز على: المساجد التاريخية، المساجد الكبرى، المصليات في المراكز التجارية والمطارات.
+      لكل موقع: الاسم، المدينة، الحي، ملاحظة تذكر: الطاقة الاستيعابية، القرب من المعالم، مواعيد الزيارة.
+      type="mosque", icon="🕌". أضف 10 مواقع على الأقل.`,
+    type: "mosque"
+  },
+  {
+    id: "attractions",
+    icon: "📍",
+    label: "معالم سياحية",
+    desc: "المعالم والمواقع التاريخية والطبيعية الأبرز",
+    prompt: (lib, cities) =>
+      `أضف قائمة شاملة للمعالم السياحية في ${lib} تشمل مدن: ${cities}.
+      تنوع بين: مواقع تاريخية، متاحف، طبيعة، مناطق حضرية مميزة، نقاط إطلالة.
+      لكل معلم: الاسم، المدينة، الحي، ملاحظة تشمل: سبب الشهرة، وقت الزيارة المثالي، تكلفة الدخول إن وجدت.
+      type="attraction". أضف 20 معلماً متنوعاً على الأقل.`,
+    type: "attraction"
+  },
+  {
+    id: "shopping",
+    icon: "🛍️",
+    label: "تسوق وأسواق",
+    desc: "أسواق شعبية ومراكز تسوق وهدايا تذكارية",
+    prompt: (lib, cities) =>
+      `أضف قائمة أماكن التسوق في ${lib} موزعة على: ${cities}.
+      تنوع بين: أسواق تقليدية، مراكز تسوق حديثة، مناطق الصناعات اليدوية والهدايا.
+      لكل موقع: الاسم، المدينة، الحي، ملاحظة تذكر: ما يُشترى منه، ساعات العمل، الأسعار.
+      type="shop". أضف 10 مواقع على الأقل.`,
+    type: "shop"
+  },
+  {
+    id: "enrich",
+    icon: "📚",
+    label: "توسيع المكتبة",
+    desc: "إضافة متنوعة شاملة لجميع الأنواع لتقوية المكتبة",
+    prompt: (lib, cities, existing) =>
+      `المكتبة الحالية لـ${lib} تحتوي ${existing} موقعاً. أضف مزيداً من المواقع المتنوعة في: ${cities}.
+      وزّع الإضافات على: معالم (30%)، مطاعم حلال (25%)، فنادق (20%)، مساجد (10%)، تسوق (10%)، ترفيه (5%).
+      تجنب التكرار مع الأسماء الموجودة. أضف 25 موقعاً جديداً على الأقل.
+      للمطاعم: halal=true. للفنادق: type="hotel". أضف icon مناسب لكل نوع.`,
+    type: "mixed"
+  },
+  {
+    id: "new_country",
+    icon: "🌍",
+    label: "توليد دولة جديدة",
+    desc: "بناء مكتبة كاملة من الصفر لدولة من القائمة",
+    prompt: (lib, cities) =>
+      `ابنِ مكتبة سياحية شاملة لـ${lib}، المدن الرئيسية: ${cities}.
+      يجب أن تشمل المكتبة:
+      - 8 معالم سياحية رئيسية موزعة على المدن (type="attraction")
+      - 6 مطاعم حلال مشهورة (type="food", halal=true)
+      - 4 مساجد أو مصليات (type="mosque")
+      - 4 فنادق مناسبة (type="hotel")
+      - 3 مناطق تسوق (type="shop")
+      لكل موقع: name (بالعربية أو الإنجليزية)، city (بالإنجليزية)، area، icon مناسب، note مفيدة، lat، lng تقريبية.
+      أضف 25+ موقعاً إجمالاً.`,
+    type: "mixed"
+  }
+];
+
+// Countries with their cities for AI context
+const GEMINI_COUNTRIES = {
+  turkey:      { name:"تركيا",        cities:"إسطنبول وكابادوكيا وأنطاليا وطرابزون وأنقرة وبورصة وإزمير" },
+  uk:          { name:"بريطانيا",     cities:"لندن وإدنبرة ومانشستر" },
+  korea:       { name:"كوريا الجنوبية", cities:"سيول وبوسان وجيجو" },
+  japan:       { name:"اليابان",       cities:"طوكيو وكيوتو وأوساكا ونارا" },
+  malaysia:    { name:"ماليزيا",      cities:"كوالالمبور وبينانج ولنكاوي" },
+  indonesia:   { name:"إندونيسيا",    cities:"بالي وجاكرتا ويوغياكارتا" },
+  uae:         { name:"الإمارات",      cities:"دبي وأبوظبي والشارقة" },
+  egypt:       { name:"مصر",          cities:"القاهرة والأقصر وأسوان والغردقة" },
+  morocco:     { name:"المغرب",        cities:"مراكش والدار البيضاء وفاس وشفشاون" },
+  france:      { name:"فرنسا",         cities:"باريس ونيس وليون وبوردو" },
+  italy:       { name:"إيطاليا",       cities:"روما وفلورنسا والبندقية وميلانو" },
+  spain:       { name:"إسبانيا",       cities:"برشلونة ومدريد وإشبيلية وغرناطة" },
+  greece:      { name:"اليونان",       cities:"أثينا وسانتوريني وميكونوس ورودس" },
+  portugal:    { name:"البرتغال",      cities:"لشبونة وبورتو والغارف" },
+  switzerland: { name:"سويسرا",        cities:"جنيف وزيوريخ وبرن وإنترلاكن" },
+  netherlands: { name:"هولندا",        cities:"أمستردام وروتردام وهاغ" }
+};
+
+function openGeminiAssistant(preselectedLib) {
   const savedKey = localStorage.getItem("kt2_gemini_key") || "";
   const libs = getGlobalLibs();
-  const libOptions = [
-    {id:"turkey",  name:"🇹🇷 تركيا"},
-    {id:"uk",      name:"🇬🇧 بريطانيا"},
-    ...Object.keys(libs).filter(k=>!["turkey","uk"].includes(k)).map(k=>({id:k,name:`🌍 ${LIB_META[k]?.name||k}`}))
-  ];
+  const existingLibIds = Object.keys(libs);
+
+  // Build lib selector: existing libs + new country option
+  const existingOptions = [
+    ...["turkey","uk","korea"].filter(k => libs[k] || k==="korea"),
+    ...existingLibIds.filter(k=>!["turkey","uk","korea"].includes(k))
+  ].map(k => {
+    const m = LIB_META[k] || GEMINI_COUNTRIES[k] || {};
+    const cnt = k==="korea" ? (typeof LIB!=='undefined'?LIB.length:0) : (libs[k]||[]).length;
+    return `<option value="${k}" ${preselectedLib===k?'selected':''}>${m.icon||'🌍'} ${m.name||k} (${cnt} موقع)</option>`;
+  }).join('');
+
+  const newCountryOptions = Object.entries(GEMINI_COUNTRIES)
+    .filter(([k])=>!existingLibIds.includes(k) && k!=="korea")
+    .map(([k,v])=>`<option value="new:${k}">🆕 ${v.name}</option>`).join('');
 
   openModal(`
     <div class="modal-h">
-      <h3>🤖 مساعد الذكاء الاصطناعي للمكتبات</h3>
+      <h3>🤖 مساعد AI للمكتبات</h3>
       <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div class="fld">
-      <label>🔑 مفتاح Gemini API</label>
-      <input type="password" class="input" id="gem-key" value="${savedKey}" placeholder="AIza..." autocomplete="off">
-      <p class="txs clm mt1">يُحفظ المفتاح محلياً فقط. <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent)">احصل على مفتاح مجاني</a></p>
+
+    <div style="background:var(--cream);border-radius:10px;padding:0.6rem 0.8rem;margin-bottom:0.75rem;font-size:0.75rem;color:var(--ink-soft)">
+      🔑 <strong>مفتاح Gemini API</strong>
+      <input type="password" class="input" id="gem-key" value="${savedKey}" placeholder="AIza..." autocomplete="off" style="margin-top:0.3rem;padding:0.3rem 0.5rem;font-size:0.8rem">
+      <span style="font-size:0.68rem;color:var(--muted)">يُحفظ محلياً فقط · مجاني من <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent)">aistudio.google.com</a></span>
     </div>
-    <div class="fld">
-      <label>المكتبة المستهدفة</label>
-      <select class="input" id="gem-lib">
-        ${libOptions.map(l=>`<option value="${l.id}">${l.name}</option>`).join('')}
-      </select>
+
+    <div class="fld-row" style="margin-bottom:0.75rem">
+      <div class="fld" style="flex:1">
+        <label>المكتبة المستهدفة</label>
+        <select class="input" id="gem-lib" onchange="_geminiLibChange()">
+          <optgroup label="مكتبات موجودة">${existingOptions}</optgroup>
+          ${newCountryOptions ? `<optgroup label="توليد مكتبة جديدة">${newCountryOptions}</optgroup>` : ''}
+        </select>
+      </div>
     </div>
-    <div class="fld">
-      <label>الطلب بالعربية أو الإنجليزية</label>
-      <textarea class="input" id="gem-prompt" rows="3" placeholder="مثال: أضف أبرز المعالم السياحية في إسطنبول مع وصف مختصر لكل منها"></textarea>
+
+    <div class="fld" style="margin-bottom:0.75rem">
+      <label>نوع المهمة</label>
+      <div id="gem-tasks" style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;margin-top:0.3rem">
+        ${GEMINI_TASKS.map(t => `
+          <button class="gem-task-btn ${t.id==='enrich'?'act':''}" data-task="${t.id}" onclick="_geminiSelectTask('${t.id}')">
+            <span style="font-size:1rem">${t.icon}</span>
+            <div>
+              <div class="fb6" style="font-size:0.78rem">${t.label}</div>
+              <div style="font-size:0.65rem;color:var(--muted)">${t.desc}</div>
+            </div>
+          </button>
+        `).join('')}
+      </div>
     </div>
-    <div id="gem-status" style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem;min-height:1.2em"></div>
+
+    <div class="fld" style="margin-bottom:0.5rem">
+      <label style="display:flex;justify-content:space-between">
+        <span>الطلب المولّد تلقائياً (يمكن تعديله)</span>
+        <button class="btn btn-out btn-sm" style="font-size:0.68rem;padding:2px 6px" onclick="_geminiRefreshPrompt()">تحديث ↺</button>
+      </label>
+      <textarea class="input" id="gem-prompt" rows="4" style="font-size:0.78rem;direction:rtl"></textarea>
+    </div>
+
+    <div id="gem-status" style="font-size:0.78rem;color:var(--muted);min-height:1.2em;margin-bottom:0.4rem"></div>
     <div class="modal-act">
       <button class="btn btn-sec" onclick="closeModal()">إغلاق</button>
       <button class="btn btn-pri" id="gem-btn" onclick="runGeminiAssistant()">✨ توليد</button>
     </div>
-    <div id="gem-preview" style="margin-top:0.75rem"></div>
+    <div id="gem-preview" style="margin-top:0.6rem"></div>
   `);
+
+  // Inject task button CSS
+  if (!document.getElementById("gem-task-style")) {
+    const s = document.createElement("style");
+    s.id = "gem-task-style";
+    s.textContent = `.gem-task-btn{display:flex;gap:0.4rem;align-items:flex-start;padding:0.45rem 0.5rem;border:1.5px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;text-align:right;width:100%;transition:border-color .15s,background .15s}.gem-task-btn.act{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,white)}`;
+    document.head.appendChild(s);
+  }
+
+  // Select "new_country" task automatically for new libs
+  window._gemState = { task: "enrich", lib: preselectedLib || ($("gem-lib")||{}).value || "" };
+  _geminiLibChange();
+  _geminiRefreshPrompt();
+}
+
+function _geminiLibChange() {
+  const val = ($("gem-lib")||{}).value || "";
+  if (!window._gemState) window._gemState = {};
+  window._gemState.lib = val;
+  if (val.startsWith("new:")) {
+    _geminiSelectTask("new_country");
+  }
+  _geminiRefreshPrompt();
+}
+
+function _geminiSelectTask(taskId) {
+  if (!window._gemState) window._gemState = {};
+  window._gemState.task = taskId;
+  document.querySelectorAll(".gem-task-btn").forEach(b => b.classList.toggle("act", b.dataset.task===taskId));
+  _geminiRefreshPrompt();
+}
+
+function _geminiRefreshPrompt() {
+  const el = document.getElementById("gem-prompt");
+  if (!el) return;
+  const libVal = ($("gem-lib")||{}).value || "";
+  const taskId = window._gemState?.task || "enrich";
+  const task = GEMINI_TASKS.find(t=>t.id===taskId) || GEMINI_TASKS[5];
+
+  const isNew = libVal.startsWith("new:");
+  const countryKey = isNew ? libVal.replace("new:","") : libVal;
+  const country = GEMINI_COUNTRIES[countryKey] || { name: LIB_META[countryKey]?.name || countryKey, cities: "المدن الرئيسية" };
+
+  const libs = getGlobalLibs();
+  const existingCount = countryKey==="korea"
+    ? (typeof LIB!=='undefined'?LIB.length:0)
+    : (libs[countryKey]||[]).length;
+
+  el.value = task.prompt(country.name, country.cities, existingCount);
 }
 
 async function runGeminiAssistant() {
   const key    = ($("gem-key")||{}).value?.trim();
-  const libId  = ($("gem-lib")||{}).value;
+  const libVal = ($("gem-lib")||{}).value || "";
   const prompt = ($("gem-prompt")||{}).value?.trim();
   const status = document.getElementById("gem-status");
   const btn    = document.getElementById("gem-btn");
   const preview= document.getElementById("gem-preview");
 
   if (!key)    { status.textContent="⚠️ أدخل مفتاح API أولاً"; return; }
-  if (!prompt) { status.textContent="⚠️ اكتب طلبك أولاً"; return; }
+  if (!prompt) { status.textContent="⚠️ الطلب فارغ"; return; }
+
+  const isNew = libVal.startsWith("new:");
+  const libId = isNew ? libVal.replace("new:","") : libVal;
+  if (!libId)  { status.textContent="⚠️ اختر المكتبة أولاً"; return; }
 
   localStorage.setItem("kt2_gemini_key", key);
   btn.disabled = true;
-  status.textContent = "⏳ جاري الإرسال إلى Gemini...";
+  status.textContent = "⏳ جاري الإرسال إلى Gemini 2.0 Flash...";
   preview.innerHTML = "";
 
-  const systemInstr = `أنت مساعد لبناء مكتبات مواقع سياحية. أجب دائماً بـ JSON فقط (مصفوفة).
-كل عنصر يحتوي: name (اسم عربي أو إنجليزي), type (food|attraction|mosque|shop|entertainment|other),
-city (اسم المدينة بالإنجليزية بدون مسافات), area (الحي/المنطقة), icon (إيموجي واحد),
-note (وصف مختصر مفيد), halal (true/false للمطاعم), lat, lng (إحداثيات تقريبية).
-لا تضف أي كلام خارج JSON. مثال: [{"name":"آيا صوفيا","type":"attraction","city":"istanbul","area":"السلطان أحمد","icon":"🕌","note":"تحفة معمارية بيزنطية عثمانية","halal":false,"lat":41.0086,"lng":28.9802}]`;
+  const systemInstr = `أنت مساعد متخصص في بناء مكتبات مواقع سياحية بصيغة JSON.
+قواعد صارمة:
+1. أجب بـ JSON فقط — مصفوفة مباشرة بدون أي كلام قبلها أو بعدها.
+2. كل عنصر يجب أن يحتوي على: name, type, city, area, icon, note
+3. الحقول: name (الاسم), type (hotel|food|attraction|mosque|shop|entertainment|other), city (بالإنجليزية حروف صغيرة بدون مسافات), area (الحي/المنطقة), icon (إيموجي واحد), note (وصف مفيد بالعربية), halal (true/false للمطاعم), price (للمطاعم والفنادق), lat, lng (إحداثيات تقريبية).
+4. للفنادق: type="hotel", icon="🏨", price=عدد النجوم ("⭐⭐⭐⭐⭐")
+5. للمساجد: type="mosque", icon="🕌"
+6. المكتبة يجب أن تكون متنوعة ومفيدة للسائح المسلم.
+مثال صحيح:
+[{"name":"برج غلطة","type":"attraction","city":"istanbul","area":"بيوغلو","icon":"🗼","note":"برج جنوي القرن 14م - إطلالة بانورامية","lat":41.0256,"lng":28.9741}]`;
 
   try {
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
       body: JSON.stringify({
-        systemInstruction: { parts: [{text: systemInstr}] },
-        contents: [{parts:[{text: prompt}]}],
-        generationConfig: { temperature: 0.4, maxOutputTokens: 4096 }
+        systemInstruction: { parts:[{text:systemInstr}] },
+        contents: [{parts:[{text:prompt}]}],
+        generationConfig: { temperature:0.35, maxOutputTokens:8192 }
       })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
 
     const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    const jsonMatch = raw.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) throw new Error("لم يُرجع Gemini JSON صحيحاً");
-    const items = JSON.parse(jsonMatch[0]);
-    if (!Array.isArray(items) || !items.length) throw new Error("المصفوفة فارغة");
+    const jsonMatch = raw.match(/\[[\s\S]*?\]/s) || raw.match(/\[[\s\S]*/);
+    if (!jsonMatch) throw new Error("لم يُرجع Gemini JSON صالحاً — جرّب مرة أخرى");
+    let items;
+    try { items = JSON.parse(jsonMatch[0]); }
+    catch { throw new Error("خطأ في تحليل JSON — جرّب مرة أخرى"); }
+    if (!Array.isArray(items) || !items.length) throw new Error("القائمة فارغة");
 
-    status.textContent = `✓ تم استلام ${items.length} موقع جديد`;
+    status.textContent = `✓ تم استلام ${items.length} موقع — راجع المعاينة أدناه`;
+
+    const taskId = window._gemState?.task || "";
     preview.innerHTML = `
-      <div style="background:var(--cream);border-radius:10px;padding:0.75rem;max-height:200px;overflow-y:auto">
-        ${items.slice(0,5).map(it=>`<div style="font-size:0.78rem;padding:3px 0;border-bottom:1px solid var(--border)">${it.icon||"📍"} <strong>${it.name}</strong> — ${it.city||''} · ${it.area||''}</div>`).join('')}
-        ${items.length>5?`<div style="font-size:0.72rem;color:var(--muted);margin-top:4px">... و${items.length-5} إضافية</div>`:''}
+      <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden">
+        <div style="background:var(--accent);color:white;padding:0.4rem 0.75rem;font-size:0.78rem;font-weight:600">
+          معاينة ${items.length} موقع مقترح
+        </div>
+        <div style="max-height:180px;overflow-y:auto;padding:0.5rem">
+          ${items.slice(0,8).map(it=>`
+            <div style="display:flex;gap:0.4rem;padding:4px 0;border-bottom:1px solid var(--border);font-size:0.75rem">
+              <span>${it.icon||"📍"}</span>
+              <span style="flex:1"><strong>${it.name}</strong></span>
+              <span style="color:var(--muted)">${LIB_CITY_NAMES[it.city]||it.city||''}</span>
+              <span style="color:var(--accent);font-size:0.65rem">${it.type||''}</span>
+            </div>`).join('')}
+          ${items.length>8?`<div style="font-size:0.7rem;color:var(--muted);padding:4px">... و${items.length-8} مواقع إضافية</div>`:''}
+        </div>
       </div>
-      <div style="margin-top:0.6rem;display:flex;gap:0.5rem">
-        <button class="btn btn-pri btn-sm" onclick="_geminiAppend(${JSON.stringify(items).replace(/"/g,'&quot;')},'${libId}')">✓ إضافة للمكتبة</button>
-        <button class="btn btn-out btn-sm" onclick="document.getElementById('gem-preview').innerHTML='';document.getElementById('gem-status').textContent=''">تجاهل</button>
+      <div style="margin-top:0.6rem;display:flex;gap:0.5rem;flex-wrap:wrap">
+        <button class="btn btn-pri btn-sm" onclick="_geminiAppend(${JSON.stringify(items).replace(/\\/g,'\\\\').replace(/"/g,'&quot;')}, '${libId}', ${isNew})">✓ إضافة للمكتبة</button>
+        <button class="btn btn-out btn-sm" onclick="document.getElementById('gem-preview').innerHTML='';document.getElementById('gem-status').textContent='جاهز'">تجاهل</button>
       </div>
     `;
   } catch(e) {
-    status.textContent = "❌ خطأ: " + e.message;
+    status.textContent = "❌ " + e.message;
   }
   btn.disabled = false;
 }
 
-function _geminiAppend(items, libId) {
+function _geminiAppend(items, libId, isNewLib) {
   const libs = getGlobalLibs();
   if (!libs[libId]) libs[libId] = [];
-  const existing = new Set(libs[libId].map(x=>x.name?.toLowerCase()));
+  const existing = new Set(libs[libId].map(x=>(x.name||"").toLowerCase()));
   let added = 0;
   items.forEach((it,i) => {
-    if (!existing.has((it.name||"").toLowerCase())) {
+    const nm = (it.name||"").toLowerCase();
+    if (!existing.has(nm)) {
       libs[libId].push({ id:`${libId}_gem_${Date.now()}_${i}`, ...it });
+      existing.add(nm);
       added++;
     }
   });
+  // Register new country in LIB_META if it was a new lib
+  if (isNewLib && GEMINI_COUNTRIES[libId]) {
+    const gc = GEMINI_COUNTRIES[libId];
+    LIB_META[libId] = { name:gc.name, icon:"🌍", color:"#0891b2", cities: gc.cities.split("و").map(c=>c.trim()), builtIn:false };
+  }
   saveGlobalLibs(libs);
   closeModal();
   renderDashboard();
-  setTimeout(()=>openLibBrowser(libId), 100);
+  setTimeout(()=>openLibBrowser(libId), 120);
 }
 
 function renderPermissionsTab() {
@@ -7992,12 +8248,27 @@ function openCreateTripModal() {
         <label>الدولة / الوجهة</label>
         <select class="input" id="ct-country" onchange="onCtCountryChange()">
           <option value="">— اختر الدولة —</option>
-          <option value="korea">🇰🇷 كوريا الجنوبية</option>
-          <option value="japan">🇯🇵 اليابان</option>
-          <option value="turkey">🇹🇷 تركيا</option>
-          <option value="malaysia">🇲🇾 ماليزيا</option>
-          <option value="uae">🇦🇪 الإمارات</option>
-          <option value="other">🌍 دولة أخرى</option>
+          <optgroup label="📚 مكتبة جاهزة">
+            <option value="korea">🇰🇷 كوريا الجنوبية</option>
+            <option value="turkey">🇹🇷 تركيا</option>
+            <option value="uk">🇬🇧 بريطانيا</option>
+          </optgroup>
+          <optgroup label="🌍 وجهات أخرى">
+            <option value="japan">🇯🇵 اليابان</option>
+            <option value="malaysia">🇲🇾 ماليزيا</option>
+            <option value="indonesia">🇮🇩 إندونيسيا</option>
+            <option value="uae">🇦🇪 الإمارات</option>
+            <option value="egypt">🇪🇬 مصر</option>
+            <option value="morocco">🇲🇦 المغرب</option>
+            <option value="france">🇫🇷 فرنسا</option>
+            <option value="italy">🇮🇹 إيطاليا</option>
+            <option value="spain">🇪🇸 إسبانيا</option>
+            <option value="greece">🇬🇷 اليونان</option>
+            <option value="portugal">🇵🇹 البرتغال</option>
+            <option value="switzerland">🇨🇭 سويسرا</option>
+            <option value="netherlands">🇳🇱 هولندا</option>
+            <option value="other">✏️ دولة أخرى</option>
+          </optgroup>
         </select>
       </div>
       <div class="fld" id="ct-custom-dest-row" style="display:none">
@@ -8100,7 +8371,9 @@ function createNewTrip() {
   if (!name) { alert("اسم الرحلة مطلوب"); return; }
 
   const destVal = country === "other" ? ($("ct-dest").value.trim() || name) : name;
-  const countryLib = country === "korea" ? "korea" : null;
+  // Link to global library by country key (korea=built-in, turkey/uk=global lib)
+  const knownLibs = ["korea","turkey","uk","japan","france","italy","spain","malaysia","uae","egypt","morocco","greece","indonesia","portugal","netherlands","switzerland"];
+  const countryLib = knownLibs.includes(country) ? country : null;
   const id = generateTripId(name);
 
   const depCity = $("ct-depcity").value.trim();
@@ -8241,6 +8514,17 @@ function openTripSettings() {
       <div class="fld">
         <label>اسم الرحلة</label>
         <input type="text" class="input" id="ts-name" value="${trip.name || ''}">
+      </div>
+      <div class="fld">
+        <label>📚 المكتبة المرتبطة</label>
+        <select class="input" id="ts-countrylib">
+          <option value="">— بدون مكتبة —</option>
+          <option value="korea" ${trip.countryLib==='korea'?'selected':''}>🇰🇷 كوريا الجنوبية</option>
+          <option value="turkey" ${trip.countryLib==='turkey'?'selected':''}>🇹🇷 تركيا</option>
+          <option value="uk" ${trip.countryLib==='uk'?'selected':''}>🇬🇧 بريطانيا</option>
+          ${Object.keys((() => { try{return JSON.parse(localStorage.getItem('kt2_global_libs')||'{}')}catch{return{}} })()).filter(k=>!['turkey','uk','korea'].includes(k)).map(k=>`<option value="${k}" ${trip.countryLib===k?'selected':''}>${LIB_META[k]?.name||k}</option>`).join('')}
+        </select>
+        <p class="txs clm mt1">تحديد المكتبة يعرض مواقعها في تبويب "المكتبة" داخل الرحلة.</p>
       </div>
     </div>
 
@@ -8470,7 +8754,8 @@ function saveTripSettings() {
   saveTripInfo();
 
   // Update trip registry
-  if (newName || sdate || edate) {
+  const newCountryLib = $("ts-countrylib")?.value ?? undefined;
+  if (newName || sdate || edate || newCountryLib !== undefined) {
     const trip = TripsRegistry.get(Trip.current) || { ...TripsRegistry.KOREA_DEFAULT };
     if (newName) trip.name = newName;
     if (sdate) trip.startDate = sdate;
@@ -8479,6 +8764,7 @@ function saveTripSettings() {
     if (depAirport) trip.depAir = depAirport;
     if (arrCity) trip.arrCity = arrCity;
     if (arrAirport) trip.arrAir = arrAirport;
+    if (newCountryLib !== undefined) trip.countryLib = newCountryLib || null;
     TripsRegistry.upsert(trip);
   }
 
