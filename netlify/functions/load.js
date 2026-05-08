@@ -1,15 +1,16 @@
-const { getStore } = require("@netlify/blobs");
+import { getStore } from "@netlify/blobs";
 
-exports.handler = async (event) => {
-  if (event.httpMethod !== "GET") {
-    return { statusCode: 405, body: "Method Not Allowed" };
+export default async (req) => {
+  if (req.method !== "GET") {
+    return new Response("Method Not Allowed", { status: 405 });
   }
 
-  const rawCode = event.queryStringParameters?.code || "";
+  const url = new URL(req.url);
+  const rawCode = url.searchParams.get("code") || "";
   const code = rawCode.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
 
   if (!code) {
-    return { statusCode: 400, body: "Missing code" };
+    return new Response("Missing code", { status: 400 });
   }
 
   try {
@@ -17,16 +18,14 @@ exports.handler = async (event) => {
     const record = await store.get(code, { type: "json" });
 
     if (!record) {
-      return { statusCode: 404, body: "Code not found" };
+      return new Response("Code not found", { status: 404 });
     }
 
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ok: true, data: record.data, updatedAt: record.updatedAt })
-    };
+    return Response.json({ ok: true, data: record.data, updatedAt: record.updatedAt });
   } catch (err) {
     console.error("load error:", err);
-    return { statusCode: 500, body: "Storage error" };
+    return new Response("Storage error", { status: 500 });
   }
 };
+
+export const config = { path: "/.netlify/functions/load" };
