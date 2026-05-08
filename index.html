@@ -7927,13 +7927,13 @@ function openGeminiAssistant(preselectedLib) {
       <input type="password" class="input" id="gem-key" value="${savedKey}" placeholder="AIza..." autocomplete="off" style="padding:0.3rem 0.5rem;font-size:0.8rem">
       <div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.4rem;flex-wrap:wrap">
         <select class="input" id="gem-model" style="padding:0.25rem 0.4rem;font-size:0.72rem;flex:1;min-width:160px">
-          <optgroup label="مجاني (موصى به)">
-            <option value="gemini-2.0-flash-lite">gemini-2.0-flash-lite ✓ مجاني · الأنسب</option>
-            <option value="gemini-2.0-flash">gemini-2.0-flash · مجاني محدود</option>
+          <optgroup label="✅ مشروع مدفوع (Billing مفعّل)">
+            <option value="gemini-2.5-flash-preview-05-20">gemini-2.5-flash ← الأنسب للمدفوع</option>
+            <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+            <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro · الأدق</option>
           </optgroup>
-          <optgroup label="مدفوع (Gemini Pro / Cloud)">
-            <option value="gemini-2.5-flash-preview-05-20">gemini-2.5-flash-preview · الأسرع</option>
-            <option value="gemini-2.5-pro-preview-06-05">gemini-2.5-pro-preview · الأدق</option>
+          <optgroup label="مشروع مجاني (بدون Billing)">
+            <option value="gemini-2.0-flash-lite">gemini-2.0-flash-lite</option>
           </optgroup>
         </select>
         <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.65rem;color:var(--accent)">+ مفتاح جديد</a>
@@ -7998,7 +7998,7 @@ function openGeminiAssistant(preselectedLib) {
   }
 
   // Restore saved model
-  const savedModel = localStorage.getItem("kt2_gemini_model") || "gemini-2.0-flash-lite";
+  const savedModel = localStorage.getItem("kt2_gemini_model") || "gemini-2.5-flash-preview-05-20";
   const modelSel = document.getElementById("gem-model");
   if (modelSel) modelSel.value = savedModel;
 
@@ -8082,7 +8082,7 @@ async function runGeminiAssistant() {
   const libId = isNew ? libVal.replace("new:","") : libVal;
   if (!libId)  { status.textContent="⚠️ اختر المكتبة أولاً"; return; }
 
-  const model = ($("gem-model")||{}).value || "gemini-2.0-flash-lite";
+  const model = ($("gem-model")||{}).value || "gemini-2.5-flash-preview-05-20";
   localStorage.setItem("kt2_gemini_key", key);
   localStorage.setItem("kt2_gemini_model", model);
   btn.disabled = true;
@@ -8157,7 +8157,11 @@ async function runGeminiAssistant() {
     // Show exact API error + short hint
     let hint = "";
     if (e.apiStatus === "RESOURCE_EXHAUSTED" || rawMsg.includes("RESOURCE_EXHAUSTED")) {
-      hint = "💡 تجاوزت حصة هذا الموديل — بدّل الموديل أو انتظر إعادة تعيين الحصة اليومية.";
+      if (rawMsg.includes("limit: 0") || rawMsg.includes("free_tier")) {
+        hint = "💡 مشروعك مفعّل الفوترة (Billing) → الحصة المجانية = 0 تلقائياً.<br>الحل: اختر موديلاً من قسم <strong>«مشروع مدفوع»</strong> مثل <strong>gemini-2.5-flash</strong> — سيعمل مباشرةً مع مشروعك المدفوع.";
+      } else {
+        hint = "💡 تجاوزت الحصة اليومية — انتظر إعادة التعيين أو بدّل الموديل.";
+      }
     } else if (code === 400 || rawMsg.includes("not found") || rawMsg.includes("not supported")) {
       hint = "💡 الموديل غير متاح — جرّب موديلاً آخر من القائمة.";
     } else if (code === 403 || rawMsg.includes("API_KEY") || rawMsg.includes("permission")) {
