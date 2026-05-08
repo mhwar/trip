@@ -818,7 +818,8 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 
 /* ── DAY NOTES ── */
 .day-notes {
-  background: rgba(245,158,11,0.08); border-right: 3px solid var(--gold);
+  background: rgba(245,158,11,0.06); border-right: none;
+  border-right: 2px solid rgba(184,146,74,0.3);
   padding: 0.55rem 0.8rem; border-radius: var(--r-sm);
   font-size: 0.78rem; color: var(--ink-soft); margin-bottom: 0.85rem;
   white-space: pre-wrap;
@@ -838,7 +839,7 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   border-color: rgba(201,68,43,0.4);
 }
 .tl-item-notes {
-  background: rgba(184,146,74,0.1); border-right: 2px solid var(--gold);
+  background: rgba(184,146,74,0.07); border: 1px solid rgba(184,146,74,0.2);
   padding: 0.35rem 0.55rem; margin-top: 0.4rem; border-radius: var(--r-sm);
   font-size: 0.72rem; color: var(--ink-soft); white-space: pre-wrap;
 }
@@ -1397,9 +1398,9 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   padding: 0.875rem;
   margin-bottom: 0.875rem;
 }
-.day-hdr.transit { border-right: 4px solid var(--warn); }
-.day-hdr.arrival { border-right: 4px solid var(--ok); }
-.day-hdr.departure { border-right: 4px solid var(--err); }
+.day-hdr.transit { border-top: 3px solid rgba(245,158,11,0.5); }
+.day-hdr.arrival { border-top: 3px solid rgba(34,197,94,0.5); }
+.day-hdr.departure { border-top: 3px solid rgba(239,68,68,0.5); }
 .day-hdr-i {
   width: 2.5rem; height: 2.5rem;
   border-radius: var(--r-md);
@@ -1441,9 +1442,8 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 
 /* Narrative card - day description */
 .narrative-card {
-  background: linear-gradient(135deg, rgba(184,146,74,0.08) 0%, rgba(26,77,74,0.05) 100%);
-  border: 1px solid rgba(184,146,74,0.3);
-  border-right: 3px solid var(--gold);
+  background: linear-gradient(135deg, rgba(184,146,74,0.06) 0%, rgba(26,77,74,0.04) 100%);
+  border: 1px solid rgba(184,146,74,0.22);
   border-radius: var(--r-md);
   padding: 0.75rem 0.875rem;
   margin-bottom: 0.875rem;
@@ -1689,8 +1689,8 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .tl-tr-note {
   font-size: 0.7rem;
   color: var(--ink-soft);
-  background: rgba(245,158,11,0.06);
-  border-right: 2px solid var(--warn);
+  background: rgba(245,158,11,0.05);
+  border: 1px solid rgba(245,158,11,0.2);
   padding: 0.35rem 0.5rem;
   border-radius: var(--r-sm);
   margin-top: 0.4rem;
@@ -1834,7 +1834,7 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   gap: 0.6rem;
   padding: 0.6rem 0.75rem;
   background: var(--cream);
-  border-right: 3px solid var(--cat-c);
+  border: 1px solid rgba(0,0,0,0.07);
   border-radius: var(--r-sm);
   margin-bottom: 0.875rem;
 }
@@ -2830,6 +2830,26 @@ const TripsRegistry = {
     // Clean up trip data
     Object.keys(localStorage).filter(k => k.startsWith(`kt2_trip_${id}_`)).forEach(k => localStorage.removeItem(k));
     return true;
+  },
+  duplicate(srcId) {
+    const src = this.get(srcId);
+    if (!src) return null;
+    const newName = (src.name || "رحلة") + " — نسخة";
+    let newId = generateTripId(newName);
+    // ensure unique
+    while (this.get(newId)) newId += "2";
+    const newTrip = { ...src, id: newId, name: newName, isBuiltIn: false, createdAt: new Date().toISOString() };
+    // Copy all localStorage keys from src to new trip
+    const srcPrefix = srcId === "korea" ? "kt2_" : `kt2_trip_${srcId}_`;
+    const dstPrefix = `kt2_trip_${newId}_`;
+    const suffixes = ["itin","clib","bud","tasks","favs","tripinfo","citycolors","customcities"];
+    suffixes.forEach(s => {
+      const key = srcId === "korea" ? `kt2_${s}` : `kt2_trip_${srcId}_${s}`;
+      const raw = localStorage.getItem(key);
+      if (raw) localStorage.setItem(`kt2_trip_${newId}_${s}`, raw);
+    });
+    this.upsert(newTrip);
+    return newTrip;
   }
 };
 
@@ -7322,7 +7342,7 @@ function renderCities() {
       ` : `
         <div class="gr g3">
           ${tripCities.map(c => `
-            <div class="card" style="border-right:4px solid ${state.cityColors[c.id] || '#1a4d4a'}">
+            <div class="card" style="border-top:3px solid ${state.cityColors[c.id] || '#1a4d4a'}">
               <div class="fb7 cli" style="font-size:1.1rem">${c.name}</div>
               <div class="txs clm mt1">${c.daysCount} يوم${c.firstDate ? ` · يبدأ ${c.firstDate}` : ''}${c.hotel ? ` · 🏨 ${c.hotel}` : ''}</div>
             </div>
@@ -8685,7 +8705,7 @@ function renderLibrariesTab() {
       const typeIcons = {food:"🍽️",attraction:"📍",mosque:"🕌",shop:"🛍️",entertainment:"🎢",transport:"🚄",other:"⭐"};
       const typeSummary = Object.entries(L.byType).slice(0,4).map(([t,n])=>`${typeIcons[t]||"•"}${n}`).join(" ");
       return `
-        <div class="lib-card" style="--lib-c:${L.color};border-right:3px solid ${L.color}">
+        <div class="lib-card" style="--lib-c:${L.color};border-top:3px solid ${L.color}">
           <div class="lib-card-icon" style="font-size:1.6rem">${L.icon}</div>
           <div class="lib-card-info" style="flex:1;min-width:0">
             <div class="lib-card-name">${L.name}${L.builtIn?' <span class="pill pill-sm" style="font-size:0.6rem;padding:1px 5px;margin-right:3px">مدمجة</span>':''}</div>
@@ -9440,8 +9460,11 @@ function renderTripCard(t) {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
           فتح
         </button>
-        <button class="trip-card-act" onclick="openShareModalFor('${t.id}')" title="رابط المشاركة">
+        <button class="trip-card-act" onclick="openShareModalFor('${t.id}')" title="مشاركة">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </button>
+        <button class="trip-card-act" onclick="confirmDuplicateTrip('${t.id}')" title="تكرار الرحلة">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         </button>
         ${!t.isBuiltIn ? `
           <button class="trip-card-act trip-card-act-danger" onclick="deleteTrip('${t.id}')" title="حذف">
@@ -9673,6 +9696,46 @@ function deleteTrip(id) {
   if (!confirm(`حذف رحلة "${t.name}" نهائياً؟ لا يمكن التراجع.`)) return;
   TripsRegistry.remove(id);
   renderDashboard();
+}
+
+function confirmDuplicateTrip(srcId) {
+  const src = TripsRegistry.get(srcId);
+  if (!src) return;
+  openModal(`
+    <div class="modal-h">
+      <h3>📋 تكرار الرحلة</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="sync-box">
+      <div style="background:var(--cream);border-radius:var(--r-md);padding:0.75rem;margin-bottom:1rem;text-align:center">
+        <div style="font-size:1.8rem">${src.icon || '🗺️'}</div>
+        <div style="font-weight:700;margin-top:0.25rem">${src.name}</div>
+        <div style="font-size:0.72rem;color:var(--muted)">سيتم نسخ جميع الأيام والأنشطة والفنادق</div>
+      </div>
+      <div class="fld">
+        <label>اسم النسخة الجديدة</label>
+        <input type="text" class="input" id="dup-trip-name" value="${src.name} — نسخة">
+      </div>
+      <button class="btn btn-pri" style="width:100%;margin-top:0.75rem" onclick="executeDuplicateTrip('${srcId}')">
+        📋 إنشاء النسخة
+      </button>
+      <div id="dup-status" style="display:none;margin-top:0.5rem;font-size:0.78rem;text-align:center;color:var(--ok)"></div>
+    </div>
+  `);
+}
+
+function executeDuplicateTrip(srcId) {
+  const nameInput = document.getElementById("dup-trip-name");
+  const customName = nameInput?.value?.trim();
+  const newTrip = TripsRegistry.duplicate(srcId);
+  if (!newTrip) return;
+  if (customName && customName !== newTrip.name) {
+    newTrip.name = customName;
+    TripsRegistry.upsert(newTrip);
+  }
+  const st = document.getElementById("dup-status");
+  if (st) { st.style.display = "block"; st.textContent = `✓ تم إنشاء "${newTrip.name}" بنجاح`; }
+  setTimeout(() => { closeModal(); renderDashboard(); }, 1200);
 }
 
 function exitOwnerMode() {
@@ -10161,17 +10224,55 @@ function openShareModal() {
         <div style="font-size:0.67rem;color:var(--muted);margin-top:0.4rem">أرسله عبر واتساب · إيميل · AirDrop — ثم الطرف الثاني يفتح التطبيق → مزامنة → استيراد ملف</div>
       </div>
 
+      <div style="background:var(--paper);border:1px solid var(--border);border-radius:var(--r-md);padding:0.75rem;margin-bottom:0.75rem">
+        <div style="font-size:0.78rem;font-weight:600;color:var(--ink);margin-bottom:0.5rem">☁️ رمز مشاركة قصير (6 أحرف)</div>
+        <button class="btn btn-out" style="width:100%;margin-bottom:0.5rem" id="gen-code-btn" onclick="_genShortCode(this)">
+          ✨ إنشاء رمز قصير
+        </button>
+        <div id="share-code-result" style="display:none"></div>
+        <div style="font-size:0.67rem;color:var(--muted)">يُرفع على السحابة ويُفتح من أي جهاز عبر الرمز في نافذة المزامنة</div>
+      </div>
+
       <div style="background:var(--paper);border:1px solid var(--border);border-radius:var(--r-md);padding:0.75rem">
-        <div style="font-size:0.78rem;font-weight:600;color:var(--ink);margin-bottom:0.5rem">🔗 رابط مشاركة (للعرض)</div>
+        <div style="font-size:0.78rem;font-weight:600;color:var(--ink);margin-bottom:0.5rem">🔗 رابط مشاركة كامل</div>
         <button class="btn btn-out" style="width:100%;margin-bottom:0.5rem" onclick="_genShareLink(this)">
-          ✨ إنشاء رابط مشاركة
+          إنشاء رابط
         </button>
         <div id="share-link-result" style="display:none"></div>
-        <div style="font-size:0.67rem;color:var(--muted)">الرابط يحتوي بيانات الرحلة مباشرة — يُفتح في أي جهاز بدون حساب</div>
+        <div style="font-size:0.67rem;color:var(--muted)">الرابط يحتوي بيانات الرحلة — يعمل بدون إنترنت</div>
       </div>
 
     </div>
   `);
+}
+
+async function _genShortCode(btn) {
+  btn.textContent = "جاري الرفع...";
+  btn.disabled = true;
+  const code = syncGetCode();
+  const ok = await syncSave(code);
+  const el = document.getElementById("share-code-result");
+  if (el) {
+    el.style.display = "block";
+    if (ok) {
+      el.innerHTML = `
+        <div style="text-align:center;margin-bottom:0.5rem">
+          <div style="font-size:2.2rem;font-weight:900;letter-spacing:0.2em;color:var(--accent);font-family:monospace;cursor:pointer"
+               onclick="navigator.clipboard?.writeText('${code}');this.style.color='var(--ok)';setTimeout(()=>this.style.color='var(--accent)',1500)">${code}</div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-top:0.2rem">اضغط على الرمز لنسخه</div>
+        </div>
+        <button class="btn btn-pri" style="width:100%" onclick="navigator.clipboard?.writeText('${code}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='📋 نسخ الرمز',1500)">
+          📋 نسخ الرمز
+        </button>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:0.4rem;text-align:center">الطرف الآخر يفتح التطبيق ← مزامنة ← يدخل الرمز</div>
+      `;
+      btn.style.display = "none";
+    } else {
+      el.innerHTML = `<div style="color:var(--err);font-size:0.78rem;text-align:center">⚠️ فشل الرفع — استخدم تصدير ملف بدلاً من ذلك</div>`;
+      btn.textContent = "إعادة المحاولة";
+      btn.disabled = false;
+    }
+  }
 }
 
 async function _compressToBase64(str) {
