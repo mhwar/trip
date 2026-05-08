@@ -1,0 +1,499 @@
+<script>
+// ═══════════════════════════════════════════════════════════
+//   LIBRARY - All reusable POIs (food, attractions, etc.)
+// ═══════════════════════════════════════════════════════════
+
+const LIB = [
+  // ─── SEOUL · FOOD (Halal + GF) ───
+  { id: "f1", name: "EID Halal Korean", type: "food", city: "seoul", area: "إيتيوون", icon: "🍽️", halal: true, gf: false, gfNote: "بعض الأطباق GF", cert: "KMF معتمد", price: "$$", note: "بولغوغي ودجاج بهارات كورية أصيلة - الأشهر في إيتيوون", lat: 37.5341, lng: 126.9947 },
+  { id: "f2", name: "Busan Jib (부산집)", type: "food", city: "seoul", area: "ميونغ‌دونغ", icon: "🍖", halal: true, gf: true, gfNote: "اللحم بدون توابل GF", cert: "حلال", price: "$$$", note: "✨ غرفة صلاة في الطابق 3 + شواء كوري نادر حلال", lat: 37.5636, lng: 126.9836 },
+  { id: "f3", name: "Yang Good Halal BBQ", type: "food", city: "seoul", area: "غانغنام", icon: "🥩", halal: true, gf: true, gfNote: "لحم مشوي بدون صلصة", cert: "حلال معتمد", price: "$$$", note: "✨ أفضل تجربة شواء كوري حلال - ضأن ودجاج", lat: 37.5006, lng: 127.0364 },
+  { id: "f4", name: "Makan Halal Korean", type: "food", city: "seoul", area: "إيتيوون", icon: "🍜", halal: true, gf: false, cert: "حلال", price: "$$", note: "خيارات متنوعة كوري وماليزي", lat: 37.5345, lng: 126.9939 },
+  { id: "f5", name: "The Halal Guys", type: "food", city: "seoul", area: "إيتيوون", icon: "🌯", halal: true, gf: true, gfNote: "أرز ولحم بدون خبز", cert: "حلال معتمد", price: "$$", note: "السلسلة العالمية المشهورة", lat: 37.5346, lng: 126.9948 },
+  { id: "f6", name: "Mr. Kebab", type: "food", city: "seoul", area: "إيتيوون", icon: "🍢", halal: true, gf: false, cert: "حلال", price: "$$", note: "كباب وشاورما تركية", lat: 37.5343, lng: 126.9943 },
+  { id: "f7", name: "Yell-O Chicken", type: "food", city: "seoul", area: "إيتيوون", icon: "🍗", halal: true, gf: false, cert: "حلال معتمد", price: "$", note: "✨ دجاج كوري مقرمش حلال - نادر جداً", lat: 37.5340, lng: 126.9950 },
+  { id: "f8", name: "Petra (بترا)", type: "food", city: "seoul", area: "إيتيوون", icon: "🥙", halal: true, gf: true, gfNote: "أرز ومشاوي", cert: "Muslim-friendly", price: "$$", note: "مذاق عربي مألوف - حمص ومشاوي", lat: 37.5344, lng: 126.9952 },
+  { id: "f9", name: "Eid Cheongdam", type: "food", city: "seoul", area: "غانغنام", icon: "🍱", halal: true, gf: true, gfNote: "خيارات GF عند الطلب", cert: "KMF معتمد", price: "$$$", note: "فرع راقٍ للمناسبات", lat: 37.5246, lng: 127.0473 },
+  { id: "f10", name: "Sunny Bread", type: "food", city: "seoul", area: "Seongsu-dong", icon: "🌾", halal: false, gf: true, gfNote: "100% خالٍ من الجلوتين", cert: "GF معتمد", price: "$$", note: "✨ مخبز خالٍ من الجلوتين كلياً - الأفضل في كوريا", lat: 37.5447, lng: 127.0557 },
+  { id: "f11", name: "Plant Bakery HBC", type: "food", city: "seoul", area: "HBC", icon: "🥐", halal: false, gf: true, gfNote: "اختيارات GF واضحة", cert: "خيارات GF", price: "$$", note: "نباتي + خيارات خالية من الجلوتين", lat: 37.5407, lng: 126.9886 },
+
+  // ─── BUSAN · FOOD ───
+  { id: "f12", name: "Cappadocia Turkish", type: "food", city: "busan", area: "Dusil", icon: "🥙", halal: true, gf: false, cert: "حلال", price: "$$", note: "الأقرب لمسجد البوسان", lat: 35.2196, lng: 129.0888 },
+  { id: "f13", name: "Namaste Haeundae", type: "food", city: "busan", area: "هاوندي", icon: "🍛", halal: true, gf: true, gfNote: "أرز وكاري بدون خبز", cert: "لحم حلال معتمد", price: "$$", note: "الأقرب لشاطئ هاوندي", lat: 35.1614, lng: 129.1652 },
+  { id: "f14", name: "Bombay Brau", type: "food", city: "busan", area: "هاوندي", icon: "🍛", halal: true, gf: true, gfNote: "أطباق GF متوفرة", cert: "حلال", price: "$$", note: "فروع متعددة بجودة عالية", lat: 35.1620, lng: 129.1640 },
+  { id: "f15", name: "Eobu", type: "food", city: "busan", area: "هاوندي", icon: "🐟", halal: true, gf: true, gfNote: "سمك مشوي طبيعي", cert: "Muslim-friendly", price: "$$$", note: "بدون كحول - مأكولات بحرية مشوية", lat: 35.1612, lng: 129.1648 },
+  { id: "f16", name: "Hello India Al-Waha", type: "food", city: "busan", area: "هاوندي", icon: "🍛", halal: true, gf: false, cert: "حلال", price: "$$", note: "خيارات لبنانية مع الهندي", lat: 35.1619, lng: 129.1656 },
+
+  // ─── JEJU · FOOD ───
+  { id: "f17", name: "Asalam (제주아살람)", type: "food", city: "jeju", area: "جيجو سيتي", icon: "🕌", halal: true, gf: true, gfNote: "أرز بسمتي وشواء", cert: "✨ شهادة حلال كاملة", price: "$$", note: "الوحيد بشهادة كاملة في جيجو + مصلى", lat: 33.5106, lng: 126.5219 },
+  { id: "f18", name: "Bagdad Halal", type: "food", city: "jeju", area: "جيجو سيتي", icon: "🍛", halal: true, gf: true, gfNote: "كاري وأرز", cert: "حلال معتمد", price: "$$", note: "قرب City Hall", lat: 33.4996, lng: 126.5312 },
+  { id: "f19", name: "Mt. Everest Halal", type: "food", city: "jeju", area: "جيجو سيتي", icon: "🍛", halal: true, gf: false, cert: "حلال", price: "$$", note: "قرب Ramada Plaza - هندي/نيبالي", lat: 33.5077, lng: 126.5219 },
+  { id: "f20", name: "Bada Punggyeong", type: "food", city: "jeju", area: "ساحل جيجو", icon: "🐟", halal: true, gf: true, gfNote: "سمك مشوي طبيعي", cert: "Muslim-friendly", price: "$$$", note: "بدون لحم خنزير + مصلى + إطلالة بحر", lat: 33.4404, lng: 126.7176 },
+  { id: "f21", name: "Tammora", type: "food", city: "jeju", area: "Ramada Plaza", icon: "🍱", halal: true, gf: false, cert: "Muslim-friendly", price: "$$", note: "داخل فندق Ramada Plaza", lat: 33.5168, lng: 126.5232 },
+
+  // ─── ATTRACTIONS ───
+  { id: "a1", name: "قصر غيونغبوكغونغ", type: "attraction", city: "seoul", area: "وسط سيول", icon: "🏯", note: "القصر الأكبر - مراسم تغيير الحرس 10ص و2ظ", lat: 37.5796, lng: 126.9770 },
+  { id: "a2", name: "قرية بوكتشون هانوك", type: "attraction", city: "seoul", area: "وسط سيول", icon: "🏘️", note: "أحياء تقليدية - استئجار هانبوك", lat: 37.5826, lng: 126.9831 },
+  { id: "a3", name: "برج N سيول", type: "attraction", city: "seoul", area: "نامسان", icon: "🗼", note: "إطلالة بانورامية + قفل الحب", lat: 37.5512, lng: 126.9882 },
+  { id: "a4", name: "حي إنسادونغ", type: "attraction", city: "seoul", area: "وسط سيول", icon: "🎨", note: "حرف وفن تقليدي + شاي كوري", lat: 37.5740, lng: 126.9856 },
+  { id: "a5", name: "حي هونغداي", type: "attraction", city: "seoul", area: "غرب سيول", icon: "🎤", note: "شباب وموسيقى - عروض K-pop", lat: 37.5563, lng: 126.9223 },
+  { id: "a6", name: "متنزه نهر الهان", type: "attraction", city: "seoul", area: "يويدو", icon: "🌊", note: "تنزه ودراجات", lat: 37.5237, lng: 126.9343 },
+  { id: "a7", name: "DMZ", type: "attraction", city: "seoul", area: "شمال سيول", icon: "🪖", note: "المنطقة منزوعة السلاح - جولة محجوزة 6-7 ساعات", lat: 37.9489, lng: 126.6712 },
+  { id: "a8", name: "حي Seongsu-dong", type: "attraction", city: "seoul", area: "شرق سيول", icon: "☕", note: "بروكلين سيول - مقاهي عصرية", lat: 37.5447, lng: 127.0557 },
+
+  { id: "a9", name: "سونغسان إيلتشولبونغ", type: "attraction", city: "jeju", area: "شرق جيجو", icon: "🌅", note: "✨ شروق الشمس البركاني - يونسكو", lat: 33.4582, lng: 126.9415 },
+  { id: "a10", name: "كهف مانجانغول", type: "attraction", city: "jeju", area: "شرق جيجو", icon: "🕳️", note: "كهف حمم بركانية - يونسكو", lat: 33.5286, lng: 126.7706 },
+  { id: "a11", name: "جبل هلاسان (Yeongsil)", type: "attraction", city: "jeju", area: "وسط جيجو", icon: "🏔️", note: "🥾 أعلى قمة في كوريا - مسار سهل", lat: 33.3617, lng: 126.5292 },
+  { id: "a12", name: "شاطئ هيوبجاي", type: "attraction", city: "jeju", area: "غرب جيجو", icon: "🏖️", note: "✨ أجمل شواطئ جيجو", lat: 33.3942, lng: 126.2391 },
+  { id: "a13", name: "شلال جيونغبانغ", type: "attraction", city: "jeju", area: "سيوغويبو", icon: "💧", note: "الوحيد في آسيا الذي يصب بالبحر", lat: 33.2402, lng: 126.5556 },
+  { id: "a14", name: "متحف O'Sulloc", type: "attraction", city: "jeju", area: "غرب جيجو", icon: "🍵", note: "حقول الشاي الأخضر + كافيه", lat: 33.3061, lng: 126.2898 },
+  { id: "a15", name: "جزيرة أودو", type: "attraction", city: "jeju", area: "شرق جيجو", icon: "🚲", note: "العبارة + دراجة كهربائية", lat: 33.5063, lng: 126.9554 },
+  { id: "a16", name: "صخرة Oedolgae", type: "attraction", city: "jeju", area: "سيوغويبو", icon: "🪨", note: "صخرة منعزلة - مناظر بحرية", lat: 33.2329, lng: 126.5497 },
+
+  { id: "a17", name: "Haedong Yonggungsa", type: "attraction", city: "busan", area: "شرق بوسان", icon: "⛩️", note: "✨ معبد على البحر - فريد", lat: 35.1884, lng: 129.2236 },
+  { id: "a18", name: "شاطئ هاوندي", type: "attraction", city: "busan", area: "هاوندي", icon: "🏖️", note: "الشاطئ الأشهر في كوريا", lat: 35.1587, lng: 129.1604 },
+  { id: "a19", name: "Haeundae Sky Capsule", type: "attraction", city: "busan", area: "هاوندي", icon: "🚞", note: "✨ رحلة كبسولة على الساحل", lat: 35.1574, lng: 129.1684 },
+  { id: "a20", name: "قرية غامتشون الملونة", type: "attraction", city: "busan", area: "غرب بوسان", icon: "🎨", note: "🎨 ماتشو بيتشو الكورية", lat: 35.0972, lng: 129.0107 },
+  { id: "a21", name: "شاطئ Gwangalli", type: "attraction", city: "busan", area: "هاوندي", icon: "🌃", note: "ليلي ساحر - عرض درونز السبت", lat: 35.1531, lng: 129.1187 },
+  { id: "a22", name: "برج Busan Tower", type: "attraction", city: "busan", area: "نامبودونغ", icon: "🗼", note: "إطلالة بانورامية", lat: 35.1014, lng: 129.0322 },
+
+  // ─── MOSQUES ───
+  { id: "mq1", name: "🕌 مسجد سيول المركزي", type: "mosque", city: "seoul", area: "إيتيوون", icon: "🕌", note: "الجامع الأكبر - 5 صلوات + جمعة", lat: 37.5347, lng: 126.9929 },
+  { id: "mq2", name: "🕌 مسجد البوسان Al-Fatah", type: "mosque", city: "busan", area: "Dusil", icon: "🕌", note: "5 صلوات + جمعة - خط 1 مخرج 8", lat: 35.2196, lng: 129.0888 },
+  { id: "mq3", name: "🕌 مصلى Asalam", type: "mosque", city: "jeju", area: "جيجو سيتي", icon: "🕌", note: "مصلى صغير داخل المطعم", lat: 33.5106, lng: 126.5219 },
+
+  // ─── MARKETS / SHOPPING ───
+  { id: "s1", name: "ميونغ‌دونغ Myeongdong", type: "shop", city: "seoul", area: "وسط سيول", icon: "🛍️", note: "أكبر منطقة تسوق - Olive Young، Adidas", lat: 37.5636, lng: 126.9826 },
+  { id: "s2", name: "سوق نامديمون", type: "shop", city: "seoul", area: "وسط سيول", icon: "🏬", note: "أقدم سوق - تذكارات وطعام شارع", lat: 37.5598, lng: 126.9774 },
+  { id: "s3", name: "سوق دونغداي‌مون", type: "shop", city: "seoul", area: "شرق سيول", icon: "🌃", note: "تسوق ليلي حتى الفجر", lat: 37.5703, lng: 127.0094 },
+  { id: "s4", name: "سوق دونغمون", type: "shop", city: "jeju", area: "جيجو سيتي", icon: "🏪", note: "سوق ليلي + هدايا جيجو", lat: 33.5126, lng: 126.5266 },
+  { id: "s5", name: "سوق Jagalchi", type: "shop", city: "busan", area: "نامبودونغ", icon: "🐟", note: "✨ أكبر سوق سمك - تختار وتطبخ", lat: 35.0966, lng: 129.0306 },
+  { id: "s6", name: "سوق Gukje", type: "shop", city: "busan", area: "نامبودونغ", icon: "🛍️", note: "كل شيء - ملابس وتذكارات", lat: 35.1011, lng: 129.0271 },
+  { id: "s7", name: "BIFF Square", type: "shop", city: "busan", area: "نامبودونغ", icon: "🎬", note: "ساحة مهرجان السينما + ستريت فود", lat: 35.0989, lng: 129.0257 },
+
+  // ─── FESTIVALS ───
+  { id: "fs1", name: "🌹 مهرجان الورود Jungnang", type: "festival", city: "seoul", area: "شرق سيول", icon: "🌹", note: "نفق ورد 5.15 كم - مجاني (15-23 مايو)", lat: 37.6048, lng: 127.0921 },
+  { id: "fs2", name: "🏮 مهرجان فوانيس اللوتس", type: "festival", city: "seoul", area: "وسط سيول", icon: "🏮", note: "✨ 100,000 فانوس - استعراض ضخم (16-17 مايو)", lat: 37.5723, lng: 126.9831 },
+  { id: "fs3", name: "🏮 مهرجان فوانيس Samgwangsa", type: "festival", city: "busan", area: "وسط بوسان", icon: "🏮", note: "✨ 40,000 فانوس في معبد Samgwangsa (15-24 مايو)", lat: 35.1480, lng: 129.0411 },
+  { id: "fs4", name: "🚁 عرض الدرونز Gwangalli", type: "festival", city: "busan", area: "هاوندي", icon: "🚁", note: "عرض درونز مجاني السبت 8م", lat: 35.1531, lng: 129.1187 },
+  { id: "fs5", name: "🪷 عيد ميلاد بوذا - Beomeosa", type: "festival", city: "busan", area: "شمال بوسان", icon: "🪷", note: "24 مايو - وجبات نباتية مجانية", lat: 35.2839, lng: 129.0686 },
+
+  // ─── ENTERTAINMENT · مدن ألعاب وترفيه ───
+  { id: "e1", name: "Lotte World", type: "entertainment", city: "seoul", area: "Jamsil", icon: "🎢", price: "₩62,000", note: "✨ أكبر مدينة ملاهي داخلية في العالم + قسم خارجي - ميجيك آيلاند على بحيرة", lat: 37.5111, lng: 127.0980 },
+  { id: "e2", name: "Everland", type: "entertainment", city: "seoul", area: "Yongin (خارج سيول)", icon: "🎠", price: "₩62,000", note: "أكبر مدينة ملاهي في كوريا - حدائق حيوان + Safari World + T Express أسرع أفعوانية خشبية", lat: 37.2940, lng: 127.2017 },
+  { id: "e3", name: "Caribbean Bay", type: "entertainment", city: "seoul", area: "Yongin", icon: "🏊", price: "₩60,000", note: "أكبر بارك مائي - تذكرة موحدة مع Everland", lat: 37.2967, lng: 127.2055 },
+  { id: "e4", name: "Children's Grand Park", type: "entertainment", city: "seoul", area: "Gwangjin-gu", icon: "🎡", price: "مجاني", note: "حديقة عائلية + ألعاب صغيرة + حديقة حيوان مجانية - مثالي للأطفال", lat: 37.5479, lng: 127.0820 },
+  { id: "e5", name: "Seoul Land", type: "entertainment", city: "seoul", area: "Gwacheon", icon: "🎢", price: "₩47,000", note: "مدينة ملاهي قرب حديقة الحيوان الكبيرة - أرخص من Lotte/Everland", lat: 37.4350, lng: 127.0119 },
+  { id: "e6", name: "Aquaplanet Jeju", type: "entertainment", city: "jeju", area: "شرق جيجو (Seopjikoji)", icon: "🐠", price: "₩42,500", note: "✨ أكبر أكواريوم في آسيا - 27,000 كائن بحري + عروض حيتان", lat: 33.4286, lng: 126.9270 },
+  { id: "e7", name: "Shinhwa Theme Park", type: "entertainment", city: "jeju", area: "غرب جيجو", icon: "🎢", price: "₩50,000", note: "شخصيات Larva الكورية - أفضل للعائلات الصغيرة", lat: 33.3245, lng: 126.3082 },
+  { id: "e8", name: "Jeju Loveland", type: "entertainment", city: "jeju", area: "جيجو سيتي", icon: "🎨", price: "₩15,000", note: "حديقة منحوتات للكبار 18+ - فقط للزوجين بدون أطفال", lat: 33.4544, lng: 126.4951 },
+  { id: "e9", name: "Lotte World Adventure Busan", type: "entertainment", city: "busan", area: "Osiria (شرق بوسان)", icon: "🎢", price: "₩59,000", note: "✨ مدينة ملاهي افتتحت 2022 - أحدث الألعاب", lat: 35.1864, lng: 129.2178 },
+  { id: "e10", name: "SEA LIFE Busan Aquarium", type: "entertainment", city: "busan", area: "هاوندي", icon: "🦈", price: "₩31,000", note: "أكواريوم تحت شاطئ هاوندي - جيد لساعتين", lat: 35.1583, lng: 129.1606 },
+  { id: "e11", name: "Songdo Cable Car", type: "entertainment", city: "busan", area: "Songdo Beach", icon: "🚡", price: "₩17,000", note: "✨ تلفريك على البحر - إطلالة بانورامية فريدة", lat: 35.0780, lng: 129.0264 },
+  { id: "e12", name: "Busan X the Sky", type: "entertainment", city: "busan", area: "هاوندي", icon: "🌆", price: "₩27,000", note: "أعلى منصة مراقبة في كوريا - 100 طابق + سكاي ووك زجاجي", lat: 35.1591, lng: 129.1606 },
+  { id: "e13", name: "Spa Land Centum City", type: "entertainment", city: "busan", area: "Centum City", icon: "♨️", price: "₩20,000", note: "✨ أفضل سبا/ججيمجلبانغ كوري - 13 نوع ساونا + 22 حمام", lat: 35.1685, lng: 129.1306 },
+  { id: "e14", name: "🎿 Yongpyong Resort (تزلج)", type: "entertainment", city: "seoul", area: "Pyeongchang (3 ساعات بالقطار)", icon: "🎿", price: "₩90,000", note: "⚠️ موسم: ديسمبر-مارس فقط · أكبر منتجع تزلج (مكان أولمبياد 2018)", lat: 37.6442, lng: 128.6916 },
+  { id: "e15", name: "🎿 Eden Valley Ski Resort", type: "entertainment", city: "busan", area: "Yangsan (45د من بوسان)", icon: "🎿", price: "₩65,000", note: "⚠️ موسم: ديسمبر-فبراير · الأقرب لبوسان للتزلج", lat: 35.4347, lng: 128.9436 },
+  { id: "e16", name: "Alpensia Tubing Park (زلاجات)", type: "entertainment", city: "seoul", area: "Pyeongchang", icon: "🛷", price: "₩25,000", note: "تزحلق على الأنابيب - يعمل صيفاً وشتاءً (Alpine Coaster متاح طول السنة)", lat: 37.6660, lng: 128.6699 },
+  { id: "e17", name: "Skyline Luge Busan", type: "entertainment", city: "busan", area: "Gijang", icon: "🛷", price: "₩30,000", note: "✨ زلاجات على المنحدرات - 4 مسارات مختلفة - يعمل طول السنة", lat: 35.2580, lng: 129.2270 },
+  { id: "e18", name: "Children's Park Jeju", type: "entertainment", city: "jeju", area: "جيجو سيتي", icon: "🎠", price: "مجاني", note: "حديقة ألعاب مجانية للأطفال + ميني-قطار", lat: 33.4878, lng: 126.5042 },
+
+  // ─── GYEONGJU (يوم رحلة من بوسان) ───
+  { id: "g1", name: "Bulguksa Temple ⭐ UNESCO", type: "attraction", city: "busan", area: "جيونغجو (1س من بوسان)", icon: "🏯", note: "✨ معبد بولغوكسا - تراث يونسكو 1995 - ذروة العمارة البوذية الكورية من عهد سيلا (528م)", lat: 35.7900, lng: 129.3320 },
+  { id: "g2", name: "Donggung Palace & Wolji Pond", type: "attraction", city: "busan", area: "جيونغجو", icon: "🏮", note: "✨ قصر الأمير + بركة القمر - مذهلة ليلاً مع الإضاءة - من عهد سيلا", lat: 35.8348, lng: 129.2255 },
+  { id: "g3", name: "Woljeonggyo Bridge", type: "attraction", city: "busan", area: "جيونغجو", icon: "🌉", note: "جسر خشبي تاريخي مُرمّم 2018 - رائع وقت الغروب والإضاءة الليلية", lat: 35.8324, lng: 129.2196 },
+  { id: "g4", name: "Gyochon Traditional Village", type: "attraction", city: "busan", area: "جيونغجو", icon: "🏘️", note: "قرية تقليدية + بيت عائلة Choi التاريخي - تجارب ثقافية", lat: 35.8275, lng: 129.2174 },
+  { id: "g5", name: "Seokguram Grotto ⭐ UNESCO", type: "attraction", city: "busan", area: "جيونغجو", icon: "🗿", note: "كهف بوذي صناعي - تمثال بوذا 3.5م - تراث يونسكو", lat: 35.7950, lng: 129.3500 },
+
+  // ─── JEJU NEW POIs ───
+  { id: "a23", name: "Eoseungsaengak Trail (어승생악)", type: "attraction", city: "jeju", area: "وسط جيجو - هلاسان", icon: "🥾", note: "🥾 مسار سهل 1.3كم - 30-40د - إطلالة بانورامية على هلاسان والساحل", lat: 33.3942, lng: 126.4955 },
+  { id: "a24", name: "Camellia Hill Botanical Garden", type: "attraction", city: "jeju", area: "Andeok جنوب", icon: "🌺", price: "₩9,000", note: "✨ أكبر حديقة كاميليا في آسيا - 6,000 شجرة + 500 نوع - صور خلابة", lat: 33.2770, lng: 126.3614 },
+  { id: "a25", name: "Cheonjeyeon Waterfall", type: "attraction", city: "jeju", area: "Jungmun", icon: "💧", price: "₩2,500", note: "✨ شلال 'بركة السماء' بـ3 طوابق + جسر Seonimgyo بسبع حوريات", lat: 33.2528, lng: 126.4192 },
+  { id: "a26", name: "Jusangjeollidae Cliff", type: "attraction", city: "jeju", area: "Jungmun ساحل", icon: "🪨", price: "₩2,000", note: "✨ أعمدة بازلتية سداسية فريدة - تكوينات بركانية مذهلة", lat: 33.2381, lng: 126.4264 },
+  { id: "a27", name: "Hamdeok Beach", type: "attraction", city: "jeju", area: "شرق جيجو سيتي", icon: "🏖️", note: "✨ شاطئ رمل أبيض + مياه فيروزية - عائلي مياهه ضحلة", lat: 33.5436, lng: 126.6700 },
+  { id: "a28", name: "Haenyeo Woman Divers", type: "attraction", city: "jeju", area: "Seongsan", icon: "🤿", note: "✨ غطاسات جيجو الأسطوريات - تراث يونسكو الإنساني - عرض حي", lat: 33.4660, lng: 126.9381 },
+  { id: "a29", name: "Seongeup Folk Village", type: "attraction", city: "jeju", area: "Pyoseon وسط", icon: "🏚️", note: "قرية تقليدية محفوظة من عهد جوسون - أكثر من 100 منزل بسقف قش بركاني", lat: 33.3949, lng: 126.7905 },
+
+  // ─── SEOUL NEW POIs ───
+  { id: "a30", name: "Bongeunsa Temple", type: "attraction", city: "seoul", area: "غانغنام", icon: "⛩️", note: "معبد بوذي قديم (794م) في قلب غانغنام - تباين رائع مع ناطحات السحاب", lat: 37.5152, lng: 127.0573 },
+  { id: "a31", name: "COEX Mall + Starfield Library", type: "shop", city: "seoul", area: "غانغنام", icon: "📚", note: "✨ أكبر مول تحت الأرض في آسيا + المكتبة الشهيرة بأرفف 13 متر", lat: 37.5126, lng: 127.0589 },
+  { id: "a32", name: "Lotte World Tower & Seoul Sky", type: "attraction", city: "seoul", area: "Jamsil", icon: "🗼", price: "₩31,000", note: "✨ أطول مبنى في كوريا (555م/123ط) + منصة الزجاج Sky Deck الأعلى عالمياً", lat: 37.5126, lng: 127.1025 },
+  { id: "a33", name: "Cheonggyecheon Stream", type: "attraction", city: "seoul", area: "وسط سيول", icon: "🌊", note: "نهر حضري مُرمّم 11كم وسط المدينة - إضاءات ليلية ساحرة", lat: 37.5687, lng: 126.9783 },
+  { id: "a34", name: "Seoul City Wall Trail (Naksan)", type: "attraction", city: "seoul", area: "Jongno", icon: "🏰", note: "⭐ سور سيول التاريخي + متنزه Naksan - إطلالة بانورامية على المدينة", lat: 37.5806, lng: 127.0067 },
+  { id: "a35", name: "DDP - Dongdaemun Design Plaza", type: "attraction", city: "seoul", area: "Dongdaemun", icon: "🛸", note: "تصميم Zaha Hadid المستقبلي - معارض + ليلاً مع أضواء الورود LED", lat: 37.5673, lng: 127.0094 },
+  { id: "a36", name: "Ikseon-dong (익선동)", type: "attraction", city: "seoul", area: "Jongno", icon: "🏘️", note: "✨ أزقة هانوك من 1920s - مقاهي بوتيك + ورشات حرف + سحر ليلي", lat: 37.5736, lng: 126.9889 },
+  { id: "a37", name: "Nami Island (남이섬)", type: "attraction", city: "seoul", area: "Chuncheon (1.5س من سيول)", icon: "🌳", price: "₩16,000", note: "✨ جزيرة Winter Sonata الشهيرة - شجرات الميتاسيكويا - 'جمهورية' خاصة بجواز سفر", lat: 37.7906, lng: 127.5256 },
+  { id: "a38", name: "Gangchon Rail Bike", type: "entertainment", city: "seoul", area: "Chuncheon", icon: "🚲", price: "₩40,000", note: "✨ دراجة سكة قديمة 8.5كم بمناظر خلابة - أنفاق LED ممتعة - قرب Nami Island", lat: 37.8467, lng: 127.6147 },
+  { id: "a39", name: "Garden of Morning Calm", type: "attraction", city: "seoul", area: "Gapyeong", icon: "🌸", price: "₩11,000", note: "✨ أشهر حديقة نباتية كورية - مهرجانات موسمية + إضاءة شتوية ساحرة", lat: 37.7795, lng: 127.4495 },
+  { id: "a40", name: "DMZ - Imjingak Park", type: "attraction", city: "seoul", area: "Paju (شمال سيول)", icon: "🕊️", note: "نقطة رمزية للسلام والوحدة - جسر الحرية + مذبح Mangbaedan", lat: 37.8987, lng: 126.7443 },
+  { id: "a41", name: "DMZ - Third Infiltration Tunnel", type: "attraction", city: "seoul", area: "Paju DMZ", icon: "🪖", price: "₩9,000", note: "✨ نفق سري حفرته كوريا الشمالية للغزو - مُكتشف 1978 - 44كم من سيول", lat: 37.9285, lng: 126.6868 },
+  { id: "a42", name: "DMZ - Dora Observatory", type: "attraction", city: "seoul", area: "Paju DMZ", icon: "🔭", note: "✨ أقرب نقطة لرؤية كوريا الشمالية - مناظير + رؤية قرية الدعاية", lat: 37.8956, lng: 126.7028 },
+  { id: "a43", name: "War Memorial of Korea", type: "attraction", city: "seoul", area: "Yongsan/إيتيوون", icon: "⚔️", note: "نصب الحرب الوطني - 7 قاعات تاريخية + معدات عسكرية + متحف أطفال", lat: 37.5369, lng: 126.9774 },
+
+  // ─── ENTERTAINMENT ADDITIONS (Busan area) ───
+  { id: "e19", name: "Songdo Skywalk", type: "entertainment", city: "busan", area: "Songdo Beach", icon: "🌉", price: "مجاني", note: "✨ ممشى زجاجي 365م فوق البحر - أطول ممشى محيطي في كوريا", lat: 35.0735, lng: 129.0231 },
+  { id: "e20", name: "Songdo Marine Cable Car", type: "entertainment", city: "busan", area: "Songdo", icon: "🚡", price: "₩17,000", note: "تلفريك Busan Air Cruise 1.62كم - كبائن كريستال زجاجية مثيرة", lat: 35.0758, lng: 129.0225 },
+  { id: "f22", name: "Noryangjin Fish Market", type: "shop", city: "seoul", area: "Noryangjin", icon: "🦞", note: "✨ أكبر سوق سمك في كوريا (منذ 1927) - اختر السمك ويُطبخ لك مباشرة", lat: 37.5125, lng: 126.9402 },
+  { id: "f23", name: "Majang Meat Market", type: "shop", city: "seoul", area: "Seongdong-gu", icon: "🥩", note: "أكبر سوق لحوم في سيول - شواء فوري للحم الذي تختاره", lat: 37.5677, lng: 127.0414 },
+
+  // ─── 🎯 جولات وفعاليات يومية (Tours & Activities) ───
+  { id: "tr1", name: "🎯 جولة DMZ كاملة (محجوزة)", type: "tour", city: "seoul", area: "Paju (شمال سيول)", icon: "🎯", price: "$60-90/شخص", note: "✨ جولة منظمة 8 ساعات: Imjingak + النفق الثالث + Dora + جسر التوحيد. حجز قبل أسبوع - الجواز إلزامي. Klook أو Trazy.", lat: 37.9285, lng: 126.6868 },
+  { id: "tr2", name: "🎯 جولة Gyeongju من بوسان", type: "tour", city: "busan", area: "جيونغجو (1س من بوسان)", icon: "🎯", price: "$80-120/شخص", note: "جولة يوم كامل: Bulguksa + Seokguram + Donggung. خاصة أو جماعية - أرخص بالـKTX المستقل ثم تاكسي محلي", lat: 35.7900, lng: 129.3320 },
+  { id: "tr3", name: "🎯 جولة Nami + Garden Morning Calm", type: "tour", city: "seoul", area: "Gapyeong (1.5س)", icon: "🎯", price: "$50-80/شخص", note: "✨ جولة جماعية: Rail Bike + Nami + Garden. شاتل من سيول 9ص-7م", lat: 37.7906, lng: 127.5256 },
+  { id: "tr4", name: "🎯 درس صنع كيمتشي + هانبوك", type: "tour", city: "seoul", area: "إنسادونغ", icon: "👘", price: "₩40-60k/شخص", note: "✨ تجربة ثقافية 3 ساعات - كيمتشي يدوي + ارتداء هانبوك للتصوير", lat: 37.5740, lng: 126.9856 },
+  { id: "tr5", name: "🎯 درس K-Pop Dance Class", type: "tour", city: "seoul", area: "Hongdae", icon: "💃", price: "₩40-50k/شخص", note: "تعلّم خطوات أغنية K-Pop شهيرة في 90 دقيقة - مناسب للجميع", lat: 37.5563, lng: 126.9223 },
+  { id: "tr6", name: "🎯 جولة طعام شارع ليلية - ميونغ‌دونغ", type: "tour", city: "seoul", area: "ميونغ‌دونغ", icon: "🍡", price: "$45-70/شخص", note: "تذوق 8-10 أصناف ستريت فود مع مرشد - Trazy/Klook (تأكد من الحلال)", lat: 37.5636, lng: 126.9826 },
+  { id: "tr7", name: "🎯 جولة قارب نهر هان ليلية", type: "tour", city: "seoul", area: "نهر الهان", icon: "🛥️", price: "₩16,000/شخص", note: "كروز نهري 1س - عرض موسيقي + إطلالة ناطحات السحاب + جسر القمر", lat: 37.5237, lng: 126.9343 },
+  { id: "tr8", name: "🎯 يخت في Haeundae + غروب", type: "tour", city: "busan", area: "هاوندي", icon: "⛵", price: "₩30-50k/شخص", note: "✨ جولة يخت 1س على شاطئ هاوندي - رومانسي مع الغروب", lat: 35.1592, lng: 129.1606 },
+  { id: "tr9", name: "🎯 درس صنع هانجي + شاي تقليدي", type: "tour", city: "seoul", area: "بوكتشون", icon: "🍵", price: "₩30k/شخص", note: "ورق هانجي يدوي + مراسم شاي كورية - تجربة هادئة", lat: 37.5826, lng: 126.9831 },
+  { id: "tr10", name: "🎯 جولة رصيف بوسان البحري", type: "tour", city: "busan", area: "Yeongdo", icon: "🐟", price: "$40-60/شخص", note: "صباح في Jagalchi + غداء بحري + Songdo - مناسب لعشاق البحر", lat: 35.0966, lng: 129.0306 },
+  { id: "tr11", name: "🎯 ركوب خيل في جيجو", type: "tour", city: "jeju", area: "وسط جيجو", icon: "🐎", price: "₩40-80k/شخص", note: "تجربة ركوب خيل في حقول جيجو الخضراء - 30-60 دقيقة", lat: 33.3617, lng: 126.5292 },
+  { id: "tr12", name: "🎯 صيد بحري في جيجو", type: "tour", city: "jeju", area: "ميناء جيجو", icon: "🎣", price: "₩50-80k/شخص", note: "رحلة قارب صيد 3 ساعات + الصيد يُطبخ لك في مطعم محلي", lat: 33.5168, lng: 126.5232 },
+
+  // ─── 🚄 وسائل التنقل بين المدن (Inter-city transport) ───
+  { id: "tx1", name: "✈️ طيران Gimpo → Jeju", type: "transport", city: "seoul", area: "Gimpo Airport (GMP)", icon: "✈️", price: "₩60-90k/شخص", note: "1س 15د - أكثر طريق محجوز عالمياً - Jeju Air, T'way, Korean Air. احجز عبر Skyscanner", lat: 37.5586, lng: 126.7942 },
+  { id: "tx2", name: "✈️ طيران Jeju → Busan", type: "transport", city: "jeju", area: "Jeju Airport (CJU)", icon: "✈️", price: "₩70-100k/شخص", note: "1س - وصول مطار Gimhae - Jeju Air أرخص خيار", lat: 33.5113, lng: 126.4930 },
+  { id: "tx3", name: "🚄 KTX بوسان → سيول", type: "transport", city: "busan", area: "Busan Station", icon: "🚄", price: "₩59,800/شخص", note: "✨ 2س 15د - أفضل خيار للعودة - احجز عبر Korail Talk أو KTX.com", lat: 35.1156, lng: 129.0423 },
+  { id: "tx4", name: "🚄 AREX إنتشون → سيول", type: "transport", city: "seoul", area: "ICN Airport", icon: "🚄", price: "₩11,000/شخص", note: "Express 43د (مباشر) - All-Stop 58د (₩4,750) - يقفل 11:30م", lat: 37.4602, lng: 126.4407 },
+  { id: "tx5", name: "🚄 ITX Cheongchun (لـNami)", type: "transport", city: "seoul", area: "Yongsan/Cheongnyangni", icon: "🚄", price: "₩7,800/شخص", note: "1س 20د لـChuncheon - حجز Korail Talk", lat: 37.5800, lng: 127.0470 }
+];
+
+// Type definitions
+const TYPES = {
+  food: { label: "مطعم/طعام", icon: "🍽️", color: "var(--persimmon)" },
+  cafe: { label: "مقهى", icon: "☕", color: "var(--gold)" },
+  attraction: { label: "معلم سياحي", icon: "📍", color: "var(--accent)" },
+  entertainment: { label: "ترفيه/ملاهي", icon: "🎢", color: "#e11d48" },
+  tour: { label: "جولة/فعالية", icon: "🎯", color: "#0891b2" },
+  rest: { label: "راحة", icon: "☕", color: "#d97706" },
+  note: { label: "ملاحظة", icon: "📝", color: "#64748b" },
+  hotel: { label: "فندق", icon: "🏨", color: "var(--gold)" },
+  shop: { label: "تسوق/سوق", icon: "🛍️", color: "#7c3aed" },
+  mosque: { label: "مسجد/صلاة", icon: "🕌", color: "#047857" },
+  transport: { label: "مواصلات", icon: "🚄", color: "var(--warn)" },
+  festival: { label: "فعالية/مهرجان", icon: "🎉", color: "#db2777" },
+  other: { label: "آخر", icon: "⭐", color: "var(--ink-soft)" }
+};
+
+const TYPE_LABELS = {
+  arrival: { label: "🛬 وصول", cls: "pill-ok" },
+  transit: { label: "✈️ تنقل", cls: "pill-warn" },
+  departure: { label: "🛫 مغادرة", cls: "pill-err" },
+  normal: null
+};
+
+// Default empty itinerary (12 days)
+const TRIP_START = new Date("2026-05-14");
+
+function makeEmptyItinerary() {
+  const days = [];
+  for (let i = 0; i < 11; i++) {
+    const d = new Date(TRIP_START);
+    d.setDate(d.getDate() + i);
+    const weekdays = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+    // Optimized 11-day flow: Seoul (4) → Jeju (3) → Busan (2) → Seoul (2 incl. departure)
+    let city;
+    if (i < 4) city = "seoul";
+    else if (i < 7) city = "jeju";
+    else if (i < 9) city = "busan";
+    else city = "seoul";
+    days.push({
+      day: i + 1,
+      date: d.toISOString().split('T')[0],
+      dateLabel: `${d.getDate()} ${["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"][d.getMonth()]}`,
+      weekday: weekdays[d.getDay()],
+      city: city,
+      title: "",
+      type: "normal",
+      flight: null,
+      items: []
+    });
+  }
+  return days;
+}
+
+// Template itinerary (suggestions to import)
+function makeTemplateItinerary() {
+  const it = makeEmptyItinerary();
+
+  // ═══════════════════════════════════════════════════════════
+  // 🎯 الجدول النهائي: 11 يوم / 10 ليالٍ (14-24 مايو 2026)
+  // مرجع التذكرة Etihad: 9T7ZEZ
+  //
+  // الذهاب (13-14 مايو):
+  //   • Flynas XY426: أبها 08:35 → جدة 09:50 (13 مايو)
+  //   • Etihad EY616: جدة 15:20 → أبوظبي 19:05 (13 مايو)
+  //   • Etihad EY822: أبوظبي 21:10 → سيول ICN 10:50 (14 مايو) ✨
+  //
+  // العودة (24-25 مايو):
+  //   • Etihad EY823: سيول ICN 17:50 → أبوظبي 22:35 (24 مايو) ✨
+  //   • Etihad EY603: أبوظبي 02:05 → جدة 03:55 (25 مايو)
+  //   • Flynas XY425: جدة 06:35 → أبها 07:55 (25 مايو)
+  //
+  // التوزيع:
+  //   • Seoul (4 ليالٍ): 14-17 مايو
+  //   • Jeju (3 ليالٍ): 18-20 مايو
+  //   • Busan (2 ليلة): 21-22 مايو
+  //   • Seoul (1 ليلة): 23 مايو
+  //   • مغادرة (24 مايو 17:50)
+  // ═══════════════════════════════════════════════════════════
+
+  // ── يوم 1 (14 مايو، خميس): الوصول 10:50 صباحاً ──
+  it[0] = { ...it[0], title: "الوصول إلى سيول واستكشاف خفيف",
+    narrative: "🛬 وصولك المبكر (10:50ص) ميزة كبيرة! لديك يوم كامل. بعد تخليص الجوازات (~45د) و AREX (43د)، ستكون في الفندق ~1:30م. اطلب Early Check-in بـKakaoTalk قبل السفر. يوم خفيف: المسجد + إنسادونغ + عشاء مبكر + نوم 9م = جيت لاج أخف. تجنّب القصور اليوم لأنها مرهقة بعد سفر طويل.",
+    type: "arrival",
+    flight: { from: "Abu Dhabi (EY 822)", to: "Seoul ICN", arrTime: "10:50" }, items: [
+    { id: "t1", time: "10:50", text: "🛬 الوصول لمطار إنتشون - رحلة EY822", type: "transport", lat: 37.4602, lng: 126.4407 },
+    { id: "t2", time: "11:00", text: "🛂 تخليص الجوازات + استلام الحقائب (~45د)", type: "transport" },
+    { id: "t3", time: "12:00", text: "🚄 AREX Express → محطة سيول", type: "transport", refId: "tx4", lat: 37.4602, lng: 126.4407 },
+    { id: "t4", time: "13:00", text: "🥩 غداء EID Halal Korean (إيتيوون)", type: "food", refId: "f1", lat: 37.5341, lng: 126.9947 },
+    { id: "t5", time: "14:30", text: "🏨 تسجيل الدخول / إيداع الحقائب", type: "hotel" },
+    { id: "t6", time: "16:00", text: "🕌 المسجد المركزي + تجوّل إيتيوون", type: "mosque", refId: "mq1", lat: 37.5347, lng: 126.9929 },
+    { id: "t7", time: "18:00", text: "🎨 إنسادونغ - شاي تقليدي + تذكارات", type: "attraction", refId: "a4", lat: 37.5740, lng: 126.9856 },
+    { id: "t8", time: "20:00", text: "🥩 عشاء خفيف + نوم مبكر (لجيت لاج)", type: "food" }
+  ]};
+
+  // ── يوم 2 (15 مايو، جمعة): قصور سيول + 🏮 فوانيس اللوتس ──
+  it[1] = { ...it[1], title: "✨ القصور + مهرجان فوانيس اللوتس",
+    narrative: "يوم تاريخي ثقيل بالفعاليات! القصور صباحاً، صلاة الجمعة في المسجد المركزي ظهراً، ومساءً مهرجان الفوانيس (15-16 مايو) - الحدث الأبرز. تنقل بالمشي أو محطة مترو واحدة بين القصور.",
+    type: "normal", items: [
+    { id: "t9", time: "08:30", text: "🏯 قصر غيونغبوكغونغ + استئجار هانبوك", type: "attraction", refId: "a1", lat: 37.5796, lng: 126.9770 },
+    { id: "t10", time: "10:00", text: "👮 مراسم تغيير الحرس الملكي", type: "attraction", lat: 37.5796, lng: 126.9770 },
+    { id: "t11", time: "11:30", text: "🏘️ قرية بوكتشون هانوك", type: "attraction", refId: "a2", lat: 37.5826, lng: 126.9831 },
+    { id: "t12", time: "12:30", text: "🕌 صلاة الجمعة في المسجد المركزي", type: "mosque", refId: "mq1", lat: 37.5347, lng: 126.9929 },
+    { id: "t13", time: "14:00", text: "🥩 غداء Busan Jib (غرفة صلاة)", type: "food", refId: "f2", lat: 37.5636, lng: 126.9836 },
+    { id: "t14", time: "16:00", text: "🛍️ تسوق ميونغ‌دونغ", type: "shop", refId: "s1", lat: 37.5636, lng: 126.9826 },
+    { id: "t15", time: "19:00", text: "🏮 ✨ استعراض فوانيس اللوتس - 100,000 فانوس", type: "festival", refId: "fs2", lat: 37.5723, lng: 126.9831 }
+  ]};
+
+  // ── يوم 3 (16 مايو، سبت): DMZ ──
+  it[2] = { ...it[2], title: "DMZ - المنطقة منزوعة السلاح",
+    narrative: "يوم تاريخي مكثف. جولة DMZ منظمة (8 ساعات) تحجز عبر Klook/Trazy. الجواز إلزامي. مساءً نصب الحرب قرب الفندق + عشاء Yang Good الحلال.",
+    type: "normal", items: [
+    { id: "t16", time: "07:30", text: "🎯 جولة DMZ كاملة منظمة (يوم كامل)", type: "tour", refId: "tr1", lat: 37.9285, lng: 126.6868 },
+    { id: "t17", time: "15:30", text: "⚔️ نصب الحرب War Memorial (إيتيوون)", type: "attraction", refId: "a43", lat: 37.5369, lng: 126.9774 },
+    { id: "t18", time: "18:00", text: "🌃 برج N سيول + غروب", type: "attraction", refId: "a3", lat: 37.5512, lng: 126.9882 },
+    { id: "t19", time: "20:00", text: "🥩 عشاء Yang Good Halal BBQ", type: "food", refId: "f3", lat: 37.5006, lng: 127.0364 }
+  ]};
+
+  // ── يوم 4 (17 مايو، أحد): Nami Island + Garden of Morning Calm ──
+  it[3] = { ...it[3], title: "Nami Island + Garden of Morning Calm",
+    narrative: "هروب من المدينة. ITX-Cheongchun من سيول لـChuncheon (1س 20د، ₩7,800). دراجة سكة Gangchon ثم Nami بالعبارة ثم الحديقة. يوم رومانسي مريح. عودة للفندق + تجهيز حقائب جيجو.",
+    type: "normal", items: [
+    { id: "t20", time: "08:30", text: "🚄 ITX-Cheongchun → Chuncheon", type: "transport", refId: "tx5", lat: 37.5800, lng: 127.0470 },
+    { id: "t21", time: "10:30", text: "🚲 Gangchon Rail Bike (8.5كم)", type: "entertainment", refId: "a38", lat: 37.8467, lng: 127.6147 },
+    { id: "t22", time: "12:30", text: "🥩 غداء + استراحة", type: "food" },
+    { id: "t23", time: "14:00", text: "🌳 جزيرة Nami - شجرات الميتاسيكويا", type: "attraction", refId: "a37", lat: 37.7906, lng: 127.5256 },
+    { id: "t24", time: "16:30", text: "🌸 Garden of Morning Calm", type: "attraction", refId: "a39", lat: 37.7795, lng: 127.4495 },
+    { id: "t25", time: "19:00", text: "🚄 العودة لسيول", type: "transport" },
+    { id: "t26", time: "21:00", text: "🏨 الفندق + تجهيز حقائب جيجو", type: "hotel" }
+  ]};
+
+  // ── يوم 5 (18 مايو، إثنين): سيول → جيجو + الوسط/الجنوب ──
+  it[4] = { ...it[4], title: "الانتقال لجيجو + الجنوب",
+    narrative: "بداية فصل الجزيرة! ✈️ Gimpo→Jeju (1س 15د، ₩60-90k). احجز الرحلة الصباحية لتستفيد من اليوم. استلام السيارة (رخصة دولية إلزامية، $50-90/يوم). جولة الجنوب في الطريق للفندق - استثمار ذكي للوقت.",
+    type: "transit",
+    flight: { from: "Gimpo (GMP)", to: "Jeju (CJU)", depTime: "09:30", arrTime: "10:45" }, items: [
+    { id: "t27", time: "07:30", text: "🚇 المترو لـGimpo (35د)", type: "transport" },
+    { id: "t28", time: "09:30", text: "✈️ طيران Gimpo → Jeju", type: "transport", refId: "tx1", lat: 37.5586, lng: 126.7942 },
+    { id: "t29", time: "11:30", text: "🚗 استلام السيارة المستأجرة", type: "transport" },
+    { id: "t30", time: "13:00", text: "🥩 غداء Asalam (شهادة حلال + مصلى)", type: "food", refId: "f17", lat: 33.5106, lng: 126.5219 },
+    { id: "t31", time: "14:30", text: "🌺 حديقة Camellia Hill النباتية", type: "attraction", refId: "a24", lat: 33.2770, lng: 126.3614 },
+    { id: "t32", time: "16:00", text: "💧 شلال Cheonjeyeon (3 طوابق)", type: "attraction", refId: "a25", lat: 33.2528, lng: 126.4192 },
+    { id: "t33", time: "17:30", text: "🪨 منحدرات Jusangjeollidae البازلتية", type: "attraction", refId: "a26", lat: 33.2381, lng: 126.4264 },
+    { id: "t34", time: "19:30", text: "🏨 تسجيل في فندق جيجو", type: "hotel" }
+  ]};
+
+  // ── يوم 6 (19 مايو، ثلاثاء): شرق جيجو ──
+  it[5] = { ...it[5], title: "شرق جيجو - شروق وغطاسات",
+    narrative: "ابدأ مبكراً (5:30ص) لشروق Seongsan ⭐ - تجربة لا تُنسى. السيارة المستأجرة ضرورية - المسافات بين المعالم 20-40د. غداء بحري على الإطلالة في Bada Punggyeong.",
+    type: "normal", items: [
+    { id: "t35", time: "05:30", text: "🚗 الانطلاق المبكر إلى Seongsan", type: "transport" },
+    { id: "t36", time: "06:30", text: "🌅 شروق الشمس من Seongsan Ilchulbong ✨", type: "attraction", refId: "a9", lat: 33.4582, lng: 126.9415 },
+    { id: "t37", time: "09:00", text: "🌊 Seopjikoji - رأس الجزيرة الشرقي", type: "attraction", refId: "a26b", lat: 33.4587, lng: 126.9301 },
+    { id: "t38", time: "11:00", text: "🤿 عرض غطاسات Haenyeo التراثيات", type: "attraction", refId: "a28", lat: 33.4660, lng: 126.9381 },
+    { id: "t39", time: "13:00", text: "🥩 غداء Bada Punggyeong (إطلالة بحر)", type: "food", refId: "f20", lat: 33.4404, lng: 126.7176 },
+    { id: "t40", time: "15:00", text: "🏚️ قرية Seongeup التقليدية", type: "attraction", refId: "a29", lat: 33.3949, lng: 126.7905 },
+    { id: "t41", time: "16:30", text: "🏖️ شاطئ Hamdeok (مياه فيروزية)", type: "attraction", refId: "a27", lat: 33.5436, lng: 126.6700 },
+    { id: "t42", time: "18:30", text: "🏨 العودة للفندق + استرخاء", type: "hotel" }
+  ]};
+
+  // ── يوم 7 (20 مايو، أربعاء): غرب جيجو ──
+  it[6] = { ...it[6], title: "غرب جيجو - الشاي والشاطئ",
+    narrative: "يوم أهدأ في الغرب. متحف الشاي الأخضر O'Sulloc يستحق ساعتين. الكهف البركاني (Hyeopjae) و Hallim Park متجاورين. مساءً عودة لجيجو سيتي للسوق الليلي + تجهيز حقائب بوسان.",
+    type: "normal", items: [
+    { id: "t43", time: "09:30", text: "🍵 متحف O'Sulloc + حقول الشاي", type: "attraction", refId: "a14", lat: 33.3061, lng: 126.2898 },
+    { id: "t44", time: "11:30", text: "🌬️ طريق Sinchang الساحلي والطواحين", type: "attraction", lat: 33.4042, lng: 126.2018 },
+    { id: "t45", time: "13:00", text: "🥩 غداء Bagdad Halal", type: "food", refId: "f18", lat: 33.4996, lng: 126.5312 },
+    { id: "t46", time: "14:30", text: "🕳️ كهف Hyeopjae (أنبوب حمم بركاني)", type: "attraction", refId: "a10b", lat: 33.3947, lng: 126.2553 },
+    { id: "t47", time: "16:00", text: "🌴 حديقة Hallim - متعددة الحدائق", type: "attraction", refId: "a12", lat: 33.3942, lng: 126.2391 },
+    { id: "t48", time: "17:30", text: "🏖️ شاطئ هيوبجاي (مياه كريستالية)", type: "attraction", lat: 33.3942, lng: 126.2391 },
+    { id: "t49", time: "19:30", text: "🛍️ سوق دونغمون الليلي + عشاء", type: "shop", refId: "s4", lat: 33.5126, lng: 126.5266 }
+  ]};
+
+  // ── يوم 8 (21 مايو، خميس): جيجو → بوسان + Songdo + هاوندي ──
+  it[7] = { ...it[7], title: "الانتقال لبوسان + Songdo والشاطئ",
+    narrative: "✈️ Jeju→Busan/Gimhae (1س، ₩70-100k). تسليم السيارة في مطار جيجو. بوصول بوسان، Songdo Skywalk + تلفريك على الطريق + شاطئ هاوندي مساءً. ليلة في فندق هاوندي.",
+    type: "transit",
+    flight: { from: "Jeju (CJU)", to: "Busan (PUS)", depTime: "10:30", arrTime: "11:30" }, items: [
+    { id: "t50", time: "08:30", text: "🚗 تسليم السيارة في مطار جيجو", type: "transport" },
+    { id: "t51", time: "10:30", text: "✈️ طيران Jeju → Busan", type: "transport", refId: "tx2", lat: 33.5113, lng: 126.4930 },
+    { id: "t52", time: "12:30", text: "🚖 تاكسي إلى Songdo (30د)", type: "transport" },
+    { id: "t53", time: "13:30", text: "🥩 غداء Cappadocia Turkish (قرب المسجد)", type: "food", refId: "f12", lat: 35.2196, lng: 129.0888 },
+    { id: "t54", time: "15:00", text: "🌉 Songdo Skywalk + التلفريك", type: "entertainment", refId: "e19", lat: 35.0735, lng: 129.0231 },
+    { id: "t55", time: "16:30", text: "🏨 تسجيل في فندق هاوندي", type: "hotel" },
+    { id: "t56", time: "18:00", text: "🏖️ شاطئ Gwangalli (غروب)", type: "attraction", refId: "a21", lat: 35.1531, lng: 129.1187 },
+    { id: "t57", time: "19:30", text: "🥩 عشاء Namaste Haeundae", type: "food", refId: "f13", lat: 35.1614, lng: 129.1652 }
+  ]};
+
+  // ── يوم 9 (22 مايو، جمعة): قلب بوسان مكثف ──
+  it[8] = { ...it[8], title: "قلب بوسان - يوم مكثف",
+    narrative: "يوم بوسان الأبرز - مكثف لأنه ليلتنا الأخيرة. صباحاً Yonggungsa والمعابد، صلاة الجمعة في مسجد Al-Fatah ضرورية، ظهراً Sky Capsule، ومساءً غامتشون + عرض الدرونز Gwangalli (الجمعة لا يوجد - السبت). تنقّل بالمترو + تاكسي.",
+    type: "normal", items: [
+    { id: "t58", time: "08:00", text: "⛩️ معبد Haedong Yonggungsa على البحر", type: "attraction", refId: "a17", lat: 35.1884, lng: 129.2236 },
+    { id: "t59", time: "10:30", text: "🚞 Haeundae Sky Capsule + Blueline", type: "entertainment", refId: "a19", lat: 35.1574, lng: 129.1684 },
+    { id: "t60", time: "12:30", text: "🕌 صلاة الجمعة - مسجد Al-Fatah", type: "mosque", refId: "mq2", lat: 35.2196, lng: 129.0888 },
+    { id: "t61", time: "14:00", text: "🥩 غداء Bombay Brau", type: "food", refId: "f14", lat: 35.1620, lng: 129.1640 },
+    { id: "t62", time: "15:30", text: "🎨 قرية غامتشون الملونة", type: "attraction", refId: "a20", lat: 35.0972, lng: 129.0107 },
+    { id: "t63", time: "17:30", text: "🐟 سوق Jagalchi + BIFF Square", type: "shop", refId: "s5", lat: 35.0966, lng: 129.0306 },
+    { id: "t64", time: "19:00", text: "🌃 Busan X the Sky (أعلى منصة)", type: "entertainment", refId: "e12", lat: 35.1591, lng: 129.1606 },
+    { id: "t65", time: "20:30", text: "🏮 مهرجان فوانيس Samgwangsa", type: "festival", refId: "fs3", lat: 35.1480, lng: 129.0411 }
+  ]};
+
+  // ── يوم 10 (23 مايو، سبت): KTX → سيول + تسوق نهائي ──
+  it[9] = { ...it[9], title: "🚄 العودة لسيول + Lotte Tower",
+    narrative: "🚄 KTX صباحي مريح من بوسان (8ص → 10:15ص سيول). تسجيل الدخول في فندق سيول الأخير (قريب من ICN). بعد الظهر: Lotte World Tower + DDP + تسوق نهائي. Gwangalli الدرونز السبت لكنك في سيول. آخر ليلة استمتع بنهر Cheonggyecheon ليلاً.",
+    type: "transit", items: [
+    { id: "t66", time: "07:00", text: "🚐 الفطور المبكر + تسليم الفندق", type: "transport" },
+    { id: "t67", time: "08:00", text: "🚄 KTX بوسان → سيول (2س 15د)", type: "transport", refId: "tx3", lat: 35.1156, lng: 129.0423 },
+    { id: "t68", time: "10:30", text: "🚖 إلى الفندق الأخير + إيداع الحقائب", type: "transport" },
+    { id: "t69", time: "12:00", text: "🥩 غداء Petra (مذاق عربي)", type: "food", refId: "f8", lat: 37.5344, lng: 126.9952 },
+    { id: "t70", time: "13:30", text: "🗼 برج Lotte World + Seoul Sky", type: "attraction", refId: "a32", lat: 37.5126, lng: 127.1025 },
+    { id: "t71", time: "16:00", text: "🛸 DDP - Dongdaemun Design Plaza", type: "attraction", refId: "a35", lat: 37.5673, lng: 127.0094 },
+    { id: "t72", time: "17:30", text: "🛍️ تسوق ختامي ميونغ‌دونغ + الهدايا", type: "shop", refId: "s1", lat: 37.5636, lng: 126.9826 },
+    { id: "t73", time: "20:00", text: "🌊 نهر Cheonggyecheon ليلاً + عشاء وداعي", type: "attraction", refId: "a33", lat: 37.5687, lng: 126.9783 }
+  ]};
+
+  // ── يوم 11 (24 مايو، أحد): المغادرة 17:50 ──
+  it[10] = { ...it[10], title: "🛫 المغادرة - رحلة EY823 (17:50)",
+    narrative: "💡 رحلة EY823 الساعة 17:50 → يجب الوصول للمطار 14:50 (3 ساعات قبل). معنى ذلك: استيقاظ مريح + Ikseon-dong صباحاً + غداء + AREX. لا تترك حقائبك في الفندق - استلمها بعد Check-out 11ص ثم اتركها في خزائن سيول Station أثناء التجوّل.",
+    type: "departure",
+    flight: { from: "Seoul ICN (EY 823)", to: "Abu Dhabi", depTime: "17:50" }, items: [
+    { id: "t74", time: "08:30", text: "🥩 فطور هادئ + تجهيز الحقائب", type: "food" },
+    { id: "t75", time: "10:00", text: "🏨 Check-out + إيداع الحقائب لاحقاً", type: "hotel" },
+    { id: "t76", time: "10:30", text: "🏘️ Ikseon-dong - أزقة هانوك للصور النهائية", type: "attraction", refId: "a36", lat: 37.5736, lng: 126.9889 },
+    { id: "t77", time: "12:30", text: "🥩 غداء أخير + شراء آخر التذكارات", type: "food" },
+    { id: "t78", time: "14:00", text: "🚄 AREX من سيول لإنتشون (43د)", type: "transport", refId: "tx4", lat: 37.4602, lng: 126.4407 },
+    { id: "t79", time: "14:50", text: "✈️ تسجيل الرحلة EY823 + Duty-Free", type: "transport", lat: 37.4602, lng: 126.4407 },
+    { id: "t80", time: "17:50", text: "🛫 المغادرة من ICN → أبوظبي → جدة → أبها", type: "transport" }
+  ]};
+
+  return it;
+}
+
+const BUDGET_DEFAULT = [
+  { id: "b1", category: "الفنادق Grand (10 ليالٍ 4-5★)", estimated: 2000, actual: 0, icon: "🏨" },
+  { id: "b2", category: "الطعام (11 يوم × زوجين)", estimated: 900, actual: 0, icon: "🍽️" },
+  { id: "b3", category: "تذاكر الطيران الداخلي (رحلتان)", estimated: 360, actual: 0, icon: "✈️" },
+  { id: "b12", category: "🚄 KTX بوسان→سيول + AREX (زوجان)", estimated: 130, actual: 0, icon: "🚄" },
+  { id: "b4", category: "استئجار سيارة جيجو (3 أيام)", estimated: 240, actual: 0, icon: "🚗" },
+  { id: "b13", category: "جولة DMZ منظمة (زوجان)", estimated: 180, actual: 0, icon: "🎯" },
+  { id: "b5", category: "تذاكر دخول المعالم", estimated: 380, actual: 0, icon: "🎫" },
+  { id: "b9", category: "الترفيه (Sky Capsule، تلفريك)", estimated: 280, actual: 0, icon: "🎢" },
+  { id: "b6", category: "التسوق والتذكارات", estimated: 600, actual: 0, icon: "🛍️" },
+  { id: "b7", category: "البيانات / SIM", estimated: 50, actual: 0, icon: "📱" },
+  { id: "b8", category: "التأمين السفري", estimated: 130, actual: 0, icon: "🛡️" }
+];
+
+const EMERGENCY = [
+  { name: "السفارة السعودية في سيول", phone: "+82-2-739-0631", note: "Yongsan-gu" },
+  { name: "الإسعاف والإطفاء", phone: "119", note: "خط طوارئ" },
+  { name: "الشرطة", phone: "112", note: "خط الشرطة" },
+  { name: "خط الترجمة السياحي", phone: "1330", note: "24/7 بالعربية" }
+];
+
+const APPS = [
+  { name: "Naver Map", note: "ملاحة بديل جوجل", icon: "🗺️" },
+  { name: "Papago", note: "أفضل مترجم كوري", icon: "🌐" },
+  { name: "Kakao T", note: "طلب تاكسي", icon: "🚕" },
+  { name: "KakaoTalk", note: "تواصل مع الفنادق", icon: "💬" },
+  { name: "Korail Talk", note: "حجز قطارات", icon: "🚄" },
+  { name: "Subway Korea", note: "خرائط مترو", icon: "🚇" },
+  { name: "Muslim Pro", note: "أوقات الصلاة", icon: "🕌" },
+  { name: "KakaoMap", note: "خرائط بديلة", icon: "📍" }
+];
+
+const TABS = [
+  { id: "overview", label: "نظرة عامة", svg: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>' },
+  { id: "tasks", label: "مهام التجهيز", svg: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>' },
+  { id: "itinerary", label: "الجدول", svg: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' },
+  { id: "cities", label: "المدن", svg: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>' },
+  { id: "library", label: "المكتبة", svg: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' },
+  { id: "map", label: "الخريطة", svg: '<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>' },
+  { id: "budget", label: "الميزانية", svg: '<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>' },
+  { id: "info", label: "معلومات", svg: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>' }
+];
+
+const CITY_COLORS = { seoul: "#1a4d4a", jeju: "#c9442b", busan: "#b8924a" };
+
+// ─── 📋 PRE-TRIP TASKS (مهام التجهيز للسفر) ───
+const TASKS_DEFAULT = [
+  // قبل 4-6 أسابيع
+  { id: "pt1", cat: "documents", catLabel: "🛂 الوثائق", label: "تحديث جوازات السفر (صلاحية > 6 أشهر)", priority: "high", timing: "قبل 6 أسابيع", done: false },
+  { id: "pt2", cat: "documents", catLabel: "🛂 الوثائق", label: "التقديم على K-ETA عبر k-eta.go.kr ($7)", priority: "high", timing: "قبل 4 أسابيع", done: false, link: "https://www.k-eta.go.kr" },
+  { id: "pt3", cat: "documents", catLabel: "🛂 الوثائق", label: "استخراج رخصة قيادة دولية (لجيجو)", priority: "high", timing: "قبل 3 أسابيع", done: false },
+  { id: "pt4", cat: "documents", catLabel: "🛂 الوثائق", label: "عمل تأمين سفر شامل (طبي + إلغاء)", priority: "high", timing: "قبل 3 أسابيع", done: false },
+
+  // الحجوزات
+  { id: "pt5", cat: "booking", catLabel: "✈️ الحجوزات", label: "✅ تذاكر الطيران محجوزة (Etihad 9T7ZEZ)", priority: "high", timing: "✓ مكتمل", done: true },
+  { id: "pt6", cat: "booking", catLabel: "✈️ الحجوزات", label: "اختيار المقاعد على Etihad.com (EY822/EY823)", priority: "med", timing: "قبل أسبوع", done: false },
+  { id: "pt7", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز فنادق سيول (4 ليالٍ: 14-17 مايو)", priority: "high", timing: "قبل 4-6 أسابيع", done: false },
+  { id: "pt8", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز فنادق جيجو (3 ليالٍ: 18-20 مايو)", priority: "high", timing: "قبل 4-6 أسابيع", done: false },
+  { id: "pt9", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز فندق بوسان (ليلتان: 21-22 مايو)", priority: "high", timing: "قبل 4-6 أسابيع", done: false },
+  { id: "pt9b", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز فندق سيول الأخير (ليلة 23 - قرب ICN)", priority: "high", timing: "قبل 4-6 أسابيع", done: false },
+  { id: "pt10", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز رحلة Gimpo→Jeju (Jeju Air/T'way)", priority: "high", timing: "قبل 3-4 أسابيع", done: false },
+  { id: "pt11", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز رحلة Jeju→Busan", priority: "high", timing: "قبل 3-4 أسابيع", done: false },
+  { id: "pt12", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز KTX بوسان→سيول عبر Korail", priority: "med", timing: "قبل 2-3 أسابيع", done: false },
+  { id: "pt13", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز سيارة جيجو (Lotte/SK Rent-a-Car)", priority: "high", timing: "قبل 3 أسابيع", done: false },
+  { id: "pt14", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز جولة DMZ (Klook/Trazy)", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt15", cat: "booking", catLabel: "✈️ الحجوزات", label: "حجز Sky Capsule في هاوندي مسبقاً", priority: "med", timing: "قبل 1-2 أسبوع", done: false },
+  { id: "pt15b", cat: "booking", catLabel: "✈️ الحجوزات", label: "📩 طلب Early Check-in من فندق سيول الأول (وصولك 12:30 ظهراً)", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt15c", cat: "booking", catLabel: "✈️ الحجوزات", label: "Online Check-in رحلة EY822 (24س قبل)", priority: "high", timing: "12 مايو", done: false },
+  { id: "pt15d", cat: "booking", catLabel: "✈️ الحجوزات", label: "Online Check-in رحلة EY823 (24س قبل)", priority: "high", timing: "23 مايو", done: false },
+
+  // التطبيقات
+  { id: "pt16", cat: "apps", catLabel: "📱 التطبيقات", label: "تنزيل Naver Map (ملاحة)", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt17", cat: "apps", catLabel: "📱 التطبيقات", label: "تنزيل Papago (مترجم)", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt18", cat: "apps", catLabel: "📱 التطبيقات", label: "تنزيل Kakao T (تاكسي)", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt19", cat: "apps", catLabel: "📱 التطبيقات", label: "تنزيل Korail Talk (قطارات)", priority: "med", timing: "قبل أسبوع", done: false },
+  { id: "pt20", cat: "apps", catLabel: "📱 التطبيقات", label: "تنزيل Subway Korea", priority: "med", timing: "قبل أسبوع", done: false },
+  { id: "pt21", cat: "apps", catLabel: "📱 التطبيقات", label: "تنزيل Muslim Pro (أوقات الصلاة)", priority: "med", timing: "قبل أسبوع", done: false },
+  { id: "pt22", cat: "apps", catLabel: "📱 التطبيقات", label: "حجز eSIM من Airalo قبل السفر", priority: "med", timing: "قبل 3-7 أيام", done: false },
+
+  // المال والمدفوعات
+  { id: "pt23", cat: "money", catLabel: "💰 المال", label: "صرف 200-500$ كاش بالـKRW", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt24", cat: "money", catLabel: "💰 المال", label: "إخطار البنك بالسفر لكوريا", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt25", cat: "money", catLabel: "💰 المال", label: "تفعيل بطاقات Visa/Master للخارج", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt26", cat: "money", catLabel: "💰 المال", label: "حفظ أرقام الطوارئ من البنك", priority: "med", timing: "قبل أسبوع", done: false },
+
+  // الحقيبة - ملابس
+  { id: "pt27", cat: "packing", catLabel: "🎒 الحقيبة", label: "ملابس خفيفة + جاكيت للمساء (15-23°م)", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt28", cat: "packing", catLabel: "🎒 الحقيبة", label: "حذاء مشي مريح (للقصور والشواطئ)", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt29", cat: "packing", catLabel: "🎒 الحقيبة", label: "شمسية صغيرة (احتمال أمطار)", priority: "med", timing: "قبل أسبوع", done: false },
+  { id: "pt30", cat: "packing", catLabel: "🎒 الحقيبة", label: "نظارة شمسية + كريم واقٍ", priority: "med", timing: "قبل أسبوع", done: false },
+  { id: "pt31", cat: "packing", catLabel: "🎒 الحقيبة", label: "محول كهربائي (Type C/F - 220V)", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt32", cat: "packing", catLabel: "🎒 الحقيبة", label: "بنك طاقة للتطبيقات الكثيرة", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt33", cat: "packing", catLabel: "🎒 الحقيبة", label: "أدوية شخصية + روشتاتها", priority: "high", timing: "قبل أسبوع", done: false },
+
+  // الطعام والاحتياجات الخاصة
+  { id: "pt34", cat: "food", catLabel: "🥩 الحلال + GF", label: "حفظ نص 'مسلم' الكوري في الجوال", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt35", cat: "food", catLabel: "🥩 الحلال + GF", label: "حفظ نص 'حساسية جلوتين' الكوري", priority: "high", timing: "قبل أسبوع", done: false },
+  { id: "pt36", cat: "food", catLabel: "🥩 الحلال + GF", label: "تجهيز وجبات GF خفيفة احتياطية", priority: "med", timing: "قبل أسبوع", done: false },
+
+  // قبل المغادرة بيوم
+  { id: "pt37", cat: "lastday", catLabel: "🚪 قبل المغادرة", label: "Online Check-in (24 ساعة قبل)", priority: "high", timing: "يوم السفر", done: false },
+  { id: "pt38", cat: "lastday", catLabel: "🚪 قبل المغادرة", label: "نسخ احتياطية للوثائق على الإيميل", priority: "high", timing: "يوم السفر", done: false },
+  { id: "pt39", cat: "lastday", catLabel: "🚪 قبل المغادرة", label: "إرسال موعد الوصول للفندق (KakaoTalk)", priority: "med", timing: "يوم السفر", done: false },
+  { id: "pt40", cat: "lastday", catLabel: "🚪 قبل المغادرة", label: "شحن الأجهزة + بنك الطاقة", priority: "high", timing: "يوم السفر", done: false }
+];
+</script>

@@ -1,0 +1,829 @@
+<script>
+// ═══════════════════════════════════════════════════════════
+//   LIBRARY SECTION (browse all POIs)
+// ═══════════════════════════════════════════════════════════
+
+function renderLibrary() {
+  const all = allLib();
+  const stats = {
+    total: all.length,
+    halal: all.filter(l => l.halal).length,
+    gf: all.filter(l => l.gf).length,
+    custom: state.customLib.length
+  };
+
+  // Initialize sort if missing
+  if (!state.libFilters.sort) state.libFilters.sort = "default";
+
+  $("sec-library").innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+        <h2>مكتبة المواقع</h2>
+      </div>
+      <p>كل المعالم والمطاعم والترفيه والأسواق - ${stats.total} موقع جاهز للاختيار</p>
+    </div>
+
+    <div class="lib-stats">
+      <div class="lib-stat"><div class="lib-stat-i">📚</div><div class="lib-stat-v">${stats.total}</div><div class="lib-stat-l">إجمالي</div></div>
+      <div class="lib-stat"><div class="lib-stat-i">🥩</div><div class="lib-stat-v">${stats.halal}</div><div class="lib-stat-l">حلال</div></div>
+      <div class="lib-stat"><div class="lib-stat-i">🌾</div><div class="lib-stat-v">${stats.gf}</div><div class="lib-stat-l">GF</div></div>
+      <div class="lib-stat"><div class="lib-stat-i">⭐</div><div class="lib-stat-v">${stats.custom}</div><div class="lib-stat-l">مخصص</div></div>
+    </div>
+
+    <div class="flt-bar">
+      <div class="flt-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="lib-search" placeholder="ابحث بالاسم أو المنطقة..." value="${state.libFilters.q || ''}" oninput="state.libFilters.q=this.value;renderLibList()">
+        ${state.libFilters.q ? `<button class="flt-search-x" onclick="state.libFilters.q='';renderLibrary()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
+      </div>
+
+      <div class="flt-row">
+        <span class="flt-lbl">المدينة</span>
+        <button class="flt-chip ${state.libFilters.city === 'all' ? 'act' : ''}" onclick="state.libFilters.city='all';renderLibList()">الكل</button>
+        ${CITIES.map(c => `<button class="flt-chip ${state.libFilters.city === c.id ? 'act' : ''}" onclick="state.libFilters.city='${c.id}';renderLibList()">${c.name}</button>`).join('')}
+      </div>
+
+      <div class="flt-row">
+        <span class="flt-lbl">النوع</span>
+        <button class="flt-chip ${state.libFilters.type === 'all' ? 'act' : ''}" onclick="state.libFilters.type='all';renderLibList()">الكل</button>
+        ${Object.entries(TYPES).filter(([k]) => ['food','attraction','entertainment','shop','mosque','festival'].includes(k)).map(([k, v]) => {
+          const cnt = all.filter(l => l.type === k).length;
+          return `<button class="flt-chip ${state.libFilters.type === k ? 'act' : ''}" onclick="state.libFilters.type='${k}';renderLibList()">${v.icon} ${v.label} <span style="opacity:0.6">${cnt}</span></button>`;
+        }).join('')}
+      </div>
+
+      <div class="flt-row">
+        <span class="flt-lbl">الميزات</span>
+        <button class="flt-chip ${state.libFilters.halal ? 'act-ok' : ''}" onclick="state.libFilters.halal=!state.libFilters.halal;renderLibList()">🥩 حلال فقط</button>
+        <button class="flt-chip ${state.libFilters.gf ? 'act-gold' : ''}" onclick="state.libFilters.gf=!state.libFilters.gf;renderLibList()">🌾 GF فقط</button>
+        <button class="flt-chip ${state.libFilters.fav ? 'act-orng' : ''}" onclick="state.libFilters.fav=!state.libFilters.fav;renderLibList()">❤️ المفضلة</button>
+      </div>
+
+      <div class="flt-row">
+        <span class="flt-lbl">ترتيب</span>
+        <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'default' ? 'act' : ''}" onclick="state.libFilters.sort='default';renderLibList()">افتراضي</button>
+        <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'name' ? 'act' : ''}" onclick="state.libFilters.sort='name';renderLibList()">أ-ي</button>
+        <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'city' ? 'act' : ''}" onclick="state.libFilters.sort='city';renderLibList()">المدينة</button>
+        <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'type' ? 'act' : ''}" onclick="state.libFilters.sort='type';renderLibList()">النوع</button>
+      </div>
+    </div>
+
+    <div id="lib-result-bar"></div>
+    <div id="lib-list"></div>
+  `;
+  renderLibList();
+}
+
+function renderLibList() {
+  const list = $("lib-list");
+  const bar = $("lib-result-bar");
+  if (!list) return;
+  const f = state.libFilters;
+
+  let filtered = allLib().filter(l => {
+    if (f.city !== "all" && l.city !== f.city) return false;
+    if (f.type !== "all" && l.type !== f.type) return false;
+    if (f.halal && !l.halal) return false;
+    if (f.gf && !l.gf) return false;
+    if (f.fav && !state.favs.includes(l.id)) return false;
+    if (f.q) {
+      const q = f.q.toLowerCase();
+      const hay = ((l.name || '') + ' ' + (l.area || '') + ' ' + (l.note || '')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  // Sort
+  if (f.sort === "name") filtered.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+  else if (f.sort === "city") filtered.sort((a, b) => (a.city || '').localeCompare(b.city) || a.name.localeCompare(b.name, 'ar'));
+  else if (f.sort === "type") filtered.sort((a, b) => (a.type || '').localeCompare(b.type) || a.name.localeCompare(b.name, 'ar'));
+
+  // Active filter pills
+  const activePills = [];
+  if (f.city !== "all") activePills.push({ k: 'city', l: cityById(f.city)?.name || f.city, clear: "state.libFilters.city='all'" });
+  if (f.type !== "all") activePills.push({ k: 'type', l: TYPES[f.type]?.label || f.type, clear: "state.libFilters.type='all'" });
+  if (f.halal) activePills.push({ k: 'halal', l: '🥩 حلال', clear: "state.libFilters.halal=false" });
+  if (f.gf) activePills.push({ k: 'gf', l: '🌾 GF', clear: "state.libFilters.gf=false" });
+  if (f.fav) activePills.push({ k: 'fav', l: '❤️ مفضلة', clear: "state.libFilters.fav=false" });
+  if (f.q) activePills.push({ k: 'q', l: `"${f.q}"`, clear: "state.libFilters.q=''" });
+
+  if (bar) {
+    bar.innerHTML = `
+      <div class="flt-result-bar">
+        <div class="flt-cnt">
+          <strong>${filtered.length}</strong> من ${allLib().length} موقع
+          ${activePills.length > 0 ? `· <span class="flt-cnt-active">${activePills.length} فلتر نشط</span>` : ''}
+        </div>
+        ${activePills.length > 0 ? `
+          <div class="flt-active-list">
+            ${activePills.map(p => `
+              <span class="flt-active-pill">
+                ${p.l}
+                <button onclick="${p.clear};renderLibrary()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </span>
+            `).join('')}
+            <button class="flt-clear-all" onclick="resetFilters()">مسح الكل</button>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  if (filtered.length === 0) {
+    list.innerHTML = `
+      <div class="empty">
+        <div class="empty-i">🔍</div>
+        <div class="empty-t">لا توجد نتائج</div>
+        <p class="empty-d">جرّب تغيير الفلاتر أو ابحث عن كلمة أخرى. لديك ${activePills.length} فلتر نشط الآن.</p>
+        <div class="empty-acts">
+          ${activePills.length > 0 ? `<button class="btn btn-pri" onclick="resetFilters()">مسح كل الفلاتر</button>` : ''}
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = `<div class="lib-grid">${filtered.map(l => renderPOI(l)).join('')}</div>`;
+}
+
+function resetFilters() {
+  state.libFilters = { type: 'all', city: 'all', halal: false, gf: false, fav: false, q: '', sort: 'default' };
+  renderLibrary();
+}
+
+function renderPOI(l) {
+  const isFav = state.favs.includes(l.id);
+  const c = cityById(l.city);
+  return `
+    <div class="poi">
+      <button class="poi-fav" onclick="toggleFav('${l.id}')" title="${isFav ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}">
+        <svg viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <div class="poi-h">
+        <div class="poi-ic t-${l.type}">${l.icon}</div>
+        <div class="poi-info">
+          <div class="poi-n">${l.name}</div>
+          <div class="poi-loc">${c?.name || l.city} · ${l.area}</div>
+        </div>
+      </div>
+      <div class="poi-pills">
+        <span class="pill pill-sm">${TYPES[l.type]?.label || l.type}</span>
+        ${l.halal ? '<span class="pill pill-sm pill-ok">🥩 حلال</span>' : ''}
+        ${l.gf ? '<span class="pill pill-sm pill-gold">🌾 GF</span>' : ''}
+        ${l.cert ? `<span class="pill pill-sm pill-orng">${l.cert}</span>` : ''}
+        ${l.price ? `<span class="pill pill-sm">${l.price}</span>` : ''}
+        ${l.custom ? '<span class="pill pill-sm">⭐ مخصص</span>' : ''}
+      </div>
+      ${l.note ? `<div class="poi-note">${l.note}</div>` : ''}
+      <div class="poi-acts">
+        <button class="poi-add" onclick="addToDayPick('${l.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          أضف ليوم
+        </button>
+        ${l.lat && l.lng ? `<a class="poi-link" href="https://www.google.com/maps/search/?api=1&query=${l.lat},${l.lng}" target="_blank" title="فتح بالخرائط">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </a>` : ''}
+        ${l.custom ? `<button class="poi-link" onclick="deleteCustom('${l.id}')" title="حذف" style="color:var(--persimmon)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+        </button>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function toggleFav(id) {
+  const i = state.favs.indexOf(id);
+  if (i >= 0) state.favs.splice(i, 1);
+  else state.favs.push(id);
+  saveFavs();
+  renderLibList();
+}
+
+function deleteCustom(id) {
+  if (!confirm("حذف هذا الموقع من المكتبة المخصصة؟")) return;
+  state.customLib = state.customLib.filter(l => l.id !== id);
+  saveLib();
+  renderLibrary();
+}
+
+function addToDayPick(refId) {
+  const item = libById(refId);
+  if (!item) return;
+  // Choose day
+  openModal(`
+    <div class="modal-h">
+      <h3>أي يوم؟</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <p class="txs clm mb3">اختر اليوم لإضافة <strong>${item.name}</strong>:</p>
+    <div style="max-height:24rem;overflow-y:auto">
+      ${state.itinerary.filter(d => d.city === item.city).map(d => `
+        <button class="picker-item" onclick="state.activeDayIdx=${d.day-1};state.pendingInsert={dayIdx:${d.day-1}};closeModal();openTimePicker('${refId}')">
+          <div class="picker-item-ic" style="background:var(--accent);color:white">${d.day}</div>
+          <div class="picker-item-info">
+            <div class="picker-item-n">يوم ${d.day} · ${d.weekday}</div>
+            <div class="picker-item-m">${d.dateLabel} · ${cityById(d.city).name} · ${d.items.length} نشاط</div>
+          </div>
+        </button>
+      `).join('')}
+    </div>
+    <p class="txx clm mt2 tac">⚠️ يظهر فقط أيام ${cityById(item.city).name}</p>
+  `);
+}
+
+// ═══════════════════════════════════════════════════════════
+//   MAP SECTION
+// ═══════════════════════════════════════════════════════════
+
+function renderMapSec() {
+  $("sec-map").innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg></div>
+        <h2>خريطة الرحلة</h2>
+      </div>
+      <p>اعرض كل مواقع المكتبة والجدول على الخريطة</p>
+    </div>
+
+    <div class="fb mb2">
+      <button class="fb-btn ${state.mapCity === 'all' ? 'act' : ''}" onclick="state.mapCity='all';drawMarkers()">كل المدن</button>
+      ${CITIES.map(c => `<button class="fb-btn ${state.mapCity === c.id ? 'act' : ''}" onclick="state.mapCity='${c.id}';flyToCity('${c.id}');drawMarkers()">${c.name}</button>`).join('')}
+    </div>
+
+    <div class="map-leg">
+      <span class="fb6 cls">الطبقات:</span>
+      ${[
+        ["plan","📅 الجدول","var(--accent)"],
+        ["food","🍽️ مطاعم","var(--persimmon)"],
+        ["attraction","📍 معالم","var(--accent)"],
+        ["entertainment","🎢 ترفيه","#e11d48"],
+        ["mosque","🕌 مساجد","#047857"],
+        ["shop","🛍️ تسوق","#7c3aed"],
+        ["festival","🎉 فعاليات","#db2777"],
+        ["custom","⭐ مخصص","var(--gold)"]
+      ].map(([k, lbl, col]) => `
+        <button class="lg-d fb-btn ${state.mapLayers[k] ? 'act' : ''}" onclick="state.mapLayers['${k}']=!state.mapLayers['${k}'];drawMarkers()" style="border-color:${col}">
+          <span class="lg-dot" style="background:${col}"></span>
+          <span style="font-size:0.7rem">${lbl}</span>
+        </button>
+      `).join('')}
+    </div>
+
+    <div class="map-wrap"><div id="tripmap"></div></div>
+
+    <p class="txx clm tac mt1">💡 اضغط على نقطة على الخريطة لعرض التفاصيل</p>
+  `;
+
+  setTimeout(initMap, 50);
+}
+
+function initMap() {
+  // Wait for Leaflet to load (it's loaded async from CDN)
+  if (typeof L === 'undefined') {
+    const tm = document.getElementById('tripmap');
+    if (tm) tm.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--muted)">⏳ جاري تحميل الخريطة...</div>';
+    setTimeout(initMap, 200);
+    return;
+  }
+  if (state.mapInst) {
+    state.mapInst.remove();
+    state.mapInst = null;
+  }
+  const tm = document.getElementById('tripmap');
+  if (!tm) return;
+  tm.innerHTML = ''; // clear any loading message
+  const map = L.map('tripmap', { zoomControl: true }).setView([36.5, 127.5], 7);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap', maxZoom: 19
+  }).addTo(map);
+  state.mapInst = map;
+  state.mapMarkers = L.layerGroup().addTo(map);
+  drawMarkers();
+}
+
+function flyToCity(cid) {
+  const c = cityById(cid);
+  if (state.mapInst && c) state.mapInst.setView([c.lat, c.lng], 11);
+}
+
+function drawMarkers() {
+  if (typeof L === 'undefined' || !state.mapMarkers) return;
+  state.mapMarkers.clearLayers();
+
+  // Library POIs
+  allLib().forEach(l => {
+    if (!l.lat || !l.lng) return;
+    if (state.mapCity !== "all" && l.city !== state.mapCity) return;
+    if (l.custom && !state.mapLayers.custom) return;
+    if (!l.custom && !state.mapLayers[l.type]) return;
+    const color = TYPES[l.type]?.color || "#888";
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="background:${color};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);font-size:14px">${l.icon}</div>`,
+      iconSize: [28, 28], iconAnchor: [14, 14]
+    });
+    L.marker([l.lat, l.lng], { icon }).addTo(state.mapMarkers).bindPopup(`
+      <div style="font-family:'IBM Plex Sans Arabic',sans-serif">
+        <strong style="font-size:13px">${l.icon} ${l.name}</strong><br>
+        <span style="font-size:11px;color:#888">${cityById(l.city)?.name} · ${l.area}</span><br>
+        ${l.halal ? '<span style="font-size:10px;color:#047857">🥩 حلال</span> ' : ''}
+        ${l.gf ? '<span style="font-size:10px;color:#b8924a">🌾 GF</span>' : ''}
+        ${l.note ? `<p style="font-size:11px;margin-top:4px">${l.note}</p>` : ''}
+        ${l.lat ? `<a href="https://www.google.com/maps/search/?api=1&query=${l.lat},${l.lng}" target="_blank" style="font-size:11px">فتح بخرائط Google</a>` : ''}
+      </div>
+    `);
+  });
+
+  // Plan items (itinerary)
+  if (state.mapLayers.plan) {
+    state.itinerary.forEach((d, di) => {
+      d.items.forEach(it => {
+        if (!it.lat || !it.lng) return;
+        if (state.mapCity !== "all" && d.city !== state.mapCity) return;
+        const icon = L.divIcon({
+          className: '',
+          html: `<div style="background:var(--accent);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--gold);box-shadow:0 2px 6px rgba(0,0,0,0.4);font-size:11px;font-weight:700">D${d.day}</div>`,
+          iconSize: [26, 26], iconAnchor: [13, 13]
+        });
+        L.marker([it.lat, it.lng], { icon }).addTo(state.mapMarkers).bindPopup(`
+          <div style="font-family:'IBM Plex Sans Arabic',sans-serif">
+            <strong style="font-size:13px">${TYPES[it.type]?.icon || ''} ${it.text}</strong><br>
+            <span style="font-size:11px;color:#888">يوم ${d.day} · ${it.time || ''}</span>
+          </div>
+        `);
+      });
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//   BUDGET SECTION
+// ═══════════════════════════════════════════════════════════
+
+function renderBudget() {
+  const totalEst = state.budget.reduce((s, b) => s + b.estimated, 0);
+  const totalAct = state.budget.reduce((s, b) => s + b.actual, 0);
+  const remaining = totalEst - totalAct;
+  const usdToSar = 3.75;
+
+  $("sec-budget").innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/></svg></div>
+        <h2>الميزانية</h2>
+      </div>
+      <p>تتبع مصاريف الرحلة - تحفظ تلقائياً</p>
+    </div>
+
+    <div class="bud-stats">
+      <div class="card bud-stat">
+        <div class="bud-l">المخطط</div>
+        <div class="bud-v">${'$'+totalEst.toLocaleString()}</div>
+        <div class="bud-sar">${(totalEst*usdToSar).toLocaleString()} ر.س</div>
+      </div>
+      <div class="card bud-stat bud-act-c">
+        <div class="bud-l">المنفق</div>
+        <div class="bud-v">${'$'+totalAct.toLocaleString()}</div>
+        <div class="bud-sar">${(totalAct*usdToSar).toLocaleString()} ر.س</div>
+      </div>
+      <div class="card bud-stat bud-rem-c">
+        <div class="bud-l">المتبقي</div>
+        <div class="bud-v">${'$'+remaining.toLocaleString()}</div>
+        <div class="bud-sar">${(remaining*usdToSar).toLocaleString()} ر.س</div>
+      </div>
+    </div>
+
+    <div class="card mb3">
+      <h4 class="fb7 cli mb2 txm">📊 تفاصيل المصاريف</h4>
+      ${state.budget.map(b => {
+        const pct = b.estimated > 0 ? Math.min(100, (b.actual / b.estimated) * 100) : 0;
+        const over = b.actual > b.estimated;
+        return `
+          <div class="mb3">
+            <div class="b-row">
+              <div class="b-icon">${b.icon}</div>
+              <div class="b-info">
+                <div class="b-n">${b.category}</div>
+                <div class="b-num">
+                  <span>المخطط: $${b.estimated}</span>
+                  <span style="color:${over ? 'var(--err)' : 'var(--accent)'}">المنفق: $${b.actual}</span>
+                </div>
+              </div>
+              <input class="b-inp" type="number" min="0" value="${b.actual}" oninput="updateBud('${b.id}', this.value)">
+            </div>
+            <div class="b-prog"><div class="b-prog-f" style="width:${pct}%;background:${over ? 'var(--err)' : 'var(--accent)'}"></div></div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+
+    <div class="card card-cream">
+      <h4 class="fb7 cli mb2 txm">💱 محول العملات (تقريبي)</h4>
+      <div class="gr g3">
+        <div class="card">
+          <div class="txx clm">USD → KRW</div>
+          <div class="fb7 cli">$1 ≈ ₩1,330</div>
+        </div>
+        <div class="card">
+          <div class="txx clm">USD → SAR</div>
+          <div class="fb7 cli">$1 ≈ 3.75 ر.س</div>
+        </div>
+        <div class="card">
+          <div class="txx clm">SAR → KRW</div>
+          <div class="fb7 cli">1 ر.س ≈ ₩355</div>
+        </div>
+      </div>
+      <p class="txx clm mt2">⚠️ الأسعار تقريبية - تحقق من البنك قبل السفر</p>
+    </div>
+  `;
+}
+
+function updateBud(id, val) {
+  const b = state.budget.find(b => b.id === id);
+  if (!b) return;
+  b.actual = Math.max(0, parseInt(val) || 0);
+  Storage.set("kt2_bud", state.budget);
+  renderBudget();
+}
+
+// ═══════════════════════════════════════════════════════════
+//   PRE-TRIP TASKS
+// ═══════════════════════════════════════════════════════════
+
+function renderTasks() {
+  const tasks = state.tasks;
+  const total = tasks.length;
+  const done = tasks.filter(t => t.done).length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+
+  // Categories
+  const cats = {};
+  tasks.forEach(t => {
+    if (!cats[t.cat]) cats[t.cat] = { label: t.catLabel, items: [] };
+    cats[t.cat].items.push(t);
+  });
+
+  // Filter
+  const filter = state.taskFilter;
+  const isVisible = (t) => {
+    if (filter === "all") return true;
+    if (filter === "undone") return !t.done;
+    if (filter === "done") return t.done;
+    return t.cat === filter;
+  };
+  const visibleTotal = tasks.filter(isVisible).length;
+
+  // Compute days until trip
+  const target = new Date("2026-05-13");
+  const daysLeft = Math.max(0, Math.ceil((target - new Date()) / 86400000));
+
+  $("sec-tasks").innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <h2>مهام التجهيز للسفر</h2>
+      </div>
+      <p>قائمة مرجعية شاملة - لا تنسَ شيئاً قبل رحلتك</p>
+    </div>
+
+    <div class="card card-acc mb3">
+      <div class="flx jb itm mb2 fwr g5">
+        <div>
+          <div class="fb7 cli" style="font-size:1.1rem">${done} / ${total} مهمة</div>
+          <div class="txs cls">${daysLeft > 0 ? `${daysLeft} يوم متبقٍ على السفر` : 'بدأت الرحلة!'}</div>
+        </div>
+        <div class="fb7" style="font-size:2rem;color:${pct === 100 ? 'var(--ok)' : 'var(--accent)'}">${pct}%</div>
+      </div>
+      <div class="task-prog"><div class="task-prog-f" style="width:${pct}%;background:${pct === 100 ? 'var(--ok)' : 'var(--accent)'}"></div></div>
+    </div>
+
+    <div class="fb mb3">
+      <button class="fb-btn ${filter === 'all' ? 'act' : ''}" onclick="state.taskFilter='all';renderTasks()">الكل (${total})</button>
+      <button class="fb-btn ${filter === 'undone' ? 'act' : ''}" onclick="state.taskFilter='undone';renderTasks()">⏳ غير منجز (${total - done})</button>
+      <button class="fb-btn ${filter === 'done' ? 'act' : ''}" onclick="state.taskFilter='done';renderTasks()">✅ منجز (${done})</button>
+      ${Object.entries(cats).map(([k, v]) => `
+        <button class="fb-btn ${filter === k ? 'act' : ''}" onclick="state.taskFilter='${k}';renderTasks()">${v.label} (${v.items.length})</button>
+      `).join('')}
+    </div>
+
+    <div id="task-list">
+      ${visibleTotal === 0 ? `<div class="empty"><div class="empty-i">${filter === 'done' ? '✅' : '🎉'}</div><div class="empty-t">${filter === 'done' ? 'لا توجد مهام منجزة بعد' : filter === 'undone' ? 'كل المهام منجزة!' : 'لا توجد مهام'}</div></div>` :
+      Object.entries(cats).map(([k, v]) => {
+        const items = v.items.filter(isVisible);
+        if (items.length === 0) return '';
+        return `
+          <div class="task-cat">
+            <h3 class="task-cat-h">${v.label} <span class="task-cat-cnt">${items.filter(t => t.done).length}/${items.length}</span></h3>
+            ${items.map(t => `
+              <div class="task ${t.done ? 'task-done' : ''}">
+                <button class="task-check" onclick="toggleTask('${t.id}')">
+                  ${t.done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+                </button>
+                <div class="task-info">
+                  <div class="task-label">${t.label}</div>
+                  <div class="task-meta">
+                    ${t.priority === 'high' ? '<span class="pill pill-sm pill-err">⚠️ مهم</span>' : t.priority === 'med' ? '<span class="pill pill-sm pill-warn">متوسط</span>' : ''}
+                    <span class="pill pill-sm">${t.timing}</span>
+                    ${t.link ? `<a class="pill pill-sm pill-ok" href="${t.link}" target="_blank">🔗 الموقع</a>` : ''}
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }).join('')
+    }</div>
+
+    <div class="card card-cream mt3">
+      <div class="flx itm g5 mb2">
+        <div style="font-size:1.5rem">💡</div>
+        <strong class="fb7 cli">إضافة مهمة مخصصة</strong>
+      </div>
+      <p class="txs cls mb2">احتجت مهمة غير موجودة في القائمة؟ أضفها هنا.</p>
+      <div class="flx g5 fwr">
+        <input type="text" class="input" id="new-task-text" placeholder="مثال: تحديث طبعة جديدة من الجواز" style="flex:1;min-width:200px">
+        <button class="btn btn-pri" onclick="addCustomTask()">إضافة</button>
+      </div>
+    </div>
+
+    <div class="flx je mt3">
+      <button class="btn btn-out btn-sm" onclick="if(confirm('إعادة تعيين كل المهام (إلغاء الإنجاز)؟')){state.tasks.forEach(t=>t.done=false);saveTasks();renderTasks()}">↻ إعادة تعيين الكل</button>
+    </div>
+  `;
+}
+
+function toggleTask(id) {
+  const t = state.tasks.find(t => t.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  saveTasks();
+  renderTasks();
+}
+
+function addCustomTask() {
+  const inp = $("new-task-text");
+  if (!inp || !inp.value.trim()) return;
+  state.tasks.push({
+    id: "custom_" + Date.now(),
+    cat: "custom",
+    catLabel: "⭐ مخصص",
+    label: inp.value.trim(),
+    priority: "med",
+    timing: "مخصص",
+    done: false
+  });
+  saveTasks();
+  renderTasks();
+}
+
+
+
+function renderInfo() {
+  $("sec-info").innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+        <h2>معلومات أساسية</h2>
+      </div>
+      <p>التأشيرة، العملة، الترجمة، والاتصال</p>
+    </div>
+
+    <div class="gr mdg2 mb3">
+      <div class="card card-acc">
+        <h4 class="fb7 cla mb2 txm">📋 التأشيرة (K-ETA)</h4>
+        <ul class="tip-list">
+          <li>السعوديون يحتاجون K-ETA إلكترونياً</li>
+          <li>الموقع: k-eta.go.kr - $7 USD</li>
+          <li>قدّم قبل 72 ساعة من السفر على الأقل</li>
+          <li>صالحة سنتين - متعددة السفرات</li>
+        </ul>
+      </div>
+
+      <div class="card card-orng">
+        <h4 class="fb7 clp mb2 txm">💰 العملة والدفع</h4>
+        <ul class="tip-list">
+          <li>الوون الكوري ₩ - $1 ≈ ₩1,330</li>
+          <li>1 ر.س ≈ ₩355</li>
+          <li>الفيزا/ماستر مقبولة في 95% من المحلات</li>
+          <li>كاش للأسواق الشعبية وسيارات الأجرة الصغيرة</li>
+          <li>صرّاف ATM في 7-Eleven للبطاقات الأجنبية</li>
+        </ul>
+      </div>
+
+      <div class="card card-gold">
+        <h4 class="fb7 mb2 txm" style="color:var(--gold)">📱 الإنترنت والاتصال</h4>
+        <ul class="tip-list">
+          <li>SIM بالمطار (KT, SK Telecom) - $20-40 لـ 10 أيام</li>
+          <li>eSIM من Airalo قبل السفر - الأسهل</li>
+          <li>WiFi مجاني في معظم المقاهي والمحطات</li>
+          <li>WhatsApp يعمل لكن KakaoTalk أكثر استخداماً</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h4 class="fb7 cli mb2 txm">🌤️ الطقس في مايو</h4>
+        <ul class="tip-list">
+          <li>سيول: 15-23°م - مثالي ربيعي</li>
+          <li>جيجو: 17-22°م - دافئ نسبياً</li>
+          <li>بوسان: 16-22°م - بحري معتدل</li>
+          <li>ملابس خفيفة + جاكيت للمساء</li>
+          <li>قد تمطر أحياناً - شمسية صغيرة مفيدة</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card mb3">
+      <h4 class="fb7 cli mb2 txm">📲 تطبيقات لا غنى عنها</h4>
+      <div class="app-grid">
+        ${APPS.map(a => `
+          <div class="app-c">
+            <div class="app-i">${a.icon}</div>
+            <div class="app-n">${a.name}</div>
+            <div class="app-no">${a.note}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="gr mdg2 mb3">
+      <div class="tc">
+        <div class="tc-t flx jb itm">
+          <span>🥩 طلب طعام حلال (كوري)</span>
+          <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;padding:0.25rem 0.5rem;font-size:0.65rem" onclick="copyKorean(this, '저는 무슬림이에요. 돼지고기와 술이 들어가지 않은 음식을 주세요.')">📋 نسخ</button>
+        </div>
+        <div class="tc-text">저는 무슬림이에요.
+돼지고기와 술이 들어가지 않은 음식을 주세요.</div>
+        <p class="txs mb1" style="opacity:0.95;font-weight:600">النطق التقريبي:</p>
+        <p class="txs" style="opacity:0.85;line-height:1.7">جو-نون موسلِّمي-إيه-يو.<br>دويجي-جوجي-وا سول-إي دوروَ-جاجي آنن أُمسيك-أُل جوسيو.</p>
+        <p class="txs mt2" style="opacity:0.95;border-top:1px solid rgba(255,255,255,0.2);padding-top:0.5rem">"أنا مسلم. من فضلك بدون لحم خنزير ولا كحول"</p>
+      </div>
+
+      <div class="tc" style="background:var(--gold)">
+        <div class="tc-t flx jb itm">
+          <span>🌾 طلب طعام GF (كوري)</span>
+          <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;padding:0.25rem 0.5rem;font-size:0.65rem" onclick="copyKorean(this, '저는 글루텐 알레르기가 있어요. 밀가루와 간장이 들어가지 않은 음식을 주세요.')">📋 نسخ</button>
+        </div>
+        <div class="tc-text">저는 글루텐 알레르기가 있어요.
+밀가루와 간장이 들어가지 않은 음식을 주세요.</div>
+        <p class="txs mb1" style="opacity:0.95;font-weight:600">النطق التقريبي:</p>
+        <p class="txs" style="opacity:0.85;line-height:1.7">جو-نون كوللوتن آللي-جيغا إيتسوَيو.<br>ميلكَرو-وا كانجانغ-إي دوروَ-جاجي آنن أُمسيك-أُل جوسيو.</p>
+        <p class="txs mt2" style="opacity:0.95;border-top:1px solid rgba(255,255,255,0.2);padding-top:0.5rem">"عندي حساسية جلوتين - بدون قمح ولا صلصة صويا"</p>
+      </div>
+    </div>
+
+    <div class="card card-orng">
+      <h4 class="fb7 clp mb2 txm">📞 أرقام الطوارئ</h4>
+      ${EMERGENCY.map(e => `
+        <div class="em-row">
+          <div class="fls">
+            <div class="em-n">${e.name}</div>
+            <div class="em-m">${e.note}</div>
+          </div>
+          <a class="em-p" href="tel:${e.phone.replace(/\s/g,'')}">${e.phone}</a>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════
+//   CURRENCY CONVERTER
+// ═══════════════════════════════════════════════════════════
+
+// Rates relative to USD (approximate, May 2026)
+const CUR_RATES = {
+  USD: 1,
+  KRW: 1330,
+  SAR: 3.75,
+  EUR: 0.92,
+  AED: 3.67
+};
+
+const CUR_INFO = {
+  USD: { flag: "🇺🇸", name: "دولار أمريكي" },
+  KRW: { flag: "🇰🇷", name: "وون كوري" },
+  SAR: { flag: "🇸🇦", name: "ريال سعودي" },
+  EUR: { flag: "🇪🇺", name: "يورو" },
+  AED: { flag: "🇦🇪", name: "درهم إماراتي" }
+};
+
+function fmtCur(n, c) {
+  if (!isFinite(n)) return "0";
+  const opts = c === "KRW" ? { maximumFractionDigits: 0 } : { maximumFractionDigits: 2 };
+  return n.toLocaleString("en-US", opts);
+}
+
+function openCurrency() {
+  state.curBase = state.curBase || "SAR";
+  state.curAmount = state.curAmount || 100;
+  renderCurrency();
+}
+
+function renderCurrency() {
+  const base = state.curBase;
+  const amount = state.curAmount;
+  const usd = amount / CUR_RATES[base];
+
+  const targetOrder = ["KRW", "SAR", "USD", "EUR", "AED"].filter(c => c !== base);
+  // Always show base first
+  const display = [base, ...targetOrder];
+
+  openModal(`
+    <div class="modal-h">
+      <h3>💱 محول العملات</h3>
+      <button class="modal-x" onclick="closeModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="cur-quick mb2" style="border:none;padding:0;margin-top:0">
+      <span class="txx clm fb6" style="margin-left:0.3rem;align-self:center">المبلغ بـ:</span>
+      ${["SAR","USD","KRW"].map(c => `
+        <button class="cur-quick-btn ${base === c ? 'act' : ''}" onclick="state.curBase='${c}';renderCurrency()">${CUR_INFO[c].flag} ${c}</button>
+      `).join('')}
+    </div>
+
+    <div class="cur-grid">
+      ${display.map((c, i) => {
+        const val = i === 0 ? amount : (usd * CUR_RATES[c]);
+        const isBase = i === 0;
+        return `
+          <div class="cur-row" style="${isBase ? 'background:var(--cream);border-color:var(--accent)' : ''}">
+            <div class="cur-flag">${CUR_INFO[c].flag}</div>
+            <div class="cur-info">
+              <div class="cur-c">${c}</div>
+              <div class="cur-l">${CUR_INFO[c].name}</div>
+            </div>
+            <input type="number" class="cur-inp" 
+              value="${fmtCur(val, c).replace(/,/g,'')}"
+              ${isBase ? '' : 'readonly'}
+              ${isBase ? `oninput="state.curAmount=parseFloat(this.value)||0;updateCurDisplay()"` : ''}
+              id="cur-${c}">
+          </div>
+        `;
+      }).join('')}
+    </div>
+
+    <div class="cur-quick mb2">
+      <span class="txx clm fb6" style="margin-left:0.3rem;align-self:center">مبالغ سريعة:</span>
+      ${[100, 500, 1000, 5000, 10000].map(n => `
+        <button class="cur-quick-btn" onclick="state.curAmount=${n};renderCurrency()">${n.toLocaleString()}</button>
+      `).join('')}
+    </div>
+
+    <div class="cur-rate-info">
+      📊 1 ${base} = ${fmtCur(CUR_RATES.KRW / CUR_RATES[base], 'KRW')} ₩  ·  ${fmtCur(CUR_RATES.SAR / CUR_RATES[base], 'SAR')} ر.س  ·  ${fmtCur(1 / CUR_RATES[base], 'USD')} $
+      <br><span style="opacity:0.7">⚠️ الأسعار تقريبية - تحقق من البنك قبل السفر</span>
+    </div>
+  `);
+}
+
+function updateCurDisplay() {
+  const base = state.curBase;
+  const amount = state.curAmount;
+  const usd = amount / CUR_RATES[base];
+  ["KRW","SAR","USD","EUR","AED"].forEach(c => {
+    if (c === base) return;
+    const el = $("cur-" + c);
+    if (el) el.value = fmtCur(usd * CUR_RATES[c], c).replace(/,/g,'');
+  });
+}
+
+// Copy Korean text helper
+function copyKorean(btn, text) {
+  const orig = btn.innerHTML;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.innerHTML = '✅ تم النسخ';
+    setTimeout(() => { btn.innerHTML = orig; }, 1800);
+  }).catch(() => {
+    btn.innerHTML = '⚠️ فشل';
+    setTimeout(() => { btn.innerHTML = orig; }, 1800);
+  });
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderNav();
+  updateCountdown();
+  setInterval(updateCountdown, 60 * 60 * 1000);
+  // Render initial section
+  switchTab(state.active);
+
+  // Modal close on backdrop click
+  $("modal-bk").addEventListener("click", (e) => {
+    if (e.target === $("modal-bk")) closeModal();
+  });
+
+  // Esc to close modal
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModal();
+  });
+});
+
+</script>
+</body>
+</html>
