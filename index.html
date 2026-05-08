@@ -488,6 +488,43 @@ footer {
 }
 footer p { font-size: 0.7rem; color: var(--muted); }
 
+/* ── SYNC BUTTON ── */
+.sync-fab {
+  position: fixed; bottom: 5rem; left: 1rem;
+  background: var(--accent); color: var(--paper);
+  border-radius: 2rem; padding: 0.55rem 1rem;
+  font-size: 0.78rem; font-weight: 600;
+  display: flex; align-items: center; gap: 0.4rem;
+  box-shadow: var(--sh-md); z-index: 90;
+  transition: background 0.15s;
+}
+.sync-fab:hover { background: var(--accent-dk); }
+.sync-fab svg { width: 15px; height: 15px; flex-shrink: 0; }
+.sync-fab.saving { opacity: 0.7; pointer-events: none; }
+
+/* ── SYNC MODAL ── */
+.sync-box { padding: 1.5rem; max-width: 360px; }
+.sync-box h3 { font-size: 1rem; margin-bottom: 0.25rem; }
+.sync-box .sync-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 1.25rem; }
+.sync-code-display {
+  background: var(--cream); border: 2px solid var(--accent);
+  border-radius: var(--r-md); padding: 0.75rem 1rem;
+  text-align: center; font-size: 1.6rem; font-weight: 700;
+  letter-spacing: 0.25em; color: var(--accent);
+  margin-bottom: 0.5rem; cursor: pointer; user-select: all;
+}
+.sync-code-display:hover { background: var(--border); }
+.sync-hint { font-size: 0.72rem; color: var(--muted); text-align: center; margin-bottom: 1.25rem; }
+.sync-divider { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0; }
+.sync-divider span { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+.sync-divider::before, .sync-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.sync-load-row { display: flex; gap: 0.5rem; }
+.sync-load-row input { flex: 1; }
+.sync-status { font-size: 0.78rem; margin-top: 0.75rem; padding: 0.5rem 0.75rem;
+  border-radius: var(--r-sm); display: none; }
+.sync-status.ok { background: #d1fae5; color: #065f46; display: block; }
+.sync-status.err { background: #fee2e2; color: #991b1b; display: block; }
+
 /* ═════════════════════════════════════════
    CURRENCY CONVERTER MODAL
    ═════════════════════════════════════════ */
@@ -1910,6 +1947,14 @@ footer p { font-size: 0.7rem; color: var(--muted); }
     <line x1="12" y1="5" x2="12" y2="19"/>
     <line x1="5" y1="12" x2="19" y2="12"/>
   </svg>
+</button>
+
+<button class="sync-fab" id="sync-fab" onclick="openSyncModal()" title="مزامنة عبر الأجهزة">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+  </svg>
+  مزامنة
 </button>
 
 <footer><p>رحلة كوريا الجنوبية · 14-24 مايو 2026 · مرجع التذكرة: 9T7ZEZ · يُحفظ تلقائياً في متصفحك</p></footer>
@@ -5564,6 +5609,127 @@ function copyKorean(btn, text) {
   });
 }
 
+
+// ═══════════════════════════════════════════════════════════
+//   SYNC — مزامنة عبر الأجهزة
+// ═══════════════════════════════════════════════════════════
+
+function syncGetCode() {
+  let code = localStorage.getItem("kt2_sync_code");
+  if (!code) {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    code = Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+    localStorage.setItem("kt2_sync_code", code);
+  }
+  return code;
+}
+
+function syncGetAllState() {
+  return {
+    itinerary: state.itinerary,
+    customLib: state.customLib,
+    budget: state.budget,
+    tasks: state.tasks,
+    favs: state.favs
+  };
+}
+
+function syncApplyState(data) {
+  if (data.itinerary) { state.itinerary = data.itinerary; Storage.set("kt2_itin", data.itinerary); }
+  if (data.customLib)  { state.customLib  = data.customLib;  Storage.set("kt2_clib", data.customLib); }
+  if (data.budget)     { state.budget     = data.budget;     Storage.set("kt2_bud",  data.budget); }
+  if (data.tasks)      { state.tasks      = data.tasks;      Storage.set("kt2_tasks", data.tasks); }
+  if (data.favs)       { state.favs       = data.favs;       Storage.set("kt2_favs", data.favs); }
+  switchTab(state.active);
+}
+
+async function syncSave(code) {
+  const fab = $("sync-fab");
+  if (fab) { fab.classList.add("saving"); fab.querySelector("span") && (fab.querySelector("span").textContent = "جاري..."); }
+  try {
+    const res = await fetch("/.netlify/functions/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, data: syncGetAllState() })
+    });
+    return res.ok;
+  } catch { return false; }
+  finally { if (fab) fab.classList.remove("saving"); }
+}
+
+async function syncLoad(code) {
+  try {
+    const res = await fetch(`/.netlify/functions/load?code=${encodeURIComponent(code)}`);
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data || null;
+  } catch { return null; }
+}
+
+function openSyncModal() {
+  const code = syncGetCode();
+  openModal(`
+    <div class="modal-h">
+      <h3>المزامنة عبر الأجهزة</h3>
+      <button class="modal-x" onclick="closeModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="sync-box">
+      <p class="sync-sub">احفظ رمزك واستخدمه على أي جهاز لاستعادة بياناتك</p>
+
+      <div class="sync-code-display" onclick="navigator.clipboard?.writeText('${code}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='${code}',1500)" title="اضغط لنسخ الرمز">${code}</div>
+      <p class="sync-hint">رمزك الشخصي — اضغط لنسخه</p>
+
+      <button class="btn btn-pri" style="width:100%" onclick="doSyncSave('${code}')">
+        ☁️ رفع بياناتي الآن
+      </button>
+
+      <div class="sync-divider"><span>أو استعد من رمز آخر</span></div>
+
+      <div class="sync-load-row">
+        <input type="text" class="input" id="sync-load-input" placeholder="أدخل الرمز (مثال: KR7X2M)" maxlength="10" style="text-transform:uppercase;letter-spacing:0.1em">
+        <button class="btn btn-out" onclick="doSyncLoad()">تحميل</button>
+      </div>
+
+      <div class="sync-status" id="sync-status"></div>
+    </div>
+  `);
+}
+
+async function doSyncSave(code) {
+  const st = $("sync-status");
+  st.className = "sync-status"; st.textContent = "جاري الرفع..."; st.style.display = "block";
+  const ok = await syncSave(code);
+  if (ok) {
+    st.className = "sync-status ok";
+    st.textContent = "✓ تم حفظ بياناتك بنجاح على السحابة";
+  } else {
+    st.className = "sync-status err";
+    st.textContent = "✗ فشل الاتصال، تحقق من الإنترنت وحاول مجدداً";
+  }
+}
+
+async function doSyncLoad() {
+  const input = $("sync-load-input");
+  const st = $("sync-status");
+  const code = (input?.value || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (code.length < 4) {
+    st.className = "sync-status err"; st.textContent = "الرمز قصير جداً"; return;
+  }
+  st.className = "sync-status"; st.textContent = "جاري التحميل..."; st.style.display = "block";
+  const data = await syncLoad(code);
+  if (!data) {
+    st.className = "sync-status err"; st.textContent = "✗ الرمز غير موجود أو منتهي";
+    return;
+  }
+  syncApplyState(data);
+  localStorage.setItem("kt2_sync_code", code);
+  st.className = "sync-status ok"; st.textContent = "✓ تم تحميل البيانات بنجاح!";
+  setTimeout(closeModal, 1500);
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   renderNav();
