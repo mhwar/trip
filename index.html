@@ -63,13 +63,51 @@ input, select, textarea {
 .hdr {
   background: var(--paper);
   color: var(--ink);
-  padding: 1rem 1.25rem 1.5rem;
+  padding: 0 0 1.5rem;
   position: relative;
   overflow: hidden;
   border-bottom: 1px solid var(--border);
 }
 .hdr::before { display: none; }
-.hdr-c { position: relative; max-width: 75rem; margin: 0 auto; }
+.hdr-c { position: relative; max-width: 75rem; margin: 0 auto; padding: 1rem 1.25rem 0; }
+
+/* Hero strip — country-themed gradient with flag emoji */
+.hdr-hero {
+  height: 90px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #cfe2ff 0%, #a4cdfd 60%, #80b3ff 100%);
+}
+.hdr-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.45) 0%, transparent 35%),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.3) 0%, transparent 40%);
+  pointer-events: none;
+}
+.hdr-hero::after {
+  content: '🌍';
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 2.5rem;
+  opacity: 0.85;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));
+}
+.hdr-hero[data-country="korea"]    { background: linear-gradient(135deg, #ffe4e1 0%, #ffafb0 50%, #5b8def 100%); }
+.hdr-hero[data-country="korea"]::after    { content: '🇰🇷'; }
+.hdr-hero[data-country="turkey"]   { background: linear-gradient(135deg, #fde2e4 0%, #f76c5e 50%, #b71c1c 100%); }
+.hdr-hero[data-country="turkey"]::after   { content: '🇹🇷'; }
+.hdr-hero[data-country="uk"]       { background: linear-gradient(135deg, #d6e4ff 0%, #5b8def 50%, #cf2828 100%); }
+.hdr-hero[data-country="uk"]::after       { content: '🇬🇧'; }
+.hdr-hero[data-country="japan"]    { background: linear-gradient(135deg, #fff1f0 0%, #ffb4b8 50%, #d63031 100%); }
+.hdr-hero[data-country="japan"]::after    { content: '🇯🇵'; }
+.hdr-hero[data-country="thailand"] { background: linear-gradient(135deg, #fff4d6 0%, #f8c34a 50%, #cf3535 100%); }
+.hdr-hero[data-country="thailand"]::after { content: '🇹🇭'; }
+@media (min-width: 768px) {
+  .hdr-hero { height: 120px; }
+  .hdr-hero::after { font-size: 3.5rem; }
+}
 .hdr-tag {
   display: inline-flex; align-items: center; gap: 0.4rem;
   font-size: 0.7rem;
@@ -628,29 +666,86 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 
 /* ── HOTEL BANNER (in day) ── */
 .day-hotel {
-  background: linear-gradient(135deg, rgba(26,77,74,0.08), rgba(184,146,74,0.05));
-  border: 1px solid var(--accent); border-radius: var(--r-md);
-  padding: 0.7rem 0.9rem; margin-bottom: 0.85rem;
-  display: flex; gap: 0.65rem; align-items: flex-start;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-lt);
+  border-radius: var(--r-md);
+  padding: 0.85rem 1rem; margin-bottom: 0.85rem;
+  display: flex; gap: 0.75rem; align-items: flex-start;
 }
-.day-hotel-ic { font-size: 1.3rem; flex-shrink: 0; }
+.day-hotel-ic { font-size: 1.4rem; flex-shrink: 0; line-height: 1; }
 .day-hotel-bd { flex: 1; min-width: 0; }
-.day-hotel-n { font-weight: 700; color: var(--accent); font-size: 0.88rem; margin-bottom: 0.15rem; }
+.day-hotel-n { font-weight: 600; color: var(--accent-dk); font-size: 0.92rem; margin-bottom: 0.2rem; }
 .day-hotel-m {
-  display: flex; gap: 0.65rem; flex-wrap: wrap;
-  font-size: 0.7rem; color: var(--ink-soft); margin-top: 0.2rem;
+  display: flex; gap: 0.75rem; flex-wrap: wrap;
+  font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.25rem;
 }
-.day-hotel-m span { display: inline-flex; align-items: center; gap: 0.2rem; }
+.day-hotel-m span { display: inline-flex; align-items: center; gap: 0.25rem; }
+.day-hotel-acts { display: flex; gap: 0.4rem; margin-top: 0.6rem; flex-wrap: wrap; }
 .day-hotel-act {
-  font-size: 0.7rem; padding: 0.25rem 0.5rem;
-  border: 1px solid var(--border); border-radius: var(--r-sm);
+  font-size: 0.72rem; padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border-strong); border-radius: 999px;
   background: var(--paper); color: var(--ink-soft);
+  text-decoration: none;
+  cursor: pointer; transition: all 0.15s;
+  font-family: inherit;
 }
+.day-hotel-act:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.day-hotel-act-danger { color: var(--err); border-color: #f4c7c3; }
+.day-hotel-act-danger:hover { background: var(--err); color: #fff; border-color: var(--err); }
 .day-hotel-night-pill {
-  display: inline-block; background: var(--accent); color: var(--paper);
-  padding: 0.1rem 0.45rem; border-radius: 0.7rem; font-size: 0.62rem; font-weight: 600;
-  margin-right: 0.25rem;
+  display: inline-block; background: var(--accent); color: #fff;
+  padding: 0.15rem 0.55rem; border-radius: 999px; font-size: 0.65rem; font-weight: 600;
+  margin-left: 0.4rem;
 }
+
+/* Empty hotel state — call-to-action */
+.day-hotel-empty {
+  width: 100%;
+  display: flex; align-items: center; gap: 0.75rem;
+  background: var(--paper);
+  border: 1.5px dashed var(--border-strong);
+  border-radius: var(--r-md);
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.85rem;
+  cursor: pointer;
+  text-align: right;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.day-hotel-empty:hover { border-color: var(--accent); border-style: solid; background: var(--accent-soft); }
+.day-hotel-empty-ic { font-size: 1.4rem; opacity: 0.75; }
+.day-hotel-empty-bd { flex: 1; min-width: 0; }
+.day-hotel-empty-t { font-size: 0.85rem; font-weight: 500; color: var(--ink); }
+.day-hotel-empty-d { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+.day-hotel-empty:hover .day-hotel-empty-t { color: var(--accent-dk); }
+.day-hotel-empty svg { color: var(--accent); flex-shrink: 0; }
+
+/* Hotel picker modal */
+.hotel-pick-sec { margin-bottom: 1rem; }
+.hotel-pick-sec-l {
+  font-size: 0.78rem; font-weight: 600; color: var(--ink-soft);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.hotel-pick-grid { display: flex; flex-direction: column; gap: 0.4rem; }
+.hotel-pick-card {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  text-align: right;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  width: 100%;
+}
+.hotel-pick-card:hover { border-color: var(--accent); background: var(--accent-soft); }
+.hotel-pick-ic { font-size: 1.2rem; flex-shrink: 0; }
+.hotel-pick-bd { flex: 1; min-width: 0; }
+.hotel-pick-n { font-weight: 600; font-size: 0.85rem; color: var(--ink); }
+.hotel-pick-a { font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
+.hotel-pick-p { font-size: 0.72rem; color: var(--accent-dk); margin-top: 0.15rem; }
 
 /* ── DAY NOTES ── */
 .day-notes {
@@ -896,38 +991,72 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .day-tabs::-webkit-scrollbar { display: none; }
 .dt {
   flex-shrink: 0;
-  min-width: 4.5rem;
-  padding: 0.55rem 0.65rem;
+  min-width: 4.75rem;
+  padding: 0.6rem 0.65rem;
   border-radius: var(--r-md);
   background: var(--paper);
   border: 1px solid var(--border);
   text-align: center;
   transition: all 0.15s;
+  position: relative;
 }
+.dt:hover { border-color: var(--accent-lt); background: var(--accent-soft); }
 .dt.act {
   background: var(--accent);
   border-color: var(--accent);
-  color: var(--paper);
+  color: #fff;
+  box-shadow: var(--sh-md);
 }
-.dt.transit { border-right: 3px solid var(--warn); }
-.dt.arrival { border-right: 3px solid var(--ok); }
-.dt.departure { border-right: 3px solid var(--err); }
-.dt.act.transit, .dt.act.arrival, .dt.act.departure { border-right-color: rgba(255,255,255,0.6); }
-.dt-d { font-size: 0.6rem; opacity: 0.75; }
-.dt-n { font-size: 1rem; font-weight: 700; line-height: 1.1; margin: 0.1rem 0; }
-.dt-c { font-size: 0.65rem; opacity: 0.85; }
+.dt.act:hover { background: var(--accent-dk); }
+.dt.transit { border-top: 3px solid var(--warn); }
+.dt.arrival { border-top: 3px solid var(--ok); }
+.dt.departure { border-top: 3px solid var(--err); }
+.dt.act.transit, .dt.act.arrival, .dt.act.departure { border-top-color: rgba(255,255,255,0.85); }
+.dt-d { font-size: 0.6rem; opacity: 0.7; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+.dt-n { font-size: 1.1rem; font-weight: 700; line-height: 1.05; margin: 0.15rem 0; }
+.dt-c { font-size: 0.68rem; opacity: 0.9; font-weight: 500; }
 .dt-add {
   flex-shrink: 0;
-  min-width: 3rem;
+  min-width: 2.6rem;
   border-radius: var(--r-md);
-  border: 2px dashed var(--border);
+  border: 1.5px dashed var(--border-strong);
   background: transparent;
   display: flex; align-items: center; justify-content: center;
   color: var(--muted); padding: 0.4rem;
   transition: all 0.15s;
 }
-.dt-add:hover { border-color: var(--accent); color: var(--accent); }
+.dt-add:hover { border-color: var(--accent); color: var(--accent); border-style: solid; background: var(--accent-soft); }
 .dt-add svg { width: 18px; height: 18px; }
+
+/* "+" between days */
+.dt-between {
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  width: 1.5rem;
+  align-self: stretch;
+}
+.dt-between-btn {
+  width: 1.4rem; height: 1.4rem;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s;
+  opacity: 0.55;
+  cursor: pointer;
+}
+.dt-between:hover .dt-between-btn,
+.dt-between-btn:hover {
+  opacity: 1;
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  transform: scale(1.15);
+}
 
 /* Wrap for each day tab + inline "+" */
 .dt-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; flex-shrink: 0; }
@@ -1578,29 +1707,39 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .cat-card {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem;
+  gap: 0.85rem;
+  padding: 1rem;
   background: var(--paper);
-  border: 1.5px solid var(--border);
-  border-right: 4px solid var(--cat-c, var(--accent));
+  border: 1px solid var(--border);
   border-radius: var(--r-md);
   cursor: pointer;
   text-align: right;
   font-family: inherit;
   transition: all 0.15s;
+  position: relative;
+}
+.cat-card::before {
+  content: '';
+  position: absolute;
+  top: 1rem; bottom: 1rem; right: 0;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--cat-c, var(--accent));
+  opacity: 0.7;
 }
 .cat-card:hover {
   border-color: var(--cat-c, var(--accent));
-  background: var(--cream);
-  transform: translateX(-2px);
+  box-shadow: var(--sh);
 }
+.cat-card:hover::before { opacity: 1; }
 .cat-ic {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   flex-shrink: 0;
   width: 2.75rem;
   height: 2.75rem;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.04);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, var(--cat-c, var(--accent)) 12%, transparent);
+  color: var(--cat-c, var(--accent));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1665,24 +1804,23 @@ footer p { font-size: 0.7rem; color: var(--muted); }
    ═════════════════════════════════════════ */
 .day-toolbar {
   display: flex;
-  gap: 0.35rem;
-  padding: 0.4rem 0.5rem;
-  background: var(--cream);
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
+  gap: 0.4rem;
+  padding: 0;
   margin-bottom: 0.875rem;
-  overflow-x: auto;
   flex-wrap: nowrap;
+  align-items: center;
 }
+.day-tb-spacer { flex: 1; }
 .day-tb-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.4rem 0.55rem;
+  gap: 0.35rem;
+  padding: 0.5rem 0.85rem;
   background: var(--paper);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  font-size: 0.72rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 500;
   color: var(--ink-soft);
   cursor: pointer;
   font-family: inherit;
@@ -1691,19 +1829,64 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   flex-shrink: 0;
 }
 .day-tb-btn:hover:not(:disabled) {
+  background: var(--accent-soft);
+  color: var(--accent-dk);
+  border-color: var(--accent-lt);
+}
+.day-tb-btn.day-tb-pri {
   background: var(--accent);
-  color: white;
+  color: #fff;
   border-color: var(--accent);
 }
-.day-tb-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+.day-tb-btn.day-tb-pri:hover:not(:disabled) {
+  background: var(--accent-dk);
+  color: #fff;
+  border-color: var(--accent-dk);
 }
-.day-tb-btn svg { width: 12px; height: 12px; }
-.day-tb-danger:hover:not(:disabled) {
-  background: var(--persimmon) !important;
-  border-color: var(--persimmon) !important;
+.day-tb-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.day-tb-btn svg { width: 14px; height: 14px; }
+.day-tb-icon { padding: 0.5rem; aspect-ratio: 1; }
+.day-tb-icon svg { width: 16px; height: 16px; }
+
+/* Dropdown menu */
+.day-tb-menu-wrap { position: relative; flex-shrink: 0; }
+.day-tb-menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  min-width: 12rem;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--sh-lg);
+  padding: 0.35rem;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
 }
+.day-tb-mi {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background: transparent;
+  border-radius: var(--r-sm);
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: var(--ink);
+  text-align: right;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.day-tb-mi:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent-dk); }
+.day-tb-mi:disabled { opacity: 0.45; cursor: not-allowed; }
+.day-tb-mi svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.75; }
+.day-tb-mi-sep { height: 1px; background: var(--border); margin: 0.25rem 0.4rem; }
+.day-tb-mi-danger { color: var(--err); }
+.day-tb-mi-danger:hover:not(:disabled) { background: #fce8e6; color: var(--err); }
 
 /* ═════════════════════════════════════════
    ⚠️ DAY WARNINGS
@@ -2063,15 +2246,15 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   text-align: right;
 }
 .picker-item:hover {
-  border-color: var(--accent);
-  background: rgba(26,77,74,0.04);
+  border-color: var(--accent-lt);
+  background: var(--accent-soft);
 }
 .picker-item-ic {
-  width: 1.85rem; height: 1.85rem;
+  width: 2.1rem; height: 2.1rem;
   border-radius: var(--r-sm);
   background: var(--cream);
   display: flex; align-items: center; justify-content: center;
-  font-size: 1rem;
+  font-size: 1.05rem;
   flex-shrink: 0;
 }
 .picker-item-info { flex: 1; min-width: 0; }
@@ -2310,34 +2493,100 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 }
 .qi-pill svg { width: 11px; height: 11px; }
 
-/* ═══════════════ PRINT / PDF EXPORT ═══════════════ */
+/* ═══════════════ PRINT / PDF EXPORT (Material 3 light) ═══════════════ */
 #print-overlay {
   display: none;
   position: fixed; inset: 0; z-index: 9999;
-  background: #fff; overflow-y: auto; padding: 1.5rem;
-  font-family: 'Segoe UI', Tahoma, sans-serif; direction: rtl;
+  background: #f8f9fa; overflow-y: auto; padding: 1.5rem;
+  font-family: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif; direction: rtl;
+  color: #1f1f1f;
 }
 #print-overlay.active { display: block; }
+#print-overlay .print-doc {
+  max-width: 760px; margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 1px 3px rgba(60,64,67,0.12), 0 8px 24px rgba(60,64,67,0.10);
+}
 .print-close-bar {
   display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 1rem; gap: 0.5rem; flex-wrap: wrap;
+  margin: 0 auto 1.25rem;
+  max-width: 760px;
+  gap: 0.5rem; flex-wrap: wrap;
+  background: #fff;
+  border: 1px solid #e8eaed;
+  padding: 0.65rem 0.85rem;
+  border-radius: 999px;
 }
-.print-header { border-bottom: 2px solid #1a4d4a; padding-bottom: 0.75rem; margin-bottom: 1rem; }
-.print-title { font-size: 1.4rem; font-weight: 700; color: #1a4d4a; }
-.print-sub { font-size: 0.85rem; color: #666; margin-top: 0.2rem; }
-.print-section { margin-bottom: 1.2rem; }
-.print-section h3 { font-size: 0.9rem; font-weight: 700; color: #1a4d4a; border-bottom: 1px solid #e0e7e4; padding-bottom: 0.3rem; margin-bottom: 0.6rem; }
-.print-item { display: flex; gap: 0.75rem; padding: 0.45rem 0; border-bottom: 1px dashed #eee; align-items: flex-start; }
-.print-item-time { font-size: 0.75rem; font-weight: 600; color: #1a4d4a; min-width: 3rem; padding-top: 0.1rem; }
-.print-item-body { flex: 1; }
-.print-item-text { font-size: 0.82rem; font-weight: 600; }
-.print-item-note { font-size: 0.72rem; color: #888; }
-.print-hotel-card { background: #f0f8f5; border: 1px solid #c8e6d9; border-radius: 6px; padding: 0.6rem 0.8rem; font-size: 0.82rem; }
-.print-tips { background: #fffbf0; border: 1px solid #f9e4a0; border-radius: 6px; padding: 0.6rem 0.8rem; font-size: 0.78rem; }
-.print-footer { font-size: 0.68rem; color: #aaa; text-align: center; margin-top: 2rem; border-top: 1px solid #eee; padding-top: 0.5rem; }
+.print-header {
+  display: flex; align-items: center; gap: 1rem;
+  padding-bottom: 1.25rem; margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e8eaed;
+}
+.print-hero {
+  width: 64px; height: 64px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ffe4e1 0%, #ffafb0 50%, #5b8def 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; flex-shrink: 0;
+}
+.print-hero[data-country="turkey"] { background: linear-gradient(135deg, #fde2e4 0%, #f76c5e 50%, #b71c1c 100%); }
+.print-hero[data-country="uk"]     { background: linear-gradient(135deg, #d6e4ff 0%, #5b8def 50%, #cf2828 100%); }
+.print-hero[data-country="japan"]  { background: linear-gradient(135deg, #fff1f0 0%, #ffb4b8 50%, #d63031 100%); }
+.print-header-info { flex: 1; min-width: 0; }
+.print-title { font-size: 1.35rem; font-weight: 600; color: #1f1f1f; letter-spacing: -0.01em; }
+.print-sub { font-size: 0.85rem; color: #5f6368; margin-top: 0.3rem; }
+.print-section { margin-bottom: 1.5rem; }
+.print-section h3 {
+  font-size: 0.85rem; font-weight: 600; color: #0b57d0;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.6rem;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.print-item {
+  display: flex; gap: 0.85rem;
+  padding: 0.65rem 0.85rem; margin-bottom: 0.35rem;
+  align-items: flex-start;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #e8eaed;
+}
+.print-item-time {
+  font-size: 0.78rem; font-weight: 700; color: #0b57d0;
+  min-width: 3.2rem; padding: 0.15rem 0.55rem;
+  background: #d3e3fd; border-radius: 999px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.print-item-body { flex: 1; min-width: 0; }
+.print-item-text { font-size: 0.88rem; font-weight: 500; color: #1f1f1f; line-height: 1.5; }
+.print-item-note { font-size: 0.75rem; color: #5f6368; margin-top: 0.2rem; }
+.print-hotel-card {
+  background: #e8f0fe;
+  border: 1px solid #d3e3fd;
+  border-radius: 12px;
+  padding: 0.85rem 1rem; font-size: 0.85rem;
+  line-height: 1.6;
+}
+.print-hotel-card strong { color: #0842a0; font-size: 0.95rem; }
+.print-tips {
+  background: #fef7e0;
+  border: 1px solid #fde29c;
+  border-radius: 12px;
+  padding: 0.85rem 1rem; font-size: 0.82rem;
+  line-height: 1.7;
+}
+.print-tips p { margin-bottom: 0.3rem; }
+.print-footer {
+  font-size: 0.7rem; color: #5f6368; text-align: center;
+  margin-top: 2rem; padding-top: 1rem;
+  border-top: 1px solid #e8eaed;
+}
 @media print {
   body > *:not(#print-overlay) { display: none !important; }
-  #print-overlay { display: block !important; position: static !important; }
+  #print-overlay { display: block !important; position: static !important; background: #fff !important; padding: 0 !important; }
+  #print-overlay .print-doc { box-shadow: none !important; padding: 1rem 0 !important; }
   .print-close-bar { display: none !important; }
 }
 </style>
@@ -2350,6 +2599,7 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 <!-- Trip view (shown when viewing a specific trip) -->
 <div id="trip-view">
 <header class="hdr">
+  <div class="hdr-hero" id="hdr-hero" data-country=""></div>
   <div class="hdr-c">
     <div class="hdr-top">
       <div class="hdr-tag">
@@ -4163,36 +4413,48 @@ function renderDayContent() {
     </div>
 
     <div class="day-toolbar">
-      <button class="day-tb-btn" onclick="setDayMeta()" title="تعديل بيانات اليوم">
+      <button class="day-tb-btn day-tb-pri" onclick="setDayMeta()" title="تعديل بيانات اليوم">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        <span>تعديل</span>
-      </button>
-      <button class="day-tb-btn" onclick="duplicateDay(${state.activeDayIdx})" title="نسخ هذا اليوم">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        <span>نسخ</span>
+        <span>تعديل اليوم</span>
       </button>
       <button class="day-tb-btn" onclick="addNewDay(${state.activeDayIdx})" title="إضافة يوم جديد بعد هذا">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <span>+ يوم</span>
-      </button>
-      <button class="day-tb-btn" onclick="moveDayUp(${state.activeDayIdx})" title="نقل لأعلى" ${state.activeDayIdx === 0 ? 'disabled' : ''}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
-      </button>
-      <button class="day-tb-btn" onclick="moveDayDown(${state.activeDayIdx})" title="نقل لأسفل" ${state.activeDayIdx === state.itinerary.length - 1 ? 'disabled' : ''}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        <span>يوم جديد</span>
       </button>
       <button class="day-tb-btn" onclick="openCityTransferModal(${state.activeDayIdx})" title="تسجيل انتقال لمدينة أخرى">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-        <span>انتقال</span>
+        <span>انتقال مدينة</span>
       </button>
-      <button class="day-tb-btn" onclick="printDay(${state.activeDayIdx})" title="تصدير اليوم PDF">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        <span>PDF</span>
-      </button>
-      <button class="day-tb-btn day-tb-danger" onclick="deleteDay(${state.activeDayIdx})" title="حذف اليوم" ${state.itinerary.length <= 1 ? 'disabled' : ''}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
-        <span>حذف</span>
-      </button>
+      <div class="day-tb-spacer"></div>
+      <div class="day-tb-menu-wrap">
+        <button class="day-tb-btn day-tb-icon" onclick="toggleDayMenu(event)" title="المزيد">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+        </button>
+        <div class="day-tb-menu" id="day-tb-menu" hidden>
+          <button class="day-tb-mi" onclick="closeDayMenu();duplicateDay(${state.activeDayIdx})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            نسخ هذا اليوم
+          </button>
+          <button class="day-tb-mi" onclick="closeDayMenu();moveDayUp(${state.activeDayIdx})" ${state.activeDayIdx === 0 ? 'disabled' : ''}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+            نقل لأعلى
+          </button>
+          <button class="day-tb-mi" onclick="closeDayMenu();moveDayDown(${state.activeDayIdx})" ${state.activeDayIdx === state.itinerary.length - 1 ? 'disabled' : ''}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            نقل لأسفل
+          </button>
+          <div class="day-tb-mi-sep"></div>
+          <button class="day-tb-mi" onclick="closeDayMenu();printDay(${state.activeDayIdx})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            تصدير اليوم (PDF)
+          </button>
+          <div class="day-tb-mi-sep"></div>
+          <button class="day-tb-mi day-tb-mi-danger" onclick="closeDayMenu();deleteDay(${state.activeDayIdx})" ${state.itinerary.length <= 1 ? 'disabled' : ''}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+            حذف اليوم
+          </button>
+        </div>
+      </div>
     </div>
   `;
 
@@ -4209,7 +4471,7 @@ function renderDayContent() {
     </div>`;
   }
 
-  // ─── Hotel banner ───
+  // ─── Hotel banner (always visible) ───
   if (day.hotel && day.hotel.name) {
     const h = day.hotel;
     const isCheckIn = h.isFirst;
@@ -4229,12 +4491,23 @@ function renderDayContent() {
           ${!isCheckIn && !isCheckOut ? `<span>🛏️ مبيت</span>` : ''}
         </div>
         ${h.notes ? `<div class="txs cls" style="margin-top:0.3rem">${h.notes}</div>` : ''}
-        <div style="display:flex;gap:0.4rem;margin-top:0.5rem;flex-wrap:wrap">
+        <div class="day-hotel-acts">
           ${mapsLink ? `<a class="day-hotel-act" href="${mapsLink}" target="_blank">📍 خرائط</a>` : ''}
           ${h.bookingLink ? `<a class="day-hotel-act" href="${h.bookingLink}" target="_blank">🔗 الحجز</a>` : ''}
+          <button class="day-hotel-act" onclick="openDayHotelPicker(${state.activeDayIdx})">✏️ تعديل</button>
+          <button class="day-hotel-act day-hotel-act-danger" onclick="clearDayHotel(${state.activeDayIdx})">🗑️ إزالة</button>
         </div>
       </div>
     </div>`;
+  } else {
+    html += `<button class="day-hotel-empty" onclick="openDayHotelPicker(${state.activeDayIdx})">
+      <div class="day-hotel-empty-ic">🏨</div>
+      <div class="day-hotel-empty-bd">
+        <div class="day-hotel-empty-t">لم يُحدَّد فندق هذا اليوم</div>
+        <div class="day-hotel-empty-d">اختر من المكتبة أو أدخل يدوياً</div>
+      </div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>`;
   }
 
   // ─── Day-level personal notes ───
@@ -4491,23 +4764,30 @@ function printDay(dayIdx) {
   const modeIcons = { flight:"✈️", train:"🚄", arex:"🚆", bus:"🚌", taxi:"🚖", metro:"🚇", rental:"🚗", ferry:"⛴️", transport:"🚌" };
 
   const overlay = $("print-overlay");
+  const flagMap = { korea: "🇰🇷", turkey: "🇹🇷", uk: "🇬🇧", japan: "🇯🇵", thailand: "🇹🇭" };
+  const flag = flagMap[trip.countryLib] || trip.icon || "✈️";
   overlay.innerHTML = `
     <div class="print-close-bar">
-      <div style="font-weight:600">معاينة اليوم ${day.day} قبل الطباعة</div>
+      <div style="font-weight:600;font-size:0.9rem">معاينة اليوم ${day.day} قبل الطباعة</div>
       <div style="display:flex;gap:0.5rem">
         <button class="btn btn-pri" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
         <button class="btn btn-sec" onclick="closePrintOverlay()">✕ إغلاق</button>
       </div>
     </div>
 
-    <div class="print-header">
-      <div class="print-title">${trip.icon || '✈️'} ${trip.name} · اليوم ${day.day} — ${day.weekday}، ${day.dateLabel}</div>
-      <div class="print-sub">
-        ${cityName ? `📍 ${cityName}` : ''}
-        ${t.travelers ? ` · 👤 ${t.travelers} مسافر` : ''}
-        ${t.ticketRef ? ` · رقم التذكرة: ${t.ticketRef}` : ''}
+    <div class="print-doc">
+      <div class="print-header">
+        <div class="print-hero" data-country="${trip.countryLib || ''}">${flag}</div>
+        <div class="print-header-info">
+          <div class="print-title">${trip.name} · اليوم ${day.day}</div>
+          <div class="print-sub">
+            ${day.weekday}، ${day.dateLabel}
+            ${cityName ? ` · 📍 ${cityName}` : ''}
+            ${t.travelers ? ` · 👤 ${t.travelers}` : ''}
+            ${t.ticketRef ? ` · 🎫 ${t.ticketRef}` : ''}
+          </div>
+        </div>
       </div>
-    </div>
 
     ${day.hotel?.name ? `
     <div class="print-section">
@@ -4569,7 +4849,8 @@ function printDay(dayIdx) {
       </div>
     </div>
 
-    <div class="print-footer">تم إنشاء هذا الجدول بواسطة منصة رحلاتي · ${new Date().toLocaleDateString('ar-SA')}</div>
+      <div class="print-footer">تم إنشاء هذا الجدول بواسطة منصة رحلاتي · ${new Date().toLocaleDateString('ar-SA')}</div>
+    </div>
   `;
   overlay.classList.add('active');
 }
@@ -4741,6 +5022,29 @@ function saveCityTransfer(dayIdx, fromCityId, fromCityName) {
   renderItinerary();
 }
 
+function toggleDayMenu(ev) {
+  ev?.stopPropagation();
+  const m = document.getElementById("day-tb-menu");
+  if (!m) return;
+  const willOpen = m.hidden;
+  m.hidden = !willOpen;
+  if (willOpen) {
+    setTimeout(() => {
+      document.addEventListener("click", _closeDayMenuOutside);
+    }, 0);
+  }
+}
+function _closeDayMenuOutside(e) {
+  if (!e.target.closest("#day-tb-menu") && !e.target.closest(".day-tb-menu-wrap")) {
+    closeDayMenu();
+  }
+}
+function closeDayMenu() {
+  const m = document.getElementById("day-tb-menu");
+  if (m) m.hidden = true;
+  document.removeEventListener("click", _closeDayMenuOutside);
+}
+
 function duplicateDay(idx) {
   const original = state.itinerary[idx];
   // Deep clone with new IDs for items
@@ -4894,12 +5198,11 @@ function closeModal() {
 
 // 6 logical categories for building a day
 const ADD_CATEGORIES = [
-  { id: "activity",  icon: "📍", label: "نشاط / زيارة",  desc: "معالم، مساجد، تسوق، ترفيه",    color: "#0891b2" },
-  { id: "meal",      icon: "🍽️", label: "مطعم",           desc: "من المكتبة أو مطعم جديد",     color: "#16a34a" },
-  { id: "tour",      icon: "🎯", label: "جولة منظمة",    desc: "جولات محجوزة أو مخصصة",      color: "#7c3aed" },
-  { id: "stay",      icon: "🏨", label: "إقامة",          desc: "تسجيل دخول / خروج فندق",     color: "#1a4d4a" },
-  { id: "transport", icon: "🚗", label: "انتقال",         desc: "بين المدن أو مواصلات محلية", color: "#f59e0b" },
-  { id: "note",      icon: "📝", label: "ملاحظة / راحة", desc: "تذكير، صلاة، استراحة...",     color: "#64748b" },
+  { id: "activity",  icon: "📍", label: "نشاط / زيارة",  desc: "معالم، مساجد، تسوق، ترفيه",    color: "#0b57d0" },
+  { id: "meal",      icon: "🍽️", label: "مطعم",           desc: "من المكتبة أو مطعم جديد",     color: "#1e8e3e" },
+  { id: "tour",      icon: "🎯", label: "جولة منظمة",    desc: "جولات محجوزة أو مخصصة",      color: "#9334e6" },
+  { id: "transport", icon: "🚗", label: "انتقال",         desc: "بين المدن أو مواصلات محلية", color: "#f9ab00" },
+  { id: "note",      icon: "📝", label: "ملاحظة / راحة", desc: "تذكير، صلاة، استراحة...",     color: "#5f6368" },
 ];
 
 function openItemPicker(dayIdx) {
@@ -6535,6 +6838,155 @@ function saveDayMeta() {
 
   saveItin();
   closeModal();
+  renderItinerary();
+}
+
+// ═══════════════════════════════════════════════════════════
+//   DAY HOTEL PICKER (library + manual)
+// ═══════════════════════════════════════════════════════════
+
+function openDayHotelPicker(dayIdx) {
+  const day = state.itinerary[dayIdx];
+  const h = day.hotel || {};
+  const remainingDays = state.itinerary.length - dayIdx;
+  const cityKey = day.city || "";
+
+  // Get hotels from library matching the day's city
+  const allHotels = (typeof allLib === "function" ? allLib() : (typeof LIB !== "undefined" ? LIB : []))
+    .filter(it => it.type === "hotel");
+  const cityHotels = allHotels.filter(h2 => (h2.city || "").toLowerCase() === cityKey.toLowerCase());
+  const otherHotels = allHotels.filter(h2 => (h2.city || "").toLowerCase() !== cityKey.toLowerCase());
+
+  const hotelCard = (it) => `
+    <button class="hotel-pick-card" onclick="_pickHotelFromLib('${it.id}')">
+      <div class="hotel-pick-ic">🏨</div>
+      <div class="hotel-pick-bd">
+        <div class="hotel-pick-n">${it.name}</div>
+        ${it.area ? `<div class="hotel-pick-a">${it.area}${it.city?` · ${LIB_CITY_NAMES?.[it.city] || it.city}`:''}</div>` : ''}
+        ${it.price ? `<div class="hotel-pick-p">⭐ ${it.price}</div>` : ''}
+      </div>
+    </button>
+  `;
+
+  openModal(`
+    <div class="modal-h">
+      <h3>🏨 فندق يوم ${day.day}</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+
+    ${cityHotels.length > 0 ? `
+      <div class="hotel-pick-sec">
+        <div class="hotel-pick-sec-l">من المكتبة · ${LIB_CITY_NAMES?.[cityKey] || cityKey}</div>
+        <div class="hotel-pick-grid">${cityHotels.map(hotelCard).join('')}</div>
+      </div>
+    ` : ''}
+    ${otherHotels.length > 0 ? `
+      <details class="hotel-pick-sec">
+        <summary class="hotel-pick-sec-l" style="cursor:pointer">من مدن أخرى (${otherHotels.length})</summary>
+        <div class="hotel-pick-grid" style="margin-top:0.5rem">${otherHotels.map(hotelCard).join('')}</div>
+      </details>
+    ` : ''}
+
+    <div class="hotel-pick-sec">
+      <div class="hotel-pick-sec-l">${cityHotels.length || otherHotels.length ? 'أو أدخل يدوياً' : 'أدخل بيانات الفندق'}</div>
+      <div class="fld">
+        <label>اسم الفندق</label>
+        <input type="text" class="input" id="dh-name" value="${h.name || ''}" placeholder="مثال: Lotte Hotel Seoul">
+      </div>
+      <div class="fld">
+        <label>العنوان (اختياري)</label>
+        <input type="text" class="input" id="dh-addr" value="${h.address || ''}" placeholder="Myeongdong, Jung-gu">
+      </div>
+      <div class="fld-row">
+        <div class="fld">
+          <label>دخول (Check-in)</label>
+          <input type="time" class="input" id="dh-cin" value="${h.checkIn || '15:00'}">
+        </div>
+        <div class="fld">
+          <label>خروج (Check-out)</label>
+          <input type="time" class="input" id="dh-cout" value="${h.checkOut || '11:00'}">
+        </div>
+      </div>
+      <div class="fld">
+        <label>عدد الليالي (يطبّق على الأيام التالية)</label>
+        <input type="number" class="input" id="dh-nights" value="${h.nights || 1}" min="1" max="${remainingDays}">
+      </div>
+      <div class="fld">
+        <label>رابط الحجز (اختياري)</label>
+        <input type="url" class="input" id="dh-link" value="${h.bookingLink || ''}" placeholder="https://...">
+      </div>
+      <div class="fld">
+        <label>ملاحظات (رقم الغرفة، مرجع الحجز...)</label>
+        <textarea class="input" id="dh-notes" rows="2">${h.notes || ''}</textarea>
+      </div>
+    </div>
+
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-pri" onclick="_saveDayHotelManual(${dayIdx})">حفظ</button>
+    </div>
+  `);
+}
+
+function _pickHotelFromLib(libId) {
+  const it = (typeof allLib === "function" ? allLib() : LIB).find(x => x.id === libId);
+  if (!it) return;
+  const nameEl = document.getElementById("dh-name");
+  const addrEl = document.getElementById("dh-addr");
+  if (nameEl) nameEl.value = it.name || '';
+  if (addrEl) addrEl.value = it.area || '';
+  // Highlight - scroll to name field
+  nameEl?.focus();
+  nameEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function _saveDayHotelManual(dayIdx) {
+  const name = $("dh-name").value.trim();
+  if (!name) {
+    alert("⚠️ أدخل اسم الفندق أولاً");
+    return;
+  }
+  const nights = Math.max(1, parseInt($("dh-nights").value, 10) || 1);
+  const hotel = {
+    name,
+    address: $("dh-addr").value.trim(),
+    checkIn: $("dh-cin").value || "15:00",
+    checkOut: $("dh-cout").value || "11:00",
+    nights,
+    bookingLink: $("dh-link").value.trim(),
+    notes: $("dh-notes").value.trim()
+  };
+  const startIdx = dayIdx;
+  const endIdx = Math.min(state.itinerary.length - 1, startIdx + nights - 1);
+  for (let i = startIdx; i <= endIdx; i++) {
+    state.itinerary[i].hotel = {
+      ...hotel,
+      nightIndex: i - startIdx + 1,
+      totalNights: nights,
+      isFirst: i === startIdx,
+      isLast: i === endIdx
+    };
+  }
+  saveItin();
+  closeModal();
+  renderItinerary();
+}
+
+function clearDayHotel(dayIdx) {
+  if (!confirm("إزالة الفندق من هذا اليوم؟")) return;
+  const day = state.itinerary[dayIdx];
+  // Clear all related days that share the same hotel
+  if (day.hotel && day.hotel.totalNights > 1) {
+    const offset = day.hotel.nightIndex - 1;
+    const start = dayIdx - offset;
+    const end = start + day.hotel.totalNights - 1;
+    for (let i = start; i <= end; i++) {
+      if (state.itinerary[i]) state.itinerary[i].hotel = null;
+    }
+  } else {
+    day.hotel = null;
+  }
+  saveItin();
   renderItinerary();
 }
 
@@ -9378,6 +9830,9 @@ function updateHeaderForTrip() {
   // Tag: just the trip icon + name (no MHWAR prefix)
   $("hdr-tag-text") && ($("hdr-tag-text").textContent = `${trip.icon || '✈️'} ${trip.name || 'رحلة'}`);
   $("hdr-title") && ($("hdr-title").textContent = trip.name || trip.destination || 'رحلة');
+  // Hero strip: themed by country
+  const hero = $("hdr-hero");
+  if (hero) hero.setAttribute("data-country", trip.countryLib || "");
 
   // Subtitle: days · dates · ticket ref (if any)
   const fmt = d => d ? d.replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$3/$2/$1') : '';
