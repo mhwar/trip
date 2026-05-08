@@ -1,4 +1,5 @@
-// DeepSeek AI proxy (OpenAI-compatible API)
+// SiliconFlow AI proxy (OpenAI-compatible API)
+// Free models: Qwen/Qwen2.5-7B-Instruct, THUDM/glm-4-9b-chat, internlm/internlm2_5-7b-chat
 exports.handler = async (event) => {
   const cors = {
     "Access-Control-Allow-Origin": "*",
@@ -18,21 +19,21 @@ exports.handler = async (event) => {
   catch { return { statusCode: 400, headers: cors, body: JSON.stringify({ error: "Invalid JSON" }) }; }
 
   const { prompt, system, model, apiKey } = body;
-  const key = process.env.DEEPSEEK_API_KEY || apiKey;
+  const key = process.env.SILICONFLOW_API_KEY || apiKey;
 
   if (!key) return { statusCode: 400, headers: cors, body: JSON.stringify({ error: "No API key provided" }) };
   if (!prompt) return { statusCode: 400, headers: cors, body: JSON.stringify({ error: "No prompt" }) };
 
   try {
-    const res = await fetch("https://api.deepseek.com/chat/completions", {
+    const res = await fetch("https://api.siliconflow.cn/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${key}`
       },
       body: JSON.stringify({
-        model: model || "deepseek-chat",
-        max_tokens: 8000,
+        model: model || "Qwen/Qwen2.5-7B-Instruct",
+        max_tokens: 4096,
         temperature: 0.4,
         messages: [
           { role: "system", content: system || "You are a helpful assistant." },
