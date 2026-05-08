@@ -2754,7 +2754,11 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   مزامنة
 </button>
 
-<footer><p id="footer-text">رحلة كوريا الجنوبية · 14-24 مايو 2026 · مرجع التذكرة: 9T7ZEZ · يُحفظ تلقائياً في متصفحك</p></footer>
+<footer>
+  <p id="footer-text">رحلة كوريا الجنوبية · 14-24 مايو 2026 · مرجع التذكرة: 9T7ZEZ · يُحفظ تلقائياً في متصفحك</p>
+  ${'' /* Hidden admin entry - tap 5 times on footer text to reveal */}
+  <span id="_admin-tap-zone" style="display:inline-block;padding:0.3rem 0.5rem;cursor:pointer;user-select:none;font-size:0.65rem;color:transparent" onclick="_adminTap()">⚙</span>
+</footer>
 
 </div><!-- /trip-view -->
 
@@ -8592,6 +8596,13 @@ function openSyncModal() {
       </div>
 
       <div class="sync-status" id="sync-status"></div>
+
+      ${!isOwner() ? `
+      <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border);text-align:center">
+        <button class="btn btn-out btn-sm" onclick="closeModal();openAdminLogin()">
+          🔐 دخول الإدارة
+        </button>
+      </div>` : ''}
     </div>
   `);
 }
@@ -9804,6 +9815,54 @@ function executeDuplicateTrip(srcId) {
   const st = document.getElementById("dup-status");
   if (st) { st.style.display = "block"; st.textContent = `✓ تم إنشاء "${newTrip.name}" بنجاح`; }
   setTimeout(() => { closeModal(); renderDashboard(); }, 1200);
+}
+
+let _adminTapCount = 0, _adminTapTimer = null;
+function _adminTap() {
+  _adminTapCount++;
+  clearTimeout(_adminTapTimer);
+  if (_adminTapCount >= 5) {
+    _adminTapCount = 0;
+    openAdminLogin();
+  } else {
+    _adminTapTimer = setTimeout(() => { _adminTapCount = 0; }, 2000);
+  }
+}
+
+function openAdminLogin() {
+  if (isOwner()) {
+    // Already admin — go to dashboard
+    navTo({ dashboard: true });
+    return;
+  }
+  openModal(`
+    <div class="modal-h">
+      <h3>🔐 دخول الإدارة</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="sync-box">
+      <div class="fld">
+        <label>مفتاح الوصول</label>
+        <input type="password" class="input" id="admin-key-input" placeholder="أدخل المفتاح..." autocomplete="off" style="letter-spacing:0.1em">
+      </div>
+      <div id="admin-login-status" style="display:none;margin-top:0.5rem;font-size:0.8rem"></div>
+      <button class="btn btn-pri" style="width:100%;margin-top:0.75rem" onclick="_submitAdminKey()">دخول</button>
+    </div>
+  `);
+  setTimeout(() => document.getElementById("admin-key-input")?.focus(), 100);
+}
+
+function _submitAdminKey() {
+  const key = document.getElementById("admin-key-input")?.value?.trim();
+  const st = document.getElementById("admin-login-status");
+  if (!key) return;
+  if (isValidAccessKey(key)) {
+    localStorage.setItem("kt2_is_owner", "1");
+    if (st) { st.style.display = "block"; st.style.color = "var(--ok)"; st.textContent = "✓ تم تفعيل صلاحية الإدارة"; }
+    setTimeout(() => { closeModal(); navTo({ dashboard: true }); }, 800);
+  } else {
+    if (st) { st.style.display = "block"; st.style.color = "var(--err)"; st.textContent = "✗ مفتاح غير صحيح"; }
+  }
 }
 
 function exitOwnerMode() {
