@@ -8245,7 +8245,7 @@ function openGeminiAssistant(preselectedLib) {
     <div style="background:var(--cream);border-radius:10px;padding:0.6rem 0.8rem;margin-bottom:0.75rem;font-size:0.75rem;color:var(--ink-soft)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
         <strong>🔑 مفتاح SiliconFlow API</strong>
-        <a href="https://cloud.siliconflow.cn/account/ak" target="_blank" style="font-size:0.68rem;color:var(--accent)">+ مفتاح جديد</a>
+        <a href="https://cloud.siliconflow.com/account/ak" target="_blank" style="font-size:0.68rem;color:var(--accent)">+ مفتاح جديد</a>
       </div>
       <input type="password" class="input" id="gem-key" value="${savedKey}" placeholder="sk-..." autocomplete="off" style="padding:0.3rem 0.5rem;font-size:0.8rem">
       <div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.4rem;flex-wrap:wrap">
@@ -8257,7 +8257,7 @@ function openGeminiAssistant(preselectedLib) {
         </select>
       </div>
       <div style="margin-top:0.4rem;font-size:0.68rem;color:var(--muted)">
-        💡 النماذج المجانية 🆓 لا تستهلك رصيداً · احصل على مفتاحك من <strong>cloud.siliconflow.cn</strong>
+        💡 النماذج المجانية 🆓 لا تستهلك رصيداً · احصل على مفتاحك من <strong>cloud.siliconflow.com</strong>
       </div>
     </div>
 
@@ -8462,9 +8462,9 @@ async function runGeminiAssistant() {
     const code = e.apiCode || "";
     let hint = "";
     if (code === 401 || rawMsg.includes("authentication") || rawMsg.includes("api_key") || rawMsg.includes("Invalid")) {
-      hint = "💡 تحقق من مفتاح SiliconFlow في cloud.siliconflow.cn/account/ak";
+      hint = "💡 تحقق من مفتاح SiliconFlow في cloud.siliconflow.com/account/ak";
     } else if (code === 402 || rawMsg.includes("balance") || rawMsg.includes("Insufficient")) {
-      hint = "💡 رصيدك غير كافٍ — استخدم نموذجاً مجانياً 🆓 أو أضف رصيداً في cloud.siliconflow.cn";
+      hint = "💡 رصيدك غير كافٍ — استخدم نموذجاً مجانياً 🆓 أو أضف رصيداً في cloud.siliconflow.com";
     } else if (code === 429) {
       hint = "💡 تجاوزت الحد المجاني — انتظر قليلاً أو جرب نموذجاً مجانياً آخر";
     } else if (rawMsg.includes("fetch") || rawMsg.includes("network")) {
