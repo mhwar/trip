@@ -1,0 +1,732 @@
+<script>
+// ═══════════════════════════════════════════════════════════
+//   STATE & STORAGE
+// ═══════════════════════════════════════════════════════════
+
+const Storage = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+
+const $ = (id) => document.getElementById(id);
+const cityById = (id) => CITIES.find(c => c.id === id);
+const libById = (id) => LIB.find(l => l.id === id);
+
+const state = {
+  active: Storage.get("kt2_tab", "overview"),
+  itinerary: Storage.get("kt2_itin", makeEmptyItinerary()),
+  customLib: Storage.get("kt2_clib", []),
+  budget: Storage.get("kt2_bud", BUDGET_DEFAULT),
+  tasks: Storage.get("kt2_tasks", TASKS_DEFAULT),
+  favs: Storage.get("kt2_favs", []),
+  // UI state
+  activeDayIdx: 0,
+  activeCity: "seoul",
+  cityTab: "overview", // overview | districts | transport | events
+  taskFilter: "all", // all | undone | done | <category>
+  libFilters: { type: "all", city: "all", halal: false, gf: false, q: "" },
+  mapCity: "all",
+  mapLayers: { food: true, attraction: true, entertainment: true, hotel: true, shop: true, mosque: true, festival: true, custom: true, plan: true },
+  pickerTab: "library", // library | new
+  pickerType: "food",
+  mapInst: null,
+  mapMarkers: null,
+  pendingInsert: null // { dayIdx, time }
+};
+
+function saveItin() { Storage.set("kt2_itin", state.itinerary); }
+function saveLib() { Storage.set("kt2_clib", state.customLib); }
+function saveFavs() { Storage.set("kt2_favs", state.favs); }
+function saveTasks() { Storage.set("kt2_tasks", state.tasks); }
+
+// All POIs (built-in + custom)
+function allLib() { return [...LIB, ...state.customLib]; }
+
+// ═══════════════════════════════════════════════════════════
+//   NAV
+// ═══════════════════════════════════════════════════════════
+
+function renderNav() {
+  $("nav-tabs").innerHTML = TABS.map(t => `
+    <button class="nav-t ${state.active === t.id ? "act" : ""}" data-tab="${t.id}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${t.svg}</svg>
+      ${t.label}
+    </button>
+  `).join("");
+  document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+}
+
+function switchTab(id) {
+  state.active = id;
+  Storage.set("kt2_tab", id);
+  document.querySelectorAll(".sec").forEach(s => s.classList.remove("act"));
+  $("sec-" + id).classList.add("act");
+  document.querySelectorAll(".nav-t").forEach(t => t.classList.toggle("act", t.dataset.tab === id));
+  // Show FAB on itinerary
+  $("fab").hidden = id !== "itinerary";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  renderSection(id);
+}
+
+function renderSection(id) {
+  if (id === "overview") renderOverview();
+  else if (id === "tasks") renderTasks();
+  else if (id === "itinerary") renderItinerary();
+  else if (id === "cities") renderCities();
+  else if (id === "library") renderLibrary();
+  else if (id === "map") renderMapSec();
+  else if (id === "budget") renderBudget();
+  else if (id === "info") renderInfo();
+}
+
+function updateCountdown() {
+  const target = new Date("2026-05-14"); // Actual arrival date
+  const days = Math.max(0, Math.ceil((target - new Date()) / 86400000));
+  $("cd-val").textContent = days > 0 ? `${days} يوم متبقٍ` : "بدأت الرحلة!";
+}
+
+// ═══════════════════════════════════════════════════════════
+//   OVERVIEW
+// ═══════════════════════════════════════════════════════════
+
+function renderOverview() {
+  const totalItems = state.itinerary.reduce((s, d) => s + d.items.length, 0);
+  const filledDays = state.itinerary.filter(d => d.items.length > 0).length;
+  const halalCount = LIB.filter(l => l.halal).length;
+  const gfCount = LIB.filter(l => l.gf).length;
+
+  $("sec-overview").innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+        <h2>لوحة الرحلة</h2>
+      </div>
+      <p>ابدأ من هنا - مكتبة المواقع جاهزة، الجدول فارغ، أنت تختار</p>
+    </div>
+
+    <div class="lib-stats">
+      <div class="lib-stat"><div class="lib-stat-i">📅</div><div class="lib-stat-v">${filledDays}/12</div><div class="lib-stat-l">أيام مخططة</div></div>
+      <div class="lib-stat"><div class="lib-stat-i">📌</div><div class="lib-stat-v">${totalItems}</div><div class="lib-stat-l">نشاط مضاف</div></div>
+      <div class="lib-stat"><div class="lib-stat-i">🥩</div><div class="lib-stat-v">${halalCount}</div><div class="lib-stat-l">مطعم حلال</div></div>
+      <div class="lib-stat"><div class="lib-stat-i">🌾</div><div class="lib-stat-v">${gfCount}</div><div class="lib-stat-l">خيار GF</div></div>
+    </div>
+
+    ${totalItems === 0 ? `
+      <div class="card card-orng mb4">
+        <div class="flx its g75">
+          <div style="font-size:2rem">🚀</div>
+          <div class="fls">
+            <div class="fb7 cli mb1" style="font-size:1rem">جدولك فارغ - ابدأ بإحدى الطريقتين</div>
+            <p class="txs cls mb2">يمكنك استيراد القالب الجاهز (11 يوم) ثم تعديله، أو بناء جدولك من الصفر بالكامل.</p>
+            <div class="flx g5 fwr">
+              <button class="btn btn-pri" onclick="importTemplate()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                استيراد القالب الجاهز
+              </button>
+              <button class="btn btn-out" onclick="switchTab('itinerary')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                ابدأ من الصفر
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    ` : ''}
+
+    <h3 class="fb7 cli mb2 mt3" style="font-size:1rem">📌 الخطوات السريعة</h3>
+    <div class="gr g3 mb4">
+      <button class="card" onclick="switchTab('tasks')" style="text-align:right;cursor:pointer">
+        <div style="font-size:1.5rem;margin-bottom:0.4rem">📋</div>
+        <div class="fb7 cli mb1">مهام التجهيز</div>
+        <p class="txs clm">تأشيرة، حجوزات، تطبيقات، أدوات السفر - كل ما يجب تجهيزه قبل الرحلة</p>
+        ${(() => {
+          const t = state.tasks || [];
+          const d = t.filter(x => x.done).length;
+          const pct = t.length ? Math.round((d / t.length) * 100) : 0;
+          return `<div class="task-prog mt2"><div class="task-prog-f" style="width:${pct}%;background:${pct === 100 ? 'var(--ok)' : 'var(--accent)'}"></div></div>
+                  <div class="txx clm mt1">${d}/${t.length} منجز · ${pct}%</div>`;
+        })()}
+      </button>
+      <button class="card" onclick="switchTab('itinerary')" style="text-align:right;cursor:pointer">
+        <div style="font-size:1.5rem;margin-bottom:0.4rem">📅</div>
+        <div class="fb7 cli mb1">الجدول اليومي</div>
+        <p class="txs clm">خط زمني تفاعلي - أضف نشاط من المكتبة أو أنشئ جديداً</p>
+      </button>
+      <button class="card" onclick="switchTab('library')" style="text-align:right;cursor:pointer">
+        <div style="font-size:1.5rem;margin-bottom:0.4rem">📚</div>
+        <div class="fb7 cli mb1">مكتبة المواقع</div>
+        <p class="txs clm">${LIB.length}+ موقع جاهز - مطاعم حلال، معالم، فعاليات، أسواق</p>
+      </button>
+    </div>
+
+    <h3 class="fb7 cli mb2 mt3" style="font-size:1rem">🗺️ خطة الرحلة العامة</h3>
+    <div class="card card-acc mb3">
+      <div class="trip-flow">
+        <div class="trip-leg">
+          <div class="trip-leg-num">1</div>
+          <div class="trip-leg-info">
+            <div class="trip-leg-t">سيول · 5 ليالٍ</div>
+            <div class="trip-leg-d">14-17 مايو · 4 ليالٍ · القصور + DMZ + Nami + 🏮 مهرجان فوانيس اللوتس (15-16)</div>
+          </div>
+        </div>
+        <div class="trip-arrow">✈️ Gimpo→Jeju (1س 15د، ₩60-90k)</div>
+        <div class="trip-leg">
+          <div class="trip-leg-num" style="background:var(--persimmon)">2</div>
+          <div class="trip-leg-info">
+            <div class="trip-leg-t">جيجو · 3 ليالٍ</div>
+            <div class="trip-leg-d">18-20 مايو · سيارة مستأجرة · جنوب+شرق+غرب الجزيرة</div>
+          </div>
+        </div>
+        <div class="trip-arrow">✈️ Jeju→Busan (1س، ₩70-100k)</div>
+        <div class="trip-leg">
+          <div class="trip-leg-num" style="background:var(--gold)">3</div>
+          <div class="trip-leg-info">
+            <div class="trip-leg-t">بوسان · ليلتان</div>
+            <div class="trip-leg-d">21-22 مايو · Songdo + هاوندي + Yonggungsa + غامتشون</div>
+          </div>
+        </div>
+        <div class="trip-arrow">🚄 KTX Busan→Seoul (2س 15د، ₩59,800) ✨</div>
+        <div class="trip-leg">
+          <div class="trip-leg-num">4</div>
+          <div class="trip-leg-info">
+            <div class="trip-leg-t">سيول · ليلة + المغادرة</div>
+            <div class="trip-leg-d">23-24 مايو · Lotte Tower + DDP + تسوق نهائي + EY823 (17:50م)</div>
+          </div>
+        </div>
+      </div>
+      <p class="txs clm mt2" style="border-top:1px dashed var(--border);padding-top:0.6rem">💡 <strong>منطق الترتيب:</strong> وصول مباشر لسيول 10:50ص (يوم كامل!)، استشفاء + مهرجان الفوانيس + DMZ + Nami، ثم تنقل ذكي بـ✈️ للجزيرة و🚄 KTX للعودة. تجنّب 3 طيرانات داخلية واستثمار آخر يوم في سيول قبل المغادرة.</p>
+    </div>
+
+    <h3 class="fb7 cli mb2 mt3" style="font-size:1rem">✈️ تذاكر الطيران المؤكدة (مرجع: 9T7ZEZ)</h3>
+    <div class="gr mdg2 mb3">
+      <div class="card card-acc">
+        <div class="flx itm g5 mb2">
+          <div style="font-size:1.5rem">🛬</div>
+          <strong class="fb7 cla">الذهاب - 13/14 مايو</strong>
+        </div>
+        <ul class="tip-list" style="margin-top:0.5rem">
+          <li><strong>XY 426</strong>: أبها <span class="cli fb6">08:35</span> → جدة <span class="cli fb6">09:50</span> (13 مايو)</li>
+          <li><strong>EY 616</strong>: جدة <span class="cli fb6">15:20</span> → أبوظبي <span class="cli fb6">19:05</span> (13 مايو)</li>
+          <li><strong>EY 822</strong>: أبوظبي <span class="cli fb6">21:10</span> → سيول ICN <span class="cli fb6">10:50ص</span> ✨ (14 مايو)</li>
+          <li>💡 <strong>الوصول 10:50 ص</strong> = يوم كامل! Early Check-in موصى به</li>
+        </ul>
+      </div>
+
+      <div class="card card-orng">
+        <div class="flx itm g5 mb2">
+          <div style="font-size:1.5rem">🛫</div>
+          <strong class="fb7 clp">العودة - 24/25 مايو</strong>
+        </div>
+        <ul class="tip-list" style="margin-top:0.5rem">
+          <li><strong>EY 823</strong>: سيول ICN <span class="cli fb6">17:50م</span> → أبوظبي <span class="cli fb6">22:35</span> (24 مايو)</li>
+          <li><strong>EY 603</strong>: أبوظبي <span class="cli fb6">02:05</span> → جدة <span class="cli fb6">03:55</span> (25 مايو)</li>
+          <li><strong>XY 425</strong>: جدة <span class="cli fb6">06:35</span> → أبها <span class="cli fb6">07:55</span> (25 مايو)</li>
+          <li>💡 <strong>المغادرة 17:50</strong> = الوصول للمطار 14:50 (3س قبل)</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="fb7 cli mb2 mt3" style="font-size:1rem">🎉 مهرجانات تتزامن مع رحلتك</h3>
+    <div class="card mb4">
+      ${LIB.filter(l => l.type === 'festival').slice(0, 5).map(f => `
+        <div class="fest-row">
+          <span class="pill pill-orng">${f.note.match(/\([^)]+\)/) ? f.note.match(/\([^)]+\)/)[0].replace(/[()]/g, '') : 'مايو'}</span>
+          <div class="fls">
+            <div class="fb6 txm cli">${f.name}</div>
+            <div class="txx clm">${cityById(f.city).name} · ${f.note}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function importTemplate() {
+  if (state.itinerary.some(d => d.items.length > 0)) {
+    if (!confirm("جدولك يحتوي على عناصر. الاستيراد سيستبدلها بالقالب. متابعة؟")) return;
+  }
+  state.itinerary = makeTemplateItinerary();
+  saveItin();
+  alert("✅ تم استيراد القالب! انتقل لتبويب الجدول.");
+  switchTab('itinerary');
+}
+
+// ═══════════════════════════════════════════════════════════
+//   ITINERARY BUILDER
+// ═══════════════════════════════════════════════════════════
+
+function renderItinerary() {
+  const day = state.itinerary[state.activeDayIdx];
+  if (!day) { state.activeDayIdx = 0; return renderItinerary(); }
+
+  const totalItems = state.itinerary.reduce((s, d) => s + d.items.length, 0);
+
+  $("sec-itinerary").innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg></div>
+        <h2>الجدول اليومي</h2>
+      </div>
+      <p>اختر اليوم من الشريط · أضف نشاطاً من المكتبة أو أنشئ جديداً</p>
+    </div>
+
+    ${totalItems === 0 ? `
+      <div class="empty mb4">
+        <div class="empty-i">📅</div>
+        <div class="empty-t">جدولك فارغ</div>
+        <p class="empty-d">يمكنك استيراد قالب جاهز (11 يوم / 10 ليالٍ) فيه أبرز المعالم والمطاعم والمواصلات، أو ابدأ بناء جدولك خطوة بخطوة.</p>
+        <div class="empty-acts">
+          <button class="btn btn-pri" onclick="importTemplate()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
+            استيراد القالب
+          </button>
+        </div>
+      </div>
+    ` : ''}
+
+    <div class="day-tabs" id="day-tabs"></div>
+
+    <div id="day-content"></div>
+
+    <div class="flx g5 mt3 fwr">
+      <button class="btn btn-out btn-sm" onclick="setDayMeta()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        تعديل بيانات اليوم
+      </button>
+      ${state.itinerary.some(d => d.items.length > 0) ? `
+        <button class="btn btn-out btn-sm" onclick="if(confirm('حذف جميع عناصر الجدول؟ لا يمكن التراجع.')){state.itinerary=makeEmptyItinerary();saveItin();renderItinerary()}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+          مسح الجدول
+        </button>
+      ` : ''}
+    </div>
+  `;
+
+  renderDayTabs();
+  renderDayContent();
+}
+
+function renderDayTabs() {
+  const tabs = $("day-tabs");
+  tabs.innerHTML = state.itinerary.map((d, i) => {
+    const c = cityById(d.city);
+    return `
+      <button class="dt ${i === state.activeDayIdx ? 'act' : ''} ${d.type !== 'normal' ? d.type : ''}" onclick="state.activeDayIdx=${i};renderItinerary()">
+        <div class="dt-d">يوم</div>
+        <div class="dt-n">${d.day}</div>
+        <div class="dt-c">${c.name.replace('جزيرة ','')}</div>
+      </button>
+    `;
+  }).join('');
+}
+
+function renderDayContent() {
+  const day = state.itinerary[state.activeDayIdx];
+  const c = cityById(day.city);
+  const typeLabel = TYPE_LABELS[day.type];
+
+  let html = `
+    <div class="day-hdr ${day.type !== 'normal' ? day.type : ''}">
+      <div class="day-hdr-i">${day.day}</div>
+      <div class="day-hdr-info">
+        <div class="day-hdr-d">${day.weekday} · ${day.dateLabel}</div>
+        <div class="day-hdr-t">${day.title || `يوم ${day.day} - ${c.name}`}</div>
+        <div class="day-hdr-row">
+          ${typeLabel ? `<span class="pill ${typeLabel.cls}">${typeLabel.label}</span>` : ''}
+          <span class="pill" style="background:${CITY_COLORS[day.city]}1a;color:${CITY_COLORS[day.city]};border-color:${CITY_COLORS[day.city]}40">${c.name}</span>
+          ${day.items.length ? `<span class="pill pill-sm">${day.items.length} نشاط</span>` : ''}
+        </div>
+      </div>
+    </div>
+
+    <div class="day-toolbar">
+      <button class="day-tb-btn" onclick="setDayMeta()" title="تعديل بيانات اليوم">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <span>تعديل</span>
+      </button>
+      <button class="day-tb-btn" onclick="duplicateDay(${state.activeDayIdx})" title="نسخ هذا اليوم">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span>نسخ</span>
+      </button>
+      <button class="day-tb-btn" onclick="addNewDay(${state.activeDayIdx})" title="إضافة يوم جديد بعد هذا">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>+ يوم</span>
+      </button>
+      <button class="day-tb-btn" onclick="moveDayUp(${state.activeDayIdx})" title="نقل لأعلى" ${state.activeDayIdx === 0 ? 'disabled' : ''}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+      </button>
+      <button class="day-tb-btn" onclick="moveDayDown(${state.activeDayIdx})" title="نقل لأسفل" ${state.activeDayIdx === state.itinerary.length - 1 ? 'disabled' : ''}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <button class="day-tb-btn day-tb-danger" onclick="deleteDay(${state.activeDayIdx})" title="حذف اليوم" ${state.itinerary.length <= 1 ? 'disabled' : ''}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+        <span>حذف</span>
+      </button>
+    </div>
+  `;
+
+  // Flight banner
+  if (day.flight) {
+    const f = day.flight;
+    let txt = `<strong>${day.type === 'arrival' ? '🛬 الوصول:' : day.type === 'departure' ? '🛫 المغادرة:' : '✈️ التنقل:'}</strong> `;
+    txt += `${f.from} → ${f.to}`;
+    if (f.depTime) txt += ` · انطلاق ${f.depTime}`;
+    if (f.arrTime) txt += ` · وصول ${f.arrTime}`;
+    html += `<div class="fl-bnr">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+      <span>${txt}</span>
+    </div>`;
+  }
+
+  // ─── Narrative card (description of the day) ───
+  if (day.narrative) {
+    html += `<div class="narrative-card">
+      <div class="narrative-icon">💡</div>
+      <div class="narrative-text">${day.narrative}</div>
+    </div>`;
+  }
+
+  // ─── Smart Warnings ───
+  const warnings = analyzeDayWarnings(day);
+  if (warnings.length > 0) {
+    html += `<div class="day-warns">
+      ${warnings.map(w => `
+        <div class="day-warn day-warn-${w.level}">
+          <span class="day-warn-i">${w.icon}</span>
+          <span class="day-warn-t">${w.text}</span>
+        </div>
+      `).join('')}
+    </div>`;
+  }
+
+  // Timeline
+  if (day.items.length === 0) {
+    html += `<div class="empty">
+      <div class="empty-i">📍</div>
+      <div class="empty-t">لا توجد أنشطة لهذا اليوم</div>
+      <p class="empty-d">اضغط الزر أدناه لإضافة بند بفئته (سكن، مواصلات، وجبة، نشاط، جولة، راحة، ملاحظة)</p>
+      <div class="empty-acts">
+        <button class="btn btn-pri" onclick="openItemPicker(${state.activeDayIdx})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          + إضافة بند
+        </button>
+      </div>
+    </div>`;
+  } else {
+    const sorted = [...day.items].sort((a,b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
+
+    // Build timeline with buffer separators
+    let timelineHTML = '';
+    sorted.forEach((it, i) => {
+      // Add buffer time separator before this item (except first)
+      if (i > 0) {
+        const prev = sorted[i - 1];
+        const buffer = computeBuffer(prev.time, it.time);
+        if (buffer) {
+          timelineHTML += `<div class="tl-buffer"><span class="tl-buffer-l">⏱️ ${buffer}</span></div>`;
+        }
+      }
+      timelineHTML += renderTimelineItem(it);
+    });
+
+    html += `<div class="tl">
+      ${timelineHTML}
+      <button class="tl-add" onclick="openItemPicker(${state.activeDayIdx})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        + إضافة بند للجدول
+      </button>
+    </div>`;
+  }
+
+  $("day-content").innerHTML = html;
+}
+
+
+function renderTimelineItem(it) {
+  const t = TYPES[it.type] || TYPES.attraction;
+  const ref = it.refId ? libById(it.refId) : null;
+  const lat = it.lat || ref?.lat;
+  const lng = it.lng || ref?.lng;
+  const noteText = it.note || ref?.note;
+
+  // Determine card style based on type
+  let cardClass = '', icBg = '', icColor = '', typePill = '', pillExtra = '';
+  if (it.type === 'transport') {
+    cardClass = 'tl-transport';
+    icBg = 'rgba(245,158,11,0.18)'; icColor = '#b45309';
+    typePill = '<span class="pill pill-sm pill-warn">🚆 تنقل</span>';
+  } else if (it.type === 'tour') {
+    cardClass = 'tl-tour';
+    icBg = 'rgba(8,145,178,0.18)'; icColor = '#0891b2';
+    typePill = '<span class="pill pill-sm" style="background:rgba(8,145,178,0.15);color:#0891b2;border-color:rgba(8,145,178,0.4)">🎯 جولة</span>';
+  } else if (it.type === 'hotel') {
+    cardClass = 'tl-hotel';
+    icBg = 'rgba(26,77,74,0.18)'; icColor = 'var(--accent)';
+    typePill = '<span class="pill pill-sm" style="background:rgba(26,77,74,0.15);color:var(--accent);border-color:rgba(26,77,74,0.4)">🏨 سكن</span>';
+  } else if (it.type === 'food') {
+    cardClass = 'tl-food';
+    icBg = 'rgba(22,163,74,0.18)'; icColor = '#16a34a';
+    const mealLabels = { breakfast: "🌅 فطور", lunch: "☀️ غداء", dinner: "🌃 عشاء", snack: "🍡 خفيف" };
+    typePill = `<span class="pill pill-sm pill-ok">${mealLabels[it.mealType] || '🍽️ وجبة'}</span>`;
+  } else if (it.type === 'mosque') {
+    cardClass = 'tl-mosque';
+    icBg = 'rgba(8,145,178,0.18)'; icColor = '#0891b2';
+    typePill = '<span class="pill pill-sm">🕌 صلاة</span>';
+  } else if (it.type === 'rest') {
+    cardClass = 'tl-rest';
+    icBg = 'rgba(217,119,6,0.18)'; icColor = '#d97706';
+    typePill = '<span class="pill pill-sm" style="background:rgba(217,119,6,0.15);color:#d97706">☕ راحة</span>';
+  } else if (it.type === 'note') {
+    cardClass = 'tl-note';
+    icBg = 'rgba(100,116,139,0.18)'; icColor = '#475569';
+    typePill = '<span class="pill pill-sm" style="background:rgba(100,116,139,0.15);color:#475569">📝 ملاحظة</span>';
+  } else {
+    icBg = 'rgba(26,77,74,0.12)'; icColor = 'var(--accent)';
+    typePill = `<span class="pill pill-sm">${t.label}</span>`;
+  }
+
+  // Halal/GF tags for food
+  if (it.type === 'food') {
+    if (it.mealHalal || ref?.halal) pillExtra += '<span class="pill pill-sm pill-ok">🥩 حلال</span>';
+    if (it.mealGf || ref?.gf) pillExtra += '<span class="pill pill-sm pill-gold">🌾 GF</span>';
+  }
+
+  return `
+    <div class="tl-row t-${it.type} ${it.done ? 'tl-row-done' : ''} ${it.locked ? 'tl-row-locked' : ''}">
+      <div class="tl-time">${it.time || '—'}</div>
+      <div class="tl-dot"></div>
+      <div class="tl-card ${cardClass}">
+        <div class="tl-card-ic" style="background:${icBg};color:${icColor}">${ref?.icon || t.icon}</div>
+        <div class="tl-card-info">
+          <div class="tl-card-t">
+            ${it.text}
+            ${it.locked ? '<span class="tl-lock" title="بند مقفول - حجز مهم">🔒</span>' : ''}
+          </div>
+          <div class="tl-card-m">
+            ${typePill}
+            ${pillExtra}
+            ${ref?.price ? `<span class="pill pill-sm">${ref.price}</span>` : ''}
+          </div>
+          ${noteText ? `<div class="tl-tr-note">${noteText}</div>` : ''}
+          <div class="tl-card-acts">
+            ${lat && lng ? `<a class="tl-card-act" href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>
+              خرائط
+            </a>` : ''}
+            <button class="tl-card-act" onclick="editItem('${it.id}')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg>
+              تعديل
+            </button>
+            <button class="tl-card-act tl-card-done ${it.done ? 'is-done' : ''}" onclick="toggleItemDone('${it.id}')" title="${it.done ? 'إلغاء الإكمال' : 'تم'}">
+              ${it.done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>'}
+              ${it.done ? 'مكتمل' : 'تم'}
+            </button>
+          </div>
+        </div>
+        <button class="tl-card-x" onclick="removeItem('${it.id}')" title="حذف">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+
+function removeItem(id) {
+  const day = state.itinerary[state.activeDayIdx];
+  const item = day.items.find(i => i.id === id);
+  if (!item) return;
+  if (item.locked) {
+    if (!confirm(`⚠️ هذا البند مقفول 🔒 (لحماية حجز مهم).\n\n"${item.text}"\n\nهل تريد فعلاً حذفه؟`)) return;
+  }
+  day.items = day.items.filter(i => i.id !== id);
+  saveItin();
+  renderDayContent();
+}
+
+function quickAdd() {
+  openItemPicker(state.activeDayIdx);
+}
+
+// ─── 🗓️ DAY MANAGEMENT ───
+function renumberDays() {
+  // Renumber days starting from 1, recalculate dates from TRIP_START
+  state.itinerary.forEach((d, i) => {
+    d.day = i + 1;
+    const date = new Date(TRIP_START);
+    date.setDate(date.getDate() + i);
+    const weekdays = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+    const months = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+    d.date = date.toISOString().split('T')[0];
+    d.dateLabel = `${date.getDate()} ${months[date.getMonth()]}`;
+    d.weekday = weekdays[date.getDay()];
+  });
+}
+
+function addNewDay(afterIdx) {
+  const sourceDay = state.itinerary[afterIdx];
+  const newDay = {
+    day: 0, // will be renumbered
+    date: "",
+    dateLabel: "",
+    weekday: "",
+    city: sourceDay?.city || "seoul",
+    title: "",
+    type: "normal",
+    flight: null,
+    narrative: null,
+    items: []
+  };
+  state.itinerary.splice(afterIdx + 1, 0, newDay);
+  renumberDays();
+  saveItin();
+  state.activeDayIdx = afterIdx + 1;
+  renderItinerary();
+}
+
+function deleteDay(idx) {
+  if (state.itinerary.length <= 1) {
+    alert("لا يمكن حذف اليوم الوحيد");
+    return;
+  }
+  const day = state.itinerary[idx];
+  const hasContent = (day.items?.length || 0) > 0 || day.title || day.flight;
+  const confirmMsg = hasContent
+    ? `حذف يوم ${day.day} (${day.dateLabel})؟\n\nيحتوي على ${day.items?.length || 0} نشاط${day.title ? ` · "${day.title}"` : ''}.\n\nلا يمكن التراجع.`
+    : `حذف يوم ${day.day} (${day.dateLabel})؟`;
+  if (!confirm(confirmMsg)) return;
+  state.itinerary.splice(idx, 1);
+  renumberDays();
+  saveItin();
+  state.activeDayIdx = Math.min(idx, state.itinerary.length - 1);
+  renderItinerary();
+}
+
+function duplicateDay(idx) {
+  const original = state.itinerary[idx];
+  // Deep clone with new IDs for items
+  const copy = JSON.parse(JSON.stringify(original));
+  copy.items = (copy.items || []).map(it => ({ ...it, id: "i_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7) }));
+  copy.title = (copy.title || "") + " (نسخة)";
+  state.itinerary.splice(idx + 1, 0, copy);
+  renumberDays();
+  saveItin();
+  state.activeDayIdx = idx + 1;
+  renderItinerary();
+}
+
+function moveDayUp(idx) {
+  if (idx === 0) return;
+  [state.itinerary[idx], state.itinerary[idx - 1]] = [state.itinerary[idx - 1], state.itinerary[idx]];
+  renumberDays();
+  saveItin();
+  state.activeDayIdx = idx - 1;
+  renderItinerary();
+}
+
+function moveDayDown(idx) {
+  if (idx >= state.itinerary.length - 1) return;
+  [state.itinerary[idx], state.itinerary[idx + 1]] = [state.itinerary[idx + 1], state.itinerary[idx]];
+  renumberDays();
+  saveItin();
+  state.activeDayIdx = idx + 1;
+  renderItinerary();
+}
+
+// ─── 🔍 DAY ANALYTICS & SMART WARNINGS ───
+function analyzeDayWarnings(day) {
+  const warnings = [];
+  const items = (day.items || []).slice().sort((a, b) =>
+    (a.time || "99:99").localeCompare(b.time || "99:99")
+  );
+  const itemsWithTime = items.filter(i => i.time);
+
+  // Warning 1: Too many activities
+  if (items.length >= 9) {
+    warnings.push({ level: "warn", icon: "⚠️", text: `يوم مزدحم - ${items.length} نشاط. فكّر في تأجيل بعضها.` });
+  }
+
+  // Warning 2: Time conflicts (overlapping items - <30min gap when one is meal/activity)
+  for (let i = 0; i < itemsWithTime.length - 1; i++) {
+    const a = itemsWithTime[i], b = itemsWithTime[i + 1];
+    if (a.time === b.time) {
+      warnings.push({ level: "err", icon: "⏰", text: `تداخل: نشاطان في نفس الوقت (${a.time})` });
+    }
+  }
+
+  // Warning 3: No meals planned
+  const hasMeal = items.some(i => i.type === "food");
+  if (items.length >= 3 && !hasMeal && day.type === "normal") {
+    warnings.push({ level: "info", icon: "🍽️", text: "لم تضع وجبة في هذا اليوم" });
+  }
+
+  // Warning 4: Friday → no Friday prayer
+  if (day.weekday === "الجمعة" && !items.some(i => i.type === "mosque")) {
+    warnings.push({ level: "info", icon: "🕌", text: "يوم جمعة - لم تضع وقتاً لصلاة الجمعة" });
+  }
+
+  // Warning 5: Long distance between consecutive items
+  for (let i = 0; i < itemsWithTime.length - 1; i++) {
+    const a = itemsWithTime[i], b = itemsWithTime[i + 1];
+    if (a.lat && a.lng && b.lat && b.lng) {
+      const dist = calcDistKm(a.lat, a.lng, b.lat, b.lng);
+      if (dist > 20) {
+        warnings.push({ level: "info", icon: "🚇", text: `مسافة كبيرة (${dist.toFixed(0)}كم) بين "${shortText(a.text)}" و "${shortText(b.text)}"` });
+      }
+    }
+  }
+
+  // Warning 6: Very early start
+  if (itemsWithTime.length && itemsWithTime[0].time < "06:00") {
+    warnings.push({ level: "info", icon: "🌅", text: `بداية مبكرة جداً (${itemsWithTime[0].time}) - تأكد من النوم مبكراً` });
+  }
+
+  // Warning 7: Very late ending
+  if (itemsWithTime.length && itemsWithTime[itemsWithTime.length - 1].time > "23:00") {
+    warnings.push({ level: "info", icon: "🌙", text: "ينتهي اليوم متأخراً - فكّر في الاستراحة قبل النشاط الأخير" });
+  }
+
+  return warnings;
+}
+
+function calcDistKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+            Math.sin(dLng/2) * Math.sin(dLng/2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function shortText(s) {
+  if (!s) return "";
+  return s.length > 25 ? s.slice(0, 25) + "…" : s;
+}
+
+// Compute buffer time between two consecutive items
+function computeBuffer(prevTime, nextTime) {
+  if (!prevTime || !nextTime) return null;
+  const [h1, m1] = prevTime.split(":").map(Number);
+  const [h2, m2] = nextTime.split(":").map(Number);
+  const mins = (h2 * 60 + m2) - (h1 * 60 + m1);
+  if (mins <= 0) return null;
+  if (mins < 30) return null; // too short to show
+  if (mins < 60) return `${mins}د فجوة`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m === 0 ? `${h}س فجوة` : `${h}س ${m}د فجوة`;
+}
+
+// Toggle item completion status
+function toggleItemDone(id) {
+  const day = state.itinerary[state.activeDayIdx];
+  const item = day.items.find(i => i.id === id);
+  if (!item) return;
+  item.done = !item.done;
+  saveItin();
+  renderItinerary();
+}
+
+
+</script>

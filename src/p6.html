@@ -1,0 +1,1350 @@
+<script>
+// ═══════════════════════════════════════════════════════════
+//   MODAL HELPERS
+// ═══════════════════════════════════════════════════════════
+
+function openModal(html) {
+  $("modal-body").innerHTML = html;
+  $("modal-bk").classList.add("show");
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  $("modal-bk").classList.remove("show");
+  document.body.style.overflow = '';
+}
+
+// ═══════════════════════════════════════════════════════════
+//   ITEM PICKER MODAL (library + new)
+// ═══════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════
+//   📋 CATEGORY-BASED ITEM PICKER (Logical Day Builder)
+// ═══════════════════════════════════════════════════════════
+
+// 7 logical categories for building a day
+const ADD_CATEGORIES = [
+  { id: "stay", icon: "🏨", label: "السكن", desc: "تسجيل دخول/خروج، فندق", color: "#1a4d4a", types: ["hotel"] },
+  { id: "transport", icon: "✈️", label: "مواصلات", desc: "طيران، KTX، AREX، تنقل", color: "#f59e0b", types: ["transport"] },
+  { id: "meal", icon: "🍽️", label: "وجبة", desc: "فطور، غداء، عشاء", color: "#16a34a", types: ["food"] },
+  { id: "activity", icon: "📍", label: "نشاط/زيارة", desc: "معلم، مسجد، تسوق، ترفيه", color: "#0891b2", types: ["attraction", "mosque", "shop", "entertainment", "festival"] },
+  { id: "tour", icon: "🎯", label: "جولة منظمة", desc: "DMZ، Gyeongju، جولات حجزها مسبق", color: "#7c3aed", types: ["tour"] },
+  { id: "rest", icon: "☕", label: "راحة/استراحة", desc: "نوم، صلاة، تجوّل حر", color: "#d97706", types: ["rest"] },
+  { id: "note", icon: "📝", label: "ملاحظة", desc: "تذكير، معلومة مهمة لليوم", color: "#64748b", types: ["note"] }
+];
+
+function openItemPicker(dayIdx) {
+  state.pendingInsert = { dayIdx };
+  state.pickerStep = "category"; // category → subtype → details
+  state.pickerCategory = null;
+  state.pickerType = "all";
+  renderPicker();
+}
+
+function renderPicker() {
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  openModal(`
+    <div class="modal-h">
+      <h3>${state.pickerStep === 'category' ? 'ماذا تريد إضافة؟' : 'إضافة بند'} · يوم ${day.day}</h3>
+      <button class="modal-x" onclick="closeModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="picker-body"></div>
+  `);
+  renderPickerBody();
+}
+
+function renderPickerBody() {
+  const body = $("picker-body");
+  if (!body) return;
+  if (state.pickerStep === "category") {
+    body.innerHTML = renderCategoryGrid();
+  } else if (state.pickerStep === "details") {
+    body.innerHTML = renderCategoryFlow();
+  }
+}
+
+function renderCategoryGrid() {
+  return `
+    <p class="txs clm mb3">اختر نوع البند الذي تريد إضافته. كل نوع له حقول مخصصة وذكية.</p>
+    <div class="cat-grid">
+      ${ADD_CATEGORIES.map(c => `
+        <button class="cat-card" onclick="selectCategory('${c.id}')" style="--cat-c:${c.color}">
+          <div class="cat-ic">${c.icon}</div>
+          <div class="cat-info">
+            <div class="cat-l">${c.label}</div>
+            <div class="cat-d">${c.desc}</div>
+          </div>
+          <svg class="cat-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function selectCategory(catId) {
+  state.pickerCategory = catId;
+  state.pickerStep = "details";
+  renderPicker();
+}
+
+function backToCategory() {
+  state.pickerStep = "category";
+  state.pickerCategory = null;
+  renderPicker();
+}
+
+function renderCategoryFlow() {
+  const cat = ADD_CATEGORIES.find(c => c.id === state.pickerCategory);
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+
+  // Suggest next time
+  const sorted = [...day.items].sort((a,b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
+  const lastTime = sorted.length ? sorted[sorted.length - 1].time : "09:00";
+  const [h, m] = (lastTime || "09:00").split(":").map(Number);
+  const nextH = Math.min(h + (cat.id === 'meal' ? 3 : 2), 22);
+  const suggestedTime = `${String(nextH).padStart(2,'0')}:00`;
+
+  let formHTML = '';
+
+  if (cat.id === "stay") {
+    formHTML = renderStayForm(suggestedTime);
+  } else if (cat.id === "transport") {
+    formHTML = renderTransportForm(suggestedTime);
+  } else if (cat.id === "meal") {
+    formHTML = renderMealForm(suggestedTime);
+  } else if (cat.id === "activity") {
+    formHTML = renderActivityForm(suggestedTime);
+  } else if (cat.id === "tour") {
+    formHTML = renderTourForm(suggestedTime);
+  } else if (cat.id === "rest") {
+    formHTML = renderRestForm(suggestedTime);
+  } else if (cat.id === "note") {
+    formHTML = renderNoteForm(suggestedTime);
+  }
+
+  return `
+    <button class="back-btn" onclick="backToCategory()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      رجوع للفئات
+    </button>
+    <div class="cat-header" style="--cat-c:${cat.color}">
+      <div class="cat-header-ic">${cat.icon}</div>
+      <div>
+        <div class="fb7 cli">${cat.label}</div>
+        <div class="txx clm">${cat.desc}</div>
+      </div>
+    </div>
+    ${formHTML}
+  `;
+}
+
+
+
+// ─── 🏨 STAY (Hotel/Accommodation) ───
+function renderStayForm(suggestedTime) {
+  return `
+    <div class="fld-row">
+      <div class="fld">
+        <label>نوع البند *</label>
+        <select class="input" id="stay-action">
+          <option value="checkin">🛬 تسجيل دخول (Check-in)</option>
+          <option value="checkout">🛫 تسجيل خروج (Check-out)</option>
+          <option value="stay">🛌 مبيت في الفندق</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label>الوقت *</label>
+        <input type="time" class="input" id="stay-time" value="${suggestedTime}">
+      </div>
+    </div>
+    <div class="fld">
+      <label>اسم الفندق *</label>
+      <input type="text" class="input" id="stay-name" placeholder="مثال: Lotte Hotel Seoul">
+    </div>
+    <div class="fld">
+      <label>المنطقة (اختياري)</label>
+      <input type="text" class="input" id="stay-area" placeholder="مثال: ميونغ‌دونغ">
+    </div>
+    <div class="fld-row">
+      <div class="fld">
+        <label>رقم الحجز (اختياري)</label>
+        <input type="text" class="input" id="stay-booking" placeholder="ABC123">
+      </div>
+      <div class="fld">
+        <label>رقم الغرفة (اختياري)</label>
+        <input type="text" class="input" id="stay-room" placeholder="1024">
+      </div>
+    </div>
+    <div class="fld">
+      <label>ملاحظات (اختياري)</label>
+      <textarea class="input" id="stay-note" rows="2" placeholder="مثال: طلب Early Check-in، إطلالة بحرية..."></textarea>
+    </div>
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-pri" onclick="saveStayItem()">إضافة للجدول</button>
+    </div>
+  `;
+}
+
+function saveStayItem() {
+  const action = $("stay-action").value;
+  const time = $("stay-time").value;
+  const name = $("stay-name").value.trim();
+  if (!name) { alert("اسم الفندق مطلوب"); return; }
+  const area = $("stay-area").value.trim();
+  const booking = $("stay-booking").value.trim();
+  const room = $("stay-room").value.trim();
+  const note = $("stay-note").value.trim();
+
+  const actionLabels = { checkin: "🛬 Check-in", checkout: "🛫 Check-out", stay: "🛌 مبيت" };
+  let text = `${actionLabels[action]} - ${name}`;
+  const meta = [];
+  if (booking) meta.push(`حجز: ${booking}`);
+  if (room) meta.push(`غرفة: ${room}`);
+  if (area) meta.push(area);
+
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  day.items.push({
+    id: "i_" + Date.now(),
+    time, text, type: "hotel",
+    stayAction: action,
+    stayName: name, stayArea: area, stayBooking: booking, stayRoom: room,
+    note: note || (meta.length ? meta.join(" · ") : null)
+  });
+  saveItin();
+  closeModal();
+  renderItinerary();
+}
+
+// ─── ✈️ TRANSPORT (Flights, Trains, Transfers) ───
+function renderTransportForm(suggestedTime) {
+  return `
+    <div class="fld-row">
+      <div class="fld">
+        <label>نوع المواصلات *</label>
+        <select class="input" id="tr-mode" onchange="updateTransportFields()">
+          <option value="flight">✈️ طيران</option>
+          <option value="train">🚄 قطار / KTX</option>
+          <option value="arex">🚆 AREX (مطار)</option>
+          <option value="bus">🚌 باص</option>
+          <option value="taxi">🚖 تاكسي / Kakao T</option>
+          <option value="metro">🚇 مترو</option>
+          <option value="rental">🚗 سيارة مستأجرة</option>
+          <option value="ferry">⛴️ عبارة</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label>الوقت *</label>
+        <input type="time" class="input" id="tr-time" value="${suggestedTime}">
+      </div>
+    </div>
+    <div class="fld-row">
+      <div class="fld">
+        <label>من *</label>
+        <input type="text" class="input" id="tr-from" placeholder="مثال: ICN">
+      </div>
+      <div class="fld">
+        <label>إلى *</label>
+        <input type="text" class="input" id="tr-to" placeholder="مثال: محطة سيول">
+      </div>
+    </div>
+    <div class="fld-row">
+      <div class="fld">
+        <label>رقم الرحلة/القطار (اختياري)</label>
+        <input type="text" class="input" id="tr-num" placeholder="EY822">
+      </div>
+      <div class="fld">
+        <label>المدة المتوقعة (اختياري)</label>
+        <input type="text" class="input" id="tr-dur" placeholder="2س 15د">
+      </div>
+    </div>
+    <div class="fld-row">
+      <div class="fld">
+        <label>السعر التقديري (اختياري)</label>
+        <input type="text" class="input" id="tr-price" placeholder="₩59,800">
+      </div>
+      <div class="fld">
+        <label>المقعد/البوابة (اختياري)</label>
+        <input type="text" class="input" id="tr-seat" placeholder="12A أو Gate 22">
+      </div>
+    </div>
+    <div class="fld">
+      <label>ملاحظات (اختياري)</label>
+      <textarea class="input" id="tr-note" rows="2" placeholder="مثال: الوصول قبل ساعتين، تسجيل الدخول..."></textarea>
+    </div>
+    <div class="card card-cream mb3">
+      <label class="flx itm g25" style="cursor:pointer">
+        <input type="checkbox" id="tr-locked" style="width:1rem;height:1rem">
+        <span class="txs cls">🔒 قفل هذا البند (للرحلات المحجوزة - يمنع الحذف بالخطأ)</span>
+      </label>
+    </div>
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-pri" onclick="saveTransportItem()">إضافة للجدول</button>
+    </div>
+  `;
+}
+
+function updateTransportFields() {
+  // Future: customize fields per mode
+}
+
+function saveTransportItem() {
+  const mode = $("tr-mode").value;
+  const time = $("tr-time").value;
+  const from = $("tr-from").value.trim();
+  const to = $("tr-to").value.trim();
+  if (!from || !to) { alert("نقطة الانطلاق والوصول مطلوبتان"); return; }
+  const num = $("tr-num").value.trim();
+  const dur = $("tr-dur").value.trim();
+  const price = $("tr-price").value.trim();
+  const seat = $("tr-seat").value.trim();
+  const note = $("tr-note").value.trim();
+  const locked = $("tr-locked").checked;
+
+  const icons = { flight: "✈️", train: "🚄", arex: "🚆", bus: "🚌", taxi: "🚖", metro: "🚇", rental: "🚗", ferry: "⛴️" };
+  let text = `${icons[mode]} ${from} → ${to}`;
+  if (num) text += ` (${num})`;
+  if (dur) text += ` · ${dur}`;
+
+  const meta = [];
+  if (seat) meta.push(seat);
+  if (price) meta.push(price);
+  const fullNote = [note, meta.join(" · ")].filter(Boolean).join(" — ");
+
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  day.items.push({
+    id: "i_" + Date.now(),
+    time, text, type: "transport",
+    transportMode: mode,
+    transportFrom: from, transportTo: to, transportNum: num,
+    transportDuration: dur, transportPrice: price, transportSeat: seat,
+    note: fullNote || null,
+    locked
+  });
+  saveItin();
+  closeModal();
+  renderItinerary();
+}
+
+// ─── 🍽️ MEAL ───
+function renderMealForm(suggestedTime) {
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  const cityFood = LIB.filter(l => l.type === "food" && l.city === day.city);
+
+  return `
+    <div class="fld-row">
+      <div class="fld">
+        <label>نوع الوجبة *</label>
+        <select class="input" id="meal-type">
+          <option value="breakfast">🌅 فطور</option>
+          <option value="lunch" selected>☀️ غداء</option>
+          <option value="dinner">🌃 عشاء</option>
+          <option value="snack">🍡 وجبة خفيفة</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label>الوقت *</label>
+        <input type="time" class="input" id="meal-time" value="${suggestedTime}">
+      </div>
+    </div>
+    <div class="fld">
+      <label>المطعم</label>
+      <select class="input" id="meal-from-lib" onchange="onMealLibSelect()">
+        <option value="">— اكتب مطعم جديد أدناه —</option>
+        ${cityFood.map(f => `<option value="${f.id}">${f.icon} ${f.name} ${f.halal ? '✅حلال' : ''} ${f.gf ? '✅GF' : ''}</option>`).join('')}
+      </select>
+    </div>
+    <div class="fld">
+      <label>أو اسم مطعم جديد</label>
+      <input type="text" class="input" id="meal-name" placeholder="اسم المطعم">
+    </div>
+    <div class="card card-cream mb2">
+      <strong class="txs cli mb1" style="display:block">خصائص</strong>
+      <div class="flx g5 fwr">
+        <label class="flx itm g25" style="cursor:pointer">
+          <input type="checkbox" id="meal-halal" style="width:1rem;height:1rem">
+          <span class="txs cls">🥩 حلال</span>
+        </label>
+        <label class="flx itm g25" style="cursor:pointer">
+          <input type="checkbox" id="meal-gf" style="width:1rem;height:1rem">
+          <span class="txs cls">🌾 خالٍ من الجلوتين</span>
+        </label>
+      </div>
+    </div>
+    <div class="fld-row">
+      <div class="fld">
+        <label>الميزانية لشخصين (اختياري)</label>
+        <input type="text" class="input" id="meal-budget" placeholder="₩50,000">
+      </div>
+      <div class="fld">
+        <label>رقم الحجز (اختياري)</label>
+        <input type="text" class="input" id="meal-booking" placeholder="مثال: 123-456">
+      </div>
+    </div>
+    <div class="fld">
+      <label>ملاحظات (اختياري)</label>
+      <textarea class="input" id="meal-note" rows="2" placeholder="مثال: طاولة بإطلالة، حساسية محددة..."></textarea>
+    </div>
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-pri" onclick="saveMealItem()">إضافة للجدول</button>
+    </div>
+  `;
+}
+
+function onMealLibSelect() {
+  const id = $("meal-from-lib").value;
+  if (!id) return;
+  const f = libById(id);
+  if (!f) return;
+  $("meal-name").value = f.name;
+  if (f.halal) $("meal-halal").checked = true;
+  if (f.gf) $("meal-gf").checked = true;
+  if (f.price) $("meal-budget").value = f.price;
+}
+
+function saveMealItem() {
+  const mealType = $("meal-type").value;
+  const time = $("meal-time").value;
+  const fromLib = $("meal-from-lib").value;
+  const name = $("meal-name").value.trim();
+  if (!name && !fromLib) { alert("اختر مطعم أو اكتب اسم"); return; }
+  const halal = $("meal-halal").checked;
+  const gf = $("meal-gf").checked;
+  const budget = $("meal-budget").value.trim();
+  const booking = $("meal-booking").value.trim();
+  const note = $("meal-note").value.trim();
+
+  const labels = { breakfast: "🌅 فطور", lunch: "☀️ غداء", dinner: "🌃 عشاء", snack: "🍡 خفيف" };
+  let text = `${labels[mealType]} - ${name || libById(fromLib)?.name}`;
+
+  const tags = [];
+  if (halal) tags.push("حلال");
+  if (gf) tags.push("GF");
+  if (budget) tags.push(budget);
+  if (booking) tags.push(`حجز: ${booking}`);
+  const fullNote = [note, tags.join(" · ")].filter(Boolean).join(" — ");
+
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  const ref = fromLib ? libById(fromLib) : null;
+  day.items.push({
+    id: "i_" + Date.now(),
+    time, text, type: "food",
+    refId: fromLib || undefined,
+    mealType, mealHalal: halal, mealGf: gf, mealBudget: budget, mealBooking: booking,
+    note: fullNote || null,
+    lat: ref?.lat, lng: ref?.lng
+  });
+  saveItin();
+  closeModal();
+  renderItinerary();
+}
+
+// ─── 📍 ACTIVITY (attraction/mosque/shop/entertainment/festival) ───
+function renderActivityForm(suggestedTime) {
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  return `
+    <div class="picker-tabs">
+      <button class="picker-tab act" onclick="this.parentElement.querySelectorAll('.picker-tab').forEach(t=>t.classList.remove('act'));this.classList.add('act');document.getElementById('act-from-lib-section').hidden=false;document.getElementById('act-new-section').hidden=true">📚 من المكتبة</button>
+      <button class="picker-tab" onclick="this.parentElement.querySelectorAll('.picker-tab').forEach(t=>t.classList.remove('act'));this.classList.add('act');document.getElementById('act-from-lib-section').hidden=true;document.getElementById('act-new-section').hidden=false">✨ موقع جديد</button>
+    </div>
+
+    <div id="act-from-lib-section">
+      <p class="txs clm mb2">المواقع في <strong>${cityById(day.city).name}</strong> فقط</p>
+      <div class="s-row mb2">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="input s-inp" id="act-search" placeholder="ابحث بالاسم..." oninput="renderActLibList()">
+      </div>
+      <div class="fb mb2" id="act-type-filter">
+        <button class="fb-btn act" data-t="all" onclick="setActFilter('all',event)">الكل</button>
+        <button class="fb-btn" data-t="attraction" onclick="setActFilter('attraction',event)">📍 معالم</button>
+        <button class="fb-btn" data-t="mosque" onclick="setActFilter('mosque',event)">🕌 مساجد</button>
+        <button class="fb-btn" data-t="shop" onclick="setActFilter('shop',event)">🛍️ تسوق</button>
+        <button class="fb-btn" data-t="entertainment" onclick="setActFilter('entertainment',event)">🎢 ترفيه</button>
+        <button class="fb-btn" data-t="festival" onclick="setActFilter('festival',event)">🎉 فعاليات</button>
+      </div>
+      <div id="act-lib-list"></div>
+    </div>
+
+    <div id="act-new-section" hidden>
+      <div class="fld">
+        <label>اسم الموقع *</label>
+        <input type="text" class="input" id="act-name" placeholder="مثال: مقهى Anthracite">
+      </div>
+      <div class="fld-row">
+        <div class="fld">
+          <label>التصنيف *</label>
+          <select class="input" id="act-type">
+            <option value="attraction">📍 معلم</option>
+            <option value="mosque">🕌 مسجد</option>
+            <option value="shop">🛍️ تسوق</option>
+            <option value="entertainment">🎢 ترفيه</option>
+            <option value="festival">🎉 فعالية</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>الوقت *</label>
+          <input type="time" class="input" id="act-time" value="${suggestedTime}">
+        </div>
+      </div>
+      <div class="fld">
+        <label>المنطقة (اختياري)</label>
+        <input type="text" class="input" id="act-area" placeholder="مثال: هاوندي">
+      </div>
+      <div class="fld-row">
+        <div class="fld">
+          <label>تذكرة محجوزة؟ (اختياري)</label>
+          <input type="text" class="input" id="act-ticket" placeholder="رقم التذكرة">
+        </div>
+        <div class="fld">
+          <label>السعر / الدخول</label>
+          <input type="text" class="input" id="act-price" placeholder="₩15,000">
+        </div>
+      </div>
+      <div class="fld-row">
+        <div class="fld">
+          <label>المدة المتوقعة</label>
+          <input type="text" class="input" id="act-dur" placeholder="ساعتان">
+        </div>
+        <div class="fld">
+          <label>وقت الإغلاق (اختياري)</label>
+          <input type="time" class="input" id="act-close">
+        </div>
+      </div>
+      <div class="fld-row">
+        <div class="fld">
+          <label>خط العرض (اختياري)</label>
+          <input type="number" step="any" class="input" id="act-lat" placeholder="37.5">
+        </div>
+        <div class="fld">
+          <label>خط الطول (اختياري)</label>
+          <input type="number" step="any" class="input" id="act-lng" placeholder="127.0">
+        </div>
+      </div>
+      <div class="fld">
+        <label>ملاحظات (اختياري)</label>
+        <textarea class="input" id="act-note" rows="2" placeholder="نصيحة، تنبيه..."></textarea>
+      </div>
+      <label class="flx itm g25 mb2" style="cursor:pointer">
+        <input type="checkbox" id="act-save" style="width:1rem;height:1rem" checked>
+        <span class="txs cls">احفظ في المكتبة لإعادة الاستخدام</span>
+      </label>
+      <div class="modal-act">
+        <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-pri" onclick="saveActivityNew()">إضافة للجدول</button>
+      </div>
+    </div>
+  `;
+}
+
+let actFilter = "all";
+function setActFilter(t, ev) {
+  actFilter = t;
+  document.querySelectorAll('#act-type-filter .fb-btn').forEach(b => b.classList.toggle('act', b.dataset.t === t));
+  renderActLibList();
+}
+
+function renderActLibList() {
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  const q = ($("act-search")?.value || "").toLowerCase();
+  const list = $("act-lib-list");
+  if (!list) return;
+
+  const types = ["attraction", "mosque", "shop", "entertainment", "festival"];
+  const filtered = allLib().filter(l => {
+    if (l.city !== day.city) return false;
+    if (!types.includes(l.type)) return false;
+    if (actFilter !== "all" && l.type !== actFilter) return false;
+    if (q && !((l.name || '') + ' ' + (l.area || '')).toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-i">🔍</div><div class="empty-t">لا نتائج</div><p class="empty-d">جرّب "موقع جديد"</p></div>`;
+    return;
+  }
+
+  list.innerHTML = `<div class="picker-list">${filtered.map(l => `
+    <button class="picker-item" onclick="addActivityFromLib('${l.id}')">
+      <div class="picker-item-ic" style="background:${TYPES[l.type]?.color || '#888'}1a;color:${TYPES[l.type]?.color || '#888'}">${l.icon}</div>
+      <div class="picker-item-info">
+        <div class="picker-item-n">${l.name}</div>
+        <div class="picker-item-m">${l.area} · ${TYPES[l.type]?.label || l.type}</div>
+        <div class="picker-item-pills">
+          ${l.halal ? '<span class="pill pill-sm pill-ok">🥩 حلال</span>' : ''}
+          ${l.price ? `<span class="pill pill-sm">${l.price}</span>` : ''}
+        </div>
+      </div>
+    </button>
+  `).join('')}</div>`;
+}
+
+function addActivityFromLib(refId) {
+  openTimePicker(refId);
+}
+
+function saveActivityNew() {
+  const name = $("act-name").value.trim();
+  if (!name) { alert("الاسم مطلوب"); return; }
+  const type = $("act-type").value;
+  const time = $("act-time").value;
+  const area = $("act-area").value.trim();
+  const ticket = $("act-ticket").value.trim();
+  const price = $("act-price").value.trim();
+  const dur = $("act-dur").value.trim();
+  const close = $("act-close").value;
+  const lat = parseFloat($("act-lat").value) || null;
+  const lng = parseFloat($("act-lng").value) || null;
+  const note = $("act-note").value.trim();
+  const save = $("act-save").checked;
+
+  const meta = [];
+  if (ticket) meta.push(`🎫 ${ticket}`);
+  if (price) meta.push(price);
+  if (dur) meta.push(`⏱️ ${dur}`);
+  if (close) meta.push(`يغلق ${close}`);
+
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+
+  if (save) {
+    const customId = "c_" + Date.now();
+    state.customLib.push({
+      id: customId, name, type, area,
+      icon: TYPES[type]?.icon || "📍",
+      city: day.city, lat, lng, note, price, custom: true
+    });
+    saveLib();
+    day.items.push({
+      id: "i_" + Date.now(), time, text: name, type, refId: customId,
+      lat, lng, note: [note, meta.join(" · ")].filter(Boolean).join(" — ") || null
+    });
+  } else {
+    day.items.push({
+      id: "i_" + Date.now(), time, text: name, type,
+      lat, lng, note: [note, meta.join(" · ")].filter(Boolean).join(" — ") || null
+    });
+  }
+  saveItin();
+  closeModal();
+  renderItinerary();
+}
+
+// ─── 🎯 TOUR (Organized tours) ───
+function renderTourForm(suggestedTime) {
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  const tours = LIB.filter(l => l.type === "tour");
+  return `
+    <p class="txs clm mb2">الجولات المنظمة المتاحة:</p>
+    <div class="picker-list mb3">
+      ${tours.map(t => `
+        <button class="picker-item" onclick="useLibTour('${t.id}')">
+          <div class="picker-item-ic" style="background:rgba(8,145,178,0.12);color:#0891b2">${t.icon}</div>
+          <div class="picker-item-info">
+            <div class="picker-item-n">${t.name}</div>
+            <div class="picker-item-m">${t.area}</div>
+            ${t.price ? `<div class="picker-item-pills"><span class="pill pill-sm pill-orng">${t.price}</span></div>` : ''}
+          </div>
+        </button>
+      `).join('')}
+    </div>
+    <div class="card card-cream">
+      <strong class="txs cli mb1" style="display:block">أو أضف جولة مخصصة</strong>
+      <div class="fld">
+        <label>اسم الجولة</label>
+        <input type="text" class="input" id="tour-name" placeholder="جولة طعام في غامتشون">
+      </div>
+      <div class="fld-row">
+        <div class="fld">
+          <label>الوقت</label>
+          <input type="time" class="input" id="tour-time" value="${suggestedTime}">
+        </div>
+        <div class="fld">
+          <label>المدة</label>
+          <input type="text" class="input" id="tour-dur" placeholder="6 ساعات">
+        </div>
+      </div>
+      <div class="fld-row">
+        <div class="fld">
+          <label>السعر/شخص</label>
+          <input type="text" class="input" id="tour-price" placeholder="$60">
+        </div>
+        <div class="fld">
+          <label>رقم الحجز</label>
+          <input type="text" class="input" id="tour-booking" placeholder="Klook XYZ">
+        </div>
+      </div>
+      <div class="fld">
+        <label>ملاحظات</label>
+        <textarea class="input" id="tour-note" rows="2" placeholder="نقطة الالتقاء، ما يشمل..."></textarea>
+      </div>
+      <div class="modal-act">
+        <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-pri" onclick="saveTourCustom()">إضافة جولة مخصصة</button>
+      </div>
+    </div>
+  `;
+}
+
+function useLibTour(refId) {
+  openTimePicker(refId);
+}
+
+function saveTourCustom() {
+  const name = $("tour-name").value.trim();
+  if (!name) { alert("اسم الجولة مطلوب"); return; }
+  const time = $("tour-time").value;
+  const dur = $("tour-dur").value.trim();
+  const price = $("tour-price").value.trim();
+  const booking = $("tour-booking").value.trim();
+  const note = $("tour-note").value.trim();
+
+  const meta = [];
+  if (dur) meta.push(`⏱️ ${dur}`);
+  if (price) meta.push(price);
+  if (booking) meta.push(`حجز: ${booking}`);
+
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  day.items.push({
+    id: "i_" + Date.now(),
+    time, text: `🎯 ${name}`, type: "tour",
+    tourDuration: dur, tourPrice: price, tourBooking: booking,
+    note: [note, meta.join(" · ")].filter(Boolean).join(" — ") || null
+  });
+  saveItin();
+  closeModal();
+  renderItinerary();
+}
+
+// ─── ☕ REST (Sleep, Prayer, Free time) ───
+function renderRestForm(suggestedTime) {
+  return `
+    <div class="fld-row">
+      <div class="fld">
+        <label>نوع الراحة *</label>
+        <select class="input" id="rest-kind">
+          <option value="nap">😴 قيلولة</option>
+          <option value="prayer">🕌 صلاة</option>
+          <option value="free">🚶 تجوّل حر</option>
+          <option value="break">☕ استراحة قصيرة</option>
+          <option value="hotel">🏨 العودة للفندق</option>
+          <option value="sleep">🌙 نوم الليل</option>
+        </select>
+      </div>
+      <div class="fld">
+        <label>الوقت *</label>
+        <input type="time" class="input" id="rest-time" value="${suggestedTime}">
+      </div>
+    </div>
+    <div class="fld">
+      <label>المدة</label>
+      <select class="input" id="rest-dur">
+        <option value="15د">15 دقيقة</option>
+        <option value="30د">30 دقيقة</option>
+        <option value="ساعة" selected>ساعة</option>
+        <option value="ساعتان">ساعتان</option>
+        <option value="3 ساعات">3 ساعات</option>
+        <option value="ليلة كاملة">ليلة كاملة</option>
+      </select>
+    </div>
+    <div class="fld">
+      <label>ملاحظات (اختياري)</label>
+      <textarea class="input" id="rest-note" rows="2" placeholder="مثال: استرخاء قبل العشاء، صلاة في فندق..."></textarea>
+    </div>
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-pri" onclick="saveRestItem()">إضافة للجدول</button>
+    </div>
+  `;
+}
+
+function saveRestItem() {
+  const kind = $("rest-kind").value;
+  const time = $("rest-time").value;
+  const dur = $("rest-dur").value;
+  const note = $("rest-note").value.trim();
+
+  const labels = { nap: "😴 قيلولة", prayer: "🕌 صلاة", free: "🚶 تجوّل حر", break: "☕ استراحة", hotel: "🏨 العودة للفندق", sleep: "🌙 نوم الليل" };
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+
+  // Prayer goes as mosque type, others as 'rest' type
+  const type = kind === "prayer" ? "mosque" : "rest";
+
+  day.items.push({
+    id: "i_" + Date.now(),
+    time,
+    text: `${labels[kind]} (${dur})`,
+    type,
+    restKind: kind, restDuration: dur,
+    note: note || null
+  });
+  saveItin();
+  closeModal();
+  renderItinerary();
+}
+
+// ─── 📝 NOTE (Reminder for the day) ───
+function renderNoteForm(suggestedTime) {
+  return `
+    <p class="txs clm mb3">أضف ملاحظة أو تذكير لهذا اليوم. لن تظهر كنشاط في الـTimeline لكن في رأس اليوم.</p>
+    <div class="fld">
+      <label>الوقت (اختياري - يظهر في timeline لو حُدّد)</label>
+      <input type="time" class="input" id="note-time" value="${suggestedTime}" placeholder="اتركه فارغاً للملاحظات العامة">
+    </div>
+    <div class="fld">
+      <label>الملاحظة *</label>
+      <textarea class="input" id="note-text" rows="3" placeholder="مثال: تذكر شحن الكاميرا، عشاء العائلة 8م، إلخ..."></textarea>
+    </div>
+    <div class="fld">
+      <label>الأولوية</label>
+      <select class="input" id="note-priority">
+        <option value="info">💡 معلومة</option>
+        <option value="warn">⚠️ تنبيه</option>
+        <option value="critical">🚨 حرج</option>
+      </select>
+    </div>
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-pri" onclick="saveNoteItem()">إضافة الملاحظة</button>
+    </div>
+  `;
+}
+
+function saveNoteItem() {
+  const time = $("note-time").value;
+  const text = $("note-text").value.trim();
+  if (!text) { alert("نص الملاحظة مطلوب"); return; }
+  const priority = $("note-priority").value;
+
+  const icons = { info: "💡", warn: "⚠️", critical: "🚨" };
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  day.items.push({
+    id: "i_" + Date.now(),
+    time: time || "",
+    text: `${icons[priority]} ${text}`,
+    type: "note",
+    notePriority: priority
+  });
+  saveItin();
+  closeModal();
+  renderItinerary();
+}
+
+
+function renderLibPicker() {
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  const dayCity = day.city;
+
+  // Filter by current day's city by default
+  const filtered = allLib().filter(l => {
+    if (state.pickerType !== "all" && l.type !== state.pickerType) return false;
+    if (l.city !== dayCity) return false;
+    if (state.libFilters.q && !l.name.toLowerCase().includes(state.libFilters.q.toLowerCase())) return false;
+    return true;
+  });
+
+  return `
+    <p class="txs clm mb2">عرض المواقع في <strong>${cityById(dayCity).name}</strong> فقط (يوم ${day.day})</p>
+
+    <div class="s-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="input s-inp" placeholder="ابحث بالاسم..." value="${state.libFilters.q}" oninput="state.libFilters.q=this.value;renderPickerBody()">
+    </div>
+
+    <div class="fb">
+      <button class="fb-btn ${state.pickerType === 'all' ? 'act' : ''}" onclick="state.pickerType='all';renderPickerBody()">الكل</button>
+      ${Object.entries(TYPES).map(([k, v]) => `
+        <button class="fb-btn ${state.pickerType === k ? 'act' : ''}" onclick="state.pickerType='${k}';renderPickerBody()">${v.icon} ${v.label}</button>
+      `).join('')}
+    </div>
+
+    <div class="picker-list">
+      ${filtered.length === 0 ? `
+        <div class="empty">
+          <div class="empty-i">🔍</div>
+          <div class="empty-t">لا توجد نتائج</div>
+          <p class="empty-d">جرّب تبويب "نشاط جديد" لإضافة موقع غير موجود في المكتبة</p>
+        </div>
+      ` : filtered.map(l => `
+        <button class="picker-item" onclick="openTimePicker('${l.id}')">
+          <div class="picker-item-ic" style="background:${TYPES[l.type]?.color || '#888'}1a;color:${TYPES[l.type]?.color || '#888'}">${l.icon}</div>
+          <div class="picker-item-info">
+            <div class="picker-item-n">${l.name}</div>
+            <div class="picker-item-m">${l.area} · ${TYPES[l.type]?.label || l.type}</div>
+            <div class="picker-item-pills">
+              ${l.halal ? '<span class="pill pill-sm pill-ok">🥩 حلال</span>' : ''}
+              ${l.gf ? '<span class="pill pill-sm pill-gold">🌾 GF</span>' : ''}
+              ${l.price ? `<span class="pill pill-sm">${l.price}</span>` : ''}
+            </div>
+          </div>
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function openTimePicker(refId) {
+  const item = libById(refId);
+  if (!item) return;
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  // Suggest next time slot
+  const sorted = [...day.items].sort((a,b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
+  const lastTime = sorted.length ? sorted[sorted.length - 1].time : "09:00";
+  const [h, m] = (lastTime || "09:00").split(":").map(Number);
+  const nextH = Math.min(h + 2, 22);
+  const suggested = `${String(nextH).padStart(2,'0')}:00`;
+
+  openModal(`
+    <div class="modal-h">
+      <h3>وقت الزيارة</h3>
+      <button class="modal-x" onclick="closeModal()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="card mb3">
+      <div class="flx its g75">
+        <div class="picker-item-ic" style="background:${TYPES[item.type]?.color || '#888'}1a;color:${TYPES[item.type]?.color || '#888'}">${item.icon}</div>
+        <div class="fls">
+          <div class="fb6 cli txm">${item.name}</div>
+          <div class="txx clm">${item.area}</div>
+        </div>
+      </div>
+    </div>
+    <div class="fld">
+      <label>الوقت</label>
+      <input type="time" class="input" id="time-pick" value="${suggested}">
+    </div>
+    <div class="fld">
+      <label>وصف مخصص (اختياري - افتراضياً اسم الموقع)</label>
+      <input type="text" class="input" id="text-pick" placeholder="${item.name}">
+    </div>
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-pri" onclick="addItemFromLib('${refId}')">إضافة</button>
+    </div>
+  `);
+}
+
+function addItemFromLib(refId) {
+  const item = libById(refId);
+  const time = $("time-pick").value;
+  const customText = $("text-pick").value.trim();
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  day.items.push({
+    id: "i_" + Date.now(),
+    time,
+    text: customText || item.name,
+    type: item.type,
+    refId: item.id,
+    lat: item.lat,
+    lng: item.lng
+  });
+  saveItin();
+  closeModal();
+  renderItinerary();
+}
+
+function renderNewItemForm() {
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+  return `
+    <p class="txs clm mb3">أضف موقعاً جديداً غير موجود في المكتبة. اختياري حفظه في المكتبة لإعادة الاستخدام.</p>
+
+    <div class="fld">
+      <label>اسم النشاط أو الموقع *</label>
+      <input type="text" class="input" id="new-name" placeholder="مثال: مقهى Anthracite">
+    </div>
+
+    <div class="fld-row">
+      <div class="fld">
+        <label>التصنيف *</label>
+        <select class="input" id="new-type">
+          ${Object.entries(TYPES).map(([k, v]) => `<option value="${k}">${v.icon} ${v.label}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fld">
+        <label>الوقت *</label>
+        <input type="time" class="input" id="new-time" value="14:00">
+      </div>
+    </div>
+
+    <div class="fld">
+      <label>المنطقة (اختياري)</label>
+      <input type="text" class="input" id="new-area" placeholder="مثال: هاوندي">
+    </div>
+
+    <div class="fld-row">
+      <div class="fld">
+        <label>خط العرض (اختياري)</label>
+        <input type="number" step="any" class="input" id="new-lat" placeholder="35.1592">
+      </div>
+      <div class="fld">
+        <label>خط الطول (اختياري)</label>
+        <input type="number" step="any" class="input" id="new-lng" placeholder="129.1606">
+      </div>
+    </div>
+
+    <div class="fld">
+      <label>ملاحظات (اختياري)</label>
+      <textarea class="input" id="new-note" placeholder="أي تفاصيل مهمة..."></textarea>
+    </div>
+
+    <div class="card card-cream mb3">
+      <div class="flx itm jb mb1">
+        <strong class="txs cli">خيارات إضافية</strong>
+      </div>
+      <div class="flx g5 fwr mb1">
+        <label class="flx itm g25" style="cursor:pointer">
+          <input type="checkbox" id="new-halal" style="width:1rem;height:1rem">
+          <span class="txs cls">🥩 حلال</span>
+        </label>
+        <label class="flx itm g25" style="cursor:pointer">
+          <input type="checkbox" id="new-gf" style="width:1rem;height:1rem">
+          <span class="txs cls">🌾 خالٍ من الجلوتين</span>
+        </label>
+        <label class="flx itm g25" style="cursor:pointer">
+          <input type="checkbox" id="new-save" style="width:1rem;height:1rem" checked>
+          <span class="txs cls">احفظ في المكتبة لإعادة الاستخدام</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-pri" onclick="saveNewItem()">إضافة للجدول</button>
+    </div>
+  `;
+}
+
+function saveNewItem() {
+  const name = $("new-name").value.trim();
+  if (!name) { alert("الاسم مطلوب"); return; }
+  const type = $("new-type").value;
+  const time = $("new-time").value;
+  const area = $("new-area").value.trim();
+  const lat = parseFloat($("new-lat").value) || null;
+  const lng = parseFloat($("new-lng").value) || null;
+  const note = $("new-note").value.trim();
+  const halal = $("new-halal").checked;
+  const gf = $("new-gf").checked;
+  const save = $("new-save").checked;
+
+  const day = state.itinerary[state.pendingInsert.dayIdx];
+
+  let refId = null;
+  if (save) {
+    refId = "c_" + Date.now();
+    state.customLib.push({
+      id: refId, name, type, city: day.city, area: area || day.city,
+      icon: TYPES[type]?.icon || "⭐",
+      halal, gf, note, lat, lng, custom: true
+    });
+    saveLib();
+  }
+
+  day.items.push({
+    id: "i_" + Date.now(),
+    time, text: name, type, refId, lat, lng
+  });
+  saveItin();
+  closeModal();
+  renderItinerary();
+}
+
+// ═══════════════════════════════════════════════════════════
+//   DAY META EDIT (title, type, flight)
+// ═══════════════════════════════════════════════════════════
+
+function setDayMeta() {
+  const day = state.itinerary[state.activeDayIdx];
+  openModal(`
+    <div class="modal-h">
+      <h3>بيانات يوم ${day.day}</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+
+    <div class="fld">
+      <label>عنوان اليوم</label>
+      <input type="text" class="input" id="dm-title" value="${day.title || ''}" placeholder="مثال: قصور سيول الملكية">
+    </div>
+
+    <div class="fld">
+      <label>المدينة</label>
+      <select class="input" id="dm-city">
+        ${CITIES.map(c => `<option value="${c.id}" ${day.city === c.id ? 'selected' : ''}>${c.name}</option>`).join('')}
+      </select>
+    </div>
+
+    <div class="fld">
+      <label>📝 وصف اليوم (اختياري - يظهر تحت العنوان)</label>
+      <textarea class="input" id="dm-narrative" rows="3" placeholder="مثال: يوم القصور التراثية - تنقل بالمشي بين المعالم القريبة، استئجار هانبوك للدخول مجاناً">${day.narrative || ''}</textarea>
+    </div>
+
+    <div class="fld">
+      <label>نوع اليوم</label>
+      <select class="input" id="dm-type" onchange="document.getElementById('flight-fields').hidden = this.value === 'normal'">
+        <option value="normal" ${day.type === 'normal' ? 'selected' : ''}>عادي</option>
+        <option value="arrival" ${day.type === 'arrival' ? 'selected' : ''}>🛬 وصول للبلد</option>
+        <option value="transit" ${day.type === 'transit' ? 'selected' : ''}>✈️ تنقل بين المدن</option>
+        <option value="departure" ${day.type === 'departure' ? 'selected' : ''}>🛫 مغادرة</option>
+      </select>
+    </div>
+
+    <div id="flight-fields" ${day.type === 'normal' ? 'hidden' : ''}>
+      <div class="card card-cream mb3">
+        <strong class="txs cli mb2" style="display:block">معلومات الرحلة</strong>
+        <div class="fld-row">
+          <div class="fld">
+            <label>من</label>
+            <input type="text" class="input" id="dm-from" value="${day.flight?.from || ''}" placeholder="ICN, GMP...">
+          </div>
+          <div class="fld">
+            <label>إلى</label>
+            <input type="text" class="input" id="dm-to" value="${day.flight?.to || ''}" placeholder="CJU, PUS...">
+          </div>
+        </div>
+        <div class="fld-row">
+          <div class="fld">
+            <label>وقت الانطلاق</label>
+            <input type="time" class="input" id="dm-dep" value="${day.flight?.depTime || ''}">
+          </div>
+          <div class="fld">
+            <label>وقت الوصول</label>
+            <input type="time" class="input" id="dm-arr" value="${day.flight?.arrTime || ''}">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-pri" onclick="saveDayMeta()">حفظ</button>
+    </div>
+  `);
+}
+
+function saveDayMeta() {
+  const day = state.itinerary[state.activeDayIdx];
+  day.title = $("dm-title").value.trim();
+  day.city = $("dm-city").value;
+  day.type = $("dm-type").value;
+  day.narrative = $("dm-narrative").value.trim() || null;
+  if (day.type !== "normal") {
+    day.flight = {
+      from: $("dm-from").value.trim(),
+      to: $("dm-to").value.trim(),
+      depTime: $("dm-dep").value,
+      arrTime: $("dm-arr").value
+    };
+  } else {
+    day.flight = null;
+  }
+  saveItin();
+  closeModal();
+  renderItinerary();
+}
+
+// ═══════════════════════════════════════════════════════════
+//   EDIT ITEM
+// ═══════════════════════════════════════════════════════════
+
+function editItem(id) {
+  const day = state.itinerary[state.activeDayIdx];
+  const item = day.items.find(i => i.id === id);
+  if (!item) return;
+
+  openModal(`
+    <div class="modal-h">
+      <h3>تعديل النشاط</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="fld">
+      <label>الوصف</label>
+      <input type="text" class="input" id="ei-text" value="${item.text}">
+    </div>
+    <div class="fld-row">
+      <div class="fld">
+        <label>الوقت</label>
+        <input type="time" class="input" id="ei-time" value="${item.time || ''}">
+      </div>
+      <div class="fld">
+        <label>التصنيف</label>
+        <select class="input" id="ei-type">
+          ${Object.entries(TYPES).map(([k, v]) => `<option value="${k}" ${item.type === k ? 'selected' : ''}>${v.icon} ${v.label}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="modal-act">
+      <button class="btn btn-sec" onclick="closeModal()">إلغاء</button>
+      <button class="btn btn-pri" onclick="saveEditItem('${id}')">حفظ</button>
+    </div>
+  `);
+}
+
+function saveEditItem(id) {
+  const day = state.itinerary[state.activeDayIdx];
+  const item = day.items.find(i => i.id === id);
+  if (!item) return;
+  item.text = $("ei-text").value.trim();
+  item.time = $("ei-time").value;
+  item.type = $("ei-type").value;
+  saveItin();
+  closeModal();
+  renderDayContent();
+}
+
+// ═══════════════════════════════════════════════════════════
+//   CITIES SECTION
+// ═══════════════════════════════════════════════════════════
+
+function renderCities() {
+  $("sec-cities").innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <h2>المدن الثلاث</h2>
+      </div>
+      <p>الأحياء + الفنادق المرشحة + المواصلات + النصائح</p>
+    </div>
+
+    <div class="fb mb3">
+      ${CITIES.map(c => `
+        <button class="fb-btn ${state.activeCity === c.id ? 'act' : ''}" onclick="state.activeCity='${c.id}';renderCities()">
+          ${c.name}
+        </button>
+      `).join('')}
+    </div>
+
+    <div id="city-content"></div>
+  `;
+  renderCityContent();
+}
+
+function renderCityContent() {
+  const c = cityById(state.activeCity);
+  $("city-content").innerHTML = `
+    <div class="city-banner">
+      <h3>${c.name}</h3>
+      <div class="cb-en">${c.nameEn} · ${c.nameKo}</div>
+      <span class="pill pill-orng">${c.tag}</span>
+      <p style="margin-top:0.75rem">${c.desc}</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab ${state.cityTab === 'overview' ? 'act' : ''}" onclick="state.cityTab='overview';renderCityContent()">نبذة</button>
+      <button class="tab ${state.cityTab === 'districts' ? 'act' : ''}" onclick="state.cityTab='districts';renderCityContent()">الأحياء + الفنادق</button>
+      <button class="tab ${state.cityTab === 'transport' ? 'act' : ''}" onclick="state.cityTab='transport';renderCityContent()">المواصلات</button>
+    </div>
+
+    <div id="city-tab-body"></div>
+  `;
+  renderCityTabBody();
+}
+
+function renderCityTabBody() {
+  const c = cityById(state.activeCity);
+  const body = $("city-tab-body");
+
+  if (state.cityTab === "overview") {
+    body.innerHTML = `
+      <div class="card mb3">
+        <h4 class="fb7 cli mb2 txm">أبرز المعالم</h4>
+        <div class="gr g3">
+          ${c.highlights.map(h => `<div class="hl"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>${h}</div>`).join('')}
+        </div>
+      </div>
+      <div class="card card-cream">
+        <h4 class="fb7 cli mb2 txm">📚 من المكتبة في هذه المدينة</h4>
+        <div class="gr g3">
+          ${["food","attraction","entertainment","shop","mosque"].map(t => {
+            const count = LIB.filter(l => l.city === c.id && l.type === t).length;
+            return count ? `<button class="card txs" onclick="state.libFilters.city='${c.id}';state.libFilters.type='${t}';switchTab('library')" style="cursor:pointer;text-align:right">
+              <div style="font-size:1.3rem;margin-bottom:0.2rem">${TYPES[t].icon}</div>
+              <div class="fb6 cli">${count} ${TYPES[t].label}</div>
+            </button>` : '';
+          }).join('')}
+        </div>
+      </div>
+    `;
+  } else if (state.cityTab === "districts") {
+    body.innerHTML = c.districts.map(d => `
+      <div class="dist-card">
+        <div class="dist-h">
+          <div class="dist-n">📍 ${d.name}</div>
+          <div class="dist-tag">${d.nameEn} · ${d.tag}</div>
+          <div class="dist-pros">
+            ${d.pros.map(p => `<div class="dist-pro">${p}</div>`).join('')}
+          </div>
+          <div class="dist-best">${d.bestFor}</div>
+        </div>
+        <div class="dist-hotels">
+          <div class="txs fb6 cls mb1" style="padding-top:0.5rem">🏨 أفضل الفنادق</div>
+          ${d.hotels.map(h => `
+            <div class="hotel-row">
+              <div class="hotel-rk">${h.rank}</div>
+              <div class="hotel-info">
+                <div class="hotel-n">${h.name}</div>
+                <div class="hotel-pr">${h.price} / ليلة</div>
+                <div class="hotel-no">${h.note}</div>
+                <div class="hotel-acts">
+                  <a class="btn btn-sec btn-sm" href="https://www.google.com/maps/search/?api=1&query=${h.lat},${h.lng}" target="_blank">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>
+                    خرائط
+                  </a>
+                  <a class="btn btn-sec btn-sm" href="https://www.google.com/search?q=${encodeURIComponent(h.name + ' ' + c.nameEn)}" target="_blank">
+                    🔍 بحث
+                  </a>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  } else if (state.cityTab === "transport") {
+    const t = c.transport;
+    body.innerHTML = `
+      <div class="card card-acc mb3">
+        <div class="flx itm g5">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent)"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+          <strong class="cla">${t.arrive}</strong>
+        </div>
+      </div>
+
+      <h4 class="fb7 cli mb2 mt3 txm">🛬 الوصول إلى المدينة</h4>
+      <div class="gr mdg2 mb3">
+        ${t.from_airport.map(o => `
+          <div class="card">
+            <div class="flx jb itm mb1">
+              <strong class="cli txs">${o.mode}</strong>
+              <span class="pill pill-gold">${o.price}</span>
+            </div>
+            <div class="txx clm mb1">⏱️ ${o.time}</div>
+            <p class="txs cls">${o.note}</p>
+          </div>
+        `).join('')}
+      </div>
+
+      <h4 class="fb7 cli mb2 txm">🚇 التنقل داخل ${c.name}</h4>
+      <div class="card mb3">
+        ${t.inside.map((o, i) => `
+          <div class="flx itm g75" style="padding:0.5rem 0;${i < t.inside.length - 1 ? 'border-bottom:1px solid var(--border)' : ''}">
+            <div style="font-size:1.3rem">${o.mode.split(' ')[0]}</div>
+            <div class="fls">
+              <strong class="cli txs">${o.mode.replace(/^[\u{1F300}-\u{1F9FF}]\s*/u, '')}</strong>
+              <p class="txs cls" style="margin-top:2px">${o.note}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="card card-gold">
+        <h4 class="fb7 mb2 txm" style="color:var(--gold)">💡 نصائح ذهبية</h4>
+        <ul class="tip-list">
+          ${t.tips.map(tip => `<li>${tip}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  }
+}
+</script>
