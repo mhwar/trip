@@ -1866,6 +1866,21 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   .tl-gutter-ic { width: 1.75rem; height: 1.75rem; }
   .tl-gutter-ic .material-symbols-rounded { font-size: 0.95rem; }
 }
+/* ── Compact list view ── */
+.cv-list { margin-bottom: 1rem; }
+.cv-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+.cv-row:last-child { border-bottom: none; }
+.cv-ic { width: 1.75rem; height: 1.75rem; border-radius: 0.4rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.cv-ic .material-symbols-rounded { font-size: 0.95rem; }
+.cv-time { font-size: 0.62rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--muted); width: 2.6rem; text-align: center; flex-shrink: 0; }
+.cv-info { flex: 1; min-width: 0; }
+.cv-t { font-size: 0.8rem; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cv-m { font-size: 0.63rem; color: var(--muted); margin-top: 2px; display: flex; gap: 0.3rem; flex-wrap: wrap; align-items: center; }
+.cv-row.cv-done .cv-t { text-decoration: line-through; opacity: 0.55; }
+.cv-done-lbl { font-size: 0.62rem; color: var(--ok); margin-right: 0.25rem; }
+.cv-note-snip { color: var(--muted); font-style: italic; }
+.day-tb-view-toggle { padding: 0.4rem 0.5rem !important; }
+.day-tb-view-toggle .material-symbols-rounded { font-size: 1.1rem; }
 .tl-card {
   background: var(--paper);
   border: 1px solid var(--border);
@@ -4171,6 +4186,14 @@ const MAT_ICONS = {
   other:         'place',
 };
 
+// Day view mode: 'timeline' | 'compact' — persisted in localStorage
+let _dayViewMode = localStorage.getItem('dayViewMode') || 'timeline';
+function toggleDayViewMode() {
+  _dayViewMode = _dayViewMode === 'timeline' ? 'compact' : 'timeline';
+  localStorage.setItem('dayViewMode', _dayViewMode);
+  renderDayContent();
+}
+
 // Default empty itinerary (12 days)
 const TRIP_START = new Date("2026-05-14");
 
@@ -5169,6 +5192,9 @@ function renderDayContent() {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span>إضافة ▾</span>
       </button>
+      <button class="day-tb-btn day-tb-view-toggle" onclick="toggleDayViewMode()" title="${_dayViewMode === 'timeline' ? 'عرض مضغوط' : 'عرض التايم لاين'}">
+        <span class="material-symbols-rounded">${_dayViewMode === 'timeline' ? 'view_agenda' : 'timeline'}</span>
+      </button>
     </div>
   `;
 
@@ -5348,36 +5374,44 @@ function renderDayContent() {
   } else {
     const sorted = [...day.items].sort((a,b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
 
-    // Build timeline with buffer / gap separators
-    let timelineHTML = '';
-    sorted.forEach((it, i) => {
-      // Add buffer time separator before this item (except first)
-      if (i > 0) {
-        const prev = sorted[i - 1];
-        const gapMins = _timeGapMins(prev.time, it.time);
-        if (gapMins !== null && gapMins > 60) {
-          // Long gap → idle / free time indicator
-          const gh = Math.floor(gapMins / 60);
-          const gm = gapMins % 60;
-          const gapTxt = gm === 0 ? `${gh}س` : `${gh}س ${gm}د`;
-          timelineHTML += `<div class="tl-gap"><span>⏸ ${gapTxt} وقت حر</span></div>`;
-        } else {
-          const buffer = computeBuffer(prev.time, it.time);
-          if (buffer) {
-            timelineHTML += `<div class="tl-buffer"><span class="tl-buffer-l">⏱️ ${buffer}</span></div>`;
+    if (_dayViewMode === 'compact') {
+      // ── Compact list view ──
+      const compactHTML = sorted.map(it => renderCompactItem(it)).join('');
+      html += `<div class="cv-list">${compactHTML}</div>
+        <button class="tl-add" onclick="openItemPicker(${state.activeDayIdx})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          + إضافة بند للجدول
+        </button>`;
+    } else {
+      // ── Timeline view ──
+      let timelineHTML = '';
+      sorted.forEach((it, i) => {
+        if (i > 0) {
+          const prev = sorted[i - 1];
+          const gapMins = _timeGapMins(prev.time, it.time);
+          if (gapMins !== null && gapMins > 60) {
+            const gh = Math.floor(gapMins / 60);
+            const gm = gapMins % 60;
+            const gapTxt = gm === 0 ? `${gh}س` : `${gh}س ${gm}د`;
+            timelineHTML += `<div class="tl-gap"><span>⏸ ${gapTxt} وقت حر</span></div>`;
+          } else {
+            const buffer = computeBuffer(prev.time, it.time);
+            if (buffer) {
+              timelineHTML += `<div class="tl-buffer"><span class="tl-buffer-l">⏱️ ${buffer}</span></div>`;
+            }
           }
         }
-      }
-      timelineHTML += renderTimelineItem(it);
-    });
+        timelineHTML += renderTimelineItem(it);
+      });
 
-    html += `<div class="tl">
-      ${timelineHTML}
-      <button class="tl-add" onclick="openItemPicker(${state.activeDayIdx})">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        + إضافة بند للجدول
-      </button>
-    </div>`;
+      html += `<div class="tl">
+        ${timelineHTML}
+        <button class="tl-add" onclick="openItemPicker(${state.activeDayIdx})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          + إضافة بند للجدول
+        </button>
+      </div>`;
+    }
   }
 
   $("day-content").innerHTML = html;
@@ -5471,6 +5505,56 @@ function renderTimelineItem(it) {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></svg>
         </button>
       </div>
+    </div>
+  `;
+}
+
+
+function renderCompactItem(it) {
+  const t = TYPES[it.type] || TYPES.attraction;
+  const matIcon = MAT_ICONS[it.type] || 'place';
+  let icBg = '', icColor = '', typePill = '';
+  if (it.type === 'transport') {
+    icBg = 'rgba(245,158,11,0.18)'; icColor = '#b45309';
+    typePill = '<span class="pill pill-sm pill-warn" style="font-size:.58rem">تنقل</span>';
+  } else if (it.type === 'tour') {
+    icBg = 'rgba(8,145,178,0.18)'; icColor = '#0891b2';
+    typePill = '<span class="pill pill-sm" style="font-size:.58rem;background:rgba(8,145,178,0.15);color:#0891b2;border-color:rgba(8,145,178,0.4)">جولة</span>';
+  } else if (it.type === 'hotel') {
+    icBg = 'rgba(26,77,74,0.18)'; icColor = 'var(--accent)';
+    typePill = '<span class="pill pill-sm" style="font-size:.58rem;background:rgba(26,77,74,0.15);color:var(--accent);border-color:rgba(26,77,74,0.4)">سكن</span>';
+  } else if (it.type === 'food') {
+    icBg = 'rgba(22,163,74,0.18)'; icColor = '#16a34a';
+    const ml = { breakfast: "فطور", lunch: "غداء", dinner: "عشاء", snack: "خفيف" };
+    typePill = `<span class="pill pill-sm pill-ok" style="font-size:.58rem">${ml[it.mealType] || 'وجبة'}</span>`;
+  } else if (it.type === 'mosque') {
+    icBg = 'rgba(8,145,178,0.18)'; icColor = '#0891b2';
+    typePill = '<span class="pill pill-sm" style="font-size:.58rem">صلاة</span>';
+  } else if (it.type === 'rest') {
+    icBg = 'rgba(217,119,6,0.18)'; icColor = '#d97706';
+    typePill = '<span class="pill pill-sm" style="font-size:.58rem;background:rgba(217,119,6,0.15);color:#d97706">راحة</span>';
+  } else if (it.type === 'note') {
+    icBg = 'rgba(100,116,139,0.18)'; icColor = '#475569';
+  } else {
+    icBg = 'rgba(26,77,74,0.12)'; icColor = 'var(--accent)';
+    typePill = `<span class="pill pill-sm" style="font-size:.58rem">${t.label}</span>`;
+  }
+  const doneClass = it.done ? 'cv-done' : '';
+  return `
+    <div class="cv-row t-${it.type} ${doneClass}">
+      <div class="cv-ic" style="background:${icBg};color:${icColor}">
+        <span class="material-symbols-rounded">${matIcon}</span>
+      </div>
+      <span class="cv-time">${it.time || '—'}</span>
+      <div class="cv-info">
+        <div class="cv-t">
+          ${it.type === 'transport' ? '<span class="tl-critical-badge" style="font-size:.55rem;padding:.05rem .3rem">⚡</span> ' : ''}${it.text}${it.locked ? ' <span class="tl-lock">🔒</span>' : ''}${it.done ? ' <span class="cv-done-lbl">✓</span>' : ''}
+        </div>
+        ${typePill || it.notes ? `<div class="cv-m">${typePill}${it.notes ? `<span class="cv-note-snip">${it.notes.substring(0,45)}${it.notes.length>45?'…':''}</span>` : ''}</div>` : ''}
+      </div>
+      <button class="tl-card-menu" onclick="_cardMenu('${it.id}',event)" title="خيارات">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></svg>
+      </button>
     </div>
   `;
 }
