@@ -1218,20 +1218,28 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 
 /* ─── Sidebar dashboard layout (Google AI Studio inspired) ─── */
 .dash-shell { display:flex; min-height:100vh; direction:rtl; }
-.dash-sidebar { width:240px; background:#0f172a; color:#e2e8f0; flex-shrink:0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; overflow-y:auto; }
-.dash-brand { padding:1.25rem 1rem; border-bottom:1px solid rgba(255,255,255,0.08); }
-.dash-brand-name { font-weight:700; font-size:1rem; }
-.dash-brand-sub { font-size:0.72rem; opacity:0.6; margin-top:0.2rem; }
+.dash-sidebar { width:240px; background:#0f172a; color:#f1f5f9; flex-shrink:0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; overflow-y:auto; }
+.dash-brand { display:flex; align-items:center; gap:0.7rem; padding:1.1rem 1rem; border-bottom:1px solid rgba(255,255,255,0.1); }
+.dash-brand-logo { flex-shrink:0; display:flex; align-items:center; }
+.dash-brand-name { font-weight:700; font-size:0.95rem; color:#fff; }
+.dash-brand-sub { font-size:0.7rem; color:rgba(255,255,255,0.6); margin-top:0.15rem; }
 .dash-nav { flex:1; padding:0.75rem 0.5rem; display:flex; flex-direction:column; gap:0.15rem; }
-.dash-nav-item { display:flex; align-items:center; gap:0.75rem; padding:0.7rem 0.85rem; background:transparent; border:0; color:#cbd5e1; cursor:pointer; border-radius:8px; font-size:0.92rem; text-align:right; font-family:inherit; transition:background 0.15s; }
-.dash-nav-item:hover { background:rgba(255,255,255,0.06); color:#fff; }
-.dash-nav-item.act { background:rgba(14,165,233,0.18); color:#fff; font-weight:600; }
-.dash-nav-icon { font-size:1.1rem; }
-.dash-sidebar-footer { padding:0.75rem 1rem; border-top:1px solid rgba(255,255,255,0.08); font-size:0.78rem; opacity:0.7; }
+.dash-nav-item { display:flex; align-items:center; gap:0.75rem; padding:0.7rem 0.85rem; background:transparent; border:0; color:#e2e8f0; cursor:pointer; border-radius:8px; font-size:0.92rem; text-align:right; font-family:inherit; font-weight:500; transition:background 0.15s; }
+.dash-nav-item:hover { background:rgba(255,255,255,0.08); color:#fff; }
+.dash-nav-item.act { background:#1e3a5f; color:#fff; font-weight:600; box-shadow:inset -3px 0 0 #e9803a; }
+.dash-nav-item svg { stroke: currentColor; }
+.dash-nav-icon { font-size:1.1rem; color:inherit; opacity:1; }
+.dash-sidebar-footer { padding:0.75rem 1rem; border-top:1px solid rgba(255,255,255,0.08); font-size:0.78rem; color:#cbd5e1; }
 .dash-sidebar-footer button { background:transparent; color:#fbbf24; border:0; cursor:pointer; padding:0; font-size:0.78rem; }
 .dash-main { flex:1; min-width:0; display:flex; flex-direction:column; background:#f8fafc; }
-.dash-topbar { position:sticky; top:0; z-index:10; background:#fff; border-bottom:1px solid #e5e7eb; padding:0.85rem 1.25rem; display:flex; align-items:center; gap:1rem; box-shadow:0 1px 3px rgba(0,0,0,0.03); }
-.dash-burger { display:none; background:transparent; border:0; font-size:1.4rem; cursor:pointer; padding:0.3rem 0.5rem; }
+.dash-header { background:#1e3a5f; color:#fff; padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; border-bottom:1px solid rgba(255,255,255,0.08); position:sticky; top:0; z-index:11; }
+.dash-header-brand { display:flex; align-items:center; gap:0.85rem; }
+.dash-header-logo { display:flex; align-items:center; }
+.dash-header-titles { display:flex; flex-direction:column; }
+.dash-header-name { font-size:1.15rem; font-weight:700; margin:0; line-height:1.2; color:#fff; }
+.dash-header-tag { font-size:0.78rem; opacity:0.75; margin-top:0.15rem; }
+.dash-topbar { background:#fff; border-bottom:1px solid #e5e7eb; padding:1rem 1.5rem; display:flex; align-items:center; gap:1rem; box-shadow:0 1px 3px rgba(0,0,0,0.03); }
+.dash-burger { display:none; background:transparent; border:0; font-size:1.4rem; cursor:pointer; padding:0.3rem 0.5rem; color:#fff; }
 .dash-title { margin:0; font-size:1.15rem; font-weight:700; flex:1; }
 .dash-content { padding:1.5rem; max-width:1400px; width:100%; margin:0 auto; }
 .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:1.5rem; }
@@ -1244,6 +1252,8 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   .dash-sidebar.open { transform:translateX(0); }
   .dash-burger { display:block; }
   .dash-content { padding:1rem; }
+  .dash-header { padding:0.85rem 1rem; }
+  .dash-header-name { font-size:1rem; }
 }
 .access-key-row {
   display: flex; gap: 0.5rem; align-items: center;
@@ -2834,6 +2844,31 @@ body.perms-view, body.perms-tasks { padding-top: 0 !important; }
 // ─── Lucide SVG icon helper ───────────────────────────────────────────────
 function icon(name, size=18) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-${name}" data-lucide="${name}"><title>${name}</title></svg>`;
+}
+
+// ─── Khattar brand logo (inline SVG) ─────────────────────────────────────
+function khattarLogo(size=48) {
+  return `
+<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 100 100" aria-label="منصة خطّار">
+  <circle cx="50" cy="50" r="48" fill="#f5efe0"/>
+  <g fill="#3a8a96">
+    ${Array.from({length:12}).map((_,i)=>{
+      const a = (i*30) * Math.PI/180;
+      const x = 50 + 38*Math.cos(a);
+      const y = 50 + 38*Math.sin(a);
+      return `<rect x="${x-3}" y="${y-3}" width="6" height="6" transform="rotate(45 ${x} ${y})"/>`;
+    }).join('')}
+  </g>
+  <g fill="#e9803a">
+    ${Array.from({length:12}).map((_,i)=>{
+      const a = ((i*30)+15) * Math.PI/180;
+      const x = 50 + 38*Math.cos(a);
+      const y = 50 + 38*Math.sin(a);
+      return `<circle cx="${x}" cy="${y}" r="2.2"/>`;
+    }).join('')}
+  </g>
+  <text x="50" y="62" text-anchor="middle" font-family="'Noto Naskh Arabic','Amiri',serif" font-size="32" font-weight="700" fill="#1e3a5f">خطّار</text>
+</svg>`.trim();
 }
 
 const OWNER_KEY = "mhwar2026"; // Legacy backup key
@@ -9035,8 +9070,11 @@ function renderDashboard() {
     <div class="dash-shell">
       <aside class="dash-sidebar" id="dash-sidebar">
         <div class="dash-brand">
-          <div class="dash-brand-name">🗺️ محور للسياحة</div>
-          <div class="dash-brand-sub">لوحة التحكم</div>
+          <span class="dash-brand-logo">${khattarLogo(40)}</span>
+          <div>
+            <div class="dash-brand-name">منصة خطّار</div>
+            <div class="dash-brand-sub">إدارة الرحلات</div>
+          </div>
         </div>
         <nav class="dash-nav">${navHtml}</nav>
         <div class="dash-sidebar-footer">
@@ -9045,11 +9083,20 @@ function renderDashboard() {
         </div>
       </aside>
       <main class="dash-main">
-        <header class="dash-topbar">
+        <header class="dash-header">
+          <div class="dash-header-brand">
+            <span class="dash-header-logo">${khattarLogo(44)}</span>
+            <div class="dash-header-titles">
+              <h1 class="dash-header-name">منصة خطّار</h1>
+              <span class="dash-header-tag">إدارة الرحلات والوجهات</span>
+            </div>
+          </div>
           <button class="dash-burger" onclick="document.getElementById('dash-sidebar').classList.toggle('open')" aria-label="القائمة">☰</button>
+        </header>
+        <div class="dash-topbar">
           <h2 class="dash-title">${icon(cur.iconLucide || 'circle', 20)} ${cur.label}</h2>
           <div class="dash-actions">${_dashTabActions(cur.key)}</div>
-        </header>
+        </div>
         <div class="dash-content" id="dash-content">${body}</div>
       </main>
     </div>
