@@ -7911,6 +7911,45 @@ function _linkLibToTrip(libId) {
   renderLibrary();
 }
 
+function _showCityPopup(cityId) {
+  const LCN = typeof LIB_CITY_NAMES !== 'undefined' ? LIB_CITY_NAMES : {};
+  const cityName = LCN[cityId] || cityId;
+  const tc = (typeof getTripCities === 'function' ? getTripCities() : []).find(c => c.id === cityId) || {};
+  const color = (typeof state !== 'undefined' && state.cityColors && state.cityColors[cityId]) ? state.cityColors[cityId] : '#1a4d4a';
+  const itemCount = (typeof allLib === 'function' ? allLib() : []).filter(x => x.city === cityId || x.city === 'all').length;
+
+  const existing = document.getElementById('city-popup-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'city-popup-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9000;display:flex;align-items:flex-end;justify-content:center';
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:20px 20px 0 0;padding:1.5rem 1.25rem 2rem;width:100%;max-width:480px;direction:rtl;font-family:system-ui">
+      <div style="width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:0 auto 1.2rem"></div>
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem">
+        <div style="width:12px;height:40px;border-radius:6px;background:${color};flex-shrink:0"></div>
+        <div>
+          <div style="font-size:1.3rem;font-weight:700;color:#0f172a">${cityName}</div>
+          <div style="font-size:0.82rem;color:#6b7280;margin-top:0.15rem">${itemCount} موقع في الدليل</div>
+        </div>
+      </div>
+      ${tc.daysCount ? `<div style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0;border-top:1px solid #f1f5f9;font-size:0.88rem;color:#374151"><span style="opacity:0.6">📅</span> <span>${tc.daysCount} أيام</span></div>` : ''}
+      ${tc.hotel ? `<div style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0;border-top:1px solid #f1f5f9;font-size:0.88rem;color:#374151"><span style="opacity:0.6">🏨</span> <span>${tc.hotel}</span></div>` : ''}
+      <button onclick="state.libFilters.city='${cityId}';renderLibList();document.getElementById('city-popup-overlay').remove()"
+              style="width:100%;margin-top:1.25rem;padding:0.85rem;background:${color};color:#fff;border:0;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit">
+        تصفح المواقع
+      </button>
+      <button onclick="document.getElementById('city-popup-overlay').remove()"
+              style="width:100%;margin-top:0.5rem;padding:0.7rem;background:transparent;color:#6b7280;border:0;font-size:0.88rem;cursor:pointer;font-family:inherit">
+        إغلاق
+      </button>
+    </div>
+  `;
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+
 function renderLibrary() {
   const trip = TripsRegistry.get(Trip.current);
   const linkedLib = trip?.countryLib || null;
@@ -8104,11 +8143,10 @@ function renderLibrary() {
     const isAct = state.libFilters.city === cid;
     return `
       <button class="lib-city-card ${isAct?'act':''}"
-              onclick="state.libFilters.city='${cid}';renderLibList()"
+              onclick="_showCityPopup('${cid}')"
               style="--city-color:${color}">
         <div class="lib-city-name">${cityName}</div>
         <div class="lib-city-meta">${count} نقطة${tc&&tc.daysCount?` · ${tc.daysCount} يوم`:''}${tc&&tc.hotel?` · 🏨 ${tc.hotel}`:''}</div>
-        ${tc&&tc.firstDate?`<div class="lib-city-date">${tc.firstDate}</div>`:''}
       </button>`;
   }).join('')}
   <button class="lib-city-card ${state.libFilters.city==='festivals'?'act':''}"
