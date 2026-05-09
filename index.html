@@ -1590,6 +1590,21 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   align-items: center;
 }
 
+/* Day header settings button (inside day-hdr) */
+.day-hdr-opt {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  width: 2rem; height: 2rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--muted);
+  position: relative;
+}
+.day-hdr-opt:hover { background: var(--bg); color: var(--ink); }
+.day-hdr-opt .material-symbols-rounded { font-size: 1.1rem; }
+
 /* Flight banner */
 .fl-bnr {
   background: rgba(245,158,11,0.1);
@@ -1835,6 +1850,13 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   letter-spacing: 0.01em;
   text-align: center;
   white-space: nowrap;
+}
+@media (max-width: 480px) {
+  .tl { padding-right: 2.5rem; }
+  .tl::before { right: 1.25rem; }
+  .tl-gutter { right: -2.5rem; width: 2.5rem; }
+  .tl-gutter-ic { width: 1.75rem; height: 1.75rem; }
+  .tl-gutter-ic .material-symbols-rounded { font-size: 0.95rem; }
 }
 .tl-card {
   background: var(--paper);
@@ -2109,6 +2131,7 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   position: absolute;
   top: calc(100% + 0.4rem);
   left: 0;
+  right: auto;
   min-width: 12rem;
   background: var(--paper);
   border: 1px solid var(--border);
@@ -2375,7 +2398,8 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   padding: 0.65rem;
   text-align: center;
 }
-.lib-stat-i { font-size: 1.4rem; margin-bottom: 0.15rem; }
+.lib-stat-i { margin-bottom: 0.15rem; display: flex; justify-content: center; }
+.lib-stat-i .material-symbols-rounded { font-size: 1.4rem; color: var(--ink-soft); }
 .lib-stat-v { font-size: 1.2rem; font-weight: 700; line-height: 1; }
 .lib-stat-l { font-size: 0.65rem; color: var(--muted); margin-top: 0.2rem; }
 
@@ -4633,10 +4657,10 @@ function renderOverview() {
 
 
     <div class="lib-stats">
-      <div class="lib-stat"><div class="lib-stat-i">📅</div><div class="lib-stat-v">${filledDays}/${totalDays}</div><div class="lib-stat-l">أيام مخططة</div></div>
-      <div class="lib-stat"><div class="lib-stat-i">📌</div><div class="lib-stat-v">${totalItems}</div><div class="lib-stat-l">نشاط مضاف</div></div>
-      <div class="lib-stat"><div class="lib-stat-i">🥩</div><div class="lib-stat-v">${halalCount}</div><div class="lib-stat-l">مطعم حلال</div></div>
-      <div class="lib-stat"><div class="lib-stat-i">🌾</div><div class="lib-stat-v">${gfCount}</div><div class="lib-stat-l">خيار GF</div></div>
+      <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded">calendar_month</span></div><div class="lib-stat-v">${filledDays}/${totalDays}</div><div class="lib-stat-l">أيام مخططة</div></div>
+      <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded">location_on</span></div><div class="lib-stat-v">${totalItems}</div><div class="lib-stat-l">نشاط مضاف</div></div>
+      <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded" style="color:#16a34a">lunch_dining</span></div><div class="lib-stat-v">${halalCount}</div><div class="lib-stat-l">مطعم حلال</div></div>
+      <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded" style="color:#a16207">spa</span></div><div class="lib-stat-v">${gfCount}</div><div class="lib-stat-l">خيار GF</div></div>
     </div>
 
     ${totalItems === 0 ? `
@@ -5098,17 +5122,9 @@ function renderDayContent() {
           ${day.items.length ? `<span class="pill pill-sm">${day.items.length} نشاط</span>` : ''}
         </div>
       </div>
-    </div>
-
-    <div class="day-toolbar">
-      <button class="day-tb-btn day-tb-pri" onclick="_dayAddMenu(${state.activeDayIdx},event)" title="إضافة">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <span>إضافة ▾</span>
-      </button>
-      <div class="day-tb-spacer"></div>
-      <div class="day-tb-menu-wrap">
-        <button class="day-tb-btn day-tb-icon" onclick="toggleDayMenu(event)" title="المزيد">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+      <div class="day-tb-menu-wrap" style="flex-shrink:0">
+        <button class="day-hdr-opt" onclick="toggleDayMenu(event)" title="خيارات اليوم">
+          <span class="material-symbols-rounded">more_vert</span>
         </button>
         <div class="day-tb-menu" id="day-tb-menu" hidden>
           <button class="day-tb-mi" onclick="closeDayMenu();setDayMeta()">
@@ -5140,6 +5156,13 @@ function renderDayContent() {
           </button>
         </div>
       </div>
+    </div>
+
+    <div class="day-toolbar">
+      <button class="day-tb-btn day-tb-pri" onclick="_dayAddMenu(${state.activeDayIdx},event)" title="إضافة">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>إضافة ▾</span>
+      </button>
     </div>
   `;
 
@@ -8952,10 +8975,10 @@ function renderLibrary() {
     </div>
 
     <div class="lib-stats">
-      <div class="lib-stat"><div class="lib-stat-i">📚</div><div class="lib-stat-v">${stats.total}</div><div class="lib-stat-l">إجمالي</div></div>
-      <div class="lib-stat"><div class="lib-stat-i">🥩</div><div class="lib-stat-v">${stats.halal}</div><div class="lib-stat-l">حلال</div></div>
-      <div class="lib-stat"><div class="lib-stat-i">🌾</div><div class="lib-stat-v">${stats.gf}</div><div class="lib-stat-l">GF</div></div>
-      <div class="lib-stat"><div class="lib-stat-i">⭐</div><div class="lib-stat-v">${stats.custom}</div><div class="lib-stat-l">مخصص</div></div>
+      <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded">library_books</span></div><div class="lib-stat-v">${stats.total}</div><div class="lib-stat-l">إجمالي</div></div>
+      <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded" style="color:#16a34a">lunch_dining</span></div><div class="lib-stat-v">${stats.halal}</div><div class="lib-stat-l">حلال</div></div>
+      <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded" style="color:#a16207">spa</span></div><div class="lib-stat-v">${stats.gf}</div><div class="lib-stat-l">GF</div></div>
+      <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded" style="color:var(--accent)">bookmarks</span></div><div class="lib-stat-v">${stats.custom}</div><div class="lib-stat-l">مخصص</div></div>
     </div>
 
 
@@ -9027,28 +9050,28 @@ function renderLibrary() {
         return `
 <div class="guide-btn-row">
   <button class="guide-btn guide-btn-gf" onclick="_showGFGuide()">
-    <span style="font-size:1.5rem">🌾</span>
+    <span class="material-symbols-rounded" style="font-size:1.6rem;color:#a16207;flex-shrink:0">spa</span>
     <div class="guide-btn-inner">
       <div class="guide-btn-title">دليل خالٍ من الجلوتين</div>
       <div class="guide-btn-sub">${gfItemCount} موقع · منتجات · مراجع</div>
     </div>
-    <span style="color:#a16207">←</span>
+    <span class="material-symbols-rounded" style="font-size:1rem;color:#a16207">chevron_left</span>
   </button>
   <button class="guide-btn guide-btn-hl" onclick="_showHalalGuide()">
-    <span style="font-size:1.5rem">🥩</span>
+    <span class="material-symbols-rounded" style="font-size:1.6rem;color:#166534;flex-shrink:0">lunch_dining</span>
     <div class="guide-btn-inner">
       <div class="guide-btn-title">دليل الطعام الحلال</div>
       <div class="guide-btn-sub">${libAll2.filter(x=>x.halal).length} موقع · مطاعم · مراجع</div>
     </div>
-    <span style="color:#166534">←</span>
+    <span class="material-symbols-rounded" style="font-size:1rem;color:#166534">chevron_left</span>
   </button>
   <button class="guide-btn guide-btn-tr" onclick="_showTransportGuide()">
-    <span style="font-size:1.5rem">🚆</span>
+    <span class="material-symbols-rounded" style="font-size:1.6rem;color:#1d4ed8;flex-shrink:0">train</span>
     <div class="guide-btn-inner">
       <div class="guide-btn-title">دليل المواصلات</div>
       <div class="guide-btn-sub">مترو · KTX · حافلات · تطبيقات</div>
     </div>
-    <span style="color:#1d4ed8">←</span>
+    <span class="material-symbols-rounded" style="font-size:1rem;color:#1d4ed8">chevron_left</span>
   </button>
 </div>
 <div class="lib-flt-bar">
