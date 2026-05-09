@@ -4130,7 +4130,7 @@ const TABS = [
   { id: "overview", label: "نظرة عامة", svg: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>' },
   { id: "itinerary", label: "الجدول", svg: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' },
   { id: "cities", label: "المدن", svg: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>' },
-  { id: "library", label: "المكتبة", svg: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' },
+  { id: "library", label: "الدليل السياحي", svg: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' },
   { id: "map", label: "الخريطة", svg: '<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>' },
   { id: "info", label: "معلومات", svg: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>' }
 ];
@@ -6129,7 +6129,7 @@ function renderMealLibList() {
     if (cityFilter) {
       const lc = _CITY_AL[l.city] || l.city;
       const fc = _CITY_AL[cityFilter] || cityFilter;
-      if (lc !== fc) return false;
+      if (lc !== fc && l.city !== "all") return false;
     }
     if (q && !((l.name||"") + " " + (l.area||"")).toLowerCase().includes(q)) return false;
     return true;
@@ -6351,7 +6351,7 @@ function renderActLibList() {
     if (cityFilter) {
       const lCity = cityAliases[l.city] || l.city;
       const fCity = cityAliases[cityFilter] || cityFilter;
-      if (lCity !== fCity) return false;
+      if (lCity !== fCity && l.city !== "all") return false;
     }
     if (actFilter !== "all" && l.type !== actFilter) return false;
     if (q && !((l.name || '') + ' ' + (l.area || '')).toLowerCase().includes(q)) return false;
@@ -6511,7 +6511,7 @@ function renderTourLibList() {
     if (cityFilter) {
       const lc = _CITY_AL[l.city] || l.city;
       const fc = _CITY_AL[cityFilter] || cityFilter;
-      if (lc !== fc) return false;
+      if (lc !== fc && l.city !== "all") return false;
     }
     if (q && !((l.name||"") + " " + (l.area||"")).toLowerCase().includes(q)) return false;
     return true;
@@ -8094,7 +8094,7 @@ function renderLibList() {
   const f = state.libFilters;
 
   let filtered = allLib().filter(l => {
-    if (f.city !== "all" && l.city !== f.city) return false;
+    if (f.city !== "all" && l.city !== f.city && l.city !== "all") return false;
     if (f.type !== "all" && l.type !== f.type) return false;
     if (f.halal && !l.halal) return false;
     if (f.gf && !l.gf) return false;
@@ -9238,6 +9238,7 @@ const LIB_META = {
   uk:      { name:"بريطانيا",       icon:"🇬🇧", color:"#2c3e50", cities:["london","edinburgh","manchester"], builtIn:true }
 };
 const LIB_CITY_NAMES = {
+  all:"جميع المدن",
   seoul:"سيول", busan:"بوسان", jeju:"جيجو",
   istanbul:"إسطنبول", cappadocia:"كابادوكيا", antalya:"أنطاليا",
   trabzon:"طرابزون", ankara:"أنقرة", bursa:"بورصة", izmir:"إزمير",
