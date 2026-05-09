@@ -2184,6 +2184,20 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 /* ═════════════════════════════════════════
    ✅ ITEM STATUS (done) + 🔒 LOCKED
    ═════════════════════════════════════════ */
+/* ── Critical items (transport + locked) ── */
+.tl-row.tl-critical .tl-card{border-right:4px solid #f59e0b;background:#fffbeb}
+.tl-row.tl-critical .tl-dot{background:#f59e0b;border-color:#d97706}
+.tl-row.tl-critical .tl-time{color:#b45309;font-weight:700}
+.tl-critical-badge{font-size:.65rem;background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:6px;padding:.1rem .4rem;font-weight:600;white-space:nowrap;margin-right:.25rem}
+/* ── Last-night hotel warning ── */
+.day-hotel.day-hotel-last{border-color:#f59e0b !important;background:#fffbeb}
+/* ── Transition day flow bar ── */
+.transition-flow{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.6rem;background:#f1f5f9;border-radius:10px;font-size:.8rem;color:#334155;margin:.5rem 0;font-weight:500}
+/* ── Maps provider toggle ── */
+.maps-toggle{padding:.28rem .65rem;border-radius:999px;border:1.5px solid #e5e7eb;background:#fff;font-size:.75rem;cursor:pointer;font-family:inherit;color:#374151;transition:all .12s}
+.maps-toggle.act{background:#0f172a;border-color:#0f172a;color:#fff}
+.maps-provider-row{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:#64748b}
+
 .tl-row-done .tl-card {
   opacity: 0.55;
   background: var(--cream) !important;
@@ -5113,7 +5127,7 @@ function renderDayContent() {
   // ─── Checkout-hotel banner (the hotel being left in the morning) ───
   if (day.hotelOut && day.hotelOut.name) {
     const ho = day.hotelOut;
-    const hoMaps = ho.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ho.address)}` : null;
+    const hoMaps = ho.address ? _mapsUrl(ho.address) : (ho.name ? _mapsUrl(ho.name, ho.area) : null);
     html += `<div class="day-hotel day-hotel-out">
       <div class="day-hotel-ic">🛬</div>
       <div class="day-hotel-bd">
@@ -5123,7 +5137,8 @@ function renderDayContent() {
         </div>
         ${ho.address ? `<div class="txs clm">📍 ${ho.address}</div>` : (ho.area ? `<div class="txs clm">📍 ${ho.area}</div>` : '')}
         <div class="day-hotel-m">
-          <span>🔴 خروج ${ho.checkOut || '11:00'}</span>
+          <span style="font-weight:700;color:#991b1b">🔴 تسجيل خروج حتى ${ho.checkOut || '11:00'}</span>
+          ${day.hotel?.name ? `<span style="color:#475569">← ${day.hotel.name}</span>` : ''}
         </div>
         ${ho.notes ? `<div class="txs cls" style="margin-top:0.3rem">${ho.notes}</div>` : ''}
         <div class="day-hotel-acts">
@@ -5133,6 +5148,12 @@ function renderDayContent() {
         </div>
       </div>
     </div>`;
+    // Transition flow bar between checkout and new hotel
+    if (day.hotel && day.hotel.name) {
+      const outCity = ho.area || ho.name || '—';
+      const inCity = day.hotel.area || day.hotel.name || '—';
+      html += `<div class="transition-flow">🛬 ${outCity} &nbsp;→&nbsp; 🚆 انتقال &nbsp;→&nbsp; 🏨 ${inCity}</div>`;
+    }
   }
 
   // ─── Hotel banner (always visible) ───
@@ -5140,9 +5161,9 @@ function renderDayContent() {
     const h = day.hotel;
     const isCheckIn = h.isFirst;
     const isCheckOut = h.isLast && h.totalNights > 1;
-    const mapsLink = h.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.address)}` : null;
+    const mapsLink = h.address ? _mapsUrl(h.address) : (h.name ? _mapsUrl(h.name, h.area) : null);
     const hasHotelOut = !!(day.hotelOut && day.hotelOut.name);
-    html += `<div class="day-hotel">
+    html += `<div class="day-hotel${isCheckOut ? ' day-hotel-last' : ''}">
       <div class="day-hotel-ic">🏨</div>
       <div class="day-hotel-bd">
         <div class="day-hotel-n">
@@ -5153,7 +5174,7 @@ function renderDayContent() {
         ${h.address ? `<div class="txs clm">📍 ${h.address}</div>` : ''}
         <div class="day-hotel-m">
           ${isCheckIn ? `<span>🟢 دخول ${h.checkIn || '15:00'}</span>` : ''}
-          ${isCheckOut ? `<span>🔴 خروج ${h.checkOut || '11:00'}</span>` : ''}
+          ${isCheckOut ? `<span style="color:#92400e;font-weight:600">⚠️ آخر ليلة — الخروج غداً بحلول ${h.checkOut || '11:00'}</span>` : ''}
           ${!isCheckIn && !isCheckOut ? `<span>🛏️ مبيت</span>` : ''}
         </div>
         ${h.notes ? `<div class="txs cls" style="margin-top:0.3rem">${h.notes}</div>` : ''}
@@ -5320,14 +5341,16 @@ function renderTimelineItem(it) {
     if (it.mealGf || ref?.gf) pillExtra += '<span class="pill pill-sm pill-gold">🌾 GF</span>';
   }
 
+  const isCritical = it.type === 'transport' || it.locked;
   return `
-    <div class="tl-row t-${it.type} ${it.done ? 'tl-row-done' : ''} ${it.locked ? 'tl-row-locked' : ''}">
+    <div class="tl-row t-${it.type} ${it.done ? 'tl-row-done' : ''} ${it.locked ? 'tl-row-locked' : ''} ${isCritical ? 'tl-critical' : ''}">
       <div class="tl-time">${it.time || '—'}</div>
       <div class="tl-dot"></div>
       <div class="tl-card ${cardClass}">
         <div class="tl-card-ic" style="background:${icBg};color:${icColor}">${ref?.icon || t.icon}</div>
         <div class="tl-card-info">
           <div class="tl-card-t">
+            ${it.type === 'transport' ? '<span class="tl-critical-badge">⚡ موعد حرج</span>' : ''}
             ${it.text}
             ${it.locked ? '<span class="tl-lock" title="بند مقفول - حجز مهم">🔒</span>' : ''}
           </div>
@@ -5344,7 +5367,7 @@ function renderTimelineItem(it) {
             فتح رابط الحجز
           </a>` : ''}
           <div class="tl-card-acts">
-            ${(it.text || lat) ? `<a class="tl-card-act" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((it.text||'') + (ref?.area?' '+ref.area:''))}${(!it.text&&lat&&lng)?lat+','+lng:''}" target="_blank">
+            ${(it.text || lat) ? `<a class="tl-card-act" href="${_mapsUrl((it.text || (lat+','+(lng||''))), it.text ? ref?.area : '')}" target="_blank">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>
               خرائط
             </a>` : ''}
@@ -8046,7 +8069,7 @@ function renderCityTabBody() {
                 <div class="hotel-pr">${h.price} / ليلة</div>
                 <div class="hotel-no">${h.note}</div>
                 <div class="hotel-acts">
-                  <a class="btn btn-sec btn-sm" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name)}" target="_blank">
+                  <a class="btn btn-sec btn-sm" href="${_mapsUrl(h.name)}" target="_blank">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>
                     خرائط
                   </a>
@@ -8653,6 +8676,19 @@ function _libFltToggle(feat, colorClass) {
   if(btn) btn.className = 'lib-toggle flt-feat-btn' + (state.libFilters[feat] ? ' '+colorClass : '');
 }
 
+// ── Maps provider helpers ─────────────────────────────────────────────────
+function _getMapsApp() { return localStorage.getItem('mapsApp') || 'google'; }
+function _setMapsApp(app) {
+  localStorage.setItem('mapsApp', app);
+  document.querySelectorAll('.maps-toggle').forEach(b => b.classList.toggle('act', b.dataset.app === app));
+}
+function _mapsUrl(name, area) {
+  const q = encodeURIComponent(name + (area ? ' ' + area : ''));
+  return _getMapsApp() === 'naver'
+    ? `https://map.naver.com/v5/search/${q}`
+    : `https://www.google.com/maps/search/?api=1&query=${q}`;
+}
+
 // ── Map filter sheet ─────────────────────────────────────────────────────
 function _openMapCitySheet() {
   const existing = document.getElementById('map-city-overlay');
@@ -9055,7 +9091,7 @@ function renderPOI(l) {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           أضف ليوم
         </button>
-        ${l.name ? `<a class="poi-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.name + (l.area?' '+l.area:''))}" target="_blank" title="فتح بالخرائط">
+        ${l.name ? `<a class="poi-link" href="${_mapsUrl(l.name, l.area)}" target="_blank" title="فتح بالخرائط">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         </a>` : ''}
         ${l.custom ? `<button class="poi-link" onclick="deleteCustom('${l.id}')" title="حذف" style="color:var(--persimmon)">
@@ -9132,7 +9168,12 @@ function renderMapSec() {
           </button>
           <button id="map-layer-btn" class="lib-flt-trigger ${activeLayers<totalLayers?'has-active':''}" onclick="_openMapLayerSheet()">
             طبقات (${activeLayers}/${totalLayers}) ▾
-          </button>`;
+          </button>
+          <div class="maps-provider-row">
+            <span>🗺️</span>
+            <button class="maps-toggle ${_getMapsApp()==='google'?'act':''}" data-app="google" onclick="_setMapsApp('google')">Google</button>
+            <button class="maps-toggle ${_getMapsApp()==='naver'?'act':''}" data-app="naver" onclick="_setMapsApp('naver')">Naver</button>
+          </div>`;
       })()}
     </div>
 
@@ -9209,7 +9250,7 @@ function drawMarkers() {
         ${noteShort?`<div style="font-size:.8rem;margin-bottom:.4rem;color:#374151">${noteShort}</div>`:''}
         ${l.halal?'<span style="background:#dcfce7;color:#166534;font-size:.7rem;padding:.1rem .4rem;border-radius:4px;margin-left:.25rem">حلال</span>':''}
         ${l.gf?'<span style="background:#fef9c3;color:#854d0e;font-size:.7rem;padding:.1rem .4rem;border-radius:4px">GF</span>':''}
-        ${l.name?`<div style="margin-top:.4rem"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.name + (l.area?' '+l.area:''))}" target="_blank" style="font-size:.72rem;color:#2563eb">فتح بخرائط Google ↗</a></div>`:''}
+        ${l.name?`<div style="margin-top:.4rem"><a href="${_mapsUrl(l.name, l.area)}" target="_blank" style="font-size:.72rem;color:#2563eb">فتح بالخرائط ↗</a></div>`:''}
       </div>
     `, { maxWidth: 220 });
     clusterGroup ? clusterGroup.addLayer(marker) : marker.addTo(state.mapMarkers);
