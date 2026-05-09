@@ -1054,30 +1054,72 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   outline: none;
 }
 
-/* ── Library filter pills v2 ── */
-.lib-filters-v2{margin-bottom:.75rem}
-.lib-flt-scroll{display:flex;gap:.35rem;overflow-x:auto;padding-bottom:.35rem;scrollbar-width:none;margin-bottom:.45rem}
-.lib-flt-scroll::-webkit-scrollbar{display:none}
+/* ── Library filter — compact trigger bar ── */
 .lib-pill{flex-shrink:0;display:flex;align-items:center;gap:.3rem;padding:.38rem .8rem;border-radius:999px;border:1.5px solid #e5e7eb;background:#fff;font-size:.8rem;cursor:pointer;font-family:inherit;color:#374151;transition:all .12s;white-space:nowrap}
 .lib-pill:hover{border-color:#94a3b8}
 .lib-pill.act{background:#0f172a;border-color:#0f172a;color:#fff}
 .lib-pill-count{opacity:.6;font-size:.7rem}
-.lib-flt-row2{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap}
 .lib-toggle{padding:.32rem .7rem;border-radius:999px;border:1.5px solid #e5e7eb;background:#fff;font-size:.78rem;cursor:pointer;font-family:inherit;color:#374151;transition:all .12s;white-space:nowrap}
 .lib-toggle:hover{border-color:#94a3b8}
 .lib-toggle.act-grn{background:#f0fdf4;border-color:#16a34a;color:#15803d;font-weight:600}
 .lib-toggle.act-gld{background:#fefce8;border-color:#ca8a04;color:#a16207;font-weight:600}
 .lib-toggle.act-red{background:#fff1f2;border-color:#e11d48;color:#be123c;font-weight:600}
-.lib-flt-spacer{flex:1}
 .lib-sort-sel{padding:.32rem .6rem;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.78rem;font-family:inherit;background:#fff;color:#374151;cursor:pointer}
 
-/* ── Map filter pills ── */
+/* ── Filter trigger bar ── */
+.lib-flt-bar{display:flex;align-items:center;gap:.4rem;overflow-x:auto;scrollbar-width:none;margin-bottom:.65rem;padding-bottom:.05rem}
+.lib-flt-bar::-webkit-scrollbar{display:none}
+.lib-flt-trigger{flex-shrink:0;display:inline-flex;align-items:center;gap:.35rem;padding:.38rem .85rem;border-radius:999px;border:1.5px solid #e5e7eb;background:#fff;font-size:.8rem;cursor:pointer;font-family:inherit;color:#374151;white-space:nowrap;transition:all .12s}
+.lib-flt-trigger:hover{border-color:#94a3b8}
+.lib-flt-trigger.has-active{border-color:#0f172a;background:#f8fafc;font-weight:600}
+.lib-flt-badge{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 3px;border-radius:9px;background:#0f172a;color:#fff;font-size:.62rem;font-weight:700}
+.lib-flt-tag{display:inline-flex;align-items:center;gap:.25rem;padding:.22rem .55rem;border-radius:999px;background:#0f172a;color:#fff;font-size:.73rem;flex-shrink:0}
+.lib-flt-tag button{background:none;border:0;color:rgba(255,255,255,.75);cursor:pointer;padding:0;line-height:1;font-size:.9rem;display:flex;align-items:center}
+.lib-flt-tag button:hover{color:#fff}
+.lib-flt-spacer{flex:1}
+
+/* ── Filter bottom-sheet overlay ── */
+.flt-sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9010;display:flex;align-items:flex-end;justify-content:center}
+.flt-sheet-box{background:#fff;border-radius:20px 20px 0 0;padding:1.25rem 1.25rem 2rem;width:100%;max-width:520px;direction:rtl;font-family:system-ui;max-height:85vh;overflow-y:auto}
+.flt-sheet-handle{width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:0 auto .9rem}
+.flt-section-label{font-size:.7rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;text-transform:uppercase;margin-bottom:.45rem;margin-top:.8rem}
+.flt-type-grid{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem}
+.flt-toggle-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.5rem}
+.flt-clear-btn{width:100%;padding:.7rem;border:1.5px solid #e5e7eb;border-radius:12px;background:#fff;font-size:.9rem;font-family:inherit;cursor:pointer;color:#64748b;margin-top:.75rem}
+.flt-clear-btn:hover{border-color:#94a3b8;color:#374151}
+
+/* ── Map compact filter ── */
+.map-flt-compact{display:flex;gap:.5rem;padding:.5rem .75rem;overflow-x:auto;scrollbar-width:none;align-items:center}
+.map-flt-compact::-webkit-scrollbar{display:none}
 .map-layer-pill{flex-shrink:0;padding:.3rem .65rem;border-radius:999px;border:1.5px solid #e2e8f0;background:#f8fafc;font-size:.76rem;cursor:pointer;font-family:inherit;color:#475569;transition:all .12s;white-space:nowrap}
 .map-layer-pill.act{background:#0f172a;border-color:#0f172a;color:#fff}
 .map-flt-row{display:flex;gap:.35rem;overflow-x:auto;padding:.4rem .75rem;scrollbar-width:none}
 .map-flt-row::-webkit-scrollbar{display:none}
 
-/* ── GF Guide button ── */
+/* ── Guide buttons row ── */
+.guide-btn-row{display:flex;gap:.5rem;margin-bottom:.75rem}
+.guide-btn{flex:1;display:flex;align-items:center;gap:.6rem;padding:.65rem .85rem;border-radius:12px;cursor:pointer;font-family:inherit;border:1.5px solid;text-align:right}
+.guide-btn-gf{background:linear-gradient(135deg,#fefce8,#fef9c3);border-color:#fde047}
+.guide-btn-hl{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#86efac}
+.guide-btn-inner{flex:1}
+.guide-btn-title{font-weight:700;font-size:.85rem}
+.guide-btn-gf .guide-btn-title{color:#713f12}
+.guide-btn-hl .guide-btn-title{color:#14532d}
+.guide-btn-sub{font-size:.71rem;margin-top:.1rem}
+.guide-btn-gf .guide-btn-sub{color:#a16207}
+.guide-btn-hl .guide-btn-sub{color:#166534}
+
+/* ── Guide popup ── */
+.guide-ref-chip{display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .65rem;border-radius:8px;background:#f1f5f9;border:1px solid #e2e8f0;font-size:.75rem;color:#334155;text-decoration:none;margin:.2rem}
+.guide-ref-chip:hover{background:#e2e8f0}
+.guide-product-card{display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border:1px solid #fef9c3;border-radius:10px;margin-bottom:.4rem;background:#fffde7}
+.guide-product-hl{border-color:#dcfce7;background:#f0fdf4}
+.guide-product-icon{font-size:1.3rem;flex-shrink:0}
+.guide-product-name{font-size:.83rem;font-weight:600;color:#1e293b;flex:1}
+.guide-product-where{font-size:.7rem;color:#64748b}
+.guide-product-search{font-size:.7rem;color:#2563eb;text-decoration:none;white-space:nowrap}
+.guide-product-search:hover{text-decoration:underline}
+/* ── GF Guide button (kept for compat) ── */
 .gf-guide-btn{width:100%;display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:linear-gradient(135deg,#fefce8,#fef9c3);border:1.5px solid #fde047;border-radius:12px;cursor:pointer;font-family:inherit;margin-bottom:.75rem}
 .gf-guide-title{font-weight:700;font-size:.88rem;color:#713f12}
 .gf-guide-sub{font-size:.73rem;color:#a16207;margin-top:.1rem}
@@ -7994,24 +8036,87 @@ function _showGFGuide() {
 
   const itemsHtml = Object.entries(byCity).map(([cid,its])=>`
     <div style="margin-bottom:.9rem">
-      <div style="font-size:.7rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.3rem;text-transform:uppercase">${LCN[cid]||cid}</div>
+      <div style="font-size:.7rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.35rem">${LCN[cid]||cid}</div>
       ${its.map(i=>`
         <div style="display:flex;align-items:center;gap:.5rem;padding:.35rem 0;border-bottom:1px solid #fef9c3">
           <span style="font-size:1.05rem">${i.icon||'🍽️'}</span>
-          <span style="font-size:.85rem;font-weight:600;flex:1;color:#0f172a">${i.name}</span>
-          <span style="font-size:.7rem;color:#6b7280">${i.area||''}</span>
+          <span style="font-size:.84rem;font-weight:600;flex:1;color:#1e293b">${i.name}</span>
+          <span style="font-size:.68rem;color:#78716c;background:#fef9c3;border-radius:6px;padding:.1rem .35rem">${i.area||''}</span>
         </div>`).join('')}
     </div>`).join('');
 
+  const gfProducts = `
+    <div style="margin-top:1.1rem">
+      <div style="font-size:.72rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.5rem">🛒 منتجات GF شائعة في كوريا</div>
+      <div class="guide-product-card">
+        <span class="guide-product-icon">🍰</span>
+        <div style="flex:1"><div class="guide-product-name">تتوك 떡 — كعك الأرز</div><div class="guide-product-where">في كل مكان · طبيعياً GF</div></div>
+        <a class="guide-product-search" href="https://www.google.com/search?q=%EB%96%A1+%EA%B8%80%EB%A3%A8%ED%85%90%ED%94%84%EB%A6%AC" target="_blank">بحث ↗</a>
+      </div>
+      <div class="guide-product-card">
+        <span class="guide-product-icon">🍚</span>
+        <div style="flex:1"><div class="guide-product-name">CJ Hetbahn — أرز جاهز معلّب</div><div class="guide-product-where">CU / GS25 / E-Mart · 100% أرز</div></div>
+        <a class="guide-product-search" href="https://www.coupang.com/np/search?q=CJ+hetbahn+gluten+free" target="_blank">كوبانج ↗</a>
+      </div>
+      <div class="guide-product-card">
+        <span class="guide-product-icon">🍜</span>
+        <div style="flex:1"><div class="guide-product-name">Ottogi Rice Ramen — رامن أرز</div><div class="guide-product-where">E-Mart / Lotte Mart · شعيرية أرز GF</div></div>
+        <a class="guide-product-search" href="https://www.coupang.com/np/search?q=ottogi+rice+ramen" target="_blank">كوبانج ↗</a>
+      </div>
+      <div class="guide-product-card">
+        <span class="guide-product-icon">🍫</span>
+        <div style="flex:1"><div class="guide-product-name">Honey Butter Chips (해태) — شيبس</div><div class="guide-product-where">편의점 / مارت · بطاطا GF</div></div>
+        <a class="guide-product-search" href="https://www.coupang.com/np/search?q=%ED%97%88%EB%8B%88%EB%B2%84%ED%84%B0%EC%B9%A9" target="_blank">كوبانج ↗</a>
+      </div>
+    </div>`;
+
+  const gfSweets = `
+    <div style="margin-top:1rem">
+      <div style="font-size:.72rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.5rem">🍦 حلويات وآيسكريم GF مشهورة</div>
+      <div class="guide-product-card">
+        <span class="guide-product-icon">🍨</span>
+        <div style="flex:1"><div class="guide-product-name">Baskin Robbins Korea</div><div class="guide-product-where">معظم النكهات GF — تجنب الكوب البسكويت</div></div>
+        <a class="guide-product-search" href="https://www.baskinrobbins.co.kr" target="_blank">الموقع ↗</a>
+      </div>
+      <div class="guide-product-card">
+        <span class="guide-product-icon">🧁</span>
+        <div style="flex:1"><div class="guide-product-name">Haagen-Dazs Korea</div><div class="guide-product-where">آيسكريم GF في معظم النكهات</div></div>
+        <a class="guide-product-search" href="https://www.google.com/search?q=Haagen-Dazs+gluten+free+Korea" target="_blank">بحث ↗</a>
+      </div>
+      <div class="guide-product-card">
+        <span class="guide-product-icon">🍡</span>
+        <div style="flex:1"><div class="guide-product-name">Bingsu (빙수) — ثلج مكشوط</div><div class="guide-product-where">حلوى صيفية كورية · أرز وفاكهة GF طبيعياً</div></div>
+        <a class="guide-product-search" href="https://www.google.com/search?q=bingsu+gluten+free" target="_blank">بحث ↗</a>
+      </div>
+      <div class="guide-product-card">
+        <span class="guide-product-icon">🌾</span>
+        <div style="flex:1"><div class="guide-product-name">Sunny Bread Bakery</div><div class="guide-product-where">هونغدي، سيول · مخبز 100% GF متخصص</div></div>
+        <a class="guide-product-search" href="https://www.google.com/search?q=Sunny+Bread+gluten+free+bakery+Hongdae+Seoul" target="_blank">خريطة ↗</a>
+      </div>
+    </div>`;
+
   const tips = `
-    <div style="margin-top:1rem;padding:0.85rem;background:#fef9c3;border-radius:10px">
-      <div style="font-weight:700;font-size:.82rem;color:#713f12;margin-bottom:.5rem">💡 نصائح للسفر</div>
-      <ul style="margin:0;padding-right:1.1rem;font-size:.8rem;color:#92400e;line-height:1.8">
-        <li>اطلب <strong>tamari</strong> بديلاً عن صلصة الصويا (تحتوي قمحاً)</li>
-        <li>تتوك (كعك الأرز) آمن دائماً — خالٍ من الجلوتين طبيعياً</li>
-        <li>ابحث عن ملصق <strong>GF</strong> أو <strong>글루텐프리</strong> في المتاجر</li>
-        <li>احمل ورقة مكتوب عليها: <em>저는 글루텐 불내증이 있어요</em></li>
+    <div style="margin-top:1rem;padding:.85rem;background:#fef9c3;border-radius:10px">
+      <div style="font-weight:700;font-size:.82rem;color:#713f12;margin-bottom:.5rem">💡 نصائح عملية</div>
+      <ul style="margin:0;padding-right:1.1rem;font-size:.78rem;color:#92400e;line-height:1.9">
+        <li>اطلب <strong>tamari (타마리)</strong> بدلاً من صلصة الصويا — تحتوي على قمح</li>
+        <li>تتوك كعك الأرز <strong>آمن دائماً</strong> — خالٍ من الجلوتين طبيعياً</li>
+        <li>ابحث عن ملصق <strong>글루텐프리</strong> (= GF) في المتاجر</li>
+        <li>انتبه لـ: رامن نودل عادي، ماندو، توكبوكي بصلصة تقليدية</li>
+        <li>احمل بطاقة: <em>저는 글루텐 불내증이 있어요</em> — (أنا مصاب بحساسية الجلوتين)</li>
       </ul>
+    </div>`;
+
+  const refs = `
+    <div style="margin-top:1rem">
+      <div style="font-size:.7rem;font-weight:700;color:#94a3b8;margin-bottom:.45rem">📚 مراجع وروابط مفيدة</div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+        <a class="guide-ref-chip" href="https://www.celiac.com/gluten-free/Korea/" target="_blank">🌐 Celiac.com — كوريا</a>
+        <a class="guide-ref-chip" href="https://glutenfreepassport.com" target="_blank">✈️ GlutenFreePassport</a>
+        <a class="guide-ref-chip" href="https://www.coupang.com/np/search?q=%EA%B8%80%EB%A3%A8%ED%85%90%ED%94%84%EB%A6%AC" target="_blank">🛒 Coupang — بحث GF</a>
+        <a class="guide-ref-chip" href="https://english.visitkorea.or.kr/enu/FOD/FO_ENG_1_1.jsp" target="_blank">🍽️ Korea Tourism Org</a>
+        <a class="guide-ref-chip" href="https://www.happycow.net/asia/south_korea/" target="_blank">🥗 HappyCow Korea</a>
+      </div>
     </div>`;
 
   const existing = document.getElementById('gf-guide-overlay');
@@ -8019,26 +8124,302 @@ function _showGFGuide() {
 
   const overlay = document.createElement('div');
   overlay.id = 'gf-guide-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9000;display:flex;align-items:flex-end;justify-content:center';
+  overlay.className = 'flt-sheet-overlay';
   overlay.innerHTML = `
-    <div style="background:#fff;border-radius:20px 20px 0 0;padding:1.5rem 1.25rem 2rem;width:100%;max-width:520px;direction:rtl;font-family:system-ui;max-height:80vh;overflow-y:auto">
-      <div style="width:40px;height:4px;background:#fde047;border-radius:2px;margin:0 auto 1.1rem"></div>
+    <div class="flt-sheet-box">
+      <div class="flt-sheet-handle"></div>
       <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem">
-        <span style="font-size:1.6rem">🌾</span>
+        <span style="font-size:1.7rem">🌾</span>
         <div>
-          <div style="font-size:1.15rem;font-weight:700;color:#713f12">دليل الخالي من الجلوتين</div>
-          <div style="font-size:.78rem;color:#a16207">${items.length} موقع موثوق</div>
+          <div style="font-size:1.1rem;font-weight:700;color:#713f12">دليل الخالي من الجلوتين</div>
+          <div style="font-size:.76rem;color:#a16207">${items.length} موقع موثوق في المكتبة</div>
         </div>
+        <button onclick="document.getElementById('gf-guide-overlay').remove()" style="margin-right:auto;background:none;border:0;cursor:pointer;color:#94a3b8;font-size:1.3rem;line-height:1;padding:0">✕</button>
       </div>
-      ${itemsHtml}
+      ${items.length ? `
+        <div style="font-size:.72rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.5rem">📍 مواقع GF في المكتبة</div>
+        ${itemsHtml}` : '<div style="font-size:.85rem;color:#94a3b8;text-align:center;padding:1rem">لا توجد مواقع GF في المكتبة المرتبطة حالياً</div>'}
+      ${gfProducts}
+      ${gfSweets}
       ${tips}
+      ${refs}
       <button onclick="document.getElementById('gf-guide-overlay').remove()"
-              style="width:100%;margin-top:1.1rem;padding:.75rem;background:#0f172a;color:#fff;border:0;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;font-family:inherit">
+              style="width:100%;margin-top:1.25rem;padding:.75rem;background:#0f172a;color:#fff;border:0;border-radius:12px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit">
         إغلاق
       </button>
     </div>`;
   overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
   document.body.appendChild(overlay);
+}
+
+function _showHalalGuide() {
+  const items = (typeof allLib==='function'?allLib():[]).filter(x=>x.halal);
+  const LCN = (typeof LIB_CITY_NAMES!=='undefined'?LIB_CITY_NAMES:{});
+  const byCity = {};
+  items.forEach(x=>{ const c=x.city||'other'; (byCity[c]=byCity[c]||[]).push(x); });
+
+  const itemsHtml = Object.entries(byCity).map(([cid,its])=>`
+    <div style="margin-bottom:.9rem">
+      <div style="font-size:.7rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.35rem">${LCN[cid]||cid}</div>
+      ${its.map(i=>`
+        <div style="display:flex;align-items:center;gap:.5rem;padding:.35rem 0;border-bottom:1px solid #dcfce7">
+          <span style="font-size:1.05rem">${i.icon||'🍽️'}</span>
+          <span style="font-size:.84rem;font-weight:600;flex:1;color:#1e293b">${i.name}</span>
+          <span style="font-size:.68rem;color:#166534;background:#dcfce7;border-radius:6px;padding:.1rem .35rem">${i.area||''}</span>
+        </div>`).join('')}
+    </div>`).join('');
+
+  const halalRests = `
+    <div style="margin-top:1rem">
+      <div style="font-size:.72rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.5rem">🕌 مطاعم حلال معروفة (كوريا)</div>
+      <div class="guide-product-card guide-product-hl">
+        <span class="guide-product-icon">🍖</span>
+        <div style="flex:1"><div class="guide-product-name">Madinah Restaurant</div><div class="guide-product-where">إيتيوون، سيول · عربي / حلال معتمد KMF</div></div>
+        <a class="guide-product-search" href="https://www.google.com/maps/search/Madinah+restaurant+Itaewon+Seoul" target="_blank">خريطة ↗</a>
+      </div>
+      <div class="guide-product-card guide-product-hl">
+        <span class="guide-product-icon">🍗</span>
+        <div style="flex:1"><div class="guide-product-name">The Halal Guys Korea</div><div class="guide-product-where">إيتيوون · سلسلة أمريكية حلال عالمية</div></div>
+        <a class="guide-product-search" href="https://www.google.com/maps/search/Halal+Guys+Itaewon" target="_blank">خريطة ↗</a>
+      </div>
+      <div class="guide-product-card guide-product-hl">
+        <span class="guide-product-icon">🥘</span>
+        <div style="flex:1"><div class="guide-product-name">EID Halal Korean</div><div class="guide-product-where">إيتيوون · أطباق كورية أصيلة حلال</div></div>
+        <a class="guide-product-search" href="https://www.google.com/maps/search/EID+halal+Korean+Itaewon" target="_blank">خريطة ↗</a>
+      </div>
+      <div class="guide-product-card guide-product-hl">
+        <span class="guide-product-icon">🍗</span>
+        <div style="flex:1"><div class="guide-product-name">Hongdae Halal Chicken</div><div class="guide-product-where">هونغدي، سيول · دجاج حلال في حي الشباب</div></div>
+        <a class="guide-product-search" href="https://www.google.com/maps/search/halal+chicken+Hongdae+Seoul" target="_blank">خريطة ↗</a>
+      </div>
+      <div class="guide-product-card guide-product-hl">
+        <span class="guide-product-icon">🍖</span>
+        <div style="flex:1"><div class="guide-product-name">Songdo Halal Chicken (بوسان)</div><div class="guide-product-where">بوسان · حلال في المنطقة السياحية</div></div>
+        <a class="guide-product-search" href="https://www.google.com/maps/search/halal+food+Busan+Korea" target="_blank">خريطة ↗</a>
+      </div>
+    </div>`;
+
+  const tips = `
+    <div style="margin-top:1rem;padding:.85rem;background:#dcfce7;border-radius:10px">
+      <div style="font-weight:700;font-size:.82rem;color:#14532d;margin-bottom:.5rem">💡 نصائح عملية</div>
+      <ul style="margin:0;padding-right:1.1rem;font-size:.78rem;color:#166534;line-height:1.9">
+        <li>منطقة <strong>إيتيوون (Itaewon)</strong> هي مركز الطعام الحلال في سيول</li>
+        <li>ابحث في Naver Maps بـ <strong>"할랄"</strong> (حلال) أو <strong>"무슬림"</strong> (مسلم)</li>
+        <li>تطبيق <strong>HalalTrip</strong> يعرض المطاعم المعتمدة بالقرب منك</li>
+        <li>المأكولات البحرية الكورية آمنة عموماً — تحقق من الصلصات</li>
+        <li>كيمتشي يحتوي أحياناً على معجون روبيان — اسأل قبل الطلب</li>
+      </ul>
+    </div>`;
+
+  const refs = `
+    <div style="margin-top:1rem">
+      <div style="font-size:.7rem;font-weight:700;color:#94a3b8;margin-bottom:.45rem">📚 مراجع وروابط موثوقة</div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+        <a class="guide-ref-chip" href="https://www.koreamuslim.kr" target="_blank">🕌 Korea Muslim Federation</a>
+        <a class="guide-ref-chip" href="https://www.halaltrip.com/halal-food/country/south-korea/" target="_blank">🍽️ HalalTrip Korea</a>
+        <a class="guide-ref-chip" href="https://www.zabihah.com/reg/Korea" target="_blank">📍 Zabihah.com — كوريا</a>
+        <a class="guide-ref-chip" href="https://english.visitkorea.or.kr/enu/FOD/FO_ENG_1_1.jsp" target="_blank">🇰🇷 Korea Tourism Org</a>
+        <a class="guide-ref-chip" href="https://www.muslimkorea.net" target="_blank">🌐 Muslim Korea Network</a>
+      </div>
+    </div>`;
+
+  const existing = document.getElementById('halal-guide-overlay');
+  if(existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'halal-guide-overlay';
+  overlay.className = 'flt-sheet-overlay';
+  overlay.innerHTML = `
+    <div class="flt-sheet-box">
+      <div class="flt-sheet-handle"></div>
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem">
+        <span style="font-size:1.7rem">🥩</span>
+        <div>
+          <div style="font-size:1.1rem;font-weight:700;color:#14532d">دليل الطعام الحلال</div>
+          <div style="font-size:.76rem;color:#166534">${items.length} موقع حلال في المكتبة</div>
+        </div>
+        <button onclick="document.getElementById('halal-guide-overlay').remove()" style="margin-right:auto;background:none;border:0;cursor:pointer;color:#94a3b8;font-size:1.3rem;line-height:1;padding:0">✕</button>
+      </div>
+      ${items.length ? `
+        <div style="font-size:.72rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.5rem">📍 مواقع حلال في المكتبة</div>
+        ${itemsHtml}` : ''}
+      ${halalRests}
+      ${tips}
+      ${refs}
+      <button onclick="document.getElementById('halal-guide-overlay').remove()"
+              style="width:100%;margin-top:1.25rem;padding:.75rem;background:#14532d;color:#fff;border:0;border-radius:12px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit">
+        إغلاق
+      </button>
+    </div>`;
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+
+// ── Library filter sheet ────────────────────────────────────────────────
+function _libFltActiveCount() {
+  const f = state.libFilters;
+  return (f.type !== 'all' ? 1 : 0) + (f.halal ? 1 : 0) + (f.gf ? 1 : 0) + (f.fav ? 1 : 0);
+}
+
+function _syncLibFltBar() {
+  const cnt = _libFltActiveCount();
+  const trigger = document.getElementById('lib-flt-trigger');
+  if(trigger) {
+    trigger.classList.toggle('has-active', cnt > 0);
+    const badge = trigger.querySelector('.lib-flt-badge');
+    if(badge) { badge.textContent = cnt; badge.style.display = cnt > 0 ? 'inline-flex' : 'none'; }
+  }
+  const tagsEl = document.getElementById('lib-flt-tags');
+  if(tagsEl) tagsEl.innerHTML = _buildLibFltTagsHtml();
+}
+
+function _buildLibFltTagsHtml() {
+  const f = state.libFilters;
+  const typeLabels = {food:'مطاعم',attraction:'معالم',entertainment:'ترفيه',shop:'تسوق',mosque:'مساجد',festival:'فعاليات'};
+  const tags = [];
+  if(f.type !== 'all') tags.push(`<span class="lib-flt-tag">${typeLabels[f.type]||f.type}<button onclick="state.libFilters.type='all';renderLibList();_syncLibFltBar()" title="إزالة">×</button></span>`);
+  if(f.halal) tags.push(`<span class="lib-flt-tag">🥩 حلال<button onclick="state.libFilters.halal=false;renderLibList();_syncLibFltBar()" title="إزالة">×</button></span>`);
+  if(f.gf) tags.push(`<span class="lib-flt-tag">🌾 GF<button onclick="state.libFilters.gf=false;renderLibList();_syncLibFltBar()" title="إزالة">×</button></span>`);
+  if(f.fav) tags.push(`<span class="lib-flt-tag">❤️ المفضلة<button onclick="state.libFilters.fav=false;renderLibList();_syncLibFltBar()" title="إزالة">×</button></span>`);
+  return tags.join('');
+}
+
+function _openLibFltSheet() {
+  const existing = document.getElementById('lib-flt-overlay');
+  if(existing) { existing.remove(); return; }
+
+  const all = allLib();
+  const tc = {};
+  ['food','attraction','entertainment','shop','mosque','festival'].forEach(t=>{ tc[t]=all.filter(x=>x.type===t).length; });
+  const total = all.length;
+  const f = state.libFilters;
+
+  const ov = document.createElement('div');
+  ov.id = 'lib-flt-overlay';
+  ov.className = 'flt-sheet-overlay';
+  ov.innerHTML = `
+    <div class="flt-sheet-box">
+      <div class="flt-sheet-handle"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+        <div style="font-size:1rem;font-weight:700;color:#0f172a">تصفية المواقع</div>
+        <button onclick="document.getElementById('lib-flt-overlay').remove();_syncLibFltBar()" style="background:none;border:0;cursor:pointer;color:#94a3b8;font-size:1.2rem;padding:0;line-height:1">✕</button>
+      </div>
+
+      <div class="flt-section-label">النوع</div>
+      <div class="flt-type-grid">
+        <button class="lib-pill flt-type-btn ${f.type==='all'?'act':''}" data-type="all" onclick="_libFltTypeSet('all')">الكل <span class="lib-pill-count">${total}</span></button>
+        <button class="lib-pill flt-type-btn ${f.type==='food'?'act':''}" data-type="food" onclick="_libFltTypeSet('food')">🍽️ مطاعم <span class="lib-pill-count">${tc.food||0}</span></button>
+        <button class="lib-pill flt-type-btn ${f.type==='attraction'?'act':''}" data-type="attraction" onclick="_libFltTypeSet('attraction')">📍 معالم <span class="lib-pill-count">${tc.attraction||0}</span></button>
+        <button class="lib-pill flt-type-btn ${f.type==='entertainment'?'act':''}" data-type="entertainment" onclick="_libFltTypeSet('entertainment')">🎢 ترفيه <span class="lib-pill-count">${tc.entertainment||0}</span></button>
+        <button class="lib-pill flt-type-btn ${f.type==='shop'?'act':''}" data-type="shop" onclick="_libFltTypeSet('shop')">🛍️ تسوق <span class="lib-pill-count">${tc.shop||0}</span></button>
+        <button class="lib-pill flt-type-btn ${f.type==='mosque'?'act':''}" data-type="mosque" onclick="_libFltTypeSet('mosque')">🕌 مساجد <span class="lib-pill-count">${tc.mosque||0}</span></button>
+        <button class="lib-pill flt-type-btn ${f.type==='festival'?'act':''}" data-type="festival" onclick="_libFltTypeSet('festival')">🎉 فعاليات <span class="lib-pill-count">${tc.festival||0}</span></button>
+      </div>
+
+      <div class="flt-section-label">ميزات</div>
+      <div class="flt-toggle-row">
+        <button class="lib-toggle flt-feat-btn ${f.halal?'act-grn':''}" data-feat="halal" onclick="_libFltToggle('halal','act-grn')">🥩 حلال</button>
+        <button class="lib-toggle flt-feat-btn ${f.gf?'act-gld':''}" data-feat="gf" onclick="_libFltToggle('gf','act-gld')">🌾 خالٍ من الجلوتين</button>
+        <button class="lib-toggle flt-feat-btn ${f.fav?'act-red':''}" data-feat="fav" onclick="_libFltToggle('fav','act-red')">❤️ المفضلة</button>
+      </div>
+
+      <div class="flt-section-label">الترتيب</div>
+      <select class="lib-sort-sel" style="width:100%;padding:.5rem .7rem;margin-bottom:.5rem" onchange="state.libFilters.sort=this.value;renderLibList()">
+        <option value="default" ${f.sort==='default'?'selected':''}>افتراضي</option>
+        <option value="name"    ${f.sort==='name'?'selected':''}>أ-ي</option>
+        <option value="city"    ${f.sort==='city'?'selected':''}>المدينة</option>
+        <option value="type"    ${f.sort==='type'?'selected':''}>النوع</option>
+      </select>
+
+      <button class="flt-clear-btn" onclick="state.libFilters={city:state.libFilters.city,type:'all',halal:false,gf:false,fav:false,q:state.libFilters.q,sort:'default'};renderLibList();_syncLibFltBar();document.getElementById('lib-flt-overlay').remove()">
+        🗑️ مسح كل الفلاتر
+      </button>
+    </div>`;
+  ov.addEventListener('click', e=>{ if(e.target===ov){ ov.remove(); _syncLibFltBar(); }});
+  document.body.appendChild(ov);
+}
+
+function _libFltTypeSet(t) {
+  state.libFilters.type = t;
+  renderLibList();
+  _syncLibFltBar();
+  document.querySelectorAll('.flt-type-btn').forEach(b => b.classList.toggle('act', b.dataset.type === t));
+}
+
+function _libFltToggle(feat, colorClass) {
+  state.libFilters[feat] = !state.libFilters[feat];
+  renderLibList();
+  _syncLibFltBar();
+  const btn = document.querySelector(`.flt-feat-btn[data-feat="${feat}"]`);
+  if(btn) btn.className = 'lib-toggle flt-feat-btn' + (state.libFilters[feat] ? ' '+colorClass : '');
+}
+
+// ── Map filter sheet ─────────────────────────────────────────────────────
+function _openMapCitySheet() {
+  const existing = document.getElementById('map-city-overlay');
+  if(existing) { existing.remove(); return; }
+  const cities = isKoreaTrip() ? CITIES : getTripCities();
+  const ov = document.createElement('div');
+  ov.id = 'map-city-overlay';
+  ov.className = 'flt-sheet-overlay';
+  ov.innerHTML = `
+    <div class="flt-sheet-box">
+      <div class="flt-sheet-handle"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem">
+        <div style="font-size:1rem;font-weight:700;color:#0f172a">اختر المدينة</div>
+        <button onclick="document.getElementById('map-city-overlay').remove()" style="background:none;border:0;cursor:pointer;color:#94a3b8;font-size:1.2rem;padding:0;line-height:1">✕</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+        <button class="lib-pill ${state.mapCity==='all'?'act':''}" onclick="state.mapCity='all';drawMarkers();_syncMapCityBtn();document.getElementById('map-city-overlay').remove()">🗺️ كل المدن</button>
+        ${cities.map(c=>`<button class="lib-pill ${state.mapCity===c.id?'act':''}" onclick="state.mapCity='${c.id}';${isKoreaTrip()?`flyToCity('${c.id}');`:''}drawMarkers();_syncMapCityBtn();document.getElementById('map-city-overlay').remove()">${c.name}</button>`).join('')}
+      </div>
+    </div>`;
+  ov.addEventListener('click', e=>{ if(e.target===ov) ov.remove(); });
+  document.body.appendChild(ov);
+}
+
+function _openMapLayerSheet() {
+  const existing = document.getElementById('map-layer-overlay');
+  if(existing) { existing.remove(); return; }
+  const layers = [["plan","📅 الجدول"],["food","🍽️ مطاعم"],["attraction","📍 معالم"],["entertainment","🎢 ترفيه"],["mosque","🕌 مساجد"],["shop","🛍️ تسوق"],["festival","🎉 فعاليات"],["custom","⭐ مخصص"]];
+  const ov = document.createElement('div');
+  ov.id = 'map-layer-overlay';
+  ov.className = 'flt-sheet-overlay';
+  ov.innerHTML = `
+    <div class="flt-sheet-box">
+      <div class="flt-sheet-handle"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem">
+        <div style="font-size:1rem;font-weight:700;color:#0f172a">طبقات الخريطة</div>
+        <button onclick="document.getElementById('map-layer-overlay').remove()" style="background:none;border:0;cursor:pointer;color:#94a3b8;font-size:1.2rem;padding:0;line-height:1">✕</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+        ${layers.map(([k,lbl])=>`<button class="map-layer-pill map-lyr-btn ${state.mapLayers[k]?'act':''}" data-layer="${k}" onclick="state.mapLayers['${k}']=!state.mapLayers['${k}'];drawMarkers();_syncMapLayerBtn();this.classList.toggle('act',state.mapLayers['${k}'])">${lbl}</button>`).join('')}
+      </div>
+      <div style="display:flex;gap:.4rem;margin-top:.85rem">
+        <button class="lib-toggle" style="flex:1" onclick="Object.keys(state.mapLayers).forEach(k=>state.mapLayers[k]=true);drawMarkers();_syncMapLayerBtn();document.querySelectorAll('.map-lyr-btn').forEach(b=>b.classList.add('act'))">تحديد الكل</button>
+        <button class="lib-toggle" style="flex:1" onclick="Object.keys(state.mapLayers).forEach(k=>state.mapLayers[k]=false);drawMarkers();_syncMapLayerBtn();document.querySelectorAll('.map-lyr-btn').forEach(b=>b.classList.remove('act'))">إلغاء الكل</button>
+      </div>
+    </div>`;
+  ov.addEventListener('click', e=>{ if(e.target===ov) ov.remove(); });
+  document.body.appendChild(ov);
+}
+
+function _syncMapCityBtn() {
+  const btn = document.getElementById('map-city-btn');
+  if(!btn) return;
+  const cities = isKoreaTrip() ? CITIES : getTripCities();
+  const found = cities.find(c=>c.id===state.mapCity);
+  btn.textContent = (found ? found.name : 'كل المدن') + ' ▾';
+  btn.classList.toggle('has-active', state.mapCity !== 'all');
+}
+
+function _syncMapLayerBtn() {
+  const btn = document.getElementById('map-layer-btn');
+  if(!btn) return;
+  const on = Object.values(state.mapLayers).filter(Boolean).length;
+  const total = Object.keys(state.mapLayers).length;
+  btn.innerHTML = `طبقات (${on}/${total}) ▾`;
+  btn.classList.toggle('has-active', on < total);
 }
 
 function renderLibrary() {
@@ -8275,36 +8656,40 @@ function renderLibrary() {
         });
         const totalCount = libAll2.length;
         const gfItemCount = libAll2.filter(x=>x.gf).length;
-        return `<button class="gf-guide-btn" onclick="_showGFGuide()">
-  <span style="font-size:1.4rem">🌾</span>
-  <div style="flex:1;text-align:right">
-    <div class="gf-guide-title">دليل الخالي من الجلوتين</div>
-    <div class="gf-guide-sub">${gfItemCount} موقع مناسب · نصائح عملية للسفراء</div>
-  </div>
-  <span style="color:#a16207;font-size:1rem">←</span>
-</button>
-<div class="lib-filters-v2">
-  <div class="lib-flt-scroll">
-    <button class="lib-pill ${state.libFilters.type==='all'?'act':''}" onclick="state.libFilters.type='all';renderLibList()">الكل <span class="lib-pill-count">${totalCount}</span></button>
-    <button class="lib-pill ${state.libFilters.type==='food'?'act':''}" onclick="state.libFilters.type='food';renderLibList()">🍽️ طعام <span class="lib-pill-count">${typeCounts.food||0}</span></button>
-    <button class="lib-pill ${state.libFilters.type==='attraction'?'act':''}" onclick="state.libFilters.type='attraction';renderLibList()">📍 معالم <span class="lib-pill-count">${typeCounts.attraction||0}</span></button>
-    <button class="lib-pill ${state.libFilters.type==='entertainment'?'act':''}" onclick="state.libFilters.type='entertainment';renderLibList()">🎢 ترفيه <span class="lib-pill-count">${typeCounts.entertainment||0}</span></button>
-    <button class="lib-pill ${state.libFilters.type==='shop'?'act':''}" onclick="state.libFilters.type='shop';renderLibList()">🛍️ تسوق <span class="lib-pill-count">${typeCounts.shop||0}</span></button>
-    <button class="lib-pill ${state.libFilters.type==='mosque'?'act':''}" onclick="state.libFilters.type='mosque';renderLibList()">🕌 مساجد <span class="lib-pill-count">${typeCounts.mosque||0}</span></button>
-    <button class="lib-pill ${state.libFilters.type==='festival'?'act':''}" onclick="state.libFilters.type='festival';renderLibList()">🎉 فعاليات <span class="lib-pill-count">${typeCounts.festival||0}</span></button>
-  </div>
-  <div class="lib-flt-row2">
-    <button class="lib-toggle ${state.libFilters.halal?'act-grn':''}" onclick="state.libFilters.halal=!state.libFilters.halal;renderLibList()">🥩 حلال</button>
-    <button class="lib-toggle ${state.libFilters.gf?'act-gld':''}" onclick="state.libFilters.gf=!state.libFilters.gf;renderLibList()">🌾 GF</button>
-    <button class="lib-toggle ${state.libFilters.fav?'act-red':''}" onclick="state.libFilters.fav=!state.libFilters.fav;renderLibList()">❤️ المفضلة</button>
-    <span class="lib-flt-spacer"></span>
-    <select class="lib-sort-sel" onchange="state.libFilters.sort=this.value;renderLibList()">
-      <option value="default" ${state.libFilters.sort==='default'?'selected':''}>افتراضي</option>
-      <option value="name"    ${state.libFilters.sort==='name'?'selected':''}>أ-ي</option>
-      <option value="city"    ${state.libFilters.sort==='city'?'selected':''}>المدينة</option>
-      <option value="type"    ${state.libFilters.sort==='type'?'selected':''}>النوع</option>
-    </select>
-  </div>
+        const activeCount = _libFltActiveCount();
+        return `
+<div class="guide-btn-row">
+  <button class="guide-btn guide-btn-gf" onclick="_showGFGuide()">
+    <span style="font-size:1.5rem">🌾</span>
+    <div class="guide-btn-inner">
+      <div class="guide-btn-title">دليل خالٍ من الجلوتين</div>
+      <div class="guide-btn-sub">${gfItemCount} موقع · منتجات · مراجع</div>
+    </div>
+    <span style="color:#a16207">←</span>
+  </button>
+  <button class="guide-btn guide-btn-hl" onclick="_showHalalGuide()">
+    <span style="font-size:1.5rem">🥩</span>
+    <div class="guide-btn-inner">
+      <div class="guide-btn-title">دليل الطعام الحلال</div>
+      <div class="guide-btn-sub">${libAll2.filter(x=>x.halal).length} موقع · مطاعم · مراجع</div>
+    </div>
+    <span style="color:#166534">←</span>
+  </button>
+</div>
+<div class="lib-flt-bar">
+  <button id="lib-flt-trigger" class="lib-flt-trigger ${activeCount>0?'has-active':''}" onclick="_openLibFltSheet()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+    تصفية
+    <span class="lib-flt-badge" style="display:${activeCount>0?'inline-flex':'none'}">${activeCount}</span>
+  </button>
+  <span id="lib-flt-tags">${_buildLibFltTagsHtml()}</span>
+  <span class="lib-flt-spacer"></span>
+  <select class="lib-sort-sel" onchange="state.libFilters.sort=this.value;renderLibList()">
+    <option value="default" ${state.libFilters.sort==='default'?'selected':''}>افتراضي</option>
+    <option value="name"    ${state.libFilters.sort==='name'?'selected':''}>أ-ي</option>
+    <option value="city"    ${state.libFilters.sort==='city'?'selected':''}>المدينة</option>
+    <option value="type"    ${state.libFilters.sort==='type'?'selected':''}>النوع</option>
+  </select>
 </div>`;
       })()}
     </div>
@@ -8549,29 +8934,20 @@ function renderMapSec() {
       <p>اعرض كل مواقع المكتبة والجدول على الخريطة</p>
     </div>
 
-    <div class="map-flt-row">
-      <button class="lib-pill ${state.mapCity === 'all' ? 'act' : ''}" onclick="state.mapCity='all';drawMarkers()">كل المدن</button>
-      ${isKoreaTrip()
-        ? CITIES.map(c => `<button class="lib-pill ${state.mapCity === c.id ? 'act' : ''}" onclick="state.mapCity='${c.id}';flyToCity('${c.id}');drawMarkers()">${c.name}</button>`).join('')
-        : getTripCities().map(c => `<button class="lib-pill ${state.mapCity === c.id ? 'act' : ''}" onclick="state.mapCity='${c.id}';drawMarkers()">${c.name}</button>`).join('')}
-    </div>
-
-    <div class="map-flt-row" style="margin-top:0.4rem">
-      <span style="font-size:0.72rem;color:#94a3b8;flex-shrink:0">الطبقات:</span>
-      ${[
-        ["plan","📅 الجدول"],
-        ["food","🍽️ مطاعم"],
-        ["attraction","📍 معالم"],
-        ["entertainment","🎢 ترفيه"],
-        ["mosque","🕌 مساجد"],
-        ["shop","🛍️ تسوق"],
-        ["festival","🎉 فعاليات"],
-        ["custom","⭐ مخصص"]
-      ].map(([k, lbl]) => `
-        <button class="map-layer-pill ${state.mapLayers[k] ? 'act' : ''}" onclick="state.mapLayers['${k}']=!state.mapLayers['${k}'];drawMarkers()">
-          ${lbl}
-        </button>
-      `).join('')}
+    <div class="map-flt-compact">
+      ${(()=>{
+        const cities = isKoreaTrip() ? CITIES : getTripCities();
+        const activeCity = cities.find(c=>c.id===state.mapCity);
+        const activeLayers = Object.values(state.mapLayers).filter(Boolean).length;
+        const totalLayers = Object.keys(state.mapLayers).length;
+        return `
+          <button id="map-city-btn" class="lib-flt-trigger ${state.mapCity!=='all'?'has-active':''}" onclick="_openMapCitySheet()">
+            🏙️ ${activeCity ? activeCity.name : 'كل المدن'} ▾
+          </button>
+          <button id="map-layer-btn" class="lib-flt-trigger ${activeLayers<totalLayers?'has-active':''}" onclick="_openMapLayerSheet()">
+            طبقات (${activeLayers}/${totalLayers}) ▾
+          </button>`;
+      })()}
     </div>
 
     <div class="map-wrap"><div id="tripmap"></div></div>
