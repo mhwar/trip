@@ -2686,13 +2686,14 @@ body.perms-view, body.perms-tasks { padding-top: 32px !important; }
 
 <!-- Real login bar (hidden once authenticated). Inline so it works even if main JS fails. -->
 <div id="auth-bar" style="position:fixed;top:0;left:0;right:0;background:#0ea5e9;color:#fff;padding:0.6rem 0.75rem;z-index:9999;display:flex;gap:0.4rem;align-items:center;justify-content:center;flex-wrap:wrap;font-family:system-ui,sans-serif;direction:rtl;box-shadow:0 2px 8px rgba(0,0,0,0.15)">
-  <span style="font-size:0.85rem;font-weight:600">🔐 تسجيل دخول:</span>
+  <span style="font-size:0.85rem;font-weight:600">🔐 الإدارة:</span>
   <input id="auth-bar-email" type="email" placeholder="البريد الإلكتروني" autocomplete="email" inputmode="email"
-         style="padding:0.45rem 0.6rem;border-radius:6px;border:0;font-size:0.9rem;direction:ltr;min-width:180px">
+         style="padding:0.45rem 0.6rem;border-radius:6px;border:0;font-size:0.9rem;direction:ltr;min-width:160px">
   <input id="auth-bar-pwd" type="password" placeholder="كلمة المرور" autocomplete="current-password"
-         style="padding:0.45rem 0.6rem;border-radius:6px;border:0;font-size:0.9rem;direction:ltr;min-width:140px">
+         style="padding:0.45rem 0.6rem;border-radius:6px;border:0;font-size:0.9rem;direction:ltr;min-width:120px">
   <button id="auth-bar-btn" onclick="_authBarLogin()" style="padding:0.45rem 1rem;background:#fff;color:#0ea5e9;border:0;border-radius:6px;font-weight:700;cursor:pointer">دخول</button>
-  <span id="auth-bar-msg" style="font-size:0.8rem"></span>
+  <button id="auth-bar-signup" onclick="_authBarSignup()" style="padding:0.45rem 0.85rem;background:#16a34a;color:#fff;border:0;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.85rem">+ إنشاء حساب</button>
+  <span id="auth-bar-msg" style="font-size:0.8rem;width:100%;text-align:center"></span>
 </div>
 <div id="auth-bar-loggedin" style="position:fixed;top:0;left:0;right:0;background:#16a34a;color:#fff;padding:0.4rem 0.75rem;z-index:9999;display:none;align-items:center;justify-content:flex-end;gap:0.6rem;font-family:system-ui,sans-serif;direction:rtl;font-size:0.82rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)">
   <span id="auth-bar-user"></span>
@@ -2711,45 +2712,37 @@ body.perms-view, body.perms-tasks { padding-top: 32px !important; }
       } catch {}
       document.body.style.paddingTop = "32px";
     } else {
-      document.body.style.paddingTop = "56px";
-      // Check if first-run setup is needed
-      fetch("/.netlify/functions/auth?action=setup-check").then(function(r){ return r.json(); }).then(function(j){
-        if (j.needsSetup) {
-          var bar = document.getElementById("auth-bar");
-          if (bar) bar.innerHTML += '<span id="auth-setup-hint" style="font-size:0.78rem;cursor:pointer;text-decoration:underline;margin-right:0.5rem" onclick="_showSetupForm()">أول مرة؟ أنشئ حساب المالك</span>';
-        }
-      }).catch(function(){});
+      document.body.style.paddingTop = "72px";
     }
   })();
-  function _showSetupForm(){
-    var bar = document.getElementById("auth-bar");
-    if (!bar) return;
-    bar.innerHTML = '<span style="font-size:0.85rem;font-weight:600">🔐 إنشاء حساب المالك (أول مرة):</span>' +
-      '<input id="setup-email" type="email" placeholder="البريد الإلكتروني" autocomplete="email" style="padding:0.45rem 0.6rem;border-radius:6px;border:0;font-size:0.9rem;direction:ltr;min-width:160px">' +
-      '<input id="setup-pwd" type="password" placeholder="كلمة المرور (٦+ أحرف)" style="padding:0.45rem 0.6rem;border-radius:6px;border:0;font-size:0.9rem;direction:ltr;min-width:160px">' +
-      '<button id="setup-btn" onclick="_doSetup()" style="padding:0.45rem 1rem;background:#fff;color:#0ea5e9;border:0;border-radius:6px;font-weight:700;cursor:pointer">إنشاء</button>' +
-      '<span id="setup-msg" style="font-size:0.8rem"></span>';
-  }
-  async function _doSetup(){
-    var email = (document.getElementById("setup-email")||{}).value || "";
-    var pwd   = (document.getElementById("setup-pwd")||{}).value || "";
-    var msg   = document.getElementById("setup-msg");
-    var btn   = document.getElementById("setup-btn");
-    if (!email || pwd.length < 6) { if (msg) msg.textContent = "✗ بريد وكلمة مرور (٦+ أحرف) مطلوبان"; return; }
-    if (btn) { btn.disabled = true; btn.textContent = "..."; }
+  async function _authBarSignup(){
+    var email = ((document.getElementById("auth-bar-email")||{}).value || "").trim();
+    var pwd   = (document.getElementById("auth-bar-pwd")||{}).value || "";
+    var msg   = document.getElementById("auth-bar-msg");
+    if (!email || pwd.length < 6) { if (msg) msg.textContent = "✗ أدخل البريد وكلمة مرور (٦ أحرف على الأقل) ثم اضغط 'إنشاء حساب'"; return; }
+    if (msg) msg.textContent = "جاري إنشاء الحساب...";
     try {
       var res = await fetch("/.netlify/functions/auth?action=setup", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email, password: pwd })
       });
       var j = await res.json().catch(function(){ return {}; });
-      if (!res.ok) { if (msg) msg.textContent = "✗ " + (j.error || "فشل"); if (btn) { btn.disabled=false; btn.textContent="إنشاء"; } return; }
+      if (!res.ok) {
+        if (res.status === 409) {
+          if (msg) msg.textContent = "ℹ️ حساب المالك موجود مسبقاً — استخدم زر 'دخول'";
+        } else {
+          if (msg) msg.textContent = "✗ " + (j.error || "فشل");
+        }
+        return;
+      }
       localStorage.setItem("kt2_session_token", j.token);
       localStorage.setItem("kt2_session_user", JSON.stringify(j.user));
       localStorage.setItem("kt2_is_owner", "1");
       if (msg) msg.textContent = "✓ تم إنشاء الحساب — جاري التحويل...";
       setTimeout(function(){ location.href = "/?dashboard=1"; }, 600);
-    } catch (e) { if (msg) msg.textContent = "✗ خطأ"; if (btn) { btn.disabled=false; btn.textContent="إنشاء"; } }
+    } catch (e) {
+      if (msg) msg.textContent = "✗ خطأ في الاتصال";
+    }
   }
   async function _authBarLogin(){
     var emailEl = document.getElementById("auth-bar-email");
