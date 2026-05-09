@@ -763,6 +763,14 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .day-hotel-empty-d { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
 .day-hotel-empty:hover .day-hotel-empty-t { color: var(--accent-dk); }
 .day-hotel-empty svg { color: var(--accent); flex-shrink: 0; }
+/* Hotel suggestions strip */
+.hotel-sugg { margin-top: .4rem; margin-bottom: .85rem; }
+.hotel-sugg-hd { font-size: .65rem; font-weight: 600; color: var(--muted); margin-bottom: .35rem; padding-right: .25rem; }
+.hotel-sugg-btn { display: flex; align-items: center; gap: .45rem; width: 100%; padding: .5rem .7rem; margin-bottom: .3rem; background: var(--paper); border: 1px solid var(--border); border-radius: var(--r-sm); cursor: pointer; font-family: inherit; font-size: .78rem; color: var(--ink); text-align: right; }
+.hotel-sugg-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
+.hotel-sugg-btn .material-symbols-rounded { font-size: .95rem; color: var(--accent); flex-shrink: 0; }
+.hotel-sugg-n { flex: 1; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hotel-sugg-p { font-size: .7rem; color: var(--muted); white-space: nowrap; }
 .day-hotel-out{background:#fef2f2;border-color:#fecaca}
 .day-hotel-out .day-hotel-ic{color:#991b1b}
 .day-hotel-out .day-hotel-n{color:#991b1b}
@@ -1118,8 +1126,8 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .map-flt-row::-webkit-scrollbar{display:none}
 
 /* ── Guide buttons row ── */
-.guide-btn-row{display:flex;gap:.5rem;margin-bottom:.75rem}
-.guide-btn{flex:1;display:flex;align-items:center;gap:.6rem;padding:.65rem .85rem;border-radius:12px;cursor:pointer;font-family:inherit;border:1.5px solid;text-align:right}
+.guide-btn-row{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem}
+.guide-btn{display:flex;align-items:center;gap:.6rem;padding:.65rem .85rem;border-radius:12px;cursor:pointer;font-family:inherit;border:1.5px solid;text-align:right;width:100%}
 .guide-btn-gf{background:linear-gradient(135deg,#fefce8,#fef9c3);border-color:#fde047}
 .guide-btn-hl{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#86efac}
 .guide-btn-tr{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-color:#93c5fd}
@@ -2441,9 +2449,9 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   border-radius: var(--r-sm);
   background: var(--cream);
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.05rem;
   flex-shrink: 0;
 }
+.poi-ic .material-symbols-rounded { font-size: 1.1rem; }
 .poi-info { flex: 1; min-width: 0; }
 .poi-n { font-size: 0.85rem; font-weight: 600; color: var(--ink); line-height: 1.3; }
 .poi-loc { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
@@ -4154,11 +4162,13 @@ const MAT_ICONS = {
   attraction:    'photo_camera',
   mosque:        'mosque',
   rest:          'coffee',
+  cafe:          'coffee',
   shop:          'shopping_bag',
   entertainment: 'movie',
   tour:          'explore',
   festival:      'celebration',
   note:          'edit_note',
+  other:         'place',
 };
 
 // Default empty itinerary (12 days)
@@ -4901,10 +4911,6 @@ function renderItinerary() {
     <div class="day-tabs-wrap">
       <div class="day-tabs" id="day-tabs"></div>
       <div class="day-tabs-actions">
-        <button class="day-tabs-settings" onclick="openTripSettings()" title="إعدادات الرحلة وبياناتها">
-          ⚙️ <span>إعدادات</span>
-          ${getMissingTripFields().length > 0 ? '<span class="badge-dot" title="بيانات ناقصة"></span>' : ''}
-        </button>
         <button class="dt-add" onclick="addNewDay(state.itinerary.length - 1)" title="إضافة يوم في النهاية">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
@@ -5271,6 +5277,20 @@ function renderDayContent() {
       </div>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </button>`;
+    // Hotel suggestions from library
+    const cityHotels = allLib().filter(h => h.type === 'hotel' && (h.city === day.city || h.city === 'all'));
+    if (cityHotels.length) {
+      const top = cityHotels.slice(0, 3);
+      html += `<div class="hotel-sugg">
+        <div class="hotel-sugg-hd">اقتراحات من المكتبة</div>
+        ${top.map(h => `
+          <button class="hotel-sugg-btn" onclick="_pickHotelFromLib('${h.id}', ${state.activeDayIdx})">
+            <span class="material-symbols-rounded">hotel</span>
+            <span class="hotel-sugg-n">${h.name.replace(/^✨ /, '')}</span>
+            ${h.price ? `<span class="hotel-sugg-p">${h.price}</span>` : ''}
+          </button>`).join('')}
+      </div>`;
+    }
   }
 
   // ─── Day-level personal notes ───
@@ -9187,13 +9207,14 @@ function resetFilters() {
 function renderPOI(l) {
   const isFav = state.favs.includes(l.id);
   const c = cityById(l.city);
+  const poiMatIcon = MAT_ICONS[l.type] || 'place';
   return `
     <div class="poi">
       <button class="poi-fav" onclick="toggleFav('${l.id}')" title="${isFav ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}">
         <svg viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       </button>
       <div class="poi-h">
-        <div class="poi-ic t-${l.type}">${l.icon}</div>
+        <div class="poi-ic t-${l.type}"><span class="material-symbols-rounded">${poiMatIcon}</span></div>
         <div class="poi-info">
           <div class="poi-n">${l.name}</div>
           <div class="poi-loc">${c?.name || l.city} · ${l.area}</div>
