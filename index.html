@@ -10491,6 +10491,8 @@ function _showShareUrlModal(url, tripId) {
     </div>
   `);
 }
+
+async function _compressToBase64(str) {
   const bytes = new TextEncoder().encode(str);
   const cs = new CompressionStream("deflate-raw");
   const writer = cs.writable.getWriter();
