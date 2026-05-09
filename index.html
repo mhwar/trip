@@ -984,6 +984,12 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .flt-chip.act-ok { background: var(--ok); color: var(--paper); border-color: var(--ok); }
 .flt-chip-sm { padding: 0.25rem 0.5rem; font-size: 0.68rem; }
 
+/* Filter cleanup for mobile */
+.lib-filters { padding: 0.75rem; background: #fff; border-radius: 12px; border: 1px solid #f1f5f9; margin-bottom: 0.75rem; }
+.lib-filter-row { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+.lib-filter-row:last-child { margin-bottom: 0; }
+.lib-filter-label { font-size: 0.72rem; color: #94a3b8; font-weight: 600; white-space: nowrap; min-width: 2.5rem; }
+
 .flt-result-bar {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0.5rem 0.75rem;
@@ -2246,7 +2252,7 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .lib-city-card.act{background:var(--city-color,#1a4d4a);border-color:var(--city-color,#1a4d4a);color:#fff}
 .lib-city-name{font-weight:700;font-size:.9rem;margin-bottom:.2rem}
 .lib-city-meta{font-size:.72rem;opacity:.8}
-.lib-city-date{font-size:.68rem;opacity:.65;margin-top:.1rem}
+/* lib-city-date removed */
 .lib-city-banner{background:#f8fafc;border-right:3px solid #1a4d4a;padding:.5rem .85rem;border-radius:6px;margin-bottom:.75rem;font-size:.83rem;color:#374151;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
 .lib-city-banner-name{font-weight:700}
 
@@ -8176,28 +8182,30 @@ function renderLibrary() {
         ${state.libFilters.q ? `<button class="flt-search-x" onclick="state.libFilters.q='';renderLibrary()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
       </div>
 
-      <div class="flt-row">
-        <span class="flt-lbl">النوع</span>
-        <button class="flt-chip ${state.libFilters.type === 'all' ? 'act' : ''}" onclick="state.libFilters.type='all';renderLibList()">الكل</button>
-        ${Object.entries(TYPES).filter(([k]) => ['food','attraction','entertainment','shop','mosque','festival'].includes(k)).map(([k, v]) => {
-          const cnt = all.filter(l => l.type === k).length;
-          return `<button class="flt-chip ${state.libFilters.type === k ? 'act' : ''}" onclick="state.libFilters.type='${k}';renderLibList()">${v.icon} ${v.label} <span style="opacity:0.6">${cnt}</span></button>`;
-        }).join('')}
-      </div>
+      <div class="lib-filters">
+        <div class="lib-filter-row">
+          <span class="lib-filter-label">النوع</span>
+          <button class="flt-chip ${state.libFilters.type === 'all' ? 'act' : ''}" onclick="state.libFilters.type='all';renderLibList()">الكل</button>
+          ${Object.entries(TYPES).filter(([k]) => ['food','attraction','entertainment','shop','mosque','festival'].includes(k)).map(([k, v]) => {
+            const cnt = all.filter(l => l.type === k).length;
+            return `<button class="flt-chip ${state.libFilters.type === k ? 'act' : ''}" onclick="state.libFilters.type='${k}';renderLibList()">${v.icon} ${v.label} <span style="opacity:0.6">${cnt}</span></button>`;
+          }).join('')}
+        </div>
 
-      <div class="flt-row">
-        <span class="flt-lbl">الميزات</span>
-        <button class="flt-chip ${state.libFilters.halal ? 'act-ok' : ''}" onclick="state.libFilters.halal=!state.libFilters.halal;renderLibList()">🥩 حلال فقط</button>
-        <button class="flt-chip ${state.libFilters.gf ? 'act-gold' : ''}" onclick="state.libFilters.gf=!state.libFilters.gf;renderLibList()">🌾 GF فقط</button>
-        <button class="flt-chip ${state.libFilters.fav ? 'act-orng' : ''}" onclick="state.libFilters.fav=!state.libFilters.fav;renderLibList()">❤️ المفضلة</button>
-      </div>
+        <div class="lib-filter-row">
+          <span class="lib-filter-label">الميزات</span>
+          <button class="flt-chip ${state.libFilters.halal ? 'act-ok' : ''}" onclick="state.libFilters.halal=!state.libFilters.halal;renderLibList()">🥩 حلال فقط</button>
+          <button class="flt-chip ${state.libFilters.gf ? 'act-gold' : ''}" onclick="state.libFilters.gf=!state.libFilters.gf;renderLibList()">🌾 GF فقط</button>
+          <button class="flt-chip ${state.libFilters.fav ? 'act-orng' : ''}" onclick="state.libFilters.fav=!state.libFilters.fav;renderLibList()">❤️ المفضلة</button>
+        </div>
 
-      <div class="flt-row">
-        <span class="flt-lbl">ترتيب</span>
-        <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'default' ? 'act' : ''}" onclick="state.libFilters.sort='default';renderLibList()">افتراضي</button>
-        <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'name' ? 'act' : ''}" onclick="state.libFilters.sort='name';renderLibList()">أ-ي</button>
-        <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'city' ? 'act' : ''}" onclick="state.libFilters.sort='city';renderLibList()">المدينة</button>
-        <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'type' ? 'act' : ''}" onclick="state.libFilters.sort='type';renderLibList()">النوع</button>
+        <div class="lib-filter-row">
+          <span class="lib-filter-label">ترتيب</span>
+          <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'default' ? 'act' : ''}" onclick="state.libFilters.sort='default';renderLibList()">افتراضي</button>
+          <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'name' ? 'act' : ''}" onclick="state.libFilters.sort='name';renderLibList()">أ-ي</button>
+          <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'city' ? 'act' : ''}" onclick="state.libFilters.sort='city';renderLibList()">المدينة</button>
+          <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'type' ? 'act' : ''}" onclick="state.libFilters.sort='type';renderLibList()">النوع</button>
+        </div>
       </div>
     </div>
 
