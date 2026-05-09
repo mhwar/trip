@@ -201,6 +201,44 @@ exports.handler = async (event) => {
     return json(200, { ok: true, email: invite.email, role: invite.role });
   }
 
+  // ─── setup (first-run: only works when zero users exist) ──────────────
+  if (action === "setup" && event.httpMethod === "POST") {
+    const email = normalizeEmail(body.email);
+    const pwd   = String(body.password || "");
+    if (!email || pwd.length < 6) return json(400, { error: "email and password (min 6 chars) required" });
+
+    // Check if any user already exists — if yes, reject
+    try {
+      const list = await usersStore.list();
+      if (list.blobs && list.blobs.length > 0) {
+        return json(409, { error: "setup already completed — use login instead" });
+      }
+    } catch {}
+
+    const { salt, passwordHash } = hashPassword(pwd);
+    const user = { email, passwordHash, salt, role: "owner", createdAt: new Date().toISOString() };
+    await usersStore.setJSON(email, user);
+
+    const token = newToken();
+    await sessionsStore.setJSON(token, {
+      email,
+      role: "owner",
+      expiresAt: new Date(Date.now() + SESSION_TTL_MS).toISOString()
+    });
+    return json(200, { ok: true, token, user: { email, role: "owner" } });
+  }
+
+  // ─── setup-check (is owner already created?) ──────────────────────────
+  if (action === "setup-check" && event.httpMethod === "GET") {
+    try {
+      const list = await usersStore.list();
+      const hasUsers = list.blobs && list.blobs.length > 0;
+      return json(200, { needsSetup: !hasUsers });
+    } catch {
+      return json(200, { needsSetup: true });
+    }
+  }
+
   return json(400, { error: "unknown action" });
 };
 
