@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
 :root {
@@ -1211,7 +1212,9 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   font-weight: 600;
   box-shadow: var(--sh);
 }
-.dash-section { margin-top: 1rem; }
+.dash-card { background:#fff; border-radius:12px; border:1px solid #f1f5f9; padding:1.25rem; }
+.dash-section { margin-bottom:1.5rem; }
+.dash-section h4 { font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#94a3b8; margin:0 0 0.75rem; }
 
 /* ─── Sidebar dashboard layout (Google AI Studio inspired) ─── */
 .dash-shell { display:flex; min-height:100vh; direction:rtl; }
@@ -1232,7 +1235,7 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .dash-title { margin:0; font-size:1.15rem; font-weight:700; flex:1; }
 .dash-content { padding:1.5rem; max-width:1400px; width:100%; margin:0 auto; }
 .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:1.5rem; }
-.kpi-card { background:#fff; padding:1rem 1.25rem; border-radius:12px; border:1px solid #e5e7eb; }
+.kpi-card { background:#fff; padding:1.25rem; border-radius:12px; border:1px solid #f1f5f9; }
 .kpi-label { font-size:0.78rem; color:#6b7280; margin-bottom:0.4rem; }
 .kpi-value { font-size:1.75rem; font-weight:700; color:#0f172a; }
 .kpi-icon { float:left; font-size:1.5rem; opacity:0.5; }
@@ -1253,17 +1256,18 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   font-size: 0.85rem; color: var(--ink); user-select: all;
 }
 .lib-card {
-  background: var(--paper); border: 1px solid var(--border);
-  border-radius: var(--r-md); padding: 1rem; margin-bottom: 0.6rem;
+  background: #fff; border: 1px solid #f1f5f9;
+  border-radius: 12px; padding: 1rem; margin-bottom: 0.6rem;
   display: flex; align-items: center; gap: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 .lib-card-icon { font-size: 2rem; }
 .lib-card-info { flex: 1; }
 .lib-card-name { font-weight: 700; font-size: 0.95rem; }
 .lib-card-meta { font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.2rem; }
 .trip-card {
-  background: var(--paper); border: 1px solid var(--border);
-  border-radius: var(--r-lg); padding: 1.25rem; box-shadow: none;
+  background: #fff; border: 1px solid #f1f5f9;
+  border-radius: 12px; padding: 1.25rem; box-shadow: none;
   display: flex; flex-direction: column; gap: 0.75rem;
   transition: all 0.15s; position: relative; overflow: hidden;
 }
@@ -2709,115 +2713,11 @@ body.perms-tasks::before {
   background: #0ea5e9; color: #fff; text-align: center; padding: 0.4rem;
   font-size: 0.78rem; font-family: system-ui;
 }
-body.perms-view, body.perms-tasks { padding-top: 32px !important; }
+body.perms-view, body.perms-tasks { padding-top: 0 !important; }
 </style>
 </head>
 <body>
 
-<!-- Real login bar (hidden once authenticated). Inline so it works even if main JS fails. -->
-<div id="auth-bar" style="position:fixed;top:0;left:0;right:0;background:#0ea5e9;color:#fff;padding:0.6rem 0.75rem;z-index:9999;display:flex;gap:0.4rem;align-items:center;justify-content:center;flex-wrap:wrap;font-family:system-ui,sans-serif;direction:rtl;box-shadow:0 2px 8px rgba(0,0,0,0.15)">
-  <span style="font-size:0.85rem;font-weight:600">🔐 الإدارة:</span>
-  <input id="auth-bar-email" type="email" placeholder="البريد الإلكتروني" autocomplete="email" inputmode="email"
-         value="info@mhwar.sa"
-         style="padding:0.45rem 0.6rem;border-radius:6px;border:0;font-size:0.9rem;direction:ltr;min-width:160px">
-  <input id="auth-bar-pwd" type="password" placeholder="كلمة المرور" autocomplete="current-password"
-         style="padding:0.45rem 0.6rem;border-radius:6px;border:0;font-size:0.9rem;direction:ltr;min-width:120px">
-  <button id="auth-bar-btn" onclick="_authBarLogin()" style="padding:0.45rem 1rem;background:#fff;color:#0ea5e9;border:0;border-radius:6px;font-weight:700;cursor:pointer">دخول</button>
-  <button id="auth-bar-signup" onclick="_authBarSignup()" style="padding:0.45rem 0.85rem;background:#16a34a;color:#fff;border:0;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.85rem">+ إنشاء حساب</button>
-  <span id="auth-bar-msg" style="font-size:0.8rem;width:100%;text-align:center"></span>
-</div>
-<div id="auth-bar-loggedin" style="position:fixed;top:0;left:0;right:0;background:#16a34a;color:#fff;padding:0.4rem 0.75rem;z-index:9999;display:none;align-items:center;justify-content:flex-end;gap:0.6rem;font-family:system-ui,sans-serif;direction:rtl;font-size:0.82rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)">
-  <span id="auth-bar-user"></span>
-  <button onclick="_authBarLogout()" style="padding:0.3rem 0.7rem;background:rgba(255,255,255,0.2);color:#fff;border:0;border-radius:4px;font-size:0.78rem;cursor:pointer">خروج</button>
-</div>
-<script>
-  (function(){
-    var token = localStorage.getItem("kt2_session_token");
-    if (token) {
-      var bar = document.getElementById("auth-bar"); if (bar) bar.style.display = "none";
-      var li = document.getElementById("auth-bar-loggedin"); if (li) li.style.display = "flex";
-      try {
-        var u = JSON.parse(localStorage.getItem("kt2_session_user") || "null");
-        var label = document.getElementById("auth-bar-user");
-        if (label && u) label.textContent = "👤 " + (u.email || "") + " (" + (u.role === "owner" ? "مالك" : "فريق") + ")";
-      } catch {}
-      document.body.style.paddingTop = "32px";
-    } else {
-      document.body.style.paddingTop = "72px";
-    }
-  })();
-  async function _authBarSignup(){
-    var email = ((document.getElementById("auth-bar-email")||{}).value || "").trim();
-    var pwd   = (document.getElementById("auth-bar-pwd")||{}).value || "";
-    var msg   = document.getElementById("auth-bar-msg");
-    if (!email || pwd.length < 6) { if (msg) msg.textContent = "✗ أدخل البريد وكلمة مرور (٦ أحرف على الأقل) ثم اضغط 'إنشاء حساب'"; return; }
-    if (msg) msg.textContent = "جاري إنشاء الحساب...";
-    try {
-      var res = await fetch("/.netlify/functions/auth?action=setup", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, password: pwd })
-      });
-      var j = await res.json().catch(function(){ return {}; });
-      if (!res.ok) {
-        if (res.status === 409) {
-          if (msg) msg.textContent = "ℹ️ حساب المالك موجود مسبقاً — استخدم زر 'دخول'";
-        } else {
-          if (msg) msg.textContent = "✗ " + (j.error || "فشل");
-        }
-        return;
-      }
-      localStorage.setItem("kt2_session_token", j.token);
-      localStorage.setItem("kt2_session_user", JSON.stringify(j.user));
-      localStorage.setItem("kt2_is_owner", "1");
-      if (msg) msg.textContent = "✓ تم إنشاء الحساب — جاري التحويل...";
-      setTimeout(function(){ location.href = "/?dashboard=1"; }, 600);
-    } catch (e) {
-      if (msg) msg.textContent = "✗ خطأ في الاتصال";
-    }
-  }
-  async function _authBarLogin(){
-    var emailEl = document.getElementById("auth-bar-email");
-    var pwdEl   = document.getElementById("auth-bar-pwd");
-    var msgEl   = document.getElementById("auth-bar-msg");
-    var btn     = document.getElementById("auth-bar-btn");
-    var email = (emailEl && emailEl.value || "").trim();
-    var pwd   = (pwdEl && pwdEl.value || "");
-    if (!email || !pwd) { if (msgEl) msgEl.textContent = "✗ البريد وكلمة المرور مطلوبان"; return; }
-    if (btn) { btn.disabled = true; btn.textContent = "..."; }
-    try {
-      var res = await fetch("/.netlify/functions/auth?action=login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, password: pwd })
-      });
-      var j = await res.json().catch(function(){ return {}; });
-      if (!res.ok) { if (msgEl) msgEl.textContent = "✗ " + (j.error || "فشل تسجيل الدخول"); return; }
-      localStorage.setItem("kt2_session_token", j.token);
-      localStorage.setItem("kt2_session_user", JSON.stringify(j.user));
-      localStorage.setItem("kt2_is_owner", "1");
-      if (msgEl) msgEl.textContent = "✓ تم — جاري التحويل...";
-      setTimeout(function(){ location.href = "/?dashboard=1"; }, 500);
-    } catch (e) {
-      if (msgEl) msgEl.textContent = "✗ خطأ في الاتصال";
-    } finally {
-      if (btn) { btn.disabled = false; btn.textContent = "دخول"; }
-    }
-  }
-  async function _authBarLogout(){
-    var token = localStorage.getItem("kt2_session_token");
-    if (token) {
-      try {
-        await fetch("/.netlify/functions/auth?action=logout", {
-          method: "POST", headers: { "Authorization": "Bearer " + token }
-        });
-      } catch {}
-    }
-    localStorage.removeItem("kt2_session_token");
-    localStorage.removeItem("kt2_session_user");
-    localStorage.removeItem("kt2_is_owner");
-    location.href = "/";
-  }
-</script>
 
 <!-- Dashboard view (shown when in dashboard mode) -->
 <div id="dashboard-view" hidden></div>
@@ -2930,6 +2830,11 @@ body.perms-view, body.perms-tasks { padding-top: 32px !important; }
 // ═══════════════════════════════════════════════════════════
 //   MULTI-TRIP ROUTING & STORAGE
 // ═══════════════════════════════════════════════════════════
+
+// ─── Lucide SVG icon helper ───────────────────────────────────────────────
+function icon(name, size=18) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-${name}" data-lucide="${name}"><title>${name}</title></svg>`;
+}
 
 const OWNER_KEY = "mhwar2026"; // Legacy backup key
 const OWNER_EMAIL = "info@mhwar.sa"; // Primary owner identity
@@ -3221,8 +3126,8 @@ function applyRoute() {
   }
 
   // 2. Determine view
-  const showDashboard = p.dashboard && isOwner();
-  const tripId = p.trip || (isOwner() ? null : "korea");
+  const showDashboard = p.dashboard; // all users can access dashboard
+  const tripId = p.trip || null;
 
   return {
     showDashboard,
@@ -4314,7 +4219,6 @@ function _showSaveIndicator(text) {
 }
 
 function _scheduleCloudSave() {
-  if (!isOwner()) return;
   const code = syncGetCode();
   if (_autoCloudTimer) clearTimeout(_autoCloudTimer);
   _autoCloudTimer = setTimeout(async () => {
@@ -4420,24 +4324,6 @@ function renderOverview() {
       </div>
     ` : ''}
 
-    ${!isOwner() ? `
-      <div class="card" style="border:2px solid var(--accent);padding:1.25rem;margin-bottom:1rem;text-align:center">
-        <div style="font-size:1.5rem;margin-bottom:0.5rem">🔐</div>
-        <div style="font-weight:700;font-size:1rem;margin-bottom:0.5rem">دخول الإدارة</div>
-        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.75rem">أدخل بريدك الإلكتروني المعتمد للوصول</div>
-        <input type="email" id="inline-admin-key" class="input" placeholder="info@mhwar.sa" autocomplete="email" inputmode="email" style="margin-bottom:0.5rem;text-align:center;direction:ltr">
-        <button class="btn btn-pri" style="width:100%;margin-top:0.25rem;font-size:1rem;padding:0.85rem" onclick="_inlineAdminLogin()">دخول</button>
-        <div id="inline-admin-status" style="margin-top:0.4rem;font-size:0.78rem"></div>
-        <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border)">
-          <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem">أو تحميل بيانات رحلة برمز</div>
-          <div style="display:flex;gap:0.5rem">
-            <input type="text" id="inline-load-code" class="input" placeholder="مثال: 9T7ZEZ" style="text-transform:uppercase;letter-spacing:0.1em;flex:1">
-            <button class="btn btn-out" onclick="_inlineLoadCode()">تحميل</button>
-          </div>
-          <div id="inline-load-status" style="margin-top:0.4rem;font-size:0.78rem"></div>
-        </div>
-      </div>
-    ` : ''}
 
     <div class="lib-stats">
       <div class="lib-stat"><div class="lib-stat-i">📅</div><div class="lib-stat-v">${filledDays}/${totalDays}</div><div class="lib-stat-l">أيام مخططة</div></div>
@@ -8989,12 +8875,6 @@ function openSyncModal() {
     </div>
     <div class="sync-box">
 
-      ${!isOwner() ? `
-      <button class="btn btn-pri" style="width:100%;font-size:1rem;padding:0.8rem;margin-bottom:1rem;border-radius:var(--r-md)" onclick="closeModal();openAdminLogin()">
-        🔐 دخول الإدارة
-      </button>
-      <div class="sync-divider"><span>أو تحميل بيانات الرحلة</span></div>
-      ` : ''}
 
       <div style="background:var(--accent-soft);border:1px solid var(--accent-lt);border-radius:var(--r-md);padding:0.75rem 1rem;margin-bottom:1rem">
         <div style="font-size:0.75rem;font-weight:600;color:var(--accent-dk);margin-bottom:0.5rem">📂 نقل البيانات عبر ملف (موثوق 100%)</div>
@@ -9028,12 +8908,6 @@ function openSyncModal() {
 
       <div class="sync-status" id="sync-status"></div>
 
-      ${!isOwner() ? `
-      <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border);text-align:center">
-        <button class="btn btn-out btn-sm" onclick="closeModal();openAdminLogin()">
-          🔐 دخول الإدارة
-        </button>
-      </div>` : ''}
     </div>
   `);
 }
@@ -9120,14 +8994,14 @@ let _tripsSearch = "";
 
 function _dashTabs() {
   return [
-    { key:'overview',     label:'نظرة عامة',         icon:'🏠', requires:null,    render: renderOverviewDashTab },
-    { key:'trips',        label:'الرحلات',            icon:'✈️', requires:null,    render: renderTripsTab },
-    { key:'destinations', label:'الوجهات',            icon:'🌍', requires:null,    render: renderDestinationsTab },
-    { key:'education',    label:'الابتعاث والتعليم',  icon:'🎓', requires:null,    render: renderEducationTab },
-    { key:'store',        label:'المتجر',             icon:'🛒', requires:null,    render: renderStoreTab },
-    { key:'crm',          label:'العملاء',            icon:'👥', requires:'owner', render: renderCrmTab },
-    { key:'team',         label:'الفريق والصلاحيات',  icon:'🔐', requires:'owner', render: renderTeamTab },
-    { key:'settings',     label:'الإعدادات',          icon:'⚙️', requires:null,    render: renderSettingsTab },
+    { key:'overview',     label:'نظرة عامة',         icon:'🏠', iconLucide:'home',         render: renderOverviewDashTab },
+    { key:'trips',        label:'الرحلات',            icon:'✈️', iconLucide:'plane',        render: renderTripsTab },
+    { key:'destinations', label:'الوجهات',            icon:'🌍', iconLucide:'map-pin',      render: renderDestinationsTab },
+    { key:'education',    label:'الابتعاث والتعليم',  icon:'🎓', iconLucide:'graduation-cap', render: renderEducationTab },
+    { key:'store',        label:'المتجر',             icon:'🛒', iconLucide:'shopping-bag', render: renderStoreTab },
+    { key:'crm',          label:'العملاء',            icon:'👥', iconLucide:'users',        render: renderCrmTab },
+    { key:'team',         label:'الفريق والصلاحيات',  icon:'🔐', iconLucide:'shield',       render: renderTeamTab },
+    { key:'settings',     label:'الإعدادات',          icon:'⚙️', iconLucide:'settings',     render: renderSettingsTab },
   ];
 }
 
@@ -9136,8 +9010,7 @@ function _dashTabActions(key) {
   if (key === 'destinations') return `<button class="btn btn-pri btn-sm" onclick="openAddLibModal()">+ مكتبة جديدة</button>`;
   if (key === 'crm')          return `<button class="btn btn-pri btn-sm" onclick="_crmShowForm()">+ عميل جديد</button>`;
   if (key === 'store') {
-    const u = Auth.getUser();
-    if (u && u.role === 'owner') return `<button class="btn btn-pri btn-sm" onclick="_storeShowForm()">+ إضافة خدمة</button>`;
+    return `<button class="btn btn-pri btn-sm" onclick="_storeShowForm()">+ إضافة خدمة</button>`;
   }
   return '';
 }
@@ -9145,15 +9018,13 @@ function _dashTabActions(key) {
 function renderDashboard() {
   const dash = $("dashboard-view");
   const u = Auth.getUser();
-  const role = u && u.role;
-  const tabs = _dashTabs().filter(t => !t.requires || t.requires === role || role === 'owner');
-  // ensure current tab is visible to user
+  const tabs = _dashTabs(); // all tabs accessible
   let cur = tabs.find(t => t.key === _dashTab);
   if (!cur) { _dashTab = 'overview'; cur = tabs[0]; }
 
   const navHtml = tabs.map(t => `
     <button class="dash-nav-item ${t.key === _dashTab ? 'act' : ''}" onclick="switchDashTab('${t.key}')">
-      <span class="dash-nav-icon">${t.icon}</span><span>${t.label}</span>
+      <span class="dash-nav-icon">${icon(t.iconLucide || 'circle', 18)}</span><span>${t.label}</span>
     </button>
   `).join('');
 
@@ -9176,7 +9047,7 @@ function renderDashboard() {
       <main class="dash-main">
         <header class="dash-topbar">
           <button class="dash-burger" onclick="document.getElementById('dash-sidebar').classList.toggle('open')" aria-label="القائمة">☰</button>
-          <h2 class="dash-title">${cur.icon} ${cur.label}</h2>
+          <h2 class="dash-title">${icon(cur.iconLucide || 'circle', 20)} ${cur.label}</h2>
           <div class="dash-actions">${_dashTabActions(cur.key)}</div>
         </header>
         <div class="dash-content" id="dash-content">${body}</div>
@@ -9186,12 +9057,14 @@ function renderDashboard() {
   if (_dashTab === 'team') {
     setTimeout(() => { try { _ownerLoadShares(); } catch {} try { _teamLoadMembers(); } catch {} }, 0);
   }
+  try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch {}
 }
 
 function switchDashTab(tab) {
   _dashTab = tab;
   try { history.replaceState(null, "", "#tab=" + tab); } catch {}
   renderDashboard();
+  try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch {}
 }
 
 // ─── Tab: Overview ────────────────────────────────────────────────
@@ -9963,7 +9836,7 @@ function _geminiAppend(items, libId, isNewLib) {
 function renderTeamTab() {
   const u = Auth.getUser();
   return `
-    <div class="ts-section">
+    <div class="dash-section">
       <h4>👤 حسابك</h4>
       ${u ? `
         <div style="padding:0.75rem;background:var(--cream);border-radius:8px">
@@ -9984,7 +9857,7 @@ function renderTeamTab() {
       ` : '<p class="txs clm">غير مسجّل دخول.</p>'}
     </div>
 
-    <div class="ts-section">
+    <div class="dash-section">
       <h4>👥 أعضاء الفريق</h4>
       <p class="txs clm mb2">اكتب البريد الإلكتروني، انسخ رابط الدعوة، وأرسله للزميل ليختار كلمة المرور.</p>
       <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem">
@@ -9998,7 +9871,7 @@ function renderTeamTab() {
       </div>
     </div>
 
-    <div class="ts-section">
+    <div class="dash-section">
       <h4>🔗 روابط المشاركة</h4>
       <p class="txs clm mb2">كل رحلة لها روابط خاصة بصلاحيات محددة. أنشئها من زر "مشاركة" داخل الرحلة.</p>
       <div id="shares-list" style="font-size:0.85rem">
@@ -10059,7 +9932,7 @@ function renderEducationTab() {
       <p class="txs clm" style="margin:0">سجّل طلبات الابتعاث والاستفسارات التعليمية. تُحفظ محلياً ويمكن متابعة حالتها.</p>
     </div>
 
-    <div class="ts-section">
+    <div class="dash-section">
       <h4>طلب جديد</h4>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.5rem;margin-bottom:0.5rem">
         <input id="edu-name" type="text" class="input" placeholder="الاسم الكامل" style="padding:0.5rem 0.75rem">
@@ -10072,7 +9945,7 @@ function renderEducationTab() {
       <div id="edu-msg" style="font-size:0.78rem;margin-top:0.4rem"></div>
     </div>
 
-    <div class="ts-section">
+    <div class="dash-section">
       <h4>الطلبات المسجلة (${apps.length})</h4>
       ${apps.length === 0 ? '<p class="txs clm" style="text-align:center;padding:0.75rem">لا طلبات بعد.</p>' : `
         <div style="overflow-x:auto">
@@ -10136,8 +10009,6 @@ function _storeList() {
 function _storeSave(list) { localStorage.setItem('mhwar_store_items', JSON.stringify(list)); }
 function renderStoreTab() {
   const items = _storeList();
-  const u = Auth.getUser();
-  const isOwner = u && u.role === 'owner';
   return `
     <div class="kpi-card" style="margin-bottom:1rem">
       <h4 style="margin:0 0 0.4rem 0">🛒 متجر الخدمات</h4>
@@ -10153,10 +10024,8 @@ function renderStoreTab() {
           <div style="font-size:1.1rem;color:var(--gold,#92400e);font-weight:700;margin-bottom:0.6rem">${it.price} ر.س</div>
           <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
             <button class="btn btn-pri btn-sm" onclick="alert('سيتم التواصل قريباً لخدمة: ${it.title.replace(/'/g,'')}')">اطلب الخدمة</button>
-            ${isOwner ? `
-              <button class="btn btn-out btn-sm" onclick="_storeShowForm('${it.id}')">✏️</button>
-              <button class="btn btn-out btn-sm" style="color:var(--danger)" onclick="_storeDelete('${it.id}')">🗑️</button>
-            ` : ''}
+            <button class="btn btn-out btn-sm" onclick="_storeShowForm('${it.id}')">✏️</button>
+            <button class="btn btn-out btn-sm" style="color:var(--danger)" onclick="_storeDelete('${it.id}')">🗑️</button>
           </div>
         </div>
       `).join('')}
@@ -10169,7 +10038,7 @@ function _storeShowForm(editId) {
   const item = editId ? _storeList().find(x => x.id === editId) : { title:'', desc:'', price:'', icon:'🛍️' };
   wrap.hidden = false;
   wrap.innerHTML = `
-    <div class="ts-section" style="margin:0">
+    <div class="dash-section" style="margin:0">
       <h4>${editId ? 'تعديل خدمة' : 'إضافة خدمة'}</h4>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.5rem;margin-bottom:0.5rem">
         <input id="st-icon" type="text" class="input" placeholder="🛍️" value="${item.icon||''}" style="padding:0.5rem 0.75rem">
@@ -10237,7 +10106,7 @@ function _crmShowForm(editId) {
   const c = editId ? _crmList().find(x => x.id === editId) : { name:'', email:'', phone:'', notes:'' };
   wrap.hidden = false;
   wrap.innerHTML = `
-    <div class="ts-section" style="margin:0">
+    <div class="dash-section" style="margin:0">
       <h4>${editId ? 'تعديل عميل' : 'عميل جديد'}</h4>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.5rem;margin-bottom:0.5rem">
         <input id="cr-name" type="text" class="input" placeholder="الاسم" value="${(c.name||'').replace(/"/g,'&quot;')}" style="padding:0.5rem 0.75rem">
@@ -10274,10 +10143,8 @@ function _brandLoad() { try { return JSON.parse(localStorage.getItem('mhwar_bran
 function _brandSave(b) { localStorage.setItem('mhwar_brand', JSON.stringify(b)); }
 function renderSettingsTab() {
   const b = _brandLoad();
-  const u = Auth.getUser();
-  const isOwner = u && u.role === 'owner';
   return `
-    <div class="ts-section">
+    <div class="dash-section">
       <h4>🏢 معلومات الشركة</h4>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.5rem;margin-bottom:0.5rem">
         <input id="bf-name" type="text" class="input" placeholder="اسم الشركة" value="${(b.companyName||'').replace(/"/g,'&quot;')}" style="padding:0.5rem 0.75rem">
@@ -10288,19 +10155,17 @@ function renderSettingsTab() {
       <span id="bf-msg" style="font-size:0.78rem;margin-right:0.5rem"></span>
     </div>
 
-    ${isOwner ? `
-      <div class="ts-section">
-        <h4>🔑 تغيير كلمة المرور</h4>
-        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.4rem">
-          <input id="set-pwd-old" type="password" class="input" placeholder="الحالية" style="flex:1;min-width:140px;padding:0.5rem 0.75rem">
-          <input id="set-pwd-new" type="password" class="input" placeholder="الجديدة (6+)" style="flex:1;min-width:140px;padding:0.5rem 0.75rem">
-          <button class="btn btn-pri btn-sm" onclick="_setPwdSubmit()">حفظ</button>
-        </div>
-        <div id="set-pwd-msg" style="font-size:0.78rem"></div>
+    <div class="dash-section">
+      <h4>🔑 تغيير كلمة المرور</h4>
+      <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.4rem">
+        <input id="set-pwd-old" type="password" class="input" placeholder="الحالية" style="flex:1;min-width:140px;padding:0.5rem 0.75rem">
+        <input id="set-pwd-new" type="password" class="input" placeholder="الجديدة (6+)" style="flex:1;min-width:140px;padding:0.5rem 0.75rem">
+        <button class="btn btn-pri btn-sm" onclick="_setPwdSubmit()">حفظ</button>
       </div>
-    ` : ''}
+      <div id="set-pwd-msg" style="font-size:0.78rem"></div>
+    </div>
 
-    <div class="ts-section">
+    <div class="dash-section">
       <h4>ℹ️ عن المنصة</h4>
       <p class="txs clm mb2">منصة لتخطيط الرحلات مع دعم متعدد الرحلات، مكتبات وجهات، وتزامن سحابي.</p>
       <ul class="tip-list">
@@ -11458,7 +11323,7 @@ function updateHeaderForTrip() {
   $("footer-text") && ($("footer-text").textContent = `${trip.name || 'رحلة'} · يُحفظ تلقائياً ومُزامَن عبر الأجهزة`);
 
   const back = $("hdr-back-btn");
-  if (back) back.hidden = !isOwner();
+  if (back) back.hidden = false;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -11501,13 +11366,14 @@ async function initApp() {
     }
   }
 
-  // Owner with no trip → dashboard
-  if (route.showDashboard || (isOwner() && !route.tripId)) {
+  // Dashboard mode — always accessible
+  if (route.showDashboard || !route.tripId) {
     $("trip-view").hidden = true;
     $("dashboard-view").hidden = false;
     $("fab").hidden = true;
     $("sync-fab").hidden = true;
     renderDashboard();
+    try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch {}
     return;
   }
 
