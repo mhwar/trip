@@ -2655,38 +2655,106 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   #print-overlay .print-doc { box-shadow: none !important; padding: 1rem 0 !important; }
   .print-close-bar { display: none !important; }
 }
+
+/* ─── Permission-based UI restrictions for shared client links ───────── */
+body.perms-view #fab,
+body.perms-view #sync-fab,
+body.perms-view .hdr-share-btn,
+body.perms-view .hdr-hero-upload { display: none !important; }
+body.perms-view .item-actions,
+body.perms-view .add-item-btn,
+body.perms-view .day-add { display: none !important; }
+body.perms-tasks #fab,
+body.perms-tasks .add-item-btn,
+body.perms-tasks .day-add { display: none !important; }
+body.perms-view::before {
+  content: "👁️ وضع العرض فقط — لا يمكن التعديل";
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9998;
+  background: #6b7280; color: #fff; text-align: center; padding: 0.4rem;
+  font-size: 0.78rem; font-family: system-ui;
+}
+body.perms-tasks::before {
+  content: "✏️ وضع تعديل المهام والملاحظات فقط";
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9998;
+  background: #0ea5e9; color: #fff; text-align: center; padding: 0.4rem;
+  font-size: 0.78rem; font-family: system-ui;
+}
+body.perms-view, body.perms-tasks { padding-top: 32px !important; }
 </style>
 </head>
 <body>
 
-<!-- Always-visible static admin login bar (hidden once admin is set) -->
-<div id="static-admin-bar" style="position:fixed;top:0;left:0;right:0;background:#0ea5e9;color:#fff;padding:0.6rem 0.75rem;z-index:9999;display:flex;gap:0.4rem;align-items:center;justify-content:center;flex-wrap:wrap;font-family:system-ui,sans-serif;direction:rtl;box-shadow:0 2px 8px rgba(0,0,0,0.15)">
-  <span style="font-size:0.85rem;font-weight:600">🔐 دخول الإدارة:</span>
-  <input id="static-admin-email" type="email" placeholder="info@mhwar.sa" autocomplete="email" inputmode="email"
+<!-- Real login bar (hidden once authenticated). Inline so it works even if main JS fails. -->
+<div id="auth-bar" style="position:fixed;top:0;left:0;right:0;background:#0ea5e9;color:#fff;padding:0.6rem 0.75rem;z-index:9999;display:flex;gap:0.4rem;align-items:center;justify-content:center;flex-wrap:wrap;font-family:system-ui,sans-serif;direction:rtl;box-shadow:0 2px 8px rgba(0,0,0,0.15)">
+  <span style="font-size:0.85rem;font-weight:600">🔐 تسجيل دخول:</span>
+  <input id="auth-bar-email" type="email" placeholder="البريد الإلكتروني" autocomplete="email" inputmode="email"
          style="padding:0.45rem 0.6rem;border-radius:6px;border:0;font-size:0.9rem;direction:ltr;min-width:180px">
-  <button onclick="_staticAdminLogin()" style="padding:0.45rem 1rem;background:#fff;color:#0ea5e9;border:0;border-radius:6px;font-weight:700;cursor:pointer">دخول</button>
-  <span id="static-admin-msg" style="font-size:0.8rem"></span>
+  <input id="auth-bar-pwd" type="password" placeholder="كلمة المرور" autocomplete="current-password"
+         style="padding:0.45rem 0.6rem;border-radius:6px;border:0;font-size:0.9rem;direction:ltr;min-width:140px">
+  <button id="auth-bar-btn" onclick="_authBarLogin()" style="padding:0.45rem 1rem;background:#fff;color:#0ea5e9;border:0;border-radius:6px;font-weight:700;cursor:pointer">دخول</button>
+  <span id="auth-bar-msg" style="font-size:0.8rem"></span>
+</div>
+<div id="auth-bar-loggedin" style="position:fixed;top:0;left:0;right:0;background:#16a34a;color:#fff;padding:0.4rem 0.75rem;z-index:9999;display:none;align-items:center;justify-content:flex-end;gap:0.6rem;font-family:system-ui,sans-serif;direction:rtl;font-size:0.82rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)">
+  <span id="auth-bar-user"></span>
+  <button onclick="_authBarLogout()" style="padding:0.3rem 0.7rem;background:rgba(255,255,255,0.2);color:#fff;border:0;border-radius:4px;font-size:0.78rem;cursor:pointer">خروج</button>
 </div>
 <script>
   (function(){
-    if (localStorage.getItem("kt2_is_owner") === "1") {
-      var b = document.getElementById("static-admin-bar"); if (b) b.style.display = "none";
+    var token = localStorage.getItem("kt2_session_token");
+    if (token) {
+      var bar = document.getElementById("auth-bar"); if (bar) bar.style.display = "none";
+      var li = document.getElementById("auth-bar-loggedin"); if (li) li.style.display = "flex";
+      try {
+        var u = JSON.parse(localStorage.getItem("kt2_session_user") || "null");
+        var label = document.getElementById("auth-bar-user");
+        if (label && u) label.textContent = "👤 " + (u.email || "") + " (" + (u.role === "owner" ? "مالك" : "فريق") + ")";
+      } catch {}
+      document.body.style.paddingTop = "32px";
     } else {
-      // push body content down so the bar doesn't cover it
       document.body.style.paddingTop = "56px";
     }
   })();
-  function _staticAdminLogin(){
-    var v = (document.getElementById("static-admin-email")||{}).value || "";
-    var k = String(v).trim().toLowerCase();
-    var msg = document.getElementById("static-admin-msg");
-    if (k === "info@mhwar.sa" || k === "mhwar2026") {
-      localStorage.setItem("kt2_is_owner","1");
-      if (msg) msg.textContent = "✓ تم — جاري التحويل...";
-      setTimeout(function(){ location.href = "/?dashboard=1"; }, 600);
-    } else {
-      if (msg) msg.textContent = "✗ بريد غير صحيح";
+  async function _authBarLogin(){
+    var emailEl = document.getElementById("auth-bar-email");
+    var pwdEl   = document.getElementById("auth-bar-pwd");
+    var msgEl   = document.getElementById("auth-bar-msg");
+    var btn     = document.getElementById("auth-bar-btn");
+    var email = (emailEl && emailEl.value || "").trim();
+    var pwd   = (pwdEl && pwdEl.value || "");
+    if (!email || !pwd) { if (msgEl) msgEl.textContent = "✗ البريد وكلمة المرور مطلوبان"; return; }
+    if (btn) { btn.disabled = true; btn.textContent = "..."; }
+    try {
+      var res = await fetch("/.netlify/functions/auth?action=login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, password: pwd })
+      });
+      var j = await res.json().catch(function(){ return {}; });
+      if (!res.ok) { if (msgEl) msgEl.textContent = "✗ " + (j.error || "فشل تسجيل الدخول"); return; }
+      localStorage.setItem("kt2_session_token", j.token);
+      localStorage.setItem("kt2_session_user", JSON.stringify(j.user));
+      localStorage.setItem("kt2_is_owner", "1");
+      if (msgEl) msgEl.textContent = "✓ تم — جاري التحويل...";
+      setTimeout(function(){ location.href = "/?dashboard=1"; }, 500);
+    } catch (e) {
+      if (msgEl) msgEl.textContent = "✗ خطأ في الاتصال";
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "دخول"; }
     }
+  }
+  async function _authBarLogout(){
+    var token = localStorage.getItem("kt2_session_token");
+    if (token) {
+      try {
+        await fetch("/.netlify/functions/auth?action=logout", {
+          method: "POST", headers: { "Authorization": "Bearer " + token }
+        });
+      } catch {}
+    }
+    localStorage.removeItem("kt2_session_token");
+    localStorage.removeItem("kt2_session_user");
+    localStorage.removeItem("kt2_is_owner");
+    location.href = "/";
   }
 </script>
 
@@ -2819,6 +2887,143 @@ function isValidAccessKey(key) {
   return getAccessKeys().some(x => String(x).trim().toLowerCase() === k);
 }
 
+// ─── Real authentication module (server-validated sessions) ───────────────
+const Auth = {
+  TOKEN_KEY: "kt2_session_token",
+  USER_KEY:  "kt2_session_user",
+
+  getToken()  { return localStorage.getItem(this.TOKEN_KEY) || ""; },
+  getUser()   { try { return JSON.parse(localStorage.getItem(this.USER_KEY) || "null"); } catch { return null; } },
+  isLoggedIn(){ return !!this.getToken(); },
+  isOwner()   { const u = this.getUser(); return u && u.role === "owner"; },
+  isTeam()    { const u = this.getUser(); return u && (u.role === "owner" || u.role === "team"); },
+  setSession(token, user) {
+    localStorage.setItem(this.TOKEN_KEY, token);
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    // Mirror to legacy flag so existing isOwner() checks keep working
+    if (user && (user.role === "owner" || user.role === "team")) {
+      localStorage.setItem("kt2_is_owner", "1");
+    }
+  },
+  clear() {
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_KEY);
+    localStorage.removeItem("kt2_is_owner");
+  },
+
+  async login(email, password) {
+    const res = await fetch("/.netlify/functions/auth?action=login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) return { ok: false, error: j.error || "login failed" };
+    this.setSession(j.token, j.user);
+    return { ok: true, user: j.user };
+  },
+
+  async logout() {
+    const token = this.getToken();
+    if (token) {
+      try {
+        await fetch("/.netlify/functions/auth?action=logout", {
+          method: "POST",
+          headers: { "Authorization": "Bearer " + token }
+        });
+      } catch {}
+    }
+    this.clear();
+  },
+
+  async me() {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const res = await fetch("/.netlify/functions/auth?action=me", {
+        headers: { "Authorization": "Bearer " + token }
+      });
+      if (!res.ok) { this.clear(); return null; }
+      const j = await res.json();
+      if (j.user) localStorage.setItem(this.USER_KEY, JSON.stringify(j.user));
+      return j.user;
+    } catch { return null; }
+  },
+
+  async invite(email) {
+    const token = this.getToken();
+    const res = await fetch("/.netlify/functions/auth?action=invite", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+      body: JSON.stringify({ email })
+    });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) return { ok: false, error: j.error || "invite failed" };
+    return { ok: true, inviteToken: j.inviteToken, email: j.email };
+  },
+
+  async redeemInvite(inviteToken, password) {
+    const res = await fetch("/.netlify/functions/auth?action=redeem", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ inviteToken, password })
+    });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) return { ok: false, error: j.error || "redeem failed" };
+    this.setSession(j.token, j.user);
+    return { ok: true, user: j.user };
+  },
+
+  async inviteInfo(inviteToken) {
+    try {
+      const res = await fetch(`/.netlify/functions/auth?action=invite-info&token=${encodeURIComponent(inviteToken)}`);
+      if (!res.ok) return null;
+      return await res.json();
+    } catch { return null; }
+  },
+
+  async createShare(tripCode, perms, label) {
+    const token = this.getToken();
+    const res = await fetch("/.netlify/functions/share?action=create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+      body: JSON.stringify({ tripCode, perms, label })
+    });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) return { ok: false, error: j.error || "share failed" };
+    return { ok: true, shareToken: j.shareToken, perms: j.perms };
+  },
+
+  async listShares(tripCode) {
+    const token = this.getToken();
+    const url = `/.netlify/functions/share?action=list${tripCode ? "&tripCode=" + encodeURIComponent(tripCode) : ""}`;
+    try {
+      const res = await fetch(url, { headers: { "Authorization": "Bearer " + token } });
+      if (!res.ok) return [];
+      const j = await res.json();
+      return j.shares || [];
+    } catch { return []; }
+  },
+
+  async revokeShare(shareToken) {
+    const token = this.getToken();
+    const res = await fetch("/.netlify/functions/share?action=revoke", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+      body: JSON.stringify({ shareToken })
+    });
+    return res.ok;
+  },
+
+  async resolveShare(shareToken) {
+    try {
+      const res = await fetch(`/.netlify/functions/share?action=resolve&token=${encodeURIComponent(shareToken)}`);
+      if (!res.ok) return null;
+      return await res.json();
+    } catch { return null; }
+  }
+};
+
 const Trip = {
   current: "korea", // current trip ID
 
@@ -2905,7 +3110,9 @@ function getRouteParams() {
     dashboard: u.searchParams.get("dashboard") === "1",
     owner: u.searchParams.get("owner"),
     loadCode: u.searchParams.get("code"),
-    shareData: u.searchParams.get("share")
+    shareData: u.searchParams.get("share"),
+    shareToken: u.searchParams.get("s"),       // new MVP share token
+    inviteToken: u.searchParams.get("invite")  // team invite redemption
   };
 }
 
@@ -2928,7 +3135,14 @@ function applyRoute() {
   const showDashboard = p.dashboard && isOwner();
   const tripId = p.trip || (isOwner() ? null : "korea");
 
-  return { showDashboard, tripId, loadCode: p.loadCode, shareData: p.shareData };
+  return {
+    showDashboard,
+    tripId,
+    loadCode: p.loadCode,
+    shareData: p.shareData,
+    shareToken: p.shareToken,
+    inviteToken: p.inviteToken
+  };
 }
 
 function navTo({ trip, dashboard, code }) {
@@ -8590,10 +8804,15 @@ async function syncSave(code) {
   const fab = $("sync-fab");
   if (fab) { fab.classList.add("saving"); fab.querySelector("span") && (fab.querySelector("span").textContent = "جاري..."); }
   try {
+    const headers = { "Content-Type": "application/json" };
+    const token = Auth.getToken();
+    if (token) headers["Authorization"] = "Bearer " + token;
+    const payload = { code, data: syncGetAllState() };
+    if (window._shareToken) payload.shareToken = window._shareToken;
     const res = await fetch("/.netlify/functions/save", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code, data: syncGetAllState() })
+      headers,
+      body: JSON.stringify(payload)
     });
     return res.ok;
   } catch { return false; }
@@ -8602,9 +8821,13 @@ async function syncSave(code) {
 
 async function syncLoad(code) {
   try {
-    const res = await fetch(`/.netlify/functions/load?code=${encodeURIComponent(code)}`);
+    const headers = {};
+    const token = Auth.getToken();
+    if (token) headers["Authorization"] = "Bearer " + token;
+    const res = await fetch(`/.netlify/functions/load?code=${encodeURIComponent(code)}`, { headers });
     if (!res.ok) return null;
     const json = await res.json();
+    if (json.perms) window._loadedPerms = json.perms;
     return json.data || null;
   } catch { return null; }
 }
@@ -8769,11 +8992,17 @@ function renderDashboard() {
       <div class="dash-section" id="dash-section">${renderDashTabBody(trips)}</div>
     </div>
   `;
+  if (_dashTab === "permissions") {
+    setTimeout(() => { try { _ownerLoadShares(); } catch {} }, 0);
+  }
 }
 
 function switchDashTab(tab) {
   _dashTab = tab;
   renderDashboard();
+  if (tab === "permissions") {
+    setTimeout(() => { try { _ownerLoadShares(); } catch {} }, 0);
+  }
 }
 
 function renderDashTabBody(trips) {
@@ -9488,45 +9717,131 @@ function _geminiAppend(items, libId, isNewLib) {
 }
 
 function renderPermissionsTab() {
-  const keys = getAccessKeys();
-  const baseUrl = location.origin + location.pathname;
+  const u = Auth.getUser();
   return `
     <div style="margin-bottom:1.5rem">
-      <h3 class="fb7 cli mb2">🔐 صلاحية الوصول للداشبورد</h3>
-      <p class="txs clm mb2">يمكنك مشاركة رابط لوحة التحكم مع أشخاص آخرين. لكل شخص رابط بمفتاحه الخاص يمكن إلغاؤه لاحقاً.</p>
+      <h3 class="fb7 cli mb2">🔐 الحسابات والصلاحيات</h3>
+      <p class="txs clm mb2">إدارة الفريق وروابط المشاركة مع العملاء.</p>
     </div>
 
     <div class="ts-section">
-      <h4>👤 مفتاحك الرئيسي (المالك)</h4>
-      <div class="access-key-row">
-        <code>${baseUrl}?owner=${OWNER_KEY}</code>
-        <button class="btn btn-pri btn-sm" onclick="navigator.clipboard?.writeText('${baseUrl}?owner=${OWNER_KEY}');this.textContent='✓';setTimeout(()=>this.textContent='نسخ',1500)">نسخ</button>
-      </div>
-      <p class="txs clm mt1">⚠️ هذا المفتاح يعطي صلاحية كاملة. لا تشاركه إلا مع المالك.</p>
-    </div>
-
-    <div class="ts-section">
-      <h4>🎫 مفاتيح الضيوف (${keys.length})</h4>
-      ${keys.length === 0 ? '<p class="txs clm">لا توجد مفاتيح ضيوف بعد. اضغط "+ مفتاح ضيف جديد" أدناه.</p>' : ''}
-      ${keys.map(k => `
-        <div class="access-key-row">
-          <code>${baseUrl}?owner=${k}</code>
-          <button class="btn btn-out btn-sm" onclick="navigator.clipboard?.writeText('${baseUrl}?owner=${k}');this.textContent='✓';setTimeout(()=>this.textContent='نسخ',1500)">نسخ</button>
-          <button class="btn btn-out btn-sm" style="color:var(--danger)" onclick="revokeAccessKey('${k}')">إلغاء</button>
+      <h4>👤 الحساب الحالي</h4>
+      ${u ? `
+        <div style="padding:0.75rem;background:var(--cream);border-radius:8px">
+          <div style="font-weight:600">${u.email}</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:0.2rem">${u.role === "owner" ? "🌟 مالك (صلاحيات كاملة)" : "👥 عضو فريق"}</div>
         </div>
-      `).join('')}
-      <button class="btn btn-pri btn-sm mt2" onclick="generateAccessKey()">+ مفتاح ضيف جديد</button>
+      ` : '<p class="txs clm">غير مسجّل دخول.</p>'}
     </div>
 
     <div class="ts-section">
-      <h4>☁️ المزامنة عبر الأجهزة</h4>
-      <p class="txs clm mb2">رمز المزامنة الحالي:</p>
-      <div class="access-key-row">
-        <code>${localStorage.getItem("kt2_sync_code") || "(لم يُنشأ بعد - افتح أي رحلة → مشاركة)"}</code>
+      <h4>👥 دعوة عضو فريق جديد</h4>
+      <p class="txs clm mb2">اكتب البريد الإلكتروني، انسخ رابط الدعوة، وأرسله للزميل ليختار كلمة المرور.</p>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem">
+        <input id="invite-email-input" type="email" class="input" placeholder="email@example.com"
+               style="flex:1;min-width:200px;direction:ltr;text-align:left">
+        <button class="btn btn-pri btn-sm" onclick="_ownerCreateInvite()">إنشاء رابط دعوة</button>
       </div>
-      <p class="txs clm mt1">💡 يستخدم هذا الرمز لمزامنة بياناتك تلقائياً مع السحابة على كل جهاز.</p>
+      <div id="invite-result" style="font-size:0.85rem"></div>
+    </div>
+
+    <div class="ts-section">
+      <h4>🔗 روابط مشاركة العملاء</h4>
+      <p class="txs clm mb2">كل رحلة لها روابط خاصة بصلاحيات محددة. أنشئها من زر "مشاركة" داخل الرحلة.</p>
+      <div id="shares-list" style="font-size:0.85rem">
+        <div style="padding:0.75rem;color:var(--muted);text-align:center">جاري التحميل...</div>
+      </div>
     </div>
   `;
+}
+
+async function _ownerCreateInvite() {
+  const inp = document.getElementById("invite-email-input");
+  const res = document.getElementById("invite-result");
+  const email = (inp?.value || "").trim();
+  if (!email) { if (res) res.innerHTML = '<span style="color:var(--err)">✗ أدخل البريد الإلكتروني</span>'; return; }
+  if (res) res.textContent = "جاري الإنشاء...";
+  const out = await Auth.invite(email);
+  if (!out.ok) {
+    if (res) res.innerHTML = `<span style="color:var(--err)">✗ ${out.error}</span>`;
+    return;
+  }
+  const url = `${location.origin}/?invite=${out.inviteToken}`;
+  if (res) res.innerHTML = `
+    <div style="padding:0.75rem;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);border-radius:8px;margin-top:0.5rem">
+      <div style="font-weight:600;color:var(--ok);margin-bottom:0.4rem">✓ تم إنشاء رابط دعوة لـ ${out.email}</div>
+      <div style="font-family:monospace;font-size:0.78rem;direction:ltr;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;margin-bottom:0.4rem">${url}</div>
+      <button class="btn btn-pri btn-sm" onclick="navigator.clipboard?.writeText('${url}');this.textContent='✓ تم النسخ';setTimeout(()=>this.textContent='📋 نسخ الرابط',1500)">📋 نسخ الرابط</button>
+      <div style="font-size:0.72rem;color:var(--muted);margin-top:0.4rem">صالح لمدة 7 أيام · يُستخدم مرة واحدة فقط</div>
+    </div>
+  `;
+  if (inp) inp.value = "";
+}
+
+async function _ownerLoadShares() {
+  const list = document.getElementById("shares-list");
+  if (!list) return;
+  const shares = await Auth.listShares();
+  if (shares.length === 0) {
+    list.innerHTML = '<div style="padding:0.75rem;color:var(--muted);text-align:center">لا توجد روابط مشاركة بعد. افتح أي رحلة → زر "مشاركة" لإنشاء رابط.</div>';
+    return;
+  }
+  const permLabel = { view: "👁️ عرض فقط", tasks: "✏️ تعديل المهام", full: "🛠️ تعديل كامل" };
+  list.innerHTML = shares.map(s => `
+    <div style="padding:0.75rem;border:1px solid var(--border);border-radius:8px;margin-bottom:0.5rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem">
+        <div>
+          <div style="font-weight:600">${s.label || s.tripCode}</div>
+          <div style="font-size:0.75rem;color:var(--muted)">${permLabel[s.perms] || s.perms} · رحلة ${s.tripCode}</div>
+        </div>
+        <div style="display:flex;gap:0.4rem">
+          <button class="btn btn-out btn-sm" onclick="navigator.clipboard?.writeText('${location.origin}/?s=${s.token}');this.textContent='✓';setTimeout(()=>this.textContent='📋 نسخ',1500)">📋 نسخ</button>
+          <button class="btn btn-out btn-sm" style="color:var(--danger)" onclick="_ownerRevokeShare('${s.token}')">🗑️ إلغاء</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function _ownerRevokeShare(shareToken) {
+  if (!confirm("إلغاء هذا الرابط؟ من يستخدمه لن يستطيع الوصول للرحلة بعد ذلك.")) return;
+  await Auth.revokeShare(shareToken);
+  _ownerLoadShares();
+}
+
+function _renderInviteForm(inviteToken, email, role) {
+  document.body.innerHTML = `
+    <div style="max-width:480px;margin:3rem auto;padding:2rem;font-family:system-ui;direction:rtl;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
+      <div style="text-align:center;font-size:2.5rem;margin-bottom:0.5rem">👋</div>
+      <h2 style="text-align:center;margin:0 0 0.5rem">مرحباً بك في الفريق</h2>
+      <p style="text-align:center;color:#6b7280;margin:0 0 1.5rem">تمت دعوتك بالبريد <strong style="direction:ltr;display:inline-block">${email}</strong> كـ ${role === "owner" ? "مالك" : "عضو فريق"}.<br>اختر كلمة مرور لإكمال التسجيل.</p>
+      <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem">كلمة المرور (٦ أحرف على الأقل)</label>
+      <input id="redeem-pwd" type="password" autocomplete="new-password" style="width:100%;padding:0.7rem;border:1px solid #d1d5db;border-radius:8px;font-size:1rem;direction:ltr;margin-bottom:0.75rem">
+      <label style="display:block;font-size:0.85rem;font-weight:600;margin-bottom:0.4rem">تأكيد كلمة المرور</label>
+      <input id="redeem-pwd2" type="password" autocomplete="new-password" style="width:100%;padding:0.7rem;border:1px solid #d1d5db;border-radius:8px;font-size:1rem;direction:ltr;margin-bottom:1rem">
+      <button id="redeem-btn" onclick="_redeemSubmit('${inviteToken}')" style="width:100%;padding:0.85rem;background:#0ea5e9;color:#fff;border:0;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer">إنشاء الحساب وتسجيل الدخول</button>
+      <div id="redeem-msg" style="margin-top:0.75rem;font-size:0.85rem;text-align:center"></div>
+    </div>
+  `;
+  document.body.style.background = "#f9fafb";
+}
+
+async function _redeemSubmit(inviteToken) {
+  const p1 = document.getElementById("redeem-pwd")?.value || "";
+  const p2 = document.getElementById("redeem-pwd2")?.value || "";
+  const msg = document.getElementById("redeem-msg");
+  const btn = document.getElementById("redeem-btn");
+  if (p1.length < 6) { if (msg) msg.innerHTML = '<span style="color:#ef4444">✗ كلمة المرور قصيرة</span>'; return; }
+  if (p1 !== p2)    { if (msg) msg.innerHTML = '<span style="color:#ef4444">✗ كلمتا المرور غير متطابقتين</span>'; return; }
+  if (btn) { btn.disabled = true; btn.textContent = "..."; }
+  const out = await Auth.redeemInvite(inviteToken, p1);
+  if (!out.ok) {
+    if (msg) msg.innerHTML = `<span style="color:#ef4444">✗ ${out.error}</span>`;
+    if (btn) { btn.disabled = false; btn.textContent = "إنشاء الحساب وتسجيل الدخول"; }
+    return;
+  }
+  if (msg) msg.innerHTML = '<span style="color:#16a34a">✓ تم — جاري التحويل...</span>';
+  setTimeout(() => { location.href = "/?dashboard=1"; }, 800);
 }
 
 function generateAccessKey() {
@@ -9957,10 +10272,31 @@ async function _inlineLoadCode() {
   }
 }
 
+async function _createShareLink(tripCode, perms) {
+  const result = document.getElementById("_share-link-result");
+  if (result) result.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:0.85rem">جاري الإنشاء...</div>';
+  const trip = TripsRegistry.get(Trip.current);
+  const label = (trip?.name || tripCode) + " · " + ({ view: "عرض", tasks: "مهام", full: "كامل" }[perms] || perms);
+  const out = await Auth.createShare(tripCode, perms, label);
+  if (!out.ok) {
+    if (result) result.innerHTML = `<div style="color:var(--err);font-size:0.85rem;text-align:center">✗ ${out.error}</div>`;
+    return;
+  }
+  const url = `${location.origin}/?s=${out.shareToken}`;
+  const safe = url.replace(/'/g, "\\'");
+  const permLabel = { view: "👁️ عرض فقط", tasks: "✏️ تعديل المهام", full: "🛠️ تعديل كامل" }[perms];
+  if (result) result.innerHTML = `
+    <div style="padding:0.75rem;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);border-radius:8px">
+      <div style="font-weight:700;color:var(--ok);margin-bottom:0.4rem;font-size:0.88rem">✓ تم إنشاء الرابط (${permLabel})</div>
+      <div style="font-family:monospace;font-size:0.78rem;direction:ltr;word-break:break-all;background:#fff;padding:0.5rem;border-radius:4px;margin-bottom:0.5rem">${url}</div>
+      <button class="btn btn-pri" style="width:100%" onclick="navigator.clipboard?.writeText('${safe}');this.textContent='✓ تم النسخ';setTimeout(()=>this.textContent='📋 نسخ الرابط',1500)">📋 نسخ الرابط</button>
+    </div>
+  `;
+}
+
 function exitOwnerMode() {
-  if (!confirm("الخروج من وضع المالك؟ ستحتاج المفتاح للدخول مرة أخرى.")) return;
-  localStorage.removeItem("kt2_is_owner");
-  location.href = "/";
+  if (!confirm("تسجيل الخروج؟")) return;
+  Auth.logout().finally(() => location.href = "/");
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -10448,17 +10784,30 @@ async function openShareModal() {
 
   if (ok) {
     const safeUrl = url.replace(/'/g, "\\'");
+    const isAuthed = Auth.isLoggedIn();
     box.parentElement.innerHTML = `
-      <div style="text-align:center;padding:0.5rem 0 1rem">
-        <div style="font-size:2rem;margin-bottom:0.35rem">🔗</div>
-        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem">رابط الرحلة — شاركه مع عائلتك أو عميلك</div>
-        <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-md);padding:0.65rem 0.75rem;font-family:monospace;font-size:0.82rem;direction:ltr;word-break:break-all;cursor:pointer;margin-bottom:0.75rem"
+      <div style="padding:0.5rem 0 0.75rem">
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.4rem;text-align:center">🔗 رابط عرض عام (للقراءة فقط)</div>
+        <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-md);padding:0.6rem 0.75rem;font-family:monospace;font-size:0.78rem;direction:ltr;word-break:break-all;cursor:pointer;margin-bottom:0.5rem"
              onclick="navigator.clipboard?.writeText('${safeUrl}');this.style.background='rgba(34,197,94,0.08)';this.style.borderColor='var(--ok)';setTimeout(()=>{this.style.background='';this.style.borderColor=''},1500)">${url}</div>
-        <button class="btn btn-pri" style="width:100%;font-size:0.95rem;padding:0.65rem" onclick="navigator.clipboard?.writeText('${safeUrl}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='📋 نسخ الرابط',2000)">
-          📋 نسخ الرابط
-        </button>
-        <div style="font-size:0.68rem;color:var(--muted);margin-top:0.6rem">يتحدث تلقائياً مع كل تعديل تقوم به ·  يُفتح في أي جهاز</div>
+        <button class="btn btn-out btn-sm" style="width:100%" onclick="navigator.clipboard?.writeText('${safeUrl}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='📋 نسخ الرابط العام',1500)">📋 نسخ الرابط العام</button>
       </div>
+      ${isAuthed ? `
+        <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)">
+          <div style="font-weight:700;font-size:0.92rem;margin-bottom:0.6rem">🎫 إنشاء رابط مشاركة بصلاحيات محددة</div>
+          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.75rem">حدد ما يمكن للعميل/المستلم فعله عبر الرابط:</p>
+          <div style="display:flex;flex-direction:column;gap:0.5rem">
+            <button class="btn btn-out" onclick="_createShareLink('${code}','view')">👁️ عرض فقط</button>
+            <button class="btn btn-out" onclick="_createShareLink('${code}','tasks')">✏️ عرض + تعليم المهام والملاحظات</button>
+            <button class="btn btn-pri" onclick="_createShareLink('${code}','full')">🛠️ تعديل كامل (مثل عضو فريق)</button>
+          </div>
+          <div id="_share-link-result" style="margin-top:0.75rem"></div>
+        </div>
+      ` : `
+        <div style="margin-top:0.5rem;padding:0.6rem;background:var(--cream);border-radius:8px;font-size:0.78rem;color:var(--muted);text-align:center">
+          سجّل دخول لإنشاء روابط مشاركة بصلاحيات محددة (عرض/تعديل مهام/تعديل كامل).
+        </div>
+      `}
     `;
   } else {
     box.innerHTML = `
@@ -10584,6 +10933,38 @@ async function initApp() {
   seedBuiltinLibraries();
   const route = applyRoute();
 
+  // ─── Invite redemption flow ────────────────────────────────────────────
+  if (route.inviteToken) {
+    const info = await Auth.inviteInfo(route.inviteToken);
+    if (info && info.ok) {
+      _renderInviteForm(route.inviteToken, info.email, info.role);
+    } else {
+      document.body.innerHTML = `<div style="max-width:480px;margin:5rem auto;padding:2rem;font-family:system-ui;direction:rtl;text-align:center;border:1px solid #e5e7eb;border-radius:12px;background:#fff">
+        <div style="font-size:2rem;margin-bottom:0.5rem">⚠️</div>
+        <h2 style="margin:0 0 0.5rem">رابط الدعوة غير صالح</h2>
+        <p style="color:#6b7280">قد يكون الرابط منتهي الصلاحية أو مستخدماً مسبقاً.</p>
+        <a href="/" style="display:inline-block;margin-top:1rem;padding:0.6rem 1.5rem;background:#0ea5e9;color:#fff;border-radius:6px;text-decoration:none">العودة للموقع</a>
+      </div>`;
+      return;
+    }
+    return;
+  }
+
+  // ─── Share token flow (?s=TOKEN) ───────────────────────────────────────
+  if (route.shareToken) {
+    const resolved = await Auth.resolveShare(route.shareToken);
+    if (resolved && resolved.ok) {
+      window._shareToken = route.shareToken;
+      window._loadedPerms = resolved.perms;
+      window._shareLabel  = resolved.label;
+      // Set route.loadCode so the existing load flow runs against the trip
+      route.loadCode = resolved.tripCode;
+    } else {
+      window._cloudLoadFailed = true;
+      window._cloudLoadCode = "(invalid share)";
+    }
+  }
+
   // Owner with no trip → dashboard
   if (route.showDashboard || (isOwner() && !route.tripId)) {
     $("trip-view").hidden = true;
@@ -10622,8 +11003,14 @@ async function initApp() {
   let _liveUpdatedAt = null;
   if (route.loadCode) {
     let _cloudOk = false;
+    const loadUrl = window._shareToken
+      ? `/.netlify/functions/load?share=${encodeURIComponent(window._shareToken)}`
+      : `/.netlify/functions/load?code=${encodeURIComponent(route.loadCode)}`;
+    const headers = {};
+    const authToken = Auth.getToken();
+    if (authToken) headers["Authorization"] = "Bearer " + authToken;
     try {
-      const res = await fetch(`/.netlify/functions/load?code=${encodeURIComponent(route.loadCode)}`);
+      const res = await fetch(loadUrl, { headers });
       if (res.ok) {
         const json = await res.json();
         if (json.data) {
@@ -10636,16 +11023,22 @@ async function initApp() {
           if (json.data.cityColors) Trip.save("citycolors", json.data.cityColors);
           Trip.save("sync_code", route.loadCode);
           _liveUpdatedAt = json.updatedAt || null;
+          if (json.perms) window._loadedPerms = json.perms;
           _cloudOk = true;
         }
       }
     } catch {}
     window._cloudLoadFailed = !_cloudOk;
     window._cloudLoadCode = route.loadCode;
+    // Apply perm class to body for UI restriction
+    if (window._loadedPerms) {
+      document.body.classList.remove("perms-view","perms-tasks","perms-full");
+      document.body.classList.add("perms-" + window._loadedPerms);
+    }
     // Auto-poll every 90s for live updates
     setInterval(async () => {
       try {
-        const r = await fetch(`/.netlify/functions/load?code=${encodeURIComponent(route.loadCode)}`);
+        const r = await fetch(loadUrl, { headers });
         if (!r.ok) return;
         const j = await r.json();
         if (j.data && j.updatedAt && j.updatedAt !== _liveUpdatedAt) {
