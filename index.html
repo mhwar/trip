@@ -8068,17 +8068,61 @@ function renderLibrary() {
     </details>
     ` : ''}
 
+    ${(() => {
+      // Build city cards row
+      const libItems = allLib();
+      const cityIds = [...new Set(libItems.map(x=>x.city).filter(c=>c&&c!=='all'))];
+      const LIB_CITY_NAMES_MAP = typeof LIB_CITY_NAMES !== 'undefined' ? LIB_CITY_NAMES : {};
+      const tripCityMap = {};
+      getTripCities().forEach(c => { tripCityMap[c.id] = c; });
+
+      const cityCardsHtml = `
+<div class="lib-city-cards">
+  <button class="lib-city-card ${state.libFilters.city==='all'?'act':''}"
+          onclick="state.libFilters.city='all';renderLibList()" style="--city-color:#1a4d4a">
+    <div class="lib-city-name">الكل</div>
+    <div class="lib-city-meta">${libItems.length} نقطة</div>
+  </button>
+  ${cityIds.map(cid => {
+    const cityName = LIB_CITY_NAMES_MAP[cid] || cid;
+    const count = libItems.filter(x=>x.city===cid).length;
+    const tc = tripCityMap[cid];
+    const color = (state.cityColors&&state.cityColors[cid]) ? state.cityColors[cid] : '#1a4d4a';
+    const isAct = state.libFilters.city === cid;
+    return `
+      <button class="lib-city-card ${isAct?'act':''}"
+              onclick="state.libFilters.city='${cid}';renderLibList()"
+              style="--city-color:${color}">
+        <div class="lib-city-name">${cityName}</div>
+        <div class="lib-city-meta">${count} نقطة${tc&&tc.daysCount?` · ${tc.daysCount} يوم`:''}${tc&&tc.hotel?` · 🏨 ${tc.hotel}`:''}</div>
+        ${tc&&tc.firstDate?`<div class="lib-city-date">${tc.firstDate}</div>`:''}
+      </button>`;
+  }).join('')}
+  <button class="lib-city-card ${state.libFilters.city==='festivals'?'act':''}"
+          onclick="state.libFilters.city='festivals';renderLibList()" style="--city-color:#9333ea">
+    <div class="lib-city-name">🎉 الفعاليات</div>
+    <div class="lib-city-meta">${libItems.filter(x=>x.type==='festival').length} فعالية</div>
+  </button>
+</div>`;
+
+      const activeCid = state.libFilters.city;
+      const activeTc = activeCid && activeCid!=='all' && activeCid!=='festivals' ? tripCityMap[activeCid] : null;
+      const activeCityColor = activeCid && state.cityColors ? (state.cityColors[activeCid]||'#1a4d4a') : '#1a4d4a';
+      const bannerHtml = activeTc ? `
+  <div class="lib-city-banner" style="border-right-color:${activeCityColor}">
+    <span class="lib-city-banner-name">${LIB_CITY_NAMES_MAP[activeCid]||activeCid}</span>
+    ${activeTc.daysCount?`<span>${activeTc.daysCount} أيام</span>`:''}
+    ${activeTc.firstDate?`<span>يبدأ ${activeTc.firstDate}</span>`:''}
+    ${activeTc.hotel?`<span>🏨 ${activeTc.hotel}</span>`:''}
+  </div>` : '';
+      return cityCardsHtml + bannerHtml;
+    })()}
+
     <div class="flt-bar">
       <div class="flt-search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" id="lib-search" placeholder="ابحث بالاسم أو المنطقة..." value="${state.libFilters.q || ''}" oninput="state.libFilters.q=this.value;renderLibList()">
         ${state.libFilters.q ? `<button class="flt-search-x" onclick="state.libFilters.q='';renderLibrary()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
-      </div>
-
-      <div class="flt-row">
-        <span class="flt-lbl">المدينة</span>
-        <button class="flt-chip ${state.libFilters.city === 'all' ? 'act' : ''}" onclick="state.libFilters.city='all';renderLibList()">الكل</button>
-        ${libCities.map(c => `<button class="flt-chip ${state.libFilters.city === c.id ? 'act' : ''}" onclick="state.libFilters.city='${c.id}';renderLibList()">${c.name}</button>`).join('')}
       </div>
 
       <div class="flt-row">
@@ -8174,7 +8218,12 @@ function renderLibList() {
   const f = state.libFilters;
 
   let filtered = allLib().filter(l => {
-    if (f.city !== "all" && l.city !== f.city && l.city !== "all") return false;
+    const cityMatch = !f.city || f.city === 'all'
+      ? true
+      : f.city === 'festivals'
+        ? l.type === 'festival'
+        : (l.city === f.city || l.city === 'all');
+    if (!cityMatch) return false;
     if (f.type !== "all" && l.type !== f.type) return false;
     if (f.halal && !l.halal) return false;
     if (f.gf && !l.gf) return false;
@@ -8406,7 +8455,17 @@ function flyToCity(cid) {
 
 function drawMarkers() {
   if (typeof L === 'undefined' || !state.mapMarkers) return;
+
+  // Clear previous cluster group
+  if (window._mapClusterGroup) { state.mapInst.removeLayer(window._mapClusterGroup); window._mapClusterGroup = null; }
   state.mapMarkers.clearLayers();
+
+  // Set up cluster group
+  const clusterGroup = (typeof L.markerClusterGroup === 'function')
+    ? L.markerClusterGroup({ maxClusterRadius: 50 })
+    : null;
+
+  const visibleLatLngs = [];
 
   // Library POIs
   allLib().forEach(l => {
@@ -8420,16 +8479,21 @@ function drawMarkers() {
       html: `<div style="background:${color};width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);font-size:14px">${l.icon}</div>`,
       iconSize: [28, 28], iconAnchor: [14, 14]
     });
-    L.marker([l.lat, l.lng], { icon }).addTo(state.mapMarkers).bindPopup(`
-      <div style="font-family:'IBM Plex Sans Arabic',sans-serif">
-        <strong style="font-size:13px">${l.icon} ${l.name}</strong><br>
-        <span style="font-size:11px;color:#888">${cityById(l.city)?.name} · ${l.area}</span><br>
-        ${l.halal ? '<span style="font-size:10px;color:#047857">🥩 حلال</span> ' : ''}
-        ${l.gf ? '<span style="font-size:10px;color:#b8924a">🌾 GF</span>' : ''}
-        ${l.note ? `<p style="font-size:11px;margin-top:4px">${l.note}</p>` : ''}
-        ${l.lat ? `<a href="https://www.google.com/maps/search/?api=1&query=${l.lat},${l.lng}" target="_blank" style="font-size:11px">فتح بخرائط Google</a>` : ''}
+    const noteShort = (l.note||'').slice(0,90) + ((l.note||'').length>90?'…':'');
+    const typeLabel = TYPES?.[l.type]?.label || l.type || '';
+    const marker = L.marker([l.lat, l.lng], { icon });
+    marker.bindPopup(`
+      <div style="direction:rtl;min-width:160px;font-family:system-ui">
+        <div style="font-weight:700;font-size:.95rem;margin-bottom:.25rem">${l.icon||''} ${l.name}</div>
+        <div style="font-size:.75rem;color:#6b7280;margin-bottom:.3rem">${l.area||''} ${typeLabel?`· ${typeLabel}`:''}</div>
+        ${noteShort?`<div style="font-size:.8rem;margin-bottom:.4rem;color:#374151">${noteShort}</div>`:''}
+        ${l.halal?'<span style="background:#dcfce7;color:#166534;font-size:.7rem;padding:.1rem .4rem;border-radius:4px;margin-left:.25rem">حلال</span>':''}
+        ${l.gf?'<span style="background:#fef9c3;color:#854d0e;font-size:.7rem;padding:.1rem .4rem;border-radius:4px">GF</span>':''}
+        ${l.lat?`<div style="margin-top:.4rem"><a href="https://www.google.com/maps/search/?api=1&query=${l.lat},${l.lng}" target="_blank" style="font-size:.72rem;color:#2563eb">فتح بخرائط Google</a></div>`:''}
       </div>
-    `);
+    `, { maxWidth: 220 });
+    clusterGroup ? clusterGroup.addLayer(marker) : marker.addTo(state.mapMarkers);
+    visibleLatLngs.push([l.lat, l.lng]);
   });
 
   // Plan items (itinerary)
@@ -8443,15 +8507,29 @@ function drawMarkers() {
           html: `<div style="background:var(--accent);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--gold);box-shadow:0 2px 6px rgba(0,0,0,0.4);font-size:11px;font-weight:700">D${d.day}</div>`,
           iconSize: [26, 26], iconAnchor: [13, 13]
         });
-        L.marker([it.lat, it.lng], { icon }).addTo(state.mapMarkers).bindPopup(`
-          <div style="font-family:'IBM Plex Sans Arabic',sans-serif">
-            <strong style="font-size:13px">${TYPES[it.type]?.icon || ''} ${it.text}</strong><br>
-            <span style="font-size:11px;color:#888">يوم ${d.day} · ${it.time || ''}</span>
+        const marker = L.marker([it.lat, it.lng], { icon });
+        marker.bindPopup(`
+          <div style="direction:rtl;min-width:140px;font-family:system-ui">
+            <div style="font-weight:700;font-size:.9rem;margin-bottom:.2rem">${TYPES[it.type]?.icon || ''} ${it.text}</div>
+            <div style="font-size:.75rem;color:#6b7280">يوم ${d.day} · ${it.time || ''}</div>
           </div>
-        `);
+        `, { maxWidth: 200 });
+        clusterGroup ? clusterGroup.addLayer(marker) : marker.addTo(state.mapMarkers);
+        visibleLatLngs.push([it.lat, it.lng]);
       });
     });
   }
+
+  if (clusterGroup) {
+    state.mapInst.addLayer(clusterGroup);
+    window._mapClusterGroup = clusterGroup;
+  }
+
+  // Fit map to visible markers
+  try {
+    if (visibleLatLngs.length > 1) state.mapInst.fitBounds(visibleLatLngs, { padding:[30,30], maxZoom:14 });
+    else if (visibleLatLngs.length === 1) state.mapInst.setView(visibleLatLngs[0], 14);
+  } catch(e){}
 }
 
 // ═══════════════════════════════════════════════════════════
