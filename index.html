@@ -1881,6 +1881,33 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .cv-note-snip { color: var(--muted); font-style: italic; }
 .day-tb-view-toggle { padding: 0.4rem 0.5rem !important; }
 .day-tb-view-toggle .material-symbols-rounded { font-size: 1.1rem; }
+
+/* ── Today banner ── */
+.today-banner {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 1rem; border-radius: var(--r); margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--accent-soft) 0%, rgba(99,102,241,0.08) 100%);
+  border: 1px solid var(--accent);
+}
+.today-banner-ic {
+  font-size: 1.5rem; flex-shrink: 0;
+}
+.today-banner-body { flex: 1; }
+.today-banner-title { font-size: 0.85rem; font-weight: 700; color: var(--ink); margin-bottom: 0.15rem; }
+.today-banner-sub { font-size: 0.72rem; color: var(--muted); }
+.today-banner-btn {
+  flex-shrink: 0; padding: 0.4rem 0.75rem; border-radius: var(--r-sm);
+  background: var(--accent); color: #fff; border: none; cursor: pointer;
+  font-size: 0.72rem; font-weight: 700; font-family: inherit;
+}
+.today-banner-btn:hover { opacity: 0.88; }
+.today-banner-countdown {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.6rem 1rem; border-radius: var(--r); margin-bottom: 1rem;
+  background: var(--paper); border: 1px solid var(--border);
+}
+.today-banner-countdown .tbc-n { font-size: 1.5rem; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+.today-banner-countdown .tbc-l { font-size: 0.72rem; color: var(--muted); }
 .tl-card {
   background: var(--paper);
   border: 1px solid var(--border);
@@ -4194,6 +4221,21 @@ function toggleDayViewMode() {
   renderDayContent();
 }
 
+let _todayJumped = false;
+function _jumpToTodayIfActive() {
+  if (_todayJumped) return;
+  _todayJumped = true;
+  const sd = state.tripInfo?.startDate;
+  if (!sd || !state.itinerary.length) return;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const start = new Date(sd); start.setHours(0,0,0,0);
+  const dayOffset = Math.round((today - start) / 86400000);
+  if (dayOffset >= 0 && dayOffset < state.itinerary.length) {
+    state.activeDayIdx = dayOffset;
+    Trip.save("uidx", dayOffset);
+  }
+}
+
 // Default empty itinerary (12 days)
 const TRIP_START = new Date("2026-05-14");
 
@@ -4556,7 +4598,7 @@ const state = {
   cityColors: Trip.load("citycolors", { ...CITY_COLORS_DEFAULT }),
   customCities: Trip.load("customcities", []),
   // UI state
-  activeDayIdx: 0,
+  activeDayIdx: Trip.load("uidx", 0),
   activeCity: "seoul",
   cityTab: "overview", // overview | districts | transport | events
   taskFilter: "all", // all | undone | done | <category>
@@ -4593,7 +4635,7 @@ function _scheduleCloudSave() {
 }
 
 function saveItin() { Trip.save("itin", state.itinerary); _showSaveIndicator(); _scheduleCloudSave(); }
-function saveLib() { Trip.save("clib", state.customLib); _scheduleCloudSave(); }
+function saveLib() { Trip.save("clib", state.customLib); _invalidateLibCache(); _scheduleCloudSave(); }
 function saveFavs() { Trip.save("favs", state.favs); }
 function saveTasks() { Trip.save("tasks", state.tasks); _showSaveIndicator(); _scheduleCloudSave(); }
 function saveTripInfo() { Trip.save("tripinfo", state.tripInfo); _showSaveIndicator(); _scheduleCloudSave(); }
@@ -4601,7 +4643,10 @@ function saveCityColors() { Trip.save("citycolors", state.cityColors); CITY_COLO
 function saveCustomCities() { Trip.save("customcities", state.customCities); }
 
 // All POIs (built-in + custom) — respects countryLib of current trip
+let _libCache = null;
+function _invalidateLibCache() { _libCache = null; }
 function allLib() {
+  if (_libCache) return _libCache;
   const t = TripsRegistry.get(Trip.current);
   const lib = t?.countryLib || null;
   let base = [];
@@ -4612,7 +4657,8 @@ function allLib() {
     const libs = (() => { try { return JSON.parse(localStorage.getItem("kt2_global_libs") || "{}"); } catch { return {}; } })();
     base = libs[lib] || [];
   }
-  return [...base, ...state.customLib];
+  _libCache = [...base, ...state.customLib];
+  return _libCache;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -4695,6 +4741,53 @@ function renderOverview() {
       <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded" style="color:#16a34a">lunch_dining</span></div><div class="lib-stat-v">${halalCount}</div><div class="lib-stat-l">مطعم حلال</div></div>
       <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded" style="color:#a16207">spa</span></div><div class="lib-stat-v">${gfCount}</div><div class="lib-stat-l">خيار GF</div></div>
     </div>
+
+    ${(() => {
+      const sd = state.tripInfo?.startDate;
+      const ed = state.tripInfo?.endDate;
+      if (!sd) return '';
+      const today = new Date(); today.setHours(0,0,0,0);
+      const start = new Date(sd); start.setHours(0,0,0,0);
+      const end = ed ? new Date(ed) : null; if (end) end.setHours(0,0,0,0);
+      const diffStart = Math.round((start - today) / 86400000);
+      const diffEnd = end ? Math.round((end - today) / 86400000) : null;
+      if (diffStart > 0) {
+        // Trip hasn't started yet
+        return `<div class="today-banner-countdown">
+          <div class="today-banner-ic">✈️</div>
+          <div>
+            <div class="today-banner-title">باقٍ على الرحلة</div>
+            <div style="display:flex;align-items:baseline;gap:0.35rem;margin-top:0.15rem">
+              <span class="tbc-n">${diffStart}</span>
+              <span class="tbc-l">يوم</span>
+            </div>
+          </div>
+        </div>`;
+      } else if (diffEnd !== null && diffEnd < 0) {
+        // Trip is over
+        return `<div class="today-banner-countdown">
+          <div class="today-banner-ic">🏡</div>
+          <div>
+            <div class="today-banner-title">انتهت الرحلة</div>
+            <div class="tbc-l" style="margin-top:0.1rem">ذكريات جميلة — منذ ${Math.abs(diffEnd)} يوم</div>
+          </div>
+        </div>`;
+      } else {
+        // Trip is active
+        const dayOffset = Math.round((today - start) / 86400000);
+        const dayObj = state.itinerary[dayOffset];
+        if (!dayObj) return '';
+        const cityLabel = dayObj.city || '';
+        return `<div class="today-banner">
+          <div class="today-banner-ic">📍</div>
+          <div class="today-banner-body">
+            <div class="today-banner-title">اليوم ${dayObj.day} من رحلتك${cityLabel ? ` · ${cityLabel}` : ''}</div>
+            <div class="today-banner-sub">${dayObj.dateLabel || ''} ${dayObj.weekday || ''}</div>
+          </div>
+          <button class="today-banner-btn" onclick="switchTab('itinerary')">عرض اليوم</button>
+        </div>`;
+      }
+    })()}
 
     ${totalItems === 0 ? `
       <div class="card card-orng mb4">
@@ -4884,6 +4977,9 @@ function importTemplate() {
 // ═══════════════════════════════════════════════════════════
 
 function renderItinerary() {
+  _jumpToTodayIfActive();
+  // Guard against stale saved index
+  if (state.activeDayIdx >= state.itinerary.length) state.activeDayIdx = 0;
   // Empty state — no days yet
   if (state.itinerary.length === 0) {
     $("sec-itinerary").innerHTML = `
@@ -4972,7 +5068,7 @@ function renderDayTabs() {
     const activeStyle   = `background:${col};border-color:${col};color:#fff`;
     html += `
       <button class="dt${borderType}${isAct ? ' act' : ''}"
-        onclick="state.activeDayIdx=${i};renderItinerary()"
+        onclick="state.activeDayIdx=${i};Trip.save('uidx',${i});renderItinerary()"
         style="${isAct ? activeStyle : inactiveStyle}">
         <div class="dt-d" style="opacity:0.75">يوم</div>
         <div class="dt-n">${d.day}</div>
