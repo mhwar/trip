@@ -1216,6 +1216,23 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .dash-section { margin-bottom:1.5rem; }
 .dash-section h4 { font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:#94a3b8; margin:0 0 0.75rem; }
 
+/* ─── Destinations tab (international + local) ─── */
+.destinations-page { padding-bottom:2rem; }
+.dest-section-head { display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:1rem; margin-bottom:1rem; }
+.dest-section-title { display:flex; align-items:center; gap:0.5rem; margin:0; font-size:1.1rem; font-weight:700; color:#0f172a; }
+.dest-section-sub { margin:0.25rem 0 0; font-size:0.82rem; color:#64748b; }
+.dest-section-actions { display:flex; gap:0.5rem; flex-wrap:wrap; }
+.dest-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:0.85rem; }
+.dest-card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:1rem; display:flex; gap:0.75rem; align-items:flex-start; position:relative; transition:border-color 0.15s, transform 0.15s; }
+.dest-card:hover { border-color:#cbd5e1; transform:translateY(-1px); }
+.dest-card-icon { font-size:2rem; line-height:1; flex-shrink:0; }
+.dest-card-body { flex:1; min-width:0; }
+.dest-card-title { font-weight:700; font-size:0.95rem; color:#0f172a; margin-bottom:0.2rem; }
+.dest-card-desc { font-size:0.78rem; color:#64748b; line-height:1.4; }
+.dest-card-soon { background:#f8fafc; opacity:0.85; }
+.dest-card-soon-badge { position:absolute; top:0.6rem; left:0.6rem; background:#fef3c7; color:#a16207; font-size:0.68rem; font-weight:700; padding:0.18rem 0.5rem; border-radius:999px; }
+.dest-card-soon:hover { transform:none; cursor:default; }
+
 /* ─── Sidebar dashboard layout (Google AI Studio inspired) ─── */
 .dash-shell { display:flex; min-height:100vh; direction:rtl; }
 .dash-sidebar { width:240px; background:#0f172a; color:#f1f5f9; flex-shrink:0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; overflow-y:auto; }
@@ -9189,6 +9206,31 @@ function _renderTripsGridInner() {
 // ─── Tab: Destinations (renamed from Libraries) ───────────────────
 // renderDestinationsTab is defined below (was renderLibrariesTab)
 
+// Local Saudi destinations (placeholder, "coming soon")
+const LOCAL_SA_DESTINATIONS = [
+  { key:'abha',     name:'أبها',           emoji:'🏔️', desc:'جنوب السعودية — طبيعة وجبال السراة' },
+  { key:'makkah',   name:'مكة المكرمة',    emoji:'🕋', desc:'العاصمة المقدسة' },
+  { key:'riyadh',   name:'الرياض',         emoji:'🏙️', desc:'العاصمة — تسوّق وثقافة' },
+  { key:'jeddah',   name:'جدة',            emoji:'🌊', desc:'المدينة الساحلية' },
+  { key:'taif',     name:'الطائف',         emoji:'🌹', desc:'مدينة الورد' },
+  { key:'madinah',  name:'المدينة المنورة', emoji:'🕌', desc:'مدينة النبي ﷺ' },
+  { key:'alula',    name:'العُلا',          emoji:'🪨', desc:'تراث وطبيعة فريدة' },
+  { key:'neom',     name:'نيوم',           emoji:'🌆', desc:'وجهة المستقبل' }
+];
+
+function renderLocalDestCard(d) {
+  return `
+    <div class="dest-card dest-card-soon">
+      <div class="dest-card-icon">${d.emoji}</div>
+      <div class="dest-card-body">
+        <div class="dest-card-title">${d.name}</div>
+        <div class="dest-card-desc">${d.desc}</div>
+      </div>
+      <span class="dest-card-soon-badge">قريباً</span>
+    </div>
+  `;
+}
+
 // Library metadata for known built-in libs
 const LIB_META = {
   korea:   { name:"كوريا الجنوبية", icon:"🇰🇷", color:"#e74c3c", cities:["seoul","busan","jeju"], builtIn:true },
@@ -9217,9 +9259,7 @@ function renderDestinationsTab() {
     const items = id === "korea" ? (typeof LIB !== 'undefined' ? LIB : []) : (customLibs[id] || []);
     const meta = LIB_META[id] || {};
     const cities = [...new Set(items.map(x => x.city).filter(Boolean))];
-    const byType = {};
-    items.forEach(x => { byType[x.type] = (byType[x.type]||0)+1; });
-    return { items, meta, cities, byType,
+    return { items, meta, cities,
       name: meta.name || id,
       icon: meta.icon || "🌍",
       color: meta.color || "#1a4d4a",
@@ -9227,41 +9267,68 @@ function renderDestinationsTab() {
     };
   }
 
-  return `
-    <div style="margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
-      <p class="txs clm" style="margin:0">الوجهات تحتوي مواقع ومطاعم ومعالم لكل وجهة — تُربط بالرحلة تلقائياً.</p>
-      <div style="display:flex;gap:0.5rem">
-        <button class="btn btn-out btn-sm" onclick="openGeminiAssistant()">🤖 مساعد AI</button>
-        <button class="btn btn-pri btn-sm" onclick="openAddLibModal()">+ وجهة جديدة</button>
-      </div>
-    </div>
-
-    ${allLibIds.map(id => {
-      const L = libInfo(id);
-      const typeIcons = {food:"🍽️",attraction:"📍",mosque:"🕌",shop:"🛍️",entertainment:"🎢",transport:"🚄",other:"⭐"};
-      const typeSummary = Object.entries(L.byType).slice(0,4).map(([t,n])=>`${typeIcons[t]||"•"}${n}`).join(" ");
-      return `
-        <div class="lib-card" style="--lib-c:${L.color};border-top:3px solid ${L.color}">
-          <div class="lib-card-icon" style="font-size:1.6rem">${L.icon}</div>
-          <div class="lib-card-info" style="flex:1;min-width:0">
-            <div class="lib-card-name">${L.name}${L.builtIn?' <span class="pill pill-sm" style="font-size:0.6rem;padding:1px 5px;margin-right:3px">مدمجة</span>':''}</div>
-            <div class="lib-card-meta">${L.items.length} موقع · ${L.cities.length} مدينة</div>
-            <div class="lib-card-meta" style="margin-top:2px;font-size:0.68rem">${typeSummary}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:0.35rem;align-items:flex-end">
-            <button class="btn btn-pri btn-sm" onclick="openLibBrowser('${id}')">استعراض</button>
-            ${!L.builtIn ? `<button class="btn btn-out btn-sm" style="color:var(--danger);font-size:0.7rem" onclick="deleteCustomLib('${id}')">حذف</button>` : ''}
+  const intlCards = allLibIds.map(id => {
+    const L = libInfo(id);
+    return `
+      <div class="dest-card" style="border-top:3px solid ${L.color}">
+        <div class="dest-card-icon">${L.icon}</div>
+        <div class="dest-card-body">
+          <div class="dest-card-title">${L.name}${L.builtIn?' <span class="pill pill-sm" style="font-size:0.6rem;padding:1px 5px;margin-right:3px">مدمجة</span>':''}</div>
+          <div class="dest-card-desc">${L.cities.length} مدينة</div>
+          <div style="margin-top:0.55rem;display:flex;gap:0.35rem;align-items:center;flex-wrap:wrap">
+            <span class="pill pill-sm" style="font-size:0.65rem;padding:2px 8px;background:#f1f5f9;color:#475569">${L.items.length} موقع</span>
+            <button class="btn btn-pri btn-sm" style="padding:0.25rem 0.65rem;font-size:0.72rem" onclick="openLibBrowser('${id}')">تصفح</button>
+            ${!L.builtIn ? `<button class="btn btn-out btn-sm" style="color:var(--danger);font-size:0.7rem;padding:0.25rem 0.55rem" onclick="deleteCustomLib('${id}')">حذف</button>` : ''}
           </div>
         </div>
-      `;
-    }).join('')}
+      </div>
+    `;
+  }).join('');
 
-    <div class="lib-card" style="border-style:dashed;cursor:pointer;background:var(--cream);justify-content:center" onclick="openAddLibModal()">
-      <div style="text-align:center;padding:0.5rem 0">
+  const addCard = `
+    <div class="dest-card" style="border-style:dashed;cursor:pointer;background:var(--cream);align-items:center;justify-content:center;text-align:center" onclick="openAddLibModal()">
+      <div style="width:100%">
         <div style="font-size:1.5rem;margin-bottom:0.3rem">+</div>
         <div class="fb6" style="font-size:0.85rem">إضافة وجهة جديدة</div>
         <div class="txs clm" style="font-size:0.72rem">JSON أو ابدأ فارغة</div>
       </div>
+    </div>
+  `;
+
+  return `
+    <div class="destinations-page">
+
+      <!-- Section 1: International -->
+      <section class="dash-section">
+        <div class="dest-section-head">
+          <div>
+            <h3 class="dest-section-title">${icon('globe',20)} الوجهات الدولية</h3>
+            <p class="dest-section-sub">الوجهات المتاحة حالياً للرحلات الدولية</p>
+          </div>
+          <div class="dest-section-actions">
+            <button class="btn btn-out btn-sm" onclick="openGeminiAssistant()">🤖 توليد بالذكاء</button>
+            <button class="btn btn-pri btn-sm" onclick="openAddLibModal()">+ إضافة وجهة</button>
+          </div>
+        </div>
+        <div class="dest-grid">
+          ${intlCards}
+          ${addCard}
+        </div>
+      </section>
+
+      <!-- Section 2: Local (Saudi) -->
+      <section class="dash-section" style="margin-top:2rem">
+        <div class="dest-section-head">
+          <div>
+            <h3 class="dest-section-title">${icon('map-pin',20)} الوجهات المحلية (السعودية)</h3>
+            <p class="dest-section-sub">قريباً — وجهات داخل المملكة العربية السعودية</p>
+          </div>
+        </div>
+        <div class="dest-grid">
+          ${LOCAL_SA_DESTINATIONS.map(d => renderLocalDestCard(d)).join('')}
+        </div>
+      </section>
+
     </div>
   `;
 }
