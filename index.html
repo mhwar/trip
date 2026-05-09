@@ -2756,8 +2756,7 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 
 <footer>
   <p id="footer-text">رحلة كوريا الجنوبية · 14-24 مايو 2026 · مرجع التذكرة: 9T7ZEZ · يُحفظ تلقائياً في متصفحك</p>
-  ${'' /* Hidden admin entry - tap 5 times on footer text to reveal */}
-  <span id="_admin-tap-zone" style="display:inline-block;padding:0.3rem 0.5rem;cursor:pointer;user-select:none;font-size:0.65rem;color:transparent" onclick="_adminTap()">⚙</span>
+  <button onclick="openAdminLogin()" style="background:none;border:none;font-size:0.65rem;color:var(--muted);cursor:pointer;padding:0.25rem 0.5rem;margin-top:0.2rem;opacity:0.5">🔐 دخول الإدارة</button>
 </footer>
 
 </div><!-- /trip-view -->
