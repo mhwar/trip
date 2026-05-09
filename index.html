@@ -1779,45 +1779,47 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 /* Timeline */
 .tl {
   position: relative;
-  padding-right: 3.25rem;
+  padding-right: 1.25rem;
   margin-bottom: 1rem;
 }
 .tl::before {
   content: '';
   position: absolute;
-  right: 2.2rem;
+  right: 0.5rem;
   top: 0.5rem;
   bottom: 0.5rem;
-  width: 1.5px;
+  width: 2px;
   background: var(--border);
+  border-radius: 1px;
 }
 .tl-row {
   position: relative;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.65rem;
+}
+/* Header row: dot + time label, pulled into the line area */
+.tl-row-hd {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-right: -1.125rem;
+  margin-bottom: 0.25rem;
+  position: relative;
+  z-index: 1;
 }
 .tl-time {
-  position: absolute;
-  right: -3.25rem;
-  top: 0.45rem;
-  width: 2.2rem;
-  text-align: center;
-  font-size: 0.6rem;
+  font-size: 0.68rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--muted);
-  background: var(--bg);
-  padding: 1px 0;
-  border-radius: 4px;
+  letter-spacing: 0.01em;
 }
 .tl-dot {
-  position: absolute;
-  right: -1.3rem;
-  top: 0.75rem;
-  width: 0.65rem; height: 0.65rem;
+  width: 0.75rem; height: 0.75rem;
   border-radius: 50%;
   background: var(--accent);
-  border: 2px solid var(--bg);
-  z-index: 1;
+  border: 2.5px solid var(--bg);
+  flex-shrink: 0;
+  position: relative;
 }
 .tl-row.t-food .tl-dot { background: var(--persimmon); }
 .tl-row.t-attraction .tl-dot { background: var(--accent); }
@@ -1832,8 +1834,8 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   background: var(--paper);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
-  padding: 0.5rem 0.65rem;
-  display: flex; align-items: flex-start; gap: 0.45rem;
+  padding: 0.65rem 0.75rem;
+  display: flex; align-items: flex-start; gap: 0.5rem;
   transition: border-color 0.15s;
 }
 .tl-card.locked { opacity: 0.85; background: var(--cream); }
@@ -1907,6 +1909,20 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 }
 .tl-card-x:hover { opacity: 1; background: rgba(201,68,43,0.1); }
 .tl-card-x svg { width: 12px; height: 12px; }
+/* ⋮ card action menu */
+.tl-card-menu{flex-shrink:0;margin-right:auto;background:none;border:0;cursor:pointer;color:#94a3b8;padding:.2rem .3rem;border-radius:6px;display:flex;align-items:center;align-self:flex-start}
+.tl-card-menu:hover{background:#f1f5f9;color:#475569}
+.tl-card-menu svg{width:16px;height:16px}
+/* Floating dropdown menu */
+.tl-menu-popup{position:fixed;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.14);min-width:140px;overflow:hidden;direction:rtl;z-index:9999}
+.tl-menu-item{display:flex;align-items:center;gap:.5rem;width:100%;padding:.6rem .9rem;font-size:.82rem;background:none;border:0;cursor:pointer;font-family:inherit;color:#1e293b;text-decoration:none;white-space:nowrap;border-radius:0}
+.tl-menu-item:hover{background:#f8fafc}
+.tl-menu-danger{color:#dc2626 !important}
+/* Day toolbar dropdown */
+.day-tb-drop{position:fixed;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.14);min-width:170px;overflow:hidden;direction:rtl;z-index:9999}
+.day-tb-drop-item{display:flex;align-items:center;gap:.6rem;width:100%;padding:.65rem 1rem;font-size:.84rem;background:none;border:0;cursor:pointer;font-family:inherit;color:#1e293b;white-space:nowrap}
+.day-tb-drop-item:hover{background:#f8fafc}
+.day-tb-drop-sep{height:1px;background:#f1f5f9;margin:.15rem 0}
 
 .tl-add {
   margin-right: 0;
@@ -2185,7 +2201,7 @@ footer p { font-size: 0.7rem; color: var(--muted); }
    ✅ ITEM STATUS (done) + 🔒 LOCKED
    ═════════════════════════════════════════ */
 /* ── Critical items (transport + locked) ── */
-.tl-row.tl-critical .tl-card{border-right:4px solid #f59e0b;background:#fffbeb}
+.tl-row.tl-critical .tl-card{background:#fffbeb}
 .tl-row.tl-critical .tl-dot{background:#f59e0b;border-color:#d97706}
 .tl-row.tl-critical .tl-time{color:#b45309;font-weight:700}
 .tl-critical-badge{font-size:.65rem;background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:6px;padding:.1rem .4rem;font-weight:600;white-space:nowrap;margin-right:.25rem}
@@ -4083,9 +4099,16 @@ const TYPES = {
 
 const TYPE_LABELS = {
   arrival: { label: "🛬 وصول", cls: "pill-ok" },
-  transit: { label: "✈️ تنقل", cls: "pill-warn" },
+  transit: { label: "✈️ تنقل", cls: "pill-warn" }, // overridden dynamically per mode
   departure: { label: "🛫 مغادرة", cls: "pill-err" },
   normal: null
+};
+const TRANSPORT_MODE = {
+  flight: { icon: '✈️', label: 'الطائرة' },
+  train:  { icon: '🚆', label: 'القطار' },
+  bus:    { icon: '🚌', label: 'الحافلة' },
+  ferry:  { icon: '⛴️', label: 'العبّارة' },
+  car:    { icon: '🚗', label: 'السيارة' },
 };
 
 // Default empty itinerary (12 days)
@@ -5032,7 +5055,10 @@ function resetCityColors() {
 function renderDayContent() {
   const day = state.itinerary[state.activeDayIdx];
   const c = cityById(day.city);
-  const typeLabel = TYPE_LABELS[day.type];
+  const modeInfo = TRANSPORT_MODE[day.flight?.mode] || TRANSPORT_MODE.flight;
+  const typeLabel = day.type === 'transit'
+    ? { label: `${modeInfo.icon} تنقل`, cls: 'pill-warn' }
+    : TYPE_LABELS[day.type];
 
   let html = `
     <div class="day-hdr ${day.type !== 'normal' ? day.type : ''}">
@@ -5049,21 +5075,9 @@ function renderDayContent() {
     </div>
 
     <div class="day-toolbar">
-      <button class="day-tb-btn day-tb-pri" onclick="openItemPicker(${state.activeDayIdx})" title="إضافة نشاط لهذا اليوم">
+      <button class="day-tb-btn day-tb-pri" onclick="_dayAddMenu(${state.activeDayIdx},event)" title="إضافة">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <span>إضافة نشاط</span>
-      </button>
-      <button class="day-tb-btn day-tb-pri" onclick="setDayMeta()" title="تعديل بيانات اليوم">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        <span>تعديل اليوم</span>
-      </button>
-      <button class="day-tb-btn" onclick="addNewDay(${state.activeDayIdx})" title="إضافة يوم جديد بعد هذا">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <span>يوم جديد</span>
-      </button>
-      <button class="day-tb-btn" onclick="openCityTransferModal(${state.activeDayIdx})" title="تسجيل انتقال لمدينة أخرى">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-        <span>انتقال مدينة</span>
+        <span>إضافة ▾</span>
       </button>
       <div class="day-tb-spacer"></div>
       <div class="day-tb-menu-wrap">
@@ -5071,6 +5085,11 @@ function renderDayContent() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
         </button>
         <div class="day-tb-menu" id="day-tb-menu" hidden>
+          <button class="day-tb-mi" onclick="closeDayMenu();setDayMeta()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            تعديل اليوم
+          </button>
+          <div class="day-tb-mi-sep"></div>
           <button class="day-tb-mi" onclick="closeDayMenu();duplicateDay(${state.activeDayIdx})">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             نسخ هذا اليوم
@@ -5111,16 +5130,20 @@ function renderDayContent() {
     }
   }
 
-  // Flight banner
+  // Flight/transport banner
   if (day.flight) {
     const f = day.flight;
-    let txt = `<strong>${day.type === 'arrival' ? '🛬 الوصول:' : day.type === 'departure' ? '🛫 المغادرة:' : '✈️ التنقل:'}</strong> `;
-    txt += `${f.from} → ${f.to}`;
+    const fm = TRANSPORT_MODE[f.mode] || TRANSPORT_MODE.flight;
+    const typePrefix = day.type === 'arrival' ? '🛬 الوصول:' : day.type === 'departure' ? '🛫 المغادرة:' : `${fm.icon} ${fm.label}:`;
+    let txt = `<strong>${typePrefix}</strong> ${f.from} → ${f.to}`;
     if (f.depTime) txt += ` · انطلاق ${f.depTime}`;
     if (f.arrTime) txt += ` · وصول ${f.arrTime}`;
+    if (f.ref) txt += ` · <span style="opacity:.8">رقم الحجز: ${f.ref}</span>`;
     html += `<div class="fl-bnr">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
-      <span>${txt}</span>
+      <div style="flex:1">
+        <span>${txt}</span>
+        ${f.bookingLink ? `<div style="margin-top:.35rem"><a href="${f.bookingLink}" target="_blank" style="font-size:.75rem;color:#b45309;font-weight:600;text-decoration:none">🎫 فتح التذكرة ↗</a></div>` : ''}
+      </div>
     </div>`;
   }
 
@@ -5342,10 +5365,15 @@ function renderTimelineItem(it) {
   }
 
   const isCritical = it.type === 'transport' || it.locked;
+  const doneClass = it.done ? 'tl-row-done' : '';
+  const lockClass = it.locked ? 'tl-row-locked' : '';
+  const critClass = isCritical ? 'tl-critical' : '';
   return `
-    <div class="tl-row t-${it.type} ${it.done ? 'tl-row-done' : ''} ${it.locked ? 'tl-row-locked' : ''} ${isCritical ? 'tl-critical' : ''}">
-      <div class="tl-time">${it.time || '—'}</div>
-      <div class="tl-dot"></div>
+    <div class="tl-row t-${it.type} ${doneClass} ${lockClass} ${critClass}">
+      <div class="tl-row-hd">
+        <div class="tl-dot"></div>
+        <span class="tl-time">${it.time || '—'}</span>
+      </div>
       <div class="tl-card ${cardClass}">
         <div class="tl-card-ic" style="background:${icBg};color:${icColor}">${ref?.icon || t.icon}</div>
         <div class="tl-card-info">
@@ -5353,6 +5381,7 @@ function renderTimelineItem(it) {
             ${it.type === 'transport' ? '<span class="tl-critical-badge">⚡ موعد حرج</span>' : ''}
             ${it.text}
             ${it.locked ? '<span class="tl-lock" title="بند مقفول - حجز مهم">🔒</span>' : ''}
+            ${it.done ? '<span style="font-size:.7rem;color:var(--ok);margin-right:.3rem">✓ مكتمل</span>' : ''}
           </div>
           <div class="tl-card-m">
             ${typePill}
@@ -5366,23 +5395,9 @@ function renderTimelineItem(it) {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
             فتح رابط الحجز
           </a>` : ''}
-          <div class="tl-card-acts">
-            ${(it.text || lat) ? `<a class="tl-card-act" href="${_mapsUrl((it.text || (lat+','+(lng||''))), it.text ? ref?.area : '')}" target="_blank">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>
-              خرائط
-            </a>` : ''}
-            <button class="tl-card-act" onclick="editItem('${it.id}')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg>
-              تعديل
-            </button>
-            <button class="tl-card-act tl-card-done ${it.done ? 'is-done' : ''}" onclick="toggleItemDone('${it.id}')" title="${it.done ? 'إلغاء الإكمال' : 'تم'}">
-              ${it.done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>'}
-              ${it.done ? 'مكتمل' : 'تم'}
-            </button>
-          </div>
         </div>
-        <button class="tl-card-x" onclick="removeItem('${it.id}')" title="حذف">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <button class="tl-card-menu" onclick="_cardMenu('${it.id}',event)" title="خيارات">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></svg>
         </button>
       </div>
     </div>
@@ -5400,6 +5415,57 @@ function removeItem(id) {
   day.items = day.items.filter(i => i.id !== id);
   saveItin();
   renderDayContent();
+}
+
+function _closeMenus() {
+  document.querySelectorAll('.tl-menu-popup,.day-tb-drop').forEach(e => e.remove());
+}
+
+function _cardMenu(id, ev) {
+  _closeMenus();
+  const day = state.itinerary[state.activeDayIdx];
+  const it = day?.items.find(x => x.id === id);
+  if (!it) return;
+  const ref = it.refId ? libById(it.refId) : null;
+  const mapsHref = _mapsUrl(it.text || '', ref?.area || '');
+  const menu = document.createElement('div');
+  menu.className = 'tl-menu-popup';
+  menu.innerHTML = `
+    <a href="${mapsHref}" target="_blank" class="tl-menu-item">📍 خرائط</a>
+    <button class="tl-menu-item" onclick="_closeMenus();editItem('${id}')">✏️ تعديل</button>
+    <button class="tl-menu-item" onclick="_closeMenus();toggleItemDone('${id}')">${it.done ? '↩️ إلغاء الإكمال' : '✅ تم'}</button>
+    <button class="tl-menu-item tl-menu-danger" onclick="_closeMenus();removeItem('${id}')">🗑️ حذف</button>
+  `;
+  const rect = ev.currentTarget.getBoundingClientRect();
+  const left = Math.max(4, rect.left - 148);
+  const top = Math.min(rect.bottom + 4, window.innerHeight - 200);
+  menu.style.cssText = `position:fixed;left:${left}px;top:${top}px`;
+  document.body.appendChild(menu);
+  ev.stopPropagation();
+  setTimeout(() => document.addEventListener('click', _closeMenus, { once: true }), 0);
+}
+
+function _dayAddMenu(dayIdx, ev) {
+  _closeMenus();
+  const menu = document.createElement('div');
+  menu.className = 'day-tb-drop';
+  menu.innerHTML = `
+    <button class="day-tb-drop-item" onclick="_closeMenus();openItemPicker(${dayIdx})">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>إضافة نشاط
+    </button>
+    <div class="day-tb-drop-sep"></div>
+    <button class="day-tb-drop-item" onclick="_closeMenus();addNewDay(${dayIdx})">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>يوم جديد بعد هذا
+    </button>
+    <button class="day-tb-drop-item" onclick="_closeMenus();openCityTransferModal(${dayIdx})">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>انتقال لمدينة
+    </button>
+  `;
+  const rect = ev.currentTarget.getBoundingClientRect();
+  menu.style.cssText = `position:fixed;right:${window.innerWidth-rect.right}px;top:${rect.bottom+4}px`;
+  document.body.appendChild(menu);
+  ev.stopPropagation();
+  setTimeout(() => document.addEventListener('click', _closeMenus, { once: true }), 0);
 }
 
 function quickAdd() {
@@ -7519,6 +7585,10 @@ function setDayMeta() {
           <input type="text" class="input" id="dm-flref" value="${day.flight?.ref || ''}" placeholder="مثال: KE1234">
         </div>
         <div class="fld">
+          <label>رابط حجز التذكرة (اختياري)</label>
+          <input type="url" class="input" id="dm-flbooklink" value="${day.flight?.bookingLink || ''}" placeholder="https://korail.com/...">
+        </div>
+        <div class="fld">
           <label>وقت المغادرة من الفندق الحالي</label>
           <input type="time" class="input" id="dm-checkout-time" value="${day.flight?.checkoutTime || ''}">
         </div>
@@ -7590,6 +7660,7 @@ function saveDayMeta() {
       arrTime: $("dm-arr").value,
       mode: $("dm-mode").value,
       ref: $("dm-flref").value.trim(),
+      bookingLink: ($("dm-flbooklink")?.value || '').trim() || null,
       checkoutTime: $("dm-checkout-time").value
     };
   } else {
