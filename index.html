@@ -2659,6 +2659,37 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 </head>
 <body>
 
+<!-- Always-visible static admin login bar (hidden once admin is set) -->
+<div id="static-admin-bar" style="position:fixed;top:0;left:0;right:0;background:#0ea5e9;color:#fff;padding:0.6rem 0.75rem;z-index:9999;display:flex;gap:0.4rem;align-items:center;justify-content:center;flex-wrap:wrap;font-family:system-ui,sans-serif;direction:rtl;box-shadow:0 2px 8px rgba(0,0,0,0.15)">
+  <span style="font-size:0.85rem;font-weight:600">🔐 دخول الإدارة:</span>
+  <input id="static-admin-email" type="email" placeholder="info@mhwar.sa" autocomplete="email" inputmode="email"
+         style="padding:0.45rem 0.6rem;border-radius:6px;border:0;font-size:0.9rem;direction:ltr;min-width:180px">
+  <button onclick="_staticAdminLogin()" style="padding:0.45rem 1rem;background:#fff;color:#0ea5e9;border:0;border-radius:6px;font-weight:700;cursor:pointer">دخول</button>
+  <span id="static-admin-msg" style="font-size:0.8rem"></span>
+</div>
+<script>
+  (function(){
+    if (localStorage.getItem("kt2_is_owner") === "1") {
+      var b = document.getElementById("static-admin-bar"); if (b) b.style.display = "none";
+    } else {
+      // push body content down so the bar doesn't cover it
+      document.body.style.paddingTop = "56px";
+    }
+  })();
+  function _staticAdminLogin(){
+    var v = (document.getElementById("static-admin-email")||{}).value || "";
+    var k = String(v).trim().toLowerCase();
+    var msg = document.getElementById("static-admin-msg");
+    if (k === "info@mhwar.sa" || k === "mhwar2026") {
+      localStorage.setItem("kt2_is_owner","1");
+      if (msg) msg.textContent = "✓ تم — جاري التحويل...";
+      setTimeout(function(){ location.href = "/?dashboard=1"; }, 600);
+    } else {
+      if (msg) msg.textContent = "✗ بريد غير صحيح";
+    }
+  }
+</script>
+
 <!-- Dashboard view (shown when in dashboard mode) -->
 <div id="dashboard-view" hidden></div>
 
@@ -2771,7 +2802,8 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 //   MULTI-TRIP ROUTING & STORAGE
 // ═══════════════════════════════════════════════════════════
 
-const OWNER_KEY = "mhwar2026"; // Primary owner key
+const OWNER_KEY = "mhwar2026"; // Legacy backup key
+const OWNER_EMAIL = "info@mhwar.sa"; // Primary owner identity
 // Additional access keys: stored in localStorage as JSON ["key1","key2",...]
 function getAccessKeys() {
   try { return JSON.parse(localStorage.getItem("kt2_access_keys") || "[]"); } catch { return []; }
@@ -2780,8 +2812,11 @@ function saveAccessKeys(keys) {
   localStorage.setItem("kt2_access_keys", JSON.stringify(keys));
 }
 function isValidAccessKey(key) {
-  if (key === OWNER_KEY) return true;
-  return getAccessKeys().includes(key);
+  if (!key) return false;
+  const k = String(key).trim().toLowerCase();
+  if (k === OWNER_EMAIL.toLowerCase()) return true;
+  if (k === OWNER_KEY.toLowerCase()) return true;
+  return getAccessKeys().some(x => String(x).trim().toLowerCase() === k);
 }
 
 const Trip = {
@@ -4085,9 +4120,10 @@ function renderOverview() {
     ${!isOwner() ? `
       <div class="card" style="border:2px solid var(--accent);padding:1.25rem;margin-bottom:1rem;text-align:center">
         <div style="font-size:1.5rem;margin-bottom:0.5rem">🔐</div>
-        <div style="font-weight:700;font-size:1rem;margin-bottom:0.75rem">دخول الإدارة</div>
-        <input type="password" id="inline-admin-key" class="input" placeholder="أدخل مفتاح الوصول" style="margin-bottom:0.5rem;text-align:center;letter-spacing:0.1em">
-        <button class="btn btn-pri" style="width:100%;margin-top:0.25rem" onclick="_inlineAdminLogin()">دخول</button>
+        <div style="font-weight:700;font-size:1rem;margin-bottom:0.5rem">دخول الإدارة</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.75rem">أدخل بريدك الإلكتروني المعتمد للوصول</div>
+        <input type="email" id="inline-admin-key" class="input" placeholder="info@mhwar.sa" autocomplete="email" inputmode="email" style="margin-bottom:0.5rem;text-align:center;direction:ltr">
+        <button class="btn btn-pri" style="width:100%;margin-top:0.25rem;font-size:1rem;padding:0.85rem" onclick="_inlineAdminLogin()">دخول</button>
         <div id="inline-admin-status" style="margin-top:0.4rem;font-size:0.78rem"></div>
         <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border)">
           <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem">أو تحميل بيانات رحلة برمز</div>
