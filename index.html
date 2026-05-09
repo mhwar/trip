@@ -1779,13 +1779,13 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 /* Timeline */
 .tl {
   position: relative;
-  padding-right: 1.25rem;
+  padding-right: 2.25rem;
   margin-bottom: 1rem;
 }
 .tl::before {
   content: '';
   position: absolute;
-  right: 0.5rem;
+  right: 1rem;
   top: 0.5rem;
   bottom: 0.5rem;
   width: 2px;
@@ -1796,13 +1796,13 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   position: relative;
   margin-bottom: 0.65rem;
 }
-/* Header row: dot + time label, pulled into the line area */
+/* Header row: squircle icon + time label, pulled into the line area */
 .tl-row-hd {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  margin-right: -1.125rem;
-  margin-bottom: 0.25rem;
+  margin-right: -2rem;
+  margin-bottom: 0.3rem;
   position: relative;
   z-index: 1;
 }
@@ -1813,23 +1813,16 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   color: var(--muted);
   letter-spacing: 0.01em;
 }
-.tl-dot {
-  width: 0.75rem; height: 0.75rem;
-  border-radius: 50%;
-  background: var(--accent);
-  border: 2.5px solid var(--bg);
+/* Squircle activity icon (replaces plain dot) */
+.tl-dot-icon {
+  width: 1.75rem; height: 1.75rem;
+  border-radius: 0.4rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.95rem;
   flex-shrink: 0;
-  position: relative;
+  border: 2px solid var(--bg);
+  box-shadow: 0 1px 4px rgba(0,0,0,.09);
 }
-.tl-row.t-food .tl-dot { background: var(--persimmon); }
-.tl-row.t-attraction .tl-dot { background: var(--accent); }
-.tl-row.t-entertainment .tl-dot { background: #e11d48; }
-.tl-row.t-tour .tl-dot { background: #0891b2; }
-.tl-row.t-transport .tl-dot { background: var(--warn); }
-.tl-row.t-hotel .tl-dot { background: var(--gold); }
-.tl-row.t-mosque .tl-dot { background: #047857; }
-.tl-row.t-shop .tl-dot { background: #7c3aed; }
-.tl-row.t-festival .tl-dot { background: #db2777; }
 .tl-card {
   background: var(--paper);
   border: 1px solid var(--border);
@@ -1860,14 +1853,18 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   margin-top: 0.4rem;
   line-height: 1.55;
 }
-.tl-card-ic {
-  width: 1.6rem; height: 1.6rem;
-  border-radius: 6px;
-  background: var(--cream);
-  display: flex; align-items: center; justify-content: center;
+/* Note icon squircle inside card */
+.tl-note-ic {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.1rem; height: 1.1rem;
+  border-radius: 0.25rem;
+  background: rgba(100,116,139,0.12);
+  color: #64748b;
   flex-shrink: 0;
-  font-size: 0.85rem;
+  vertical-align: middle;
 }
+.tl-note-ic svg { width: 0.6rem; height: 0.6rem; }
+.tl-item-notes { display: flex; align-items: flex-start; gap: 0.35rem; }
 .tl-card-info { flex: 1; min-width: 0; }
 .tl-card-t {
   font-size: 0.8rem;
@@ -2202,7 +2199,7 @@ footer p { font-size: 0.7rem; color: var(--muted); }
    ═════════════════════════════════════════ */
 /* ── Critical items (transport + locked) ── */
 .tl-row.tl-critical .tl-card{background:#fffbeb}
-.tl-row.tl-critical .tl-dot{background:#f59e0b;border-color:#d97706}
+.tl-row.tl-critical .tl-dot-icon{box-shadow:0 0 0 2px #fde68a,0 1px 4px rgba(0,0,0,.09)}
 .tl-row.tl-critical .tl-time{color:#b45309;font-weight:700}
 .tl-critical-badge{font-size:.65rem;background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-radius:6px;padding:.1rem .4rem;font-weight:600;white-space:nowrap;margin-right:.25rem}
 /* ── Last-night hotel warning ── */
@@ -5371,11 +5368,10 @@ function renderTimelineItem(it) {
   return `
     <div class="tl-row t-${it.type} ${doneClass} ${lockClass} ${critClass}">
       <div class="tl-row-hd">
-        <div class="tl-dot"></div>
+        <div class="tl-dot-icon" style="background:${icBg};color:${icColor}">${ref?.icon || t.icon}</div>
         <span class="tl-time">${it.time || '—'}</span>
       </div>
       <div class="tl-card ${cardClass}">
-        <div class="tl-card-ic" style="background:${icBg};color:${icColor}">${ref?.icon || t.icon}</div>
         <div class="tl-card-info">
           <div class="tl-card-t">
             ${it.type === 'transport' ? '<span class="tl-critical-badge">⚡ موعد حرج</span>' : ''}
@@ -5390,7 +5386,7 @@ function renderTimelineItem(it) {
             ${it.requiresTicket ? '<span class="pill pill-sm pill-ticket">🎟️ يحتاج تذكرة</span>' : ''}
           </div>
           ${noteText ? `<div class="tl-tr-note">${noteText}</div>` : ''}
-          ${it.notes ? `<div class="tl-item-notes">📒 ${it.notes}</div>` : ''}
+          ${it.notes ? `<div class="tl-item-notes"><span class="tl-note-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span><span>${it.notes}</span></div>` : ''}
           ${it.bookingLink ? `<a class="tl-card-link" href="${it.bookingLink}" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
             فتح رابط الحجز
