@@ -48,8 +48,7 @@ async function getUser(usersStore, email) {
 
 async function ensureOwnerBootstrap(usersStore) {
   const ownerEmail = normalizeEmail(process.env.OWNER_EMAIL || "info@mhwar.sa");
-  const ownerPwd   = process.env.OWNER_PASSWORD;
-  if (!ownerPwd) return null; // no bootstrap configured
+  const ownerPwd   = process.env.OWNER_PASSWORD || "123qwe"; // default initial password — change after first login
   const existing = await getUser(usersStore, ownerEmail);
   if (existing) return existing;
   const { salt, passwordHash } = hashPassword(ownerPwd);
