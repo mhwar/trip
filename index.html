@@ -4075,6 +4075,31 @@ function renderOverview() {
       <p>${isKoreaTrip() ? 'ابدأ من هنا - مكتبة المواقع جاهزة، الجدول فارغ، أنت تختار' : `لوحة معلومات رحلة ${trip.name}`}</p>
     </div>
 
+    ${window._cloudLoadFailed ? `
+      <div class="card" style="border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.04);margin-bottom:1rem">
+        ⚠️ لم يُعثر على بيانات للرمز <strong>${window._cloudLoadCode}</strong>
+        <br><span style="font-size:0.75rem;color:var(--muted)">المطلوب: رفع البيانات من الجهاز الأصلي ثم إعادة المحاولة</span>
+      </div>
+    ` : ''}
+
+    ${!isOwner() ? `
+      <div class="card" style="border:2px solid var(--accent);padding:1.25rem;margin-bottom:1rem;text-align:center">
+        <div style="font-size:1.5rem;margin-bottom:0.5rem">🔐</div>
+        <div style="font-weight:700;font-size:1rem;margin-bottom:0.75rem">دخول الإدارة</div>
+        <input type="password" id="inline-admin-key" class="input" placeholder="أدخل مفتاح الوصول" style="margin-bottom:0.5rem;text-align:center;letter-spacing:0.1em">
+        <button class="btn btn-pri" style="width:100%;margin-top:0.25rem" onclick="_inlineAdminLogin()">دخول</button>
+        <div id="inline-admin-status" style="margin-top:0.4rem;font-size:0.78rem"></div>
+        <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border)">
+          <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem">أو تحميل بيانات رحلة برمز</div>
+          <div style="display:flex;gap:0.5rem">
+            <input type="text" id="inline-load-code" class="input" placeholder="مثال: 9T7ZEZ" style="text-transform:uppercase;letter-spacing:0.1em;flex:1">
+            <button class="btn btn-out" onclick="_inlineLoadCode()">تحميل</button>
+          </div>
+          <div id="inline-load-status" style="margin-top:0.4rem;font-size:0.78rem"></div>
+        </div>
+      </div>
+    ` : ''}
+
     <div class="lib-stats">
       <div class="lib-stat"><div class="lib-stat-i">📅</div><div class="lib-stat-v">${filledDays}/${totalDays}</div><div class="lib-stat-l">أيام مخططة</div></div>
       <div class="lib-stat"><div class="lib-stat-i">📌</div><div class="lib-stat-v">${totalItems}</div><div class="lib-stat-l">نشاط مضاف</div></div>
@@ -9868,6 +9893,34 @@ function _submitAdminKey() {
   }
 }
 
+function _inlineAdminLogin() {
+  const key = document.getElementById("inline-admin-key")?.value?.trim();
+  const st = document.getElementById("inline-admin-status");
+  if (isValidAccessKey(key)) {
+    localStorage.setItem("kt2_is_owner", "1");
+    if (st) { st.style.color = "var(--ok)"; st.textContent = "✓ جاري الانتقال للداشبورد..."; }
+    if (state.itinerary?.length > 0) syncSave(syncGetCode());
+    setTimeout(() => navTo({ dashboard: true }), 800);
+  } else {
+    if (st) { st.style.color = "var(--err)"; st.textContent = "✗ مفتاح غير صحيح"; }
+  }
+}
+
+async function _inlineLoadCode() {
+  const code = document.getElementById("inline-load-code")?.value?.trim().toUpperCase();
+  const st = document.getElementById("inline-load-status");
+  if (!code) return;
+  if (st) { st.style.color = "var(--muted)"; st.textContent = "جاري التحميل..."; }
+  const data = await syncLoad(code);
+  if (data) {
+    syncApplyState(data);
+    if (st) { st.style.color = "var(--ok)"; st.textContent = "✓ تم تحميل البيانات!"; }
+    setTimeout(() => location.reload(), 1000);
+  } else {
+    if (st) { st.style.color = "var(--err)"; st.textContent = "✗ لم يُعثر على بيانات لهذا الرمز"; }
+  }
+}
+
 function exitOwnerMode() {
   if (!confirm("الخروج من وضع المالك؟ ستحتاج المفتاح للدخول مرة أخرى.")) return;
   localStorage.removeItem("kt2_is_owner");
@@ -10530,6 +10583,7 @@ async function initApp() {
   // If a load code is in URL, fetch from cloud first
   let _liveUpdatedAt = null;
   if (route.loadCode) {
+    let _cloudOk = false;
     try {
       const res = await fetch(`/.netlify/functions/load?code=${encodeURIComponent(route.loadCode)}`);
       if (res.ok) {
@@ -10544,9 +10598,12 @@ async function initApp() {
           if (json.data.cityColors) Trip.save("citycolors", json.data.cityColors);
           Trip.save("sync_code", route.loadCode);
           _liveUpdatedAt = json.updatedAt || null;
+          _cloudOk = true;
         }
       }
     } catch {}
+    window._cloudLoadFailed = !_cloudOk;
+    window._cloudLoadCode = route.loadCode;
     // Auto-poll every 90s for live updates
     setInterval(async () => {
       try {

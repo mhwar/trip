@@ -1,33 +1,35 @@
-import { getStore } from "@netlify/blobs";
+const { getStore } = require("@netlify/blobs");
 
-export default async (req) => {
-  if (req.method !== "POST") {
-    return new Response("Method Not Allowed", { status: 405 });
+exports.handler = async (event) => {
+  if (event.httpMethod !== "POST") {
+    return { statusCode: 405, body: "Method Not Allowed" };
   }
 
   let body;
   try {
-    body = await req.json();
+    body = JSON.parse(event.body);
   } catch {
-    return new Response("Invalid JSON", { status: 400 });
+    return { statusCode: 400, body: "Invalid JSON" };
   }
 
   const { code, data } = body;
   if (!code || typeof code !== "string" || code.length < 4 || !data) {
-    return new Response("Missing or invalid code/data", { status: 400 });
+    return { statusCode: 400, body: "Missing or invalid code/data" };
   }
 
   const safeCode = code.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
-  if (!safeCode) return new Response("Invalid code", { status: 400 });
+  if (!safeCode) return { statusCode: 400, body: "Invalid code" };
 
   try {
     const store = getStore("trip-sync");
     await store.setJSON(safeCode, { data, updatedAt: new Date().toISOString() });
-    return Response.json({ ok: true, code: safeCode });
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ok: true, code: safeCode })
+    };
   } catch (err) {
     console.error("save error:", err);
-    return new Response("Storage error", { status: 500 });
+    return { statusCode: 500, body: "Storage error" };
   }
 };
-
-export const config = { path: "/.netlify/functions/save" };
