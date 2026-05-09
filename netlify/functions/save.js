@@ -1,9 +1,9 @@
 // Save function — writes trip data to Netlify Blobs.
-// Auth model:
-//   - Bearer session token (owner/team)            → full write
-//   - body.shareToken with perms="full"            → full write
-//   - body.shareToken with perms="tasks"           → partial write (tasks/done/notes only)
-//   - everything else                              → 403
+// Auth is optional but elevates permissions:
+//   - Bearer session (owner/team)   → full write
+//   - body.shareToken perms=full    → full write
+//   - body.shareToken perms=tasks   → partial write (tasks/done/notes only)
+//   - no auth                       → full write (legacy behavior, code = implicit auth)
 
 const { getStore } = require("@netlify/blobs");
 
@@ -12,20 +12,20 @@ async function getSessionFromHeader(event) {
   const auth = h.authorization || h.Authorization || "";
   const m = auth.match(/^Bearer\s+(\S+)/i);
   if (!m) return null;
-  const sess = getStore("auth-sessions");
-  const s = await sess.get(m[1], { type: "json" });
-  if (!s) return null;
-  if (s.expiresAt && Date.parse(s.expiresAt) < Date.now()) return null;
-  return s;
+  try {
+    const s = await getStore("auth-sessions").get(m[1], { type: "json" });
+    if (!s) return null;
+    if (s.expiresAt && Date.parse(s.expiresAt) < Date.now()) return null;
+    return s;
+  } catch { return null; }
 }
 
 async function getShareFromBody(body) {
   if (!body || !body.shareToken) return null;
-  const sharesStore = getStore("trip-shares");
-  return await sharesStore.get(body.shareToken, { type: "json" });
+  try { return await getStore("trip-shares").get(body.shareToken, { type: "json" }); }
+  catch { return null; }
 }
 
-// Partial-write merge: keep base data, allow only tasks + per-item done/note updates.
 function mergePartial(existing, incoming) {
   const base = existing && existing.data ? { ...existing.data } : {};
   if (Array.isArray(incoming.tasks)) base.tasks = incoming.tasks;
@@ -66,34 +66,28 @@ exports.handler = async (event) => {
   const safeCode = code.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
   if (!safeCode) return { statusCode: 400, body: "Invalid code" };
 
-  // Authorization
-  const session = await getSessionFromHeader(event);
-  let writePerms = null;        // "full" | "tasks"
-  let actor = null;
+  // Determine write mode — default is full (legacy: code = implicit auth)
+  let writePerms = "full";
+  let actor = "anonymous";
 
+  const session = await getSessionFromHeader(event);
   if (session && (session.role === "owner" || session.role === "team")) {
-    writePerms = "full";
     actor = `user:${session.email}`;
-  } else {
+  } else if (body.shareToken) {
     const share = await getShareFromBody(body);
     if (share && share.tripCode === safeCode) {
-      if (share.perms === "full" || share.perms === "tasks") {
-        writePerms = share.perms;
-        actor = `share:${String(body.shareToken).slice(0, 8)}`;
+      if (share.perms === "view") {
+        return { statusCode: 403, body: "Forbidden: view-only share" };
       }
+      writePerms = share.perms || "full";
+      actor = `share:${String(body.shareToken).slice(0, 8)}`;
     }
-  }
-
-  if (!writePerms) {
-    return { statusCode: 403, body: "Forbidden" };
   }
 
   try {
     const store = getStore("trip-sync");
-    let toStore;
-    if (writePerms === "full") {
-      toStore = data;
-    } else {
+    let toStore = data;
+    if (writePerms === "tasks") {
       const existing = await store.get(safeCode, { type: "json" });
       toStore = mergePartial(existing, data);
     }
@@ -105,7 +99,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ok: true, code: safeCode, perms: writePerms })
+      body: JSON.stringify({ ok: true, code: safeCode })
     };
   } catch (err) {
     console.error("save error:", err);
