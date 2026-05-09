@@ -4417,7 +4417,7 @@ const state = {
   activeCity: "seoul",
   cityTab: "overview", // overview | districts | transport | events
   taskFilter: "all", // all | undone | done | <category>
-  libFilters: { type: "all", city: "all", halal: false, gf: false, q: "" },
+  libFilters: { types: [], city: "all", halal: false, gf: false, q: "" },
   mapCity: "all",
   mapLayers: { food: true, attraction: true, entertainment: true, hotel: true, shop: true, mosque: true, festival: true, custom: true, plan: true },
   pickerTab: "library", // library | new
@@ -5251,7 +5251,7 @@ function renderTimelineItem(it) {
             فتح رابط الحجز
           </a>` : ''}
           <div class="tl-card-acts">
-            ${lat && lng ? `<a class="tl-card-act" href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">
+            ${(it.text || lat) ? `<a class="tl-card-act" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((it.text||'') + (ref?.area?' '+ref.area:''))}${(!it.text&&lat&&lng)?lat+','+lng:''}" target="_blank">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>
               خرائط
             </a>` : ''}
@@ -7884,7 +7884,7 @@ function renderCityTabBody() {
         <div class="gr g3">
           ${["food","attraction","entertainment","shop","mosque"].map(t => {
             const count = LIB.filter(l => l.city === c.id && l.type === t).length;
-            return count ? `<button class="card txs" onclick="state.libFilters.city='${c.id}';state.libFilters.type='${t}';switchTab('library')" style="cursor:pointer;text-align:right">
+            return count ? `<button class="card txs" onclick="state.libFilters.city='${c.id}';state.libFilters.types=['${t}'];switchTab('library')" style="cursor:pointer;text-align:right">
               <div style="font-size:1.3rem;margin-bottom:0.2rem">${TYPES[t].icon}</div>
               <div class="fb6 cli">${count} ${TYPES[t].label}</div>
             </button>` : '';
@@ -7913,7 +7913,7 @@ function renderCityTabBody() {
                 <div class="hotel-pr">${h.price} / ليلة</div>
                 <div class="hotel-no">${h.note}</div>
                 <div class="hotel-acts">
-                  <a class="btn btn-sec btn-sm" href="https://www.google.com/maps/search/?api=1&query=${h.lat},${h.lng}" target="_blank">
+                  <a class="btn btn-sec btn-sm" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name)}" target="_blank">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>
                     خرائط
                   </a>
@@ -8258,7 +8258,7 @@ function _showHalalGuide() {
 // ── Library filter sheet ────────────────────────────────────────────────
 function _libFltActiveCount() {
   const f = state.libFilters;
-  return (f.type !== 'all' ? 1 : 0) + (f.halal ? 1 : 0) + (f.gf ? 1 : 0) + (f.fav ? 1 : 0);
+  return (f.types?.length || 0) + (f.halal ? 1 : 0) + (f.gf ? 1 : 0) + (f.fav ? 1 : 0);
 }
 
 function _syncLibFltBar() {
@@ -8277,7 +8277,7 @@ function _buildLibFltTagsHtml() {
   const f = state.libFilters;
   const typeLabels = {food:'مطاعم',attraction:'معالم',entertainment:'ترفيه',shop:'تسوق',mosque:'مساجد',festival:'فعاليات'};
   const tags = [];
-  if(f.type !== 'all') tags.push(`<span class="lib-flt-tag">${typeLabels[f.type]||f.type}<button onclick="state.libFilters.type='all';renderLibList();_syncLibFltBar()" title="إزالة">×</button></span>`);
+  (f.types||[]).forEach(t => tags.push(`<span class="lib-flt-tag">${typeLabels[t]||t}<button onclick="state.libFilters.types=state.libFilters.types.filter(x=>x!=='${t}');renderLibList();_syncLibFltBar()" title="إزالة">×</button></span>`));
   if(f.halal) tags.push(`<span class="lib-flt-tag">🥩 حلال<button onclick="state.libFilters.halal=false;renderLibList();_syncLibFltBar()" title="إزالة">×</button></span>`);
   if(f.gf) tags.push(`<span class="lib-flt-tag">🌾 GF<button onclick="state.libFilters.gf=false;renderLibList();_syncLibFltBar()" title="إزالة">×</button></span>`);
   if(f.fav) tags.push(`<span class="lib-flt-tag">❤️ المفضلة<button onclick="state.libFilters.fav=false;renderLibList();_syncLibFltBar()" title="إزالة">×</button></span>`);
@@ -8305,15 +8305,15 @@ function _openLibFltSheet() {
         <button onclick="document.getElementById('lib-flt-overlay').remove();_syncLibFltBar()" style="background:none;border:0;cursor:pointer;color:#94a3b8;font-size:1.2rem;padding:0;line-height:1">✕</button>
       </div>
 
-      <div class="flt-section-label">النوع</div>
+      <div class="flt-section-label">النوع <span style="font-weight:400;color:#cbd5e1;text-transform:none">(يمكن تحديد أكثر من واحد)</span></div>
       <div class="flt-type-grid">
-        <button class="lib-pill flt-type-btn ${f.type==='all'?'act':''}" data-type="all" onclick="_libFltTypeSet('all')">الكل <span class="lib-pill-count">${total}</span></button>
-        <button class="lib-pill flt-type-btn ${f.type==='food'?'act':''}" data-type="food" onclick="_libFltTypeSet('food')">🍽️ مطاعم <span class="lib-pill-count">${tc.food||0}</span></button>
-        <button class="lib-pill flt-type-btn ${f.type==='attraction'?'act':''}" data-type="attraction" onclick="_libFltTypeSet('attraction')">📍 معالم <span class="lib-pill-count">${tc.attraction||0}</span></button>
-        <button class="lib-pill flt-type-btn ${f.type==='entertainment'?'act':''}" data-type="entertainment" onclick="_libFltTypeSet('entertainment')">🎢 ترفيه <span class="lib-pill-count">${tc.entertainment||0}</span></button>
-        <button class="lib-pill flt-type-btn ${f.type==='shop'?'act':''}" data-type="shop" onclick="_libFltTypeSet('shop')">🛍️ تسوق <span class="lib-pill-count">${tc.shop||0}</span></button>
-        <button class="lib-pill flt-type-btn ${f.type==='mosque'?'act':''}" data-type="mosque" onclick="_libFltTypeSet('mosque')">🕌 مساجد <span class="lib-pill-count">${tc.mosque||0}</span></button>
-        <button class="lib-pill flt-type-btn ${f.type==='festival'?'act':''}" data-type="festival" onclick="_libFltTypeSet('festival')">🎉 فعاليات <span class="lib-pill-count">${tc.festival||0}</span></button>
+        <button class="lib-pill flt-type-btn ${(f.types||[]).length===0?'act':''}" data-type="all" onclick="_libFltTypeSet('all')">الكل <span class="lib-pill-count">${total}</span></button>
+        <button class="lib-pill flt-type-btn ${(f.types||[]).includes('food')?'act':''}" data-type="food" onclick="_libFltTypeSet('food')">🍽️ مطاعم <span class="lib-pill-count">${tc.food||0}</span></button>
+        <button class="lib-pill flt-type-btn ${(f.types||[]).includes('attraction')?'act':''}" data-type="attraction" onclick="_libFltTypeSet('attraction')">📍 معالم <span class="lib-pill-count">${tc.attraction||0}</span></button>
+        <button class="lib-pill flt-type-btn ${(f.types||[]).includes('entertainment')?'act':''}" data-type="entertainment" onclick="_libFltTypeSet('entertainment')">🎢 ترفيه <span class="lib-pill-count">${tc.entertainment||0}</span></button>
+        <button class="lib-pill flt-type-btn ${(f.types||[]).includes('shop')?'act':''}" data-type="shop" onclick="_libFltTypeSet('shop')">🛍️ تسوق <span class="lib-pill-count">${tc.shop||0}</span></button>
+        <button class="lib-pill flt-type-btn ${(f.types||[]).includes('mosque')?'act':''}" data-type="mosque" onclick="_libFltTypeSet('mosque')">🕌 مساجد <span class="lib-pill-count">${tc.mosque||0}</span></button>
+        <button class="lib-pill flt-type-btn ${(f.types||[]).includes('festival')?'act':''}" data-type="festival" onclick="_libFltTypeSet('festival')">🎉 فعاليات <span class="lib-pill-count">${tc.festival||0}</span></button>
       </div>
 
       <div class="flt-section-label">ميزات</div>
@@ -8331,7 +8331,7 @@ function _openLibFltSheet() {
         <option value="type"    ${f.sort==='type'?'selected':''}>النوع</option>
       </select>
 
-      <button class="flt-clear-btn" onclick="state.libFilters={city:state.libFilters.city,type:'all',halal:false,gf:false,fav:false,q:state.libFilters.q,sort:'default'};renderLibList();_syncLibFltBar();document.getElementById('lib-flt-overlay').remove()">
+      <button class="flt-clear-btn" onclick="state.libFilters={city:state.libFilters.city,types:[],halal:false,gf:false,fav:false,q:state.libFilters.q,sort:'default'};renderLibList();_syncLibFltBar();document.getElementById('lib-flt-overlay').remove()">
         🗑️ مسح كل الفلاتر
       </button>
     </div>`;
@@ -8340,10 +8340,21 @@ function _openLibFltSheet() {
 }
 
 function _libFltTypeSet(t) {
-  state.libFilters.type = t;
+  if (!Array.isArray(state.libFilters.types)) state.libFilters.types = [];
+  if (t === 'all') {
+    state.libFilters.types = [];
+  } else {
+    const arr = state.libFilters.types;
+    const i = arr.indexOf(t);
+    if (i >= 0) arr.splice(i, 1); else arr.push(t);
+  }
   renderLibList();
   _syncLibFltBar();
-  document.querySelectorAll('.flt-type-btn').forEach(b => b.classList.toggle('act', b.dataset.type === t));
+  const types = state.libFilters.types;
+  document.querySelectorAll('.flt-type-btn').forEach(b => {
+    if (b.dataset.type === 'all') b.classList.toggle('act', types.length === 0);
+    else b.classList.toggle('act', types.includes(b.dataset.type));
+  });
 }
 
 function _libFltToggle(feat, colorClass) {
@@ -8768,7 +8779,7 @@ function renderLibList() {
         ? l.type === 'festival'
         : (l.city === f.city || l.city === 'all');
     if (!cityMatch) return false;
-    if (f.type !== "all" && l.type !== f.type) return false;
+    if (f.types && f.types.length && !f.types.includes(l.type)) return false;
     if (f.halal && !l.halal) return false;
     if (f.gf && !l.gf) return false;
     if (f.fav && !state.favs.includes(l.id)) return false;
@@ -8788,7 +8799,7 @@ function renderLibList() {
   // Active filter pills
   const activePills = [];
   if (f.city !== "all") activePills.push({ k: 'city', l: cityById(f.city)?.name || f.city, clear: "state.libFilters.city='all'" });
-  if (f.type !== "all") activePills.push({ k: 'type', l: TYPES[f.type]?.label || f.type, clear: "state.libFilters.type='all'" });
+  (f.types||[]).forEach(t => activePills.push({ k: 'type', l: TYPES[t]?.label || t, clear: `state.libFilters.types=state.libFilters.types.filter(x=>x!=='${t}')` }));
   if (f.halal) activePills.push({ k: 'halal', l: '🥩 حلال', clear: "state.libFilters.halal=false" });
   if (f.gf) activePills.push({ k: 'gf', l: '🌾 GF', clear: "state.libFilters.gf=false" });
   if (f.fav) activePills.push({ k: 'fav', l: '❤️ مفضلة', clear: "state.libFilters.fav=false" });
@@ -8836,7 +8847,7 @@ function renderLibList() {
 }
 
 function resetFilters() {
-  state.libFilters = { type: 'all', city: 'all', halal: false, gf: false, fav: false, q: '', sort: 'default' };
+  state.libFilters = { types: [], city: 'all', halal: false, gf: false, fav: false, q: '', sort: 'default' };
   renderLibrary();
 }
 
@@ -8869,7 +8880,7 @@ function renderPOI(l) {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           أضف ليوم
         </button>
-        ${l.lat && l.lng ? `<a class="poi-link" href="https://www.google.com/maps/search/?api=1&query=${l.lat},${l.lng}" target="_blank" title="فتح بالخرائط">
+        ${l.name ? `<a class="poi-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.name + (l.area?' '+l.area:''))}" target="_blank" title="فتح بالخرائط">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         </a>` : ''}
         ${l.custom ? `<button class="poi-link" onclick="deleteCustom('${l.id}')" title="حذف" style="color:var(--persimmon)">
@@ -9023,7 +9034,7 @@ function drawMarkers() {
         ${noteShort?`<div style="font-size:.8rem;margin-bottom:.4rem;color:#374151">${noteShort}</div>`:''}
         ${l.halal?'<span style="background:#dcfce7;color:#166534;font-size:.7rem;padding:.1rem .4rem;border-radius:4px;margin-left:.25rem">حلال</span>':''}
         ${l.gf?'<span style="background:#fef9c3;color:#854d0e;font-size:.7rem;padding:.1rem .4rem;border-radius:4px">GF</span>':''}
-        ${l.lat?`<div style="margin-top:.4rem"><a href="https://www.google.com/maps/search/?api=1&query=${l.lat},${l.lng}" target="_blank" style="font-size:.72rem;color:#2563eb">فتح بخرائط Google</a></div>`:''}
+        ${l.name?`<div style="margin-top:.4rem"><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.name + (l.area?' '+l.area:''))}" target="_blank" style="font-size:.72rem;color:#2563eb">فتح بخرائط Google ↗</a></div>`:''}
       </div>
     `, { maxWidth: 220 });
     clusterGroup ? clusterGroup.addLayer(marker) : marker.addTo(state.mapMarkers);
