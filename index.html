@@ -762,6 +762,26 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .day-hotel-empty-d { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
 .day-hotel-empty:hover .day-hotel-empty-t { color: var(--accent-dk); }
 .day-hotel-empty svg { color: var(--accent); flex-shrink: 0; }
+.day-hotel-out{background:#fef2f2;border-color:#fecaca}
+.day-hotel-out .day-hotel-ic{color:#991b1b}
+.day-hotel-out .day-hotel-n{color:#991b1b}
+.day-hotel-out-add{display:inline-flex;align-items:center;gap:.35rem;font-size:.72rem;padding:.3rem .7rem;border:1.5px dashed #fca5a5;border-radius:999px;background:transparent;color:#991b1b;cursor:pointer;font-family:inherit;margin-bottom:.85rem;transition:all .15s}
+.day-hotel-out-add:hover{background:#fef2f2;border-style:solid}
+
+/* Day progress bar */
+.day-progress{position:relative;height:6px;border-radius:3px;background:#e5e7eb;margin-bottom:1.1rem;margin-top:.3rem;overflow:visible}
+.day-progress-bar{height:100%;background:linear-gradient(90deg,#10b981,#059669);border-radius:3px;transition:width .3s}
+.day-progress-text{position:absolute;left:50%;top:-18px;transform:translateX(-50%);font-size:.7rem;color:#475569;background:#fff;padding:0 .4rem;white-space:nowrap}
+
+/* Timeline gap (idle time) */
+.tl-gap{display:flex;justify-content:center;align-items:center;padding:.4rem 0;font-size:.7rem;color:#94a3b8;position:relative}
+.tl-gap::before,.tl-gap::after{content:"";flex:1;border-top:1px dashed #e5e7eb;align-self:center;margin:0 .6rem}
+
+/* Travel day hero */
+.travel-day-hero{padding:2rem 1rem;text-align:center;background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #fcd34d;border-radius:16px;margin:1rem 0}
+.travel-day-icon{font-size:3rem;margin-bottom:.5rem}
+.travel-day-title{font-size:1.2rem;font-weight:700;color:#78350f;margin-bottom:.25rem}
+.travel-day-sub{font-size:.85rem;color:#92400e}
 
 /* Hotel picker modal */
 .hotel-pick-nights {
@@ -1101,13 +1121,16 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .guide-btn{flex:1;display:flex;align-items:center;gap:.6rem;padding:.65rem .85rem;border-radius:12px;cursor:pointer;font-family:inherit;border:1.5px solid;text-align:right}
 .guide-btn-gf{background:linear-gradient(135deg,#fefce8,#fef9c3);border-color:#fde047}
 .guide-btn-hl{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#86efac}
+.guide-btn-tr{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-color:#93c5fd}
 .guide-btn-inner{flex:1}
 .guide-btn-title{font-weight:700;font-size:.85rem}
 .guide-btn-gf .guide-btn-title{color:#713f12}
 .guide-btn-hl .guide-btn-title{color:#14532d}
+.guide-btn-tr .guide-btn-title{color:#1e3a8a}
 .guide-btn-sub{font-size:.71rem;margin-top:.1rem}
 .guide-btn-gf .guide-btn-sub{color:#a16207}
 .guide-btn-hl .guide-btn-sub{color:#166534}
+.guide-btn-tr .guide-btn-sub{color:#1d4ed8}
 
 /* ── Guide popup ── */
 .guide-ref-chip{display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .65rem;border-radius:8px;background:#f1f5f9;border:1px solid #e2e8f0;font-size:.75rem;color:#334155;text-decoration:none;margin:.2rem}
@@ -5012,6 +5035,10 @@ function renderDayContent() {
     </div>
 
     <div class="day-toolbar">
+      <button class="day-tb-btn day-tb-pri" onclick="openItemPicker(${state.activeDayIdx})" title="إضافة نشاط لهذا اليوم">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>إضافة نشاط</span>
+      </button>
       <button class="day-tb-btn day-tb-pri" onclick="setDayMeta()" title="تعديل بيانات اليوم">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
         <span>تعديل اليوم</span>
@@ -5057,6 +5084,19 @@ function renderDayContent() {
     </div>
   `;
 
+  // ─── Day progress bar (only when there are items and at least one done) ───
+  if (day.items && day.items.length > 0) {
+    const totalCount = day.items.length;
+    const doneCount = day.items.filter(i => i.done).length;
+    const pct = Math.round((doneCount / totalCount) * 100);
+    if (pct > 0) {
+      html += `<div class="day-progress">
+        <div class="day-progress-bar" style="width:${pct}%"></div>
+        <span class="day-progress-text">${doneCount} من ${totalCount} مكتمل</span>
+      </div>`;
+    }
+  }
+
   // Flight banner
   if (day.flight) {
     const f = day.flight;
@@ -5070,16 +5110,43 @@ function renderDayContent() {
     </div>`;
   }
 
+  // ─── Checkout-hotel banner (the hotel being left in the morning) ───
+  if (day.hotelOut && day.hotelOut.name) {
+    const ho = day.hotelOut;
+    const hoMaps = ho.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ho.address)}` : null;
+    html += `<div class="day-hotel day-hotel-out">
+      <div class="day-hotel-ic">🛬</div>
+      <div class="day-hotel-bd">
+        <div class="day-hotel-n">
+          <span class="day-hotel-night-pill" style="background:#fef2f2;color:#991b1b">خروج</span>
+          ${ho.name}
+        </div>
+        ${ho.address ? `<div class="txs clm">📍 ${ho.address}</div>` : (ho.area ? `<div class="txs clm">📍 ${ho.area}</div>` : '')}
+        <div class="day-hotel-m">
+          <span>🔴 خروج ${ho.checkOut || '11:00'}</span>
+        </div>
+        ${ho.notes ? `<div class="txs cls" style="margin-top:0.3rem">${ho.notes}</div>` : ''}
+        <div class="day-hotel-acts">
+          ${hoMaps ? `<a class="day-hotel-act" href="${hoMaps}" target="_blank">📍 خرائط</a>` : ''}
+          <button class="day-hotel-act" onclick="setDayHotelOut(${state.activeDayIdx})">✏️ تعديل</button>
+          <button class="day-hotel-act day-hotel-act-danger" onclick="clearDayHotelOut(${state.activeDayIdx})">🗑️ إزالة</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
   // ─── Hotel banner (always visible) ───
   if (day.hotel && day.hotel.name) {
     const h = day.hotel;
     const isCheckIn = h.isFirst;
     const isCheckOut = h.isLast && h.totalNights > 1;
     const mapsLink = h.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.address)}` : null;
+    const hasHotelOut = !!(day.hotelOut && day.hotelOut.name);
     html += `<div class="day-hotel">
       <div class="day-hotel-ic">🏨</div>
       <div class="day-hotel-bd">
         <div class="day-hotel-n">
+          ${hasHotelOut ? `<span class="day-hotel-night-pill" style="background:#dcfce7;color:#166534">🛏️ مبيت الليلة</span>` : ''}
           ${h.totalNights > 1 ? `<span class="day-hotel-night-pill">ليلة ${h.nightIndex}/${h.totalNights}</span>` : ''}
           ${h.name}
         </div>
@@ -5098,6 +5165,10 @@ function renderDayContent() {
         </div>
       </div>
     </div>`;
+    // Offer to add a checkout hotel (for transition days) when not already set
+    if (!day.hotelOut) {
+      html += `<button class="day-hotel-out-add" onclick="setDayHotelOut(${state.activeDayIdx})">+ إضافة فندق خروج (للانتقال)</button>`;
+    }
   } else {
     html += `<button class="day-hotel-empty" onclick="openDayHotelPicker(${state.activeDayIdx})">
       <div class="day-hotel-empty-ic">🏨</div>
@@ -5137,29 +5208,51 @@ function renderDayContent() {
 
   // Timeline
   if (day.items.length === 0) {
-    html += `<div class="empty">
-      <div class="empty-i">📍</div>
-      <div class="empty-t">لا توجد أنشطة لهذا اليوم</div>
-      <p class="empty-d">اضغط الزر أدناه لإضافة بند بفئته (سكن، مواصلات، وجبة، نشاط، جولة، راحة، ملاحظة)</p>
-      <div class="empty-acts">
-        <button class="btn btn-pri" onclick="openItemPicker(${state.activeDayIdx})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          + إضافة بند
-        </button>
-      </div>
-    </div>`;
+    // Travel-day special view: when the day is purely a flight/transit day
+    if (day.flight) {
+      const f = day.flight;
+      const flightFromTo = `${f.from || ''} → ${f.to || ''}`;
+      const heroTitle = day.type === 'arrival' ? 'يوم الوصول' : day.type === 'departure' ? 'يوم المغادرة' : 'يوم انتقال';
+      html += `<div class="travel-day-hero">
+        <div class="travel-day-icon">✈️</div>
+        <div class="travel-day-title">${heroTitle}</div>
+        <div class="travel-day-sub">${flightFromTo}</div>
+        <button onclick="openItemPicker(${state.activeDayIdx})" class="btn btn-pri" style="margin-top:1rem">+ إضافة نشاط في هذا اليوم</button>
+      </div>`;
+    } else {
+      html += `<div class="empty">
+        <div class="empty-i">📍</div>
+        <div class="empty-t">لا توجد أنشطة لهذا اليوم</div>
+        <p class="empty-d">اضغط الزر أدناه لإضافة بند بفئته (سكن، مواصلات، وجبة، نشاط، جولة، راحة، ملاحظة)</p>
+        <div class="empty-acts">
+          <button class="btn btn-pri" onclick="openItemPicker(${state.activeDayIdx})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            + إضافة بند
+          </button>
+        </div>
+      </div>`;
+    }
   } else {
     const sorted = [...day.items].sort((a,b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
 
-    // Build timeline with buffer separators
+    // Build timeline with buffer / gap separators
     let timelineHTML = '';
     sorted.forEach((it, i) => {
       // Add buffer time separator before this item (except first)
       if (i > 0) {
         const prev = sorted[i - 1];
-        const buffer = computeBuffer(prev.time, it.time);
-        if (buffer) {
-          timelineHTML += `<div class="tl-buffer"><span class="tl-buffer-l">⏱️ ${buffer}</span></div>`;
+        const gapMins = _timeGapMins(prev.time, it.time);
+        if (gapMins !== null && gapMins > 60) {
+          // Long gap → idle / free time indicator
+          const gh = Math.floor(gapMins / 60);
+          const gm = gapMins % 60;
+          const gapTxt = gm === 0 ? `${gh}س` : `${gh}س ${gm}د`;
+          timelineHTML += `<div class="tl-gap"><span>⏸ ${gapTxt} وقت حر</span></div>`;
+        } else {
+          const buffer = computeBuffer(prev.time, it.time);
+          if (buffer) {
+            timelineHTML += `<div class="tl-buffer"><span class="tl-buffer-l">⏱️ ${buffer}</span></div>`;
+          }
         }
       }
       timelineHTML += renderTimelineItem(it);
@@ -5747,6 +5840,17 @@ function shortText(s) {
 }
 
 // Compute buffer time between two consecutive items
+// Returns gap in minutes between two "HH:MM" strings, or null if either missing/invalid
+function _timeGapMins(t1, t2) {
+  if (!t1 || !t2) return null;
+  const p1 = t1.split(":").map(Number);
+  const p2 = t2.split(":").map(Number);
+  if (p1.length < 2 || p2.length < 2 || isNaN(p1[0]) || isNaN(p2[0])) return null;
+  const m1 = p1[0] * 60 + (p1[1] || 0);
+  const m2 = p2[0] * 60 + (p2[1] || 0);
+  return m2 - m1;
+}
+
 function computeBuffer(prevTime, nextTime) {
   if (!prevTime || !nextTime) return null;
   const [h1, m1] = prevTime.split(":").map(Number);
@@ -7720,6 +7824,35 @@ function clearDayHotel(dayIdx) {
   renderItinerary();
 }
 
+// ─── Checkout-hotel (the hotel you check OUT of in the morning) ───
+function setDayHotelOut(dayIdx) {
+  const day = state.itinerary[dayIdx];
+  const cur = day.hotelOut || {};
+  const name = prompt("اسم فندق الخروج (الذي ستغادره صباحاً):", cur.name || "");
+  if (name === null) return; // cancelled
+  if (!name.trim()) { alert("يجب إدخال اسم الفندق"); return; }
+  const area = prompt("المنطقة / الحي (اختياري):", cur.area || "") || "";
+  const address = prompt("العنوان (اختياري):", cur.address || "") || "";
+  const checkOut = prompt("وقت الخروج (مثال: 11:00):", cur.checkOut || "11:00") || "";
+  const notes = prompt("ملاحظات (اختياري):", cur.notes || "") || "";
+  day.hotelOut = {
+    name: name.trim(),
+    area: area.trim(),
+    address: address.trim(),
+    checkOut: checkOut.trim(),
+    notes: notes.trim()
+  };
+  saveItin();
+  renderItinerary();
+}
+
+function clearDayHotelOut(dayIdx) {
+  if (!confirm("إزالة فندق الخروج من هذا اليوم؟")) return;
+  state.itinerary[dayIdx].hotelOut = null;
+  saveItin();
+  renderItinerary();
+}
+
 // ═══════════════════════════════════════════════════════════
 //   EDIT ITEM
 // ═══════════════════════════════════════════════════════════
@@ -8255,6 +8388,161 @@ function _showHalalGuide() {
   document.body.appendChild(overlay);
 }
 
+function _showTransportGuide() {
+  const metro = `
+    <div style="margin-top:.6rem">
+      <div style="font-size:.72rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.5rem">🚇 مترو المدن</div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🚇</span>
+        <div style="flex:1"><div class="guide-product-name">Seoul Metro — مترو سيول</div><div class="guide-product-where">23 خط · أوسع شبكة في آسيا · يغطي كل المعالم</div></div>
+        <a class="guide-product-search" href="https://www.seoulmetro.co.kr/en/" target="_blank">الموقع ↗</a>
+      </div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🚇</span>
+        <div style="flex:1"><div class="guide-product-name">Busan Metro — مترو بوسان</div><div class="guide-product-where">5 خطوط · يصل الميناء وشواطئ هايوندي</div></div>
+        <a class="guide-product-search" href="https://www.humetro.busan.kr/english/" target="_blank">الموقع ↗</a>
+      </div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🚇</span>
+        <div style="flex:1"><div class="guide-product-name">Incheon Metro</div><div class="guide-product-where">خطان رئيسيان + AREX من المطار</div></div>
+        <a class="guide-product-search" href="https://www.icrt.co.kr/en/" target="_blank">الموقع ↗</a>
+      </div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🚇</span>
+        <div style="flex:1"><div class="guide-product-name">Daegu Metro — مترو دايغو</div><div class="guide-product-where">3 خطوط</div></div>
+        <a class="guide-product-search" href="https://www.dtro.or.kr/eng/" target="_blank">الموقع ↗</a>
+      </div>
+    </div>`;
+
+  const tmoney = `
+    <div style="margin-top:1rem;padding:.85rem;background:#dbeafe;border-radius:10px">
+      <div style="font-weight:700;font-size:.82rem;color:#1e3a8a;margin-bottom:.5rem">💳 بطاقة T-Money</div>
+      <ul style="margin:0;padding-right:1.1rem;font-size:.78rem;color:#1d4ed8;line-height:1.9">
+        <li><strong>ما هي:</strong> بطاقة دفع موحّدة للمترو، الحافلات، التاكسي، حتى المتاجر الصغيرة</li>
+        <li><strong>أين تشتريها:</strong> CU / GS25 / 7-Eleven / محطات المترو · ~4,000₩ للبطاقة فارغة</li>
+        <li><strong>كيف تستخدم:</strong> اشحن عند الشباك أو الماكينة، ثم مرّر على القارئ عند الدخول والخروج</li>
+        <li><strong>التخفيضات:</strong> ~100₩ خصم على كل رحلة + تحويلات مجانية بين المترو والحافلة خلال 30د</li>
+      </ul>
+      <div style="margin-top:.5rem"><a class="guide-ref-chip" href="https://www.t-money.co.kr/" target="_blank">🌐 t-money.co.kr</a></div>
+    </div>`;
+
+  const intercity = `
+    <div style="margin-top:1rem">
+      <div style="font-size:.72rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.5rem">🚄 بين المدن — KTX / SRT / Express Bus</div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🚄</span>
+        <div style="flex:1"><div class="guide-product-name">KTX — قطار سريع</div><div class="guide-product-where">305كم/س · سيول→بوسان 2س40د · ~59,800₩</div></div>
+        <a class="guide-product-search" href="https://www.letskorail.com/" target="_blank">حجز ↗</a>
+      </div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🚅</span>
+        <div style="flex:1"><div class="guide-product-name">SRT — بديل أرخص</div><div class="guide-product-where">خطوط مختلفة قليلاً · أسعار أرخص من KTX</div></div>
+        <a class="guide-product-search" href="https://etk.srail.kr/main.do" target="_blank">حجز ↗</a>
+      </div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🚌</span>
+        <div style="flex:1"><div class="guide-product-name">Express Bus — حافلات سريعة</div><div class="guide-product-where">للمدن الأصغر · أرخص لكن أبطأ</div></div>
+        <a class="guide-product-search" href="https://www.kobus.co.kr/" target="_blank">حجز ↗</a>
+      </div>
+    </div>`;
+
+  const airport = `
+    <div style="margin-top:1rem">
+      <div style="font-size:.72rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.5rem">✈️ الوصول من المطار</div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🛬</span>
+        <div style="flex:1"><div class="guide-product-name">Incheon → سيول</div><div class="guide-product-where">AREX Express 43د · All-stop 56د · Limousine Bus · Taxi</div></div>
+      </div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🛬</span>
+        <div style="flex:1"><div class="guide-product-name">Gimhae (Busan) → بوسان</div><div class="guide-product-where">Light Rail · Limousine Bus</div></div>
+      </div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🛬</span>
+        <div style="flex:1"><div class="guide-product-name">Jeju Airport</div><div class="guide-product-where">Bus 600 / 800</div></div>
+      </div>
+    </div>`;
+
+  const apps = `
+    <div style="margin-top:1rem">
+      <div style="font-size:.72rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.5rem">📱 تطبيقات أساسية</div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🗺️</span>
+        <div style="flex:1"><div class="guide-product-name">Naver Map</div><div class="guide-product-where">الأفضل للملاحة في كوريا — أدق من Google</div></div>
+        <a class="guide-product-search" href="https://map.naver.com" target="_blank">الموقع ↗</a>
+      </div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🗺️</span>
+        <div style="flex:1"><div class="guide-product-name">KakaoMap</div><div class="guide-product-where">بديل ممتاز · يدعم تتبع الباصات بدقة</div></div>
+        <a class="guide-product-search" href="https://map.kakao.com" target="_blank">الموقع ↗</a>
+      </div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🚇</span>
+        <div style="flex:1"><div class="guide-product-name">Subway Korea</div><div class="guide-product-where">تطبيق المترو offline لكل المدن</div></div>
+      </div>
+      <div class="guide-product-card" style="background:#eff6ff;border-color:#bfdbfe">
+        <span class="guide-product-icon">🚖</span>
+        <div style="flex:1"><div class="guide-product-name">Kakao T</div><div class="guide-product-where">تاكسي + حجز قطارات + باصات</div></div>
+      </div>
+    </div>`;
+
+  const tips = `
+    <div style="margin-top:1rem;padding:.85rem;background:#dbeafe;border-radius:10px">
+      <div style="font-weight:700;font-size:.82rem;color:#1e3a8a;margin-bottom:.5rem">💡 نصائح عملية</div>
+      <ul style="margin:0;padding-right:1.1rem;font-size:.78rem;color:#1d4ed8;line-height:1.9">
+        <li>اشتر <strong>T-Money</strong> فور وصولك المطار — توفّر وقت ومال</li>
+        <li>استخدم <strong>Naver Map</strong> ليس Google — أدق بكثير في كوريا</li>
+        <li>KTX يحجز مسبقاً للأماكن الجيدة — خاصة الجمعة والأحد</li>
+        <li>في الذروة الصباحية (8-9ص) المترو مزدحم جداً — تجنب إن أمكن</li>
+        <li>التاكسي رخيص نسبياً لكن أحياناً يرفض الإنجليزية — استخدم Kakao T</li>
+      </ul>
+    </div>`;
+
+  const refs = `
+    <div style="margin-top:1rem">
+      <div style="font-size:.7rem;font-weight:700;color:#94a3b8;margin-bottom:.45rem">📚 مراجع وروابط</div>
+      <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+        <a class="guide-ref-chip" href="https://english.visitkorea.or.kr" target="_blank">🇰🇷 Korea Tourism Org</a>
+        <a class="guide-ref-chip" href="https://english.visitkorea.or.kr/enu/TRP/TP_ENG_8_1.jsp" target="_blank">🚆 Visit Korea — Transport</a>
+        <a class="guide-ref-chip" href="https://www.letskorail.com/" target="_blank">🚄 Korail (KTX)</a>
+        <a class="guide-ref-chip" href="https://www.klook.com/en-US/coureg/19-seoul-things-to-do/" target="_blank">🎟️ Klook</a>
+        <a class="guide-ref-chip" href="https://www.kkday.com/en/country/korea" target="_blank">🎟️ KKday</a>
+      </div>
+    </div>`;
+
+  const existing = document.getElementById('transport-guide-overlay');
+  if(existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'transport-guide-overlay';
+  overlay.className = 'flt-sheet-overlay';
+  overlay.innerHTML = `
+    <div class="flt-sheet-box">
+      <div class="flt-sheet-handle"></div>
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem">
+        <span style="font-size:1.7rem">🚆</span>
+        <div>
+          <div style="font-size:1.1rem;font-weight:700;color:#1e3a8a">دليل المواصلات في كوريا</div>
+          <div style="font-size:.76rem;color:#1d4ed8">مترو · KTX · حافلات · تطبيقات</div>
+        </div>
+        <button onclick="document.getElementById('transport-guide-overlay').remove()" style="margin-right:auto;background:none;border:0;cursor:pointer;color:#94a3b8;font-size:1.3rem;line-height:1;padding:0">✕</button>
+      </div>
+      ${metro}
+      ${tmoney}
+      ${intercity}
+      ${airport}
+      ${apps}
+      ${tips}
+      ${refs}
+      <button onclick="document.getElementById('transport-guide-overlay').remove()"
+              style="width:100%;margin-top:1.25rem;padding:.75rem;background:#1e3a8a;color:#fff;border:0;border-radius:12px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit">
+        إغلاق
+      </button>
+    </div>`;
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+
 // ── Library filter sheet ────────────────────────────────────────────────
 function _libFltActiveCount() {
   const f = state.libFilters;
@@ -8535,73 +8823,6 @@ function renderLibrary() {
       <div class="lib-stat"><div class="lib-stat-i">⭐</div><div class="lib-stat-v">${stats.custom}</div><div class="lib-stat-l">مخصص</div></div>
     </div>
 
-    ${isKoreaTrip() ? `
-    <details style="margin-bottom:1rem">
-      <summary style="cursor:pointer;list-style:none;display:flex;align-items:center;gap:0.5rem;background:var(--cream);border:1px solid var(--border);border-radius:var(--r-md);padding:0.65rem 0.85rem;font-weight:600;font-size:0.88rem;color:var(--ink)">
-        <span>🌾 الغذاء الآمن في كوريا — حلال وخالٍ من الجلوتين</span>
-        <span style="margin-right:auto;font-size:0.72rem;font-weight:400;color:var(--muted)">اضغط للتوسيع</span>
-      </summary>
-      <div style="border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r-md) var(--r-md);padding:1rem;background:var(--paper)">
-
-        <div style="font-size:0.82rem;font-weight:700;color:var(--accent);margin-bottom:0.6rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border)">🥩 مطاعم حلال معتمدة</div>
-        <div style="overflow-x:auto;margin-bottom:1rem">
-          <table style="width:100%;font-size:0.75rem;border-collapse:collapse">
-            <thead><tr style="background:var(--cream)">
-              <th style="padding:0.35rem 0.5rem;text-align:right;font-weight:600;border:1px solid var(--border)">المطعم</th>
-              <th style="padding:0.35rem 0.5rem;text-align:right;font-weight:600;border:1px solid var(--border)">المنطقة</th>
-              <th style="padding:0.35rem 0.5rem;text-align:right;font-weight:600;border:1px solid var(--border)">النوع</th>
-              <th style="padding:0.35rem 0.5rem;text-align:right;font-weight:600;border:1px solid var(--border)">ملاحظة</th>
-            </tr></thead>
-            <tbody>
-              <tr><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">Madinah Restaurant</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">إيتيوون</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">عربي/حلال</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">معتمد اتحاد المسلمين الكوري</td></tr>
-              <tr style="background:var(--cream)"><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">The Halal Guys</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">إيتيوون</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">أمريكي</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">سلسلة عالمية حلال</td></tr>
-              <tr><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">EID Halal Korean</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">إيتيوون</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">كوري</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">حلال + أطباق كورية أصيلة</td></tr>
-              <tr style="background:var(--cream)"><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">Busan Jib</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">سيول</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">كوري</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">لحم بدون توابل · خيارات GF</td></tr>
-              <tr><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">Hongdae Halal Chicken</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">هونغدي</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">دجاج</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">حلال في حي الشباب</td></tr>
-              <tr style="background:var(--cream)"><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">Myeongdong Gyoza</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">ميونغدونغ</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">كوري</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">ليس حلال رسمياً لكن بدون لحم خنزير</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div style="font-size:0.68rem;color:var(--muted);margin-bottom:1rem">المصادر: <a href="https://www.halaltrip.com/korea" target="_blank" style="color:var(--accent)">HalalTrip.com</a> · <a href="https://english.visitkorea.or.kr" target="_blank" style="color:var(--accent)">KTO</a> · Korea Muslim Federation</div>
-
-        <div style="font-size:0.82rem;font-weight:700;color:var(--accent);margin-bottom:0.6rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border)">🌾 منتجات خالية من الجلوتين شائعة</div>
-        <div style="overflow-x:auto;margin-bottom:1rem">
-          <table style="width:100%;font-size:0.75rem;border-collapse:collapse">
-            <thead><tr style="background:var(--cream)">
-              <th style="padding:0.35rem 0.5rem;text-align:right;font-weight:600;border:1px solid var(--border)">المنتج</th>
-              <th style="padding:0.35rem 0.5rem;text-align:right;font-weight:600;border:1px solid var(--border)">أين يُباع</th>
-              <th style="padding:0.35rem 0.5rem;text-align:right;font-weight:600;border:1px solid var(--border)">ملاحظة</th>
-            </tr></thead>
-            <tbody>
-              <tr><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">تتوك 떡 (كعك الأرز)</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">في كل مكان</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">طبيعياً خالٍ من الجلوتين ✓</td></tr>
-              <tr style="background:var(--cream)"><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">CJ Hetbahn (أرز جاهز)</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">CU / GS25 / E-Mart</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">100% أرز معلّب GF ✓</td></tr>
-              <tr><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">Ottogi Rice Ramen</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">E-Mart / Lotte Mart</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">رامن شعيرية أرز GF معتمد</td></tr>
-              <tr style="background:var(--cream)"><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">Sam Yang Rice Noodle</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">CU / GS25</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">شعيرية أرز GF</td></tr>
-              <tr><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">Honey Butter Chips (해태)</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">편의점 (مارت)</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">شيبس بطاطا GF</td></tr>
-              <tr style="background:var(--cream)"><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">Sunny Bread (GF Bakery)</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">هونغدي / سيول</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">مخبز 100% GF متخصص</td></tr>
-              <tr><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">Plant Bakery HBC</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">إيتيوون</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">خيارات GF نباتية واضحة</td></tr>
-              <tr style="background:var(--cream)"><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">بيبيمباب 비빔밥</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">المطاعم</td><td style="padding:0.3rem 0.5rem;border:1px solid var(--border)">اطلب tamari بدلاً من صلصة الصويا</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div style="font-size:0.68rem;color:var(--muted);margin-bottom:1rem">المصادر: <a href="https://glutenfreepassport.com/korea" target="_blank" style="color:var(--accent)">GlutenFreePassport.com</a> · <a href="https://www.celiac.com" target="_blank" style="color:var(--accent)">Celiac.com</a></div>
-
-        <div style="font-size:0.82rem;font-weight:700;color:var(--accent);margin-bottom:0.6rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border)">💡 نصائح وتطبيقات مفيدة</div>
-        <ul class="tip-list" style="margin-bottom:0.75rem">
-          <li><strong>تطبيق HalalTrip</strong> (iOS/Android) — يعرض المطاعم الحلال بالقرب منك على الخريطة</li>
-          <li><strong>Naver Maps</strong> — ابحث بـ "할랄" (halal) أو "GF" لإيجاد الأماكن المناسبة</li>
-          <li><strong>تحذير صلصة الصويا</strong> — 간장 (kanjang) تحتوي قمح · اطلب타마리 tamari كبديل GF</li>
-          <li><strong>آمن عموماً</strong>: أرز، بطاطا مشوية، كيمتشي أرز (تحقق من المكونات)</li>
-          <li><strong>انتبه لـ</strong>: رامن نودل، ماندو (زلابية)، توكبوكي بصلصة تقليدية</li>
-          <li><strong>بطاقة تعريف GF</strong>: احمل ورقة مكتوبة — <em>저는 글루텐 불내증이 있어요</em> (أنا مصاب بحساسية الجلوتين)</li>
-        </ul>
-        <div style="font-size:0.68rem;color:var(--muted)">
-          المراجع: Korea Tourism Organization · Korea Muslim Federation (kmuslim.org) · HalalTrip.com · GlutenFreePassport.com
-        </div>
-
-      </div>
-    </details>
-    ` : ''}
 
     ${(() => {
       // Build city cards row
@@ -8686,6 +8907,14 @@ function renderLibrary() {
     </div>
     <span style="color:#166534">←</span>
   </button>
+  <button class="guide-btn guide-btn-tr" onclick="_showTransportGuide()">
+    <span style="font-size:1.5rem">🚆</span>
+    <div class="guide-btn-inner">
+      <div class="guide-btn-title">دليل المواصلات</div>
+      <div class="guide-btn-sub">مترو · KTX · حافلات · تطبيقات</div>
+    </div>
+    <span style="color:#1d4ed8">←</span>
+  </button>
 </div>
 <div class="lib-flt-bar">
   <button id="lib-flt-trigger" class="lib-flt-trigger ${activeCount>0?'has-active':''}" onclick="_openLibFltSheet()">
@@ -8708,60 +8937,6 @@ function renderLibrary() {
     <div id="lib-result-bar"></div>
     <div id="lib-list"></div>
 
-    ${isKoreaTrip() ? `
-<details class="card" style="margin-top:1.5rem;padding:0">
-  <summary style="padding:1rem 1.25rem;font-weight:700;cursor:pointer;font-size:1rem;list-style:none;display:flex;justify-content:space-between;align-items:center">
-    🌾 الغذاء الآمن في كوريا — حلال وخالٍ من الجلوتين
-    <span style="font-size:0.75rem;color:var(--muted);font-weight:400">اضغط للعرض ▼</span>
-  </summary>
-  <div style="padding:0 1.25rem 1.25rem">
-    <h5 style="margin:1rem 0 0.5rem;color:var(--accent)">🕌 مطاعم حلال معتمدة</h5>
-    <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;font-size:0.82rem">
-        <thead><tr style="background:var(--cream)">
-          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">المطعم</th>
-          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">المنطقة</th>
-          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">النوع</th>
-          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">ملاحظة</th>
-        </tr></thead>
-        <tbody>
-          <tr><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">Madinah Restaurant</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">إيتيوون</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">عربي/حلال</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">معتمد اتحاد المسلمين الكوري</td></tr>
-          <tr style="background:var(--cream)"><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">Halal Guys Korea</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">إيتيوون / هونداي</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">أمريكي</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">سلسلة عالمية حلال</td></tr>
-          <tr><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">EID Halal Korean</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">إيتيوون</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">كوري</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">حلال + أطباق كورية أصيلة</td></tr>
-          <tr style="background:var(--cream)"><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">Songdo Chicken</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">بوسان</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">دجاج</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">حلال في المنطقة السياحية</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h5 style="margin:1.25rem 0 0.5rem;color:var(--accent)">🌾 منتجات خالية من الجلوتين (GF)</h5>
-    <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;font-size:0.82rem">
-        <thead><tr style="background:var(--cream)">
-          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">المنتج</th>
-          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">أين يُباع</th>
-          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">ملاحظة</th>
-        </tr></thead>
-        <tbody>
-          <tr><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">تتوك (كعك الأرز)</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">في كل مكان</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">طبيعياً خالٍ من الجلوتين ✓</td></tr>
-          <tr style="background:var(--cream)"><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">Sam Yang Rice Noodle</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">CU / GS25</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">شعيرية أرز GF</td></tr>
-          <tr><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">Ottogi Rice Ramen</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">E-Mart / Lotte</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">رامن أرز GF</td></tr>
-          <tr style="background:var(--cream)"><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">CJ Hetbahn Cooked Rice</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">سوبرماركت</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">أرز جاهز GF</td></tr>
-          <tr><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">Samyang Honey Butter Chips</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">편의점 (متاجر)</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">شيبس خالٍ من الجلوتين</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h5 style="margin:1.25rem 0 0.5rem;color:var(--accent)">💡 نصائح مهمة</h5>
-    <ul style="font-size:0.83rem;line-height:1.8;padding-right:1.2rem;color:var(--text)">
-      <li>صلصة الصويا (간장) تحتوي قمح — استبدلها بـ <strong>tamari (타마리)</strong></li>
-      <li>ابحث في Naver Maps بـ <strong>할랄</strong> (حلال) للمطاعم القريبة</li>
-      <li>احمل ورقة: <strong>저는 글루텐 불내증이 있어요</strong> (أنا لدي حساسية جلوتين)</li>
-      <li>آمن عموماً: أرز، بطاطا، كيمتشي (تحقق من المكونات)</li>
-      <li>تطبيق <strong>HalalTrip</strong> يعرض المطاعم الحلال بالقرب منك</li>
-    </ul>
-  </div>
-</details>
-` : ''}
   `;
   renderLibList();
 }
