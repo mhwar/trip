@@ -1053,6 +1053,34 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   font-family: inherit;
   outline: none;
 }
+
+/* ── Library filter pills v2 ── */
+.lib-filters-v2{margin-bottom:.75rem}
+.lib-flt-scroll{display:flex;gap:.35rem;overflow-x:auto;padding-bottom:.35rem;scrollbar-width:none;margin-bottom:.45rem}
+.lib-flt-scroll::-webkit-scrollbar{display:none}
+.lib-pill{flex-shrink:0;display:flex;align-items:center;gap:.3rem;padding:.38rem .8rem;border-radius:999px;border:1.5px solid #e5e7eb;background:#fff;font-size:.8rem;cursor:pointer;font-family:inherit;color:#374151;transition:all .12s;white-space:nowrap}
+.lib-pill:hover{border-color:#94a3b8}
+.lib-pill.act{background:#0f172a;border-color:#0f172a;color:#fff}
+.lib-pill-count{opacity:.6;font-size:.7rem}
+.lib-flt-row2{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap}
+.lib-toggle{padding:.32rem .7rem;border-radius:999px;border:1.5px solid #e5e7eb;background:#fff;font-size:.78rem;cursor:pointer;font-family:inherit;color:#374151;transition:all .12s;white-space:nowrap}
+.lib-toggle:hover{border-color:#94a3b8}
+.lib-toggle.act-grn{background:#f0fdf4;border-color:#16a34a;color:#15803d;font-weight:600}
+.lib-toggle.act-gld{background:#fefce8;border-color:#ca8a04;color:#a16207;font-weight:600}
+.lib-toggle.act-red{background:#fff1f2;border-color:#e11d48;color:#be123c;font-weight:600}
+.lib-flt-spacer{flex:1}
+.lib-sort-sel{padding:.32rem .6rem;border:1.5px solid #e5e7eb;border-radius:8px;font-size:.78rem;font-family:inherit;background:#fff;color:#374151;cursor:pointer}
+
+/* ── Map filter pills ── */
+.map-layer-pill{flex-shrink:0;padding:.3rem .65rem;border-radius:999px;border:1.5px solid #e2e8f0;background:#f8fafc;font-size:.76rem;cursor:pointer;font-family:inherit;color:#475569;transition:all .12s;white-space:nowrap}
+.map-layer-pill.act{background:#0f172a;border-color:#0f172a;color:#fff}
+.map-flt-row{display:flex;gap:.35rem;overflow-x:auto;padding:.4rem .75rem;scrollbar-width:none}
+.map-flt-row::-webkit-scrollbar{display:none}
+
+/* ── GF Guide button ── */
+.gf-guide-btn{width:100%;display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:linear-gradient(135deg,#fefce8,#fef9c3);border:1.5px solid #fde047;border-radius:12px;cursor:pointer;font-family:inherit;margin-bottom:.75rem}
+.gf-guide-title{font-weight:700;font-size:.88rem;color:#713f12}
+.gf-guide-sub{font-size:.73rem;color:#a16207;margin-top:.1rem}
 </style>
 <style>
 /* ═════════════════════════════════════════
@@ -7923,6 +7951,8 @@ function _showCityPopup(cityId) {
   const tc = (typeof getTripCities === 'function' ? getTripCities() : []).find(c => c.id === cityId) || {};
   const color = (typeof state !== 'undefined' && state.cityColors && state.cityColors[cityId]) ? state.cityColors[cityId] : '#1a4d4a';
   const itemCount = (typeof allLib === 'function' ? allLib() : []).filter(x => x.city === cityId || x.city === 'all').length;
+  const desc = (typeof CITY_DESC !== 'undefined' && CITY_DESC[cityId]) || '';
+  const hotel = tc && tc.hotel ? tc.hotel : '';
 
   const existing = document.getElementById('city-popup-overlay');
   if (existing) existing.remove();
@@ -7933,26 +7963,81 @@ function _showCityPopup(cityId) {
   overlay.innerHTML = `
     <div style="background:#fff;border-radius:20px 20px 0 0;padding:1.5rem 1.25rem 2rem;width:100%;max-width:480px;direction:rtl;font-family:system-ui">
       <div style="width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:0 auto 1.2rem"></div>
-      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem">
-        <div style="width:12px;height:40px;border-radius:6px;background:${color};flex-shrink:0"></div>
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.85rem">
+        <div style="width:12px;height:44px;border-radius:6px;background:${color};flex-shrink:0"></div>
         <div>
-          <div style="font-size:1.3rem;font-weight:700;color:#0f172a">${cityName}</div>
-          <div style="font-size:0.82rem;color:#6b7280;margin-top:0.15rem">${itemCount} موقع في الدليل</div>
+          <div style="font-size:1.25rem;font-weight:700;color:#0f172a">${cityName}</div>
+          <div style="font-size:0.8rem;color:#6b7280;margin-top:0.1rem">${itemCount} موقع في الدليل</div>
         </div>
       </div>
-      ${tc.daysCount ? `<div style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0;border-top:1px solid #f1f5f9;font-size:0.88rem;color:#374151"><span style="opacity:0.6">📅</span> <span>${tc.daysCount} أيام</span></div>` : ''}
-      ${tc.hotel ? `<div style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0;border-top:1px solid #f1f5f9;font-size:0.88rem;color:#374151"><span style="opacity:0.6">🏨</span> <span>${tc.hotel}</span></div>` : ''}
+      ${desc ? `<p style="font-size:0.85rem;color:#374151;line-height:1.65;margin:0 0 0.85rem;padding-bottom:0.85rem;border-bottom:1px solid #f1f5f9">${desc}</p>` : ''}
+      ${hotel ? `<div style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0;font-size:0.87rem;color:#374151;margin-bottom:0.5rem"><span>🏨</span><span>${hotel}</span></div>` : ''}
       <button onclick="state.libFilters.city='${cityId}';renderLibList();document.getElementById('city-popup-overlay').remove()"
-              style="width:100%;margin-top:1.25rem;padding:0.85rem;background:${color};color:#fff;border:0;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit">
+              style="width:100%;margin-top:0.75rem;padding:0.85rem;background:${color};color:#fff;border:0;border-radius:12px;font-size:0.97rem;font-weight:700;cursor:pointer;font-family:inherit">
         تصفح المواقع
       </button>
       <button onclick="document.getElementById('city-popup-overlay').remove()"
-              style="width:100%;margin-top:0.5rem;padding:0.7rem;background:transparent;color:#6b7280;border:0;font-size:0.88rem;cursor:pointer;font-family:inherit">
+              style="width:100%;margin-top:0.4rem;padding:0.6rem;background:transparent;color:#6b7280;border:0;font-size:0.85rem;cursor:pointer;font-family:inherit">
         إغلاق
       </button>
     </div>
   `;
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+
+function _showGFGuide() {
+  const items = (typeof allLib==='function'?allLib():[]).filter(x=>x.gf);
+  const LCN = (typeof LIB_CITY_NAMES!=='undefined'?LIB_CITY_NAMES:{});
+  const byCity = {};
+  items.forEach(x=>{ const c=x.city||'other'; (byCity[c]=byCity[c]||[]).push(x); });
+
+  const itemsHtml = Object.entries(byCity).map(([cid,its])=>`
+    <div style="margin-bottom:.9rem">
+      <div style="font-size:.7rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.3rem;text-transform:uppercase">${LCN[cid]||cid}</div>
+      ${its.map(i=>`
+        <div style="display:flex;align-items:center;gap:.5rem;padding:.35rem 0;border-bottom:1px solid #fef9c3">
+          <span style="font-size:1.05rem">${i.icon||'🍽️'}</span>
+          <span style="font-size:.85rem;font-weight:600;flex:1;color:#0f172a">${i.name}</span>
+          <span style="font-size:.7rem;color:#6b7280">${i.area||''}</span>
+        </div>`).join('')}
+    </div>`).join('');
+
+  const tips = `
+    <div style="margin-top:1rem;padding:0.85rem;background:#fef9c3;border-radius:10px">
+      <div style="font-weight:700;font-size:.82rem;color:#713f12;margin-bottom:.5rem">💡 نصائح للسفر</div>
+      <ul style="margin:0;padding-right:1.1rem;font-size:.8rem;color:#92400e;line-height:1.8">
+        <li>اطلب <strong>tamari</strong> بديلاً عن صلصة الصويا (تحتوي قمحاً)</li>
+        <li>تتوك (كعك الأرز) آمن دائماً — خالٍ من الجلوتين طبيعياً</li>
+        <li>ابحث عن ملصق <strong>GF</strong> أو <strong>글루텐프리</strong> في المتاجر</li>
+        <li>احمل ورقة مكتوب عليها: <em>저는 글루텐 불내증이 있어요</em></li>
+      </ul>
+    </div>`;
+
+  const existing = document.getElementById('gf-guide-overlay');
+  if(existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'gf-guide-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9000;display:flex;align-items:flex-end;justify-content:center';
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:20px 20px 0 0;padding:1.5rem 1.25rem 2rem;width:100%;max-width:520px;direction:rtl;font-family:system-ui;max-height:80vh;overflow-y:auto">
+      <div style="width:40px;height:4px;background:#fde047;border-radius:2px;margin:0 auto 1.1rem"></div>
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem">
+        <span style="font-size:1.6rem">🌾</span>
+        <div>
+          <div style="font-size:1.15rem;font-weight:700;color:#713f12">دليل الخالي من الجلوتين</div>
+          <div style="font-size:.78rem;color:#a16207">${items.length} موقع موثوق</div>
+        </div>
+      </div>
+      ${itemsHtml}
+      ${tips}
+      <button onclick="document.getElementById('gf-guide-overlay').remove()"
+              style="width:100%;margin-top:1.1rem;padding:.75rem;background:#0f172a;color:#fff;border:0;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;font-family:inherit">
+        إغلاق
+      </button>
+    </div>`;
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
   document.body.appendChild(overlay);
 }
 
@@ -8182,31 +8267,46 @@ function renderLibrary() {
         ${state.libFilters.q ? `<button class="flt-search-x" onclick="state.libFilters.q='';renderLibrary()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
       </div>
 
-      <div class="lib-filters">
-        <div class="lib-filter-row">
-          <span class="lib-filter-label">النوع</span>
-          <button class="flt-chip ${state.libFilters.type === 'all' ? 'act' : ''}" onclick="state.libFilters.type='all';renderLibList()">الكل</button>
-          ${Object.entries(TYPES).filter(([k]) => ['food','attraction','entertainment','shop','mosque','festival'].includes(k)).map(([k, v]) => {
-            const cnt = all.filter(l => l.type === k).length;
-            return `<button class="flt-chip ${state.libFilters.type === k ? 'act' : ''}" onclick="state.libFilters.type='${k}';renderLibList()">${v.icon} ${v.label} <span style="opacity:0.6">${cnt}</span></button>`;
-          }).join('')}
-        </div>
-
-        <div class="lib-filter-row">
-          <span class="lib-filter-label">الميزات</span>
-          <button class="flt-chip ${state.libFilters.halal ? 'act-ok' : ''}" onclick="state.libFilters.halal=!state.libFilters.halal;renderLibList()">🥩 حلال فقط</button>
-          <button class="flt-chip ${state.libFilters.gf ? 'act-gold' : ''}" onclick="state.libFilters.gf=!state.libFilters.gf;renderLibList()">🌾 GF فقط</button>
-          <button class="flt-chip ${state.libFilters.fav ? 'act-orng' : ''}" onclick="state.libFilters.fav=!state.libFilters.fav;renderLibList()">❤️ المفضلة</button>
-        </div>
-
-        <div class="lib-filter-row">
-          <span class="lib-filter-label">ترتيب</span>
-          <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'default' ? 'act' : ''}" onclick="state.libFilters.sort='default';renderLibList()">افتراضي</button>
-          <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'name' ? 'act' : ''}" onclick="state.libFilters.sort='name';renderLibList()">أ-ي</button>
-          <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'city' ? 'act' : ''}" onclick="state.libFilters.sort='city';renderLibList()">المدينة</button>
-          <button class="flt-chip flt-chip-sm ${state.libFilters.sort === 'type' ? 'act' : ''}" onclick="state.libFilters.sort='type';renderLibList()">النوع</button>
-        </div>
-      </div>
+      ${(()=>{
+        const libAll2 = allLib();
+        const typeCounts = {};
+        ['food','attraction','entertainment','shop','mosque','festival'].forEach(t => {
+          typeCounts[t] = libAll2.filter(x=>x.type===t).length;
+        });
+        const totalCount = libAll2.length;
+        const gfItemCount = libAll2.filter(x=>x.gf).length;
+        return `<button class="gf-guide-btn" onclick="_showGFGuide()">
+  <span style="font-size:1.4rem">🌾</span>
+  <div style="flex:1;text-align:right">
+    <div class="gf-guide-title">دليل الخالي من الجلوتين</div>
+    <div class="gf-guide-sub">${gfItemCount} موقع مناسب · نصائح عملية للسفراء</div>
+  </div>
+  <span style="color:#a16207;font-size:1rem">←</span>
+</button>
+<div class="lib-filters-v2">
+  <div class="lib-flt-scroll">
+    <button class="lib-pill ${state.libFilters.type==='all'?'act':''}" onclick="state.libFilters.type='all';renderLibList()">الكل <span class="lib-pill-count">${totalCount}</span></button>
+    <button class="lib-pill ${state.libFilters.type==='food'?'act':''}" onclick="state.libFilters.type='food';renderLibList()">🍽️ طعام <span class="lib-pill-count">${typeCounts.food||0}</span></button>
+    <button class="lib-pill ${state.libFilters.type==='attraction'?'act':''}" onclick="state.libFilters.type='attraction';renderLibList()">📍 معالم <span class="lib-pill-count">${typeCounts.attraction||0}</span></button>
+    <button class="lib-pill ${state.libFilters.type==='entertainment'?'act':''}" onclick="state.libFilters.type='entertainment';renderLibList()">🎢 ترفيه <span class="lib-pill-count">${typeCounts.entertainment||0}</span></button>
+    <button class="lib-pill ${state.libFilters.type==='shop'?'act':''}" onclick="state.libFilters.type='shop';renderLibList()">🛍️ تسوق <span class="lib-pill-count">${typeCounts.shop||0}</span></button>
+    <button class="lib-pill ${state.libFilters.type==='mosque'?'act':''}" onclick="state.libFilters.type='mosque';renderLibList()">🕌 مساجد <span class="lib-pill-count">${typeCounts.mosque||0}</span></button>
+    <button class="lib-pill ${state.libFilters.type==='festival'?'act':''}" onclick="state.libFilters.type='festival';renderLibList()">🎉 فعاليات <span class="lib-pill-count">${typeCounts.festival||0}</span></button>
+  </div>
+  <div class="lib-flt-row2">
+    <button class="lib-toggle ${state.libFilters.halal?'act-grn':''}" onclick="state.libFilters.halal=!state.libFilters.halal;renderLibList()">🥩 حلال</button>
+    <button class="lib-toggle ${state.libFilters.gf?'act-gld':''}" onclick="state.libFilters.gf=!state.libFilters.gf;renderLibList()">🌾 GF</button>
+    <button class="lib-toggle ${state.libFilters.fav?'act-red':''}" onclick="state.libFilters.fav=!state.libFilters.fav;renderLibList()">❤️ المفضلة</button>
+    <span class="lib-flt-spacer"></span>
+    <select class="lib-sort-sel" onchange="state.libFilters.sort=this.value;renderLibList()">
+      <option value="default" ${state.libFilters.sort==='default'?'selected':''}>افتراضي</option>
+      <option value="name"    ${state.libFilters.sort==='name'?'selected':''}>أ-ي</option>
+      <option value="city"    ${state.libFilters.sort==='city'?'selected':''}>المدينة</option>
+      <option value="type"    ${state.libFilters.sort==='type'?'selected':''}>النوع</option>
+    </select>
+  </div>
+</div>`;
+      })()}
     </div>
 
     <div id="lib-result-bar"></div>
@@ -8449,28 +8549,27 @@ function renderMapSec() {
       <p>اعرض كل مواقع المكتبة والجدول على الخريطة</p>
     </div>
 
-    <div class="fb mb2">
-      <button class="fb-btn ${state.mapCity === 'all' ? 'act' : ''}" onclick="state.mapCity='all';drawMarkers()">كل المدن</button>
+    <div class="map-flt-row">
+      <button class="lib-pill ${state.mapCity === 'all' ? 'act' : ''}" onclick="state.mapCity='all';drawMarkers()">كل المدن</button>
       ${isKoreaTrip()
-        ? CITIES.map(c => `<button class="fb-btn ${state.mapCity === c.id ? 'act' : ''}" onclick="state.mapCity='${c.id}';flyToCity('${c.id}');drawMarkers()">${c.name}</button>`).join('')
-        : getTripCities().map(c => `<button class="fb-btn ${state.mapCity === c.id ? 'act' : ''}" onclick="state.mapCity='${c.id}';drawMarkers()">${c.name}</button>`).join('')}
+        ? CITIES.map(c => `<button class="lib-pill ${state.mapCity === c.id ? 'act' : ''}" onclick="state.mapCity='${c.id}';flyToCity('${c.id}');drawMarkers()">${c.name}</button>`).join('')
+        : getTripCities().map(c => `<button class="lib-pill ${state.mapCity === c.id ? 'act' : ''}" onclick="state.mapCity='${c.id}';drawMarkers()">${c.name}</button>`).join('')}
     </div>
 
-    <div class="map-leg">
-      <span class="fb6 cls">الطبقات:</span>
+    <div class="map-flt-row" style="margin-top:0.4rem">
+      <span style="font-size:0.72rem;color:#94a3b8;flex-shrink:0">الطبقات:</span>
       ${[
-        ["plan","📅 الجدول","var(--accent)"],
-        ["food","🍽️ مطاعم","var(--persimmon)"],
-        ["attraction","📍 معالم","var(--accent)"],
-        ["entertainment","🎢 ترفيه","#e11d48"],
-        ["mosque","🕌 مساجد","#047857"],
-        ["shop","🛍️ تسوق","#7c3aed"],
-        ["festival","🎉 فعاليات","#db2777"],
-        ["custom","⭐ مخصص","var(--gold)"]
-      ].map(([k, lbl, col]) => `
-        <button class="lg-d fb-btn ${state.mapLayers[k] ? 'act' : ''}" onclick="state.mapLayers['${k}']=!state.mapLayers['${k}'];drawMarkers()" style="border-color:${col}">
-          <span class="lg-dot" style="background:${col}"></span>
-          <span style="font-size:0.7rem">${lbl}</span>
+        ["plan","📅 الجدول"],
+        ["food","🍽️ مطاعم"],
+        ["attraction","📍 معالم"],
+        ["entertainment","🎢 ترفيه"],
+        ["mosque","🕌 مساجد"],
+        ["shop","🛍️ تسوق"],
+        ["festival","🎉 فعاليات"],
+        ["custom","⭐ مخصص"]
+      ].map(([k, lbl]) => `
+        <button class="map-layer-pill ${state.mapLayers[k] ? 'act' : ''}" onclick="state.mapLayers['${k}']=!state.mapLayers['${k}'];drawMarkers()">
+          ${lbl}
         </button>
       `).join('')}
     </div>
@@ -9460,6 +9559,21 @@ const LIB_CITY_NAMES = {
   istanbul:"إسطنبول", cappadocia:"كابادوكيا", antalya:"أنطاليا",
   trabzon:"طرابزون", ankara:"أنقرة", bursa:"بورصة", izmir:"إزمير",
   london:"لندن", edinburgh:"إدنبرة", manchester:"مانشستر"
+};
+const CITY_DESC = {
+  seoul:"عاصمة كوريا الجنوبية — مزيج مذهل بين قصور جوسون التاريخية وناطحات سحاب شينتشون وأسواق منقطعة النظير",
+  busan:"المدينة الساحلية الثانية — شواطئ هايوندي الرملية وأسواق السمك الطازج وجبال خضراء تطل على البحر",
+  jeju:"جزيرة العجائب الطبيعية — بركان هالا وشلالات جونجبانغ وشواطئ سوداء فريدة وثقافة مختلفة",
+  istanbul:"بوابة بين شرق وغرب — ثلاث إمبراطوريات في مدينة واحدة، آيا صوفيا والبوسفور والبازارات العثمانية",
+  cappadocia:"وادي الأساطير — تشكيلات صخرية فريدة ومداخن جن وكهوف محفورة، أجمل ما في تركيا من الجو",
+  antalya:"اللؤلؤة الساحلية — أقدم مدن البحر المتوسط مع شواطئ فيروزية وجبال طوروس في الخلفية",
+  trabzon:"جنة البحر الأسود — دير سوميلا المحفور في الصخر وبحيرة أوزنجول وطبيعة خضراء كثيفة",
+  ankara:"عاصمة الجمهورية الهادئة — متحف الحضارات الأناضولية وضريح أتاتورك وتاريخ حثي عريق",
+  bursa:"أولى عواصم العثمانيين — جبل أولوداغ الخلاب ومخترع كباب إيسكندر والجامع الكبير الأيقوني",
+  izmir:"المدينة الجميلة — كورنيش البحر الأيقوني وآثار أفسس الرومانية وأسواق شعبية أصيلة",
+  london:"عاصمة العالم — تاريخ ممتد وفن راقٍ وتنوع لا مثيل له وحياة لا تتوقف أبداً",
+  edinburgh:"بوابة اسكتلندا — قلعة تاريخية وأزقة قديمة وضباب رومانسي فوق تلال خضراء",
+  manchester:"روح الشمال — موسيقى وكرة قدم وثقافة صناعية وتنوع بشري لافت",
 };
 
 function getGlobalLibs() {
