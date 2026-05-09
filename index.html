@@ -1212,6 +1212,36 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   box-shadow: var(--sh);
 }
 .dash-section { margin-top: 1rem; }
+
+/* ─── Sidebar dashboard layout (Google AI Studio inspired) ─── */
+.dash-shell { display:flex; min-height:100vh; direction:rtl; }
+.dash-sidebar { width:240px; background:#0f172a; color:#e2e8f0; flex-shrink:0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; overflow-y:auto; }
+.dash-brand { padding:1.25rem 1rem; border-bottom:1px solid rgba(255,255,255,0.08); }
+.dash-brand-name { font-weight:700; font-size:1rem; }
+.dash-brand-sub { font-size:0.72rem; opacity:0.6; margin-top:0.2rem; }
+.dash-nav { flex:1; padding:0.75rem 0.5rem; display:flex; flex-direction:column; gap:0.15rem; }
+.dash-nav-item { display:flex; align-items:center; gap:0.75rem; padding:0.7rem 0.85rem; background:transparent; border:0; color:#cbd5e1; cursor:pointer; border-radius:8px; font-size:0.92rem; text-align:right; font-family:inherit; transition:background 0.15s; }
+.dash-nav-item:hover { background:rgba(255,255,255,0.06); color:#fff; }
+.dash-nav-item.act { background:rgba(14,165,233,0.18); color:#fff; font-weight:600; }
+.dash-nav-icon { font-size:1.1rem; }
+.dash-sidebar-footer { padding:0.75rem 1rem; border-top:1px solid rgba(255,255,255,0.08); font-size:0.78rem; opacity:0.7; }
+.dash-sidebar-footer button { background:transparent; color:#fbbf24; border:0; cursor:pointer; padding:0; font-size:0.78rem; }
+.dash-main { flex:1; min-width:0; display:flex; flex-direction:column; background:#f8fafc; }
+.dash-topbar { position:sticky; top:0; z-index:10; background:#fff; border-bottom:1px solid #e5e7eb; padding:0.85rem 1.25rem; display:flex; align-items:center; gap:1rem; box-shadow:0 1px 3px rgba(0,0,0,0.03); }
+.dash-burger { display:none; background:transparent; border:0; font-size:1.4rem; cursor:pointer; padding:0.3rem 0.5rem; }
+.dash-title { margin:0; font-size:1.15rem; font-weight:700; flex:1; }
+.dash-content { padding:1.5rem; max-width:1400px; width:100%; margin:0 auto; }
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:1.5rem; }
+.kpi-card { background:#fff; padding:1rem 1.25rem; border-radius:12px; border:1px solid #e5e7eb; }
+.kpi-label { font-size:0.78rem; color:#6b7280; margin-bottom:0.4rem; }
+.kpi-value { font-size:1.75rem; font-weight:700; color:#0f172a; }
+.kpi-icon { float:left; font-size:1.5rem; opacity:0.5; }
+@media (max-width:768px) {
+  .dash-sidebar { position:fixed; top:0; right:0; transform:translateX(100%); transition:transform 0.25s; z-index:100; box-shadow:-4px 0 16px rgba(0,0,0,0.2); }
+  .dash-sidebar.open { transform:translateX(0); }
+  .dash-burger { display:block; }
+  .dash-content { padding:1rem; }
+}
 .access-key-row {
   display: flex; gap: 0.5rem; align-items: center;
   background: var(--paper); border: 1px solid var(--border);
@@ -3052,6 +3082,34 @@ const Auth = {
       if (!res.ok) return null;
       return await res.json();
     } catch { return null; }
+  },
+
+  async changePassword(oldPassword, newPassword) {
+    const token = this.getToken();
+    if (!token) return { ok: false, error: "not authenticated" };
+    try {
+      const res = await fetch("/.netlify/functions/auth?action=change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+        body: JSON.stringify({ oldPassword, newPassword })
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) return { ok: false, error: j.error || "change failed" };
+      return { ok: true };
+    } catch (e) { return { ok: false, error: "network error" }; }
+  },
+
+  async teamList() {
+    const token = this.getToken();
+    if (!token) return [];
+    try {
+      const res = await fetch("/.netlify/functions/auth?action=team-list", {
+        headers: { "Authorization": "Bearer " + token }
+      });
+      if (!res.ok) return [];
+      const j = await res.json();
+      return j.users || [];
+    } catch { return []; }
   }
 };
 
@@ -9048,68 +9106,168 @@ async function doSyncLoad() {
 //   DASHBOARD VIEW
 // ═══════════════════════════════════════════════════════════
 
-let _dashTab = "trips"; // trips | libraries | permissions | about
+let _dashTab = "overview"; // overview|trips|destinations|education|store|crm|team|settings
+let _tripsSearch = "";
+
+// Try to read tab from URL hash on load (e.g. #tab=store)
+(function _initDashTabFromHash() {
+  try {
+    const h = (location.hash || "").replace(/^#/, "");
+    const m = h.match(/(?:^|&)tab=([a-z]+)/i);
+    if (m) _dashTab = m[1];
+  } catch {}
+})();
+
+function _dashTabs() {
+  return [
+    { key:'overview',     label:'نظرة عامة',         icon:'🏠', requires:null,    render: renderOverviewDashTab },
+    { key:'trips',        label:'الرحلات',            icon:'✈️', requires:null,    render: renderTripsTab },
+    { key:'destinations', label:'الوجهات',            icon:'🌍', requires:null,    render: renderDestinationsTab },
+    { key:'education',    label:'الابتعاث والتعليم',  icon:'🎓', requires:null,    render: renderEducationTab },
+    { key:'store',        label:'المتجر',             icon:'🛒', requires:null,    render: renderStoreTab },
+    { key:'crm',          label:'العملاء',            icon:'👥', requires:'owner', render: renderCrmTab },
+    { key:'team',         label:'الفريق والصلاحيات',  icon:'🔐', requires:'owner', render: renderTeamTab },
+    { key:'settings',     label:'الإعدادات',          icon:'⚙️', requires:null,    render: renderSettingsTab },
+  ];
+}
+
+function _dashTabActions(key) {
+  if (key === 'trips')        return `<button class="btn btn-pri btn-sm" onclick="openCreateTripModal()">+ رحلة جديدة</button>`;
+  if (key === 'destinations') return `<button class="btn btn-pri btn-sm" onclick="openAddLibModal()">+ مكتبة جديدة</button>`;
+  if (key === 'crm')          return `<button class="btn btn-pri btn-sm" onclick="_crmShowForm()">+ عميل جديد</button>`;
+  if (key === 'store') {
+    const u = Auth.getUser();
+    if (u && u.role === 'owner') return `<button class="btn btn-pri btn-sm" onclick="_storeShowForm()">+ إضافة خدمة</button>`;
+  }
+  return '';
+}
 
 function renderDashboard() {
-  const trips = TripsRegistry.list();
   const dash = $("dashboard-view");
+  const u = Auth.getUser();
+  const role = u && u.role;
+  const tabs = _dashTabs().filter(t => !t.requires || t.requires === role || role === 'owner');
+  // ensure current tab is visible to user
+  let cur = tabs.find(t => t.key === _dashTab);
+  if (!cur) { _dashTab = 'overview'; cur = tabs[0]; }
+
+  const navHtml = tabs.map(t => `
+    <button class="dash-nav-item ${t.key === _dashTab ? 'act' : ''}" onclick="switchDashTab('${t.key}')">
+      <span class="dash-nav-icon">${t.icon}</span><span>${t.label}</span>
+    </button>
+  `).join('');
+
+  let body = '';
+  try { body = cur.render(); } catch (e) { body = `<div style="padding:1rem;color:var(--danger)">خطأ في عرض القسم: ${e && e.message || e}</div>`; }
+
   dash.innerHTML = `
-    <div class="dash-page">
-      <div class="dash-hdr">
-        <div>
-          <div class="dash-hdr-title">🗺️ لوحة التحكم</div>
-          <div class="dash-hdr-sub">إدارة الرحلات والمكتبات والصلاحيات</div>
+    <div class="dash-shell">
+      <aside class="dash-sidebar" id="dash-sidebar">
+        <div class="dash-brand">
+          <div class="dash-brand-name">🗺️ محور للسياحة</div>
+          <div class="dash-brand-sub">لوحة التحكم</div>
         </div>
-        <div class="dash-actions">
-          <button class="btn btn-out btn-sm" onclick="exitOwnerMode()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            خروج
-          </button>
+        <nav class="dash-nav">${navHtml}</nav>
+        <div class="dash-sidebar-footer">
+          <div style="margin-bottom:0.4rem;direction:ltr;text-align:right;font-size:0.72rem;opacity:0.85">${u ? u.email : ''}</div>
+          <button onclick="exitOwnerMode()">↩ خروج</button>
         </div>
-      </div>
-
-      <div class="dash-tabs">
-        <button class="dash-tab ${_dashTab === 'trips' ? 'act' : ''}" onclick="switchDashTab('trips')">✈️ الرحلات (${trips.length})</button>
-        <button class="dash-tab ${_dashTab === 'libraries' ? 'act' : ''}" onclick="switchDashTab('libraries')">📚 المكتبات</button>
-        <button class="dash-tab ${_dashTab === 'permissions' ? 'act' : ''}" onclick="switchDashTab('permissions')">🔐 الصلاحيات</button>
-        <button class="dash-tab ${_dashTab === 'about' ? 'act' : ''}" onclick="switchDashTab('about')">ℹ️ عن المنصة</button>
-      </div>
-
-      <div class="dash-section" id="dash-section">${renderDashTabBody(trips)}</div>
+      </aside>
+      <main class="dash-main">
+        <header class="dash-topbar">
+          <button class="dash-burger" onclick="document.getElementById('dash-sidebar').classList.toggle('open')" aria-label="القائمة">☰</button>
+          <h2 class="dash-title">${cur.icon} ${cur.label}</h2>
+          <div class="dash-actions">${_dashTabActions(cur.key)}</div>
+        </header>
+        <div class="dash-content" id="dash-content">${body}</div>
+      </main>
     </div>
   `;
-  if (_dashTab === "permissions") {
-    setTimeout(() => { try { _ownerLoadShares(); } catch {} }, 0);
+  if (_dashTab === 'team') {
+    setTimeout(() => { try { _ownerLoadShares(); } catch {} try { _teamLoadMembers(); } catch {} }, 0);
   }
 }
 
 function switchDashTab(tab) {
   _dashTab = tab;
+  try { history.replaceState(null, "", "#tab=" + tab); } catch {}
   renderDashboard();
-  if (tab === "permissions") {
-    setTimeout(() => { try { _ownerLoadShares(); } catch {} }, 0);
-  }
 }
 
-function renderDashTabBody(trips) {
-  if (_dashTab === 'libraries')   return renderLibrariesTab();
-  if (_dashTab === 'permissions') return renderPermissionsTab();
-  if (_dashTab === 'about')       return renderAboutTab();
-  // Default: trips
+// ─── Tab: Overview ────────────────────────────────────────────────
+function renderOverviewDashTab() {
+  const trips = TripsRegistry.list();
+  const customLibs = (function(){ try { return JSON.parse(localStorage.getItem("kt2_global_libs") || "{}"); } catch { return {}; } })();
+  const destCount = 1 + Object.keys(customLibs).length; // korea + custom
+  const sharesEl = '<span id="ov-shares-count">…</span>';
+  const teamEl = '<span id="ov-team-count">…</span>';
+  // async-load counts after render
+  setTimeout(async () => {
+    try {
+      const shares = await Auth.listShares();
+      const el = document.getElementById('ov-shares-count'); if (el) el.textContent = (shares || []).length;
+    } catch { const el = document.getElementById('ov-shares-count'); if (el) el.textContent = '0'; }
+    try {
+      const members = await Auth.teamList();
+      const el = document.getElementById('ov-team-count'); if (el) el.textContent = (members || []).length;
+    } catch { const el = document.getElementById('ov-team-count'); if (el) el.textContent = '—'; }
+  }, 0);
+
   return `
-    <div class="dash-grid">
-      ${trips.map(t => renderTripCard(t)).join('')}
-      <button class="dash-create-card" onclick="openCreateTripModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-        <div class="dash-create-card-l">إنشاء رحلة جديدة</div>
-        <div class="txs clm">ابدأ تخطيط وجهة جديدة</div>
-      </button>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-icon">✈️</div><div class="kpi-label">الرحلات النشطة</div><div class="kpi-value">${trips.length}</div></div>
+      <div class="kpi-card"><div class="kpi-icon">🌍</div><div class="kpi-label">الوجهات</div><div class="kpi-value">${destCount}</div></div>
+      <div class="kpi-card"><div class="kpi-icon">👥</div><div class="kpi-label">أعضاء الفريق</div><div class="kpi-value">${teamEl}</div></div>
+      <div class="kpi-card"><div class="kpi-icon">🔗</div><div class="kpi-label">روابط المشاركة</div><div class="kpi-value">${sharesEl}</div></div>
     </div>
-    <div style="margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border);text-align:center;font-size:0.72rem;color:var(--muted)">
+
+    <div class="kpi-card" style="margin-bottom:1rem">
+      <h4 style="margin:0 0 0.5rem 0">⚡ إجراءات سريعة</h4>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+        <button class="btn btn-pri btn-sm" onclick="openCreateTripModal()">+ رحلة جديدة</button>
+        <button class="btn btn-out btn-sm" onclick="switchDashTab('team')">+ دعوة عضو</button>
+        <button class="btn btn-out btn-sm" onclick="switchDashTab('store')">🛒 فتح المتجر</button>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <h4 style="margin:0 0 0.5rem 0">📋 آخر النشاطات</h4>
+      <p class="txs clm" style="margin:0">سيتم عرض آخر التحديثات والنشاطات هنا قريباً.</p>
+    </div>
+  `;
+}
+
+// ─── Tab: Trips ───────────────────────────────────────────────────
+function renderTripsTab() {
+  const all = TripsRegistry.list();
+  const q = (_tripsSearch || '').trim().toLowerCase();
+  const trips = q ? all.filter(t => (t.name + ' ' + (t.destination||'')).toLowerCase().includes(q)) : all;
+  return `
+    <div style="margin-bottom:1rem;display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
+      <input type="text" class="input" placeholder="🔍 بحث برحلة..." value="${q}" oninput="_tripsSearch=this.value;document.getElementById('trips-grid-wrap').innerHTML=_renderTripsGridInner()" style="flex:1;min-width:200px;padding:0.5rem 0.75rem">
+    </div>
+    <div id="trips-grid-wrap">${_renderTripsGridInner()}</div>
+    <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);text-align:center;font-size:0.72rem;color:var(--muted)">
       💡 شارك رحلة مع شخص: افتح الرحلة → زر مشاركة → انسخ الرابط
     </div>
   `;
 }
+function _renderTripsGridInner() {
+  const all = TripsRegistry.list();
+  const q = (_tripsSearch || '').trim().toLowerCase();
+  const trips = q ? all.filter(t => (t.name + ' ' + (t.destination||'')).toLowerCase().includes(q)) : all;
+  return `<div class="dash-grid">
+    ${trips.map(t => renderTripCard(t)).join('')}
+    <button class="dash-create-card" onclick="openCreateTripModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <div class="dash-create-card-l">إنشاء رحلة جديدة</div>
+      <div class="txs clm">ابدأ تخطيط وجهة جديدة</div>
+    </button>
+  </div>`;
+}
+
+// ─── Tab: Destinations (renamed from Libraries) ───────────────────
+// renderDestinationsTab is defined below (was renderLibrariesTab)
 
 // Library metadata for known built-in libs
 const LIB_META = {
@@ -9131,7 +9289,7 @@ function saveGlobalLibs(libs) {
   localStorage.setItem("kt2_global_libs", JSON.stringify(libs));
 }
 
-function renderLibrariesTab() {
+function renderDestinationsTab() {
   const customLibs = getGlobalLibs();
   const allLibIds = ["korea", ...Object.keys(customLibs)];
 
@@ -9151,10 +9309,10 @@ function renderLibrariesTab() {
 
   return `
     <div style="margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
-      <p class="txs clm" style="margin:0">المكتبات تحتوي مواقع ومطاعم ومعالم لكل وجهة — تُربط بالرحلة تلقائياً.</p>
+      <p class="txs clm" style="margin:0">الوجهات تحتوي مواقع ومطاعم ومعالم لكل وجهة — تُربط بالرحلة تلقائياً.</p>
       <div style="display:flex;gap:0.5rem">
         <button class="btn btn-out btn-sm" onclick="openGeminiAssistant()">🤖 مساعد AI</button>
-        <button class="btn btn-pri btn-sm" onclick="openAddLibModal()">+ مكتبة جديدة</button>
+        <button class="btn btn-pri btn-sm" onclick="openAddLibModal()">+ وجهة جديدة</button>
       </div>
     </div>
 
@@ -9181,7 +9339,7 @@ function renderLibrariesTab() {
     <div class="lib-card" style="border-style:dashed;cursor:pointer;background:var(--cream);justify-content:center" onclick="openAddLibModal()">
       <div style="text-align:center;padding:0.5rem 0">
         <div style="font-size:1.5rem;margin-bottom:0.3rem">+</div>
-        <div class="fb6" style="font-size:0.85rem">إضافة مكتبة لوجهة جديدة</div>
+        <div class="fb6" style="font-size:0.85rem">إضافة وجهة جديدة</div>
         <div class="txs clm" style="font-size:0.72rem">JSON أو ابدأ فارغة</div>
       </div>
     </div>
@@ -9802,43 +9960,381 @@ function _geminiAppend(items, libId, isNewLib) {
   setTimeout(()=>openLibBrowser(libId), 120);
 }
 
-function renderPermissionsTab() {
+function renderTeamTab() {
   const u = Auth.getUser();
   return `
-    <div style="margin-bottom:1.5rem">
-      <h3 class="fb7 cli mb2">🔐 الحسابات والصلاحيات</h3>
-      <p class="txs clm mb2">إدارة الفريق وروابط المشاركة مع العملاء.</p>
-    </div>
-
     <div class="ts-section">
-      <h4>👤 الحساب الحالي</h4>
+      <h4>👤 حسابك</h4>
       ${u ? `
         <div style="padding:0.75rem;background:var(--cream);border-radius:8px">
-          <div style="font-weight:600">${u.email}</div>
+          <div style="font-weight:600;direction:ltr;text-align:right">${u.email}</div>
           <div style="font-size:0.78rem;color:var(--muted);margin-top:0.2rem">${u.role === "owner" ? "🌟 مالك (صلاحيات كاملة)" : "👥 عضو فريق"}</div>
+          <div style="margin-top:0.6rem">
+            <button class="btn btn-out btn-sm" onclick="_togglePwdForm()">🔑 تغيير كلمة المرور</button>
+          </div>
+          <div id="pwd-form-wrap" hidden style="margin-top:0.6rem;padding:0.6rem;background:#fff;border:1px solid var(--border);border-radius:8px">
+            <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.4rem">
+              <input id="pwd-old" type="password" class="input" placeholder="كلمة المرور الحالية" style="flex:1;min-width:160px;padding:0.4rem 0.6rem">
+              <input id="pwd-new" type="password" class="input" placeholder="الجديدة (6+ أحرف)" style="flex:1;min-width:160px;padding:0.4rem 0.6rem">
+              <button class="btn btn-pri btn-sm" onclick="_changePwdSubmit()">حفظ</button>
+            </div>
+            <div id="pwd-msg" style="font-size:0.78rem"></div>
+          </div>
         </div>
       ` : '<p class="txs clm">غير مسجّل دخول.</p>'}
     </div>
 
     <div class="ts-section">
-      <h4>👥 دعوة عضو فريق جديد</h4>
+      <h4>👥 أعضاء الفريق</h4>
       <p class="txs clm mb2">اكتب البريد الإلكتروني، انسخ رابط الدعوة، وأرسله للزميل ليختار كلمة المرور.</p>
       <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.5rem">
         <input id="invite-email-input" type="email" class="input" placeholder="email@example.com"
-               style="flex:1;min-width:200px;direction:ltr;text-align:left">
+               style="flex:1;min-width:200px;direction:ltr;text-align:left;padding:0.5rem 0.75rem">
         <button class="btn btn-pri btn-sm" onclick="_ownerCreateInvite()">إنشاء رابط دعوة</button>
       </div>
-      <div id="invite-result" style="font-size:0.85rem"></div>
+      <div id="invite-result" style="font-size:0.85rem;margin-bottom:0.6rem"></div>
+      <div id="team-members-list" style="font-size:0.85rem">
+        <div style="padding:0.75rem;color:var(--muted);text-align:center">جاري التحميل...</div>
+      </div>
     </div>
 
     <div class="ts-section">
-      <h4>🔗 روابط مشاركة العملاء</h4>
+      <h4>🔗 روابط المشاركة</h4>
       <p class="txs clm mb2">كل رحلة لها روابط خاصة بصلاحيات محددة. أنشئها من زر "مشاركة" داخل الرحلة.</p>
       <div id="shares-list" style="font-size:0.85rem">
         <div style="padding:0.75rem;color:var(--muted);text-align:center">جاري التحميل...</div>
       </div>
     </div>
   `;
+}
+
+function _togglePwdForm() {
+  const w = document.getElementById('pwd-form-wrap');
+  if (w) w.hidden = !w.hidden;
+}
+async function _changePwdSubmit() {
+  const oldP = document.getElementById('pwd-old').value;
+  const newP = document.getElementById('pwd-new').value;
+  const msg = document.getElementById('pwd-msg');
+  if (!oldP || !newP) { msg.innerHTML = '<span style="color:var(--err)">✗ أكمل الحقول</span>'; return; }
+  if (newP.length < 6) { msg.innerHTML = '<span style="color:var(--err)">✗ كلمة المرور قصيرة (6+ أحرف)</span>'; return; }
+  msg.textContent = 'جاري الحفظ...';
+  const out = await Auth.changePassword(oldP, newP);
+  if (out.ok) {
+    msg.innerHTML = '<span style="color:var(--ok)">✓ تم تغيير كلمة المرور</span>';
+    document.getElementById('pwd-old').value = '';
+    document.getElementById('pwd-new').value = '';
+  } else {
+    msg.innerHTML = `<span style="color:var(--err)">✗ ${out.error || 'فشل التغيير'}</span>`;
+  }
+}
+
+async function _teamLoadMembers() {
+  const list = document.getElementById('team-members-list');
+  if (!list) return;
+  const members = await Auth.teamList();
+  if (!members || !members.length) {
+    list.innerHTML = '<div style="padding:0.75rem;color:var(--muted);text-align:center">لا أعضاء بعد. أرسل دعوة أعلاه.</div>';
+    return;
+  }
+  list.innerHTML = members.map(m => `
+    <div style="padding:0.6rem 0.75rem;border:1px solid var(--border);border-radius:8px;margin-bottom:0.4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.4rem">
+      <div>
+        <div style="font-weight:600;direction:ltr;text-align:right">${m.email}</div>
+        ${m.createdAt ? `<div style="font-size:0.7rem;color:var(--muted)">انضم: ${new Date(m.createdAt).toLocaleDateString('ar')}</div>` : ''}
+      </div>
+      <span class="pill pill-sm" style="background:${m.role==='owner'?'rgba(251,191,36,0.18)':'rgba(14,165,233,0.15)'};color:${m.role==='owner'?'#92400e':'#075985'}">${m.role==='owner'?'🌟 مالك':'👥 فريق'}</span>
+    </div>
+  `).join('');
+}
+
+// ─── Tab: Education / Scholarships ────────────────────────────────
+function _eduList() { try { return JSON.parse(localStorage.getItem('mhwar_edu_apps') || '[]'); } catch { return []; } }
+function _eduSave(list) { localStorage.setItem('mhwar_edu_apps', JSON.stringify(list)); }
+function renderEducationTab() {
+  const apps = _eduList();
+  return `
+    <div class="kpi-card" style="margin-bottom:1rem">
+      <h4 style="margin:0 0 0.4rem 0">🎓 الابتعاث والتعليم</h4>
+      <p class="txs clm" style="margin:0">سجّل طلبات الابتعاث والاستفسارات التعليمية. تُحفظ محلياً ويمكن متابعة حالتها.</p>
+    </div>
+
+    <div class="ts-section">
+      <h4>طلب جديد</h4>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.5rem;margin-bottom:0.5rem">
+        <input id="edu-name" type="text" class="input" placeholder="الاسم الكامل" style="padding:0.5rem 0.75rem">
+        <input id="edu-email" type="email" class="input" placeholder="البريد الإلكتروني" style="padding:0.5rem 0.75rem;direction:ltr;text-align:left">
+        <input id="edu-country" type="text" class="input" placeholder="الدولة المستهدفة" style="padding:0.5rem 0.75rem">
+        <input id="edu-program" type="text" class="input" placeholder="البرنامج / التخصص" style="padding:0.5rem 0.75rem">
+      </div>
+      <textarea id="edu-notes" class="input" placeholder="ملاحظات إضافية" rows="2" style="width:100%;padding:0.5rem 0.75rem;margin-bottom:0.5rem"></textarea>
+      <button class="btn btn-pri btn-sm" onclick="_eduSubmit()">حفظ الطلب</button>
+      <div id="edu-msg" style="font-size:0.78rem;margin-top:0.4rem"></div>
+    </div>
+
+    <div class="ts-section">
+      <h4>الطلبات المسجلة (${apps.length})</h4>
+      ${apps.length === 0 ? '<p class="txs clm" style="text-align:center;padding:0.75rem">لا طلبات بعد.</p>' : `
+        <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:0.85rem">
+          <thead><tr style="background:var(--cream)">
+            <th style="padding:0.5rem;text-align:right">الاسم</th>
+            <th style="padding:0.5rem;text-align:right">الدولة</th>
+            <th style="padding:0.5rem;text-align:right">البرنامج</th>
+            <th style="padding:0.5rem;text-align:right">الحالة</th>
+            <th style="padding:0.5rem"></th>
+          </tr></thead>
+          <tbody>
+            ${apps.map(a => `
+              <tr style="border-top:1px solid var(--border)">
+                <td style="padding:0.5rem">${a.name||'—'}<div style="font-size:0.7rem;color:var(--muted);direction:ltr;text-align:right">${a.email||''}</div></td>
+                <td style="padding:0.5rem">${a.country||'—'}</td>
+                <td style="padding:0.5rem">${a.program||'—'}</td>
+                <td style="padding:0.5rem"><span class="pill pill-sm">${a.status||'جديد'}</span></td>
+                <td style="padding:0.5rem"><button class="btn btn-out btn-sm" style="color:var(--danger)" onclick="_eduDelete('${a.id}')">حذف</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        </div>
+      `}
+    </div>
+  `;
+}
+function _eduSubmit() {
+  const get = id => (document.getElementById(id)?.value || '').trim();
+  const name = get('edu-name'), email = get('edu-email'), country = get('edu-country'), program = get('edu-program'), notes = get('edu-notes');
+  const msg = document.getElementById('edu-msg');
+  if (!name || !email) { msg.innerHTML = '<span style="color:var(--err)">✗ الاسم والبريد مطلوبان</span>'; return; }
+  const apps = _eduList();
+  apps.unshift({ id: 'e' + Date.now(), name, email, country, program, notes, status: 'جديد', createdAt: new Date().toISOString() });
+  _eduSave(apps);
+  renderDashboard();
+}
+function _eduDelete(id) {
+  if (!confirm('حذف هذا الطلب؟')) return;
+  _eduSave(_eduList().filter(a => a.id !== id));
+  renderDashboard();
+}
+
+// ─── Tab: Store ───────────────────────────────────────────────────
+function _storeList() {
+  try {
+    const raw = localStorage.getItem('mhwar_store_items');
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  // Seed defaults
+  const seed = [
+    { id:'s1', title:'تنظيم رحلة عائلية', desc:'تخطيط متكامل لرحلة عائلية شاملة', price:5000, icon:'👨‍👩‍👧' },
+    { id:'s2', title:'استشارة سفر',        desc:'جلسة استشارية مع خبير سفر',         price:300,  icon:'💬' },
+    { id:'s3', title:'حجز فندق',           desc:'حجز وتأكيد الفنادق نيابة عنك',       price:200,  icon:'🏨' },
+    { id:'s4', title:'خدمة فيزا',          desc:'تجهيز ومتابعة طلبات التأشيرة',       price:500,  icon:'📄' },
+  ];
+  localStorage.setItem('mhwar_store_items', JSON.stringify(seed));
+  return seed;
+}
+function _storeSave(list) { localStorage.setItem('mhwar_store_items', JSON.stringify(list)); }
+function renderStoreTab() {
+  const items = _storeList();
+  const u = Auth.getUser();
+  const isOwner = u && u.role === 'owner';
+  return `
+    <div class="kpi-card" style="margin-bottom:1rem">
+      <h4 style="margin:0 0 0.4rem 0">🛒 متجر الخدمات</h4>
+      <p class="txs clm" style="margin:0">خدمات سياحية يمكن طلبها من العملاء.</p>
+    </div>
+    <div id="store-form-wrap" hidden style="margin-bottom:1rem"></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem">
+      ${items.map(it => `
+        <div class="kpi-card">
+          <div style="font-size:2rem;margin-bottom:0.4rem">${it.icon || '🛍️'}</div>
+          <div class="fb6" style="font-size:1rem;margin-bottom:0.3rem">${it.title}</div>
+          <div class="txs clm" style="margin-bottom:0.5rem;min-height:2.4em">${it.desc || ''}</div>
+          <div style="font-size:1.1rem;color:var(--gold,#92400e);font-weight:700;margin-bottom:0.6rem">${it.price} ر.س</div>
+          <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
+            <button class="btn btn-pri btn-sm" onclick="alert('سيتم التواصل قريباً لخدمة: ${it.title.replace(/'/g,'')}')">اطلب الخدمة</button>
+            ${isOwner ? `
+              <button class="btn btn-out btn-sm" onclick="_storeShowForm('${it.id}')">✏️</button>
+              <button class="btn btn-out btn-sm" style="color:var(--danger)" onclick="_storeDelete('${it.id}')">🗑️</button>
+            ` : ''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+function _storeShowForm(editId) {
+  const wrap = document.getElementById('store-form-wrap');
+  if (!wrap) return;
+  const item = editId ? _storeList().find(x => x.id === editId) : { title:'', desc:'', price:'', icon:'🛍️' };
+  wrap.hidden = false;
+  wrap.innerHTML = `
+    <div class="ts-section" style="margin:0">
+      <h4>${editId ? 'تعديل خدمة' : 'إضافة خدمة'}</h4>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.5rem;margin-bottom:0.5rem">
+        <input id="st-icon" type="text" class="input" placeholder="🛍️" value="${item.icon||''}" style="padding:0.5rem 0.75rem">
+        <input id="st-title" type="text" class="input" placeholder="اسم الخدمة" value="${(item.title||'').replace(/"/g,'&quot;')}" style="padding:0.5rem 0.75rem">
+        <input id="st-price" type="number" class="input" placeholder="السعر (ر.س)" value="${item.price||''}" style="padding:0.5rem 0.75rem">
+      </div>
+      <textarea id="st-desc" class="input" placeholder="وصف" rows="2" style="width:100%;padding:0.5rem 0.75rem;margin-bottom:0.5rem">${item.desc||''}</textarea>
+      <button class="btn btn-pri btn-sm" onclick="_storeSubmit('${editId||''}')">حفظ</button>
+      <button class="btn btn-out btn-sm" onclick="document.getElementById('store-form-wrap').hidden=true">إلغاء</button>
+    </div>
+  `;
+}
+function _storeSubmit(editId) {
+  const get = id => (document.getElementById(id)?.value || '').trim();
+  const title = get('st-title'), desc = get('st-desc'), icon = get('st-icon') || '🛍️';
+  const price = parseFloat(get('st-price')) || 0;
+  if (!title) { alert('اسم الخدمة مطلوب'); return; }
+  let items = _storeList();
+  if (editId) {
+    items = items.map(it => it.id === editId ? { ...it, title, desc, price, icon } : it);
+  } else {
+    items.unshift({ id: 's' + Date.now(), title, desc, price, icon });
+  }
+  _storeSave(items);
+  renderDashboard();
+}
+function _storeDelete(id) {
+  if (!confirm('حذف هذه الخدمة؟')) return;
+  _storeSave(_storeList().filter(x => x.id !== id));
+  renderDashboard();
+}
+
+// ─── Tab: CRM ─────────────────────────────────────────────────────
+function _crmList() { try { return JSON.parse(localStorage.getItem('mhwar_crm_customers') || '[]'); } catch { return []; } }
+function _crmSave(list) { localStorage.setItem('mhwar_crm_customers', JSON.stringify(list)); }
+function renderCrmTab() {
+  const customers = _crmList();
+  return `
+    <div class="kpi-card" style="margin-bottom:1rem">
+      <h4 style="margin:0 0 0.4rem 0">👥 العملاء</h4>
+      <p class="txs clm" style="margin:0">قائمة بعملاء وكالة السفر.</p>
+    </div>
+    <div id="crm-form-wrap" hidden style="margin-bottom:1rem"></div>
+    ${customers.length === 0 ? '<p class="txs clm" style="text-align:center;padding:1rem">لا عملاء بعد. أضف أول عميل.</p>' : `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem">
+        ${customers.map(c => `
+          <div class="kpi-card">
+            <div class="fb6" style="font-size:1rem;margin-bottom:0.3rem">${c.name||'—'}</div>
+            <div class="txs clm" style="direction:ltr;text-align:right">📧 ${c.email||'—'}</div>
+            <div class="txs clm" style="direction:ltr;text-align:right">📱 ${c.phone||'—'}</div>
+            ${c.notes ? `<div class="txs clm" style="margin-top:0.4rem;border-top:1px solid var(--border);padding-top:0.4rem">${c.notes}</div>` : ''}
+            <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.6rem">
+              <button class="btn btn-out btn-sm" onclick="_crmShowForm('${c.id}')">✏️ تعديل</button>
+              <button class="btn btn-out btn-sm" style="color:var(--danger)" onclick="_crmDelete('${c.id}')">🗑️ حذف</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `}
+  `;
+}
+function _crmShowForm(editId) {
+  const wrap = document.getElementById('crm-form-wrap');
+  if (!wrap) return;
+  const c = editId ? _crmList().find(x => x.id === editId) : { name:'', email:'', phone:'', notes:'' };
+  wrap.hidden = false;
+  wrap.innerHTML = `
+    <div class="ts-section" style="margin:0">
+      <h4>${editId ? 'تعديل عميل' : 'عميل جديد'}</h4>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.5rem;margin-bottom:0.5rem">
+        <input id="cr-name" type="text" class="input" placeholder="الاسم" value="${(c.name||'').replace(/"/g,'&quot;')}" style="padding:0.5rem 0.75rem">
+        <input id="cr-email" type="email" class="input" placeholder="البريد" value="${c.email||''}" style="padding:0.5rem 0.75rem;direction:ltr;text-align:left">
+        <input id="cr-phone" type="text" class="input" placeholder="الجوال" value="${c.phone||''}" style="padding:0.5rem 0.75rem;direction:ltr;text-align:left">
+      </div>
+      <textarea id="cr-notes" class="input" placeholder="ملاحظات" rows="2" style="width:100%;padding:0.5rem 0.75rem;margin-bottom:0.5rem">${c.notes||''}</textarea>
+      <button class="btn btn-pri btn-sm" onclick="_crmSubmit('${editId||''}')">حفظ</button>
+      <button class="btn btn-out btn-sm" onclick="document.getElementById('crm-form-wrap').hidden=true">إلغاء</button>
+    </div>
+  `;
+}
+function _crmSubmit(editId) {
+  const get = id => (document.getElementById(id)?.value || '').trim();
+  const name = get('cr-name'), email = get('cr-email'), phone = get('cr-phone'), notes = get('cr-notes');
+  if (!name) { alert('الاسم مطلوب'); return; }
+  let list = _crmList();
+  if (editId) {
+    list = list.map(c => c.id === editId ? { ...c, name, email, phone, notes } : c);
+  } else {
+    list.unshift({ id: 'c' + Date.now(), name, email, phone, notes, createdAt: new Date().toISOString() });
+  }
+  _crmSave(list);
+  renderDashboard();
+}
+function _crmDelete(id) {
+  if (!confirm('حذف هذا العميل؟')) return;
+  _crmSave(_crmList().filter(x => x.id !== id));
+  renderDashboard();
+}
+
+// ─── Tab: Settings ────────────────────────────────────────────────
+function _brandLoad() { try { return JSON.parse(localStorage.getItem('mhwar_brand') || '{}'); } catch { return {}; } }
+function _brandSave(b) { localStorage.setItem('mhwar_brand', JSON.stringify(b)); }
+function renderSettingsTab() {
+  const b = _brandLoad();
+  const u = Auth.getUser();
+  const isOwner = u && u.role === 'owner';
+  return `
+    <div class="ts-section">
+      <h4>🏢 معلومات الشركة</h4>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.5rem;margin-bottom:0.5rem">
+        <input id="bf-name" type="text" class="input" placeholder="اسم الشركة" value="${(b.companyName||'').replace(/"/g,'&quot;')}" style="padding:0.5rem 0.75rem">
+        <input id="bf-email" type="email" class="input" placeholder="بريد التواصل" value="${b.contactEmail||''}" style="padding:0.5rem 0.75rem;direction:ltr;text-align:left">
+        <input id="bf-phone" type="text" class="input" placeholder="جوال التواصل" value="${b.contactPhone||''}" style="padding:0.5rem 0.75rem;direction:ltr;text-align:left">
+      </div>
+      <button class="btn btn-pri btn-sm" onclick="_brandSubmit()">حفظ</button>
+      <span id="bf-msg" style="font-size:0.78rem;margin-right:0.5rem"></span>
+    </div>
+
+    ${isOwner ? `
+      <div class="ts-section">
+        <h4>🔑 تغيير كلمة المرور</h4>
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.4rem">
+          <input id="set-pwd-old" type="password" class="input" placeholder="الحالية" style="flex:1;min-width:140px;padding:0.5rem 0.75rem">
+          <input id="set-pwd-new" type="password" class="input" placeholder="الجديدة (6+)" style="flex:1;min-width:140px;padding:0.5rem 0.75rem">
+          <button class="btn btn-pri btn-sm" onclick="_setPwdSubmit()">حفظ</button>
+        </div>
+        <div id="set-pwd-msg" style="font-size:0.78rem"></div>
+      </div>
+    ` : ''}
+
+    <div class="ts-section">
+      <h4>ℹ️ عن المنصة</h4>
+      <p class="txs clm mb2">منصة لتخطيط الرحلات مع دعم متعدد الرحلات، مكتبات وجهات، وتزامن سحابي.</p>
+      <ul class="tip-list">
+        <li>📅 جدول يومي مع أنشطة وفنادق وانتقالات</li>
+        <li>🌍 مكتبة وجهات (يمكن إضافة وجهات جديدة)</li>
+        <li>☁️ مزامنة تلقائية عبر الأجهزة برمز شخصي</li>
+        <li>🖨️ تصدير كل يوم على شكل PDF</li>
+        <li>🔐 صلاحيات للأشخاص الآخرين عبر مفاتيح ضيوف</li>
+      </ul>
+      <p class="txs clm" style="margin-top:0.5rem">منصة خاصة - لا تستخدم بدون إذن المالك.</p>
+    </div>
+  `;
+}
+function _brandSubmit() {
+  const get = id => (document.getElementById(id)?.value || '').trim();
+  _brandSave({ companyName: get('bf-name'), contactEmail: get('bf-email'), contactPhone: get('bf-phone') });
+  const msg = document.getElementById('bf-msg');
+  if (msg) { msg.innerHTML = '<span style="color:var(--ok)">✓ تم الحفظ</span>'; setTimeout(() => { if (msg) msg.textContent = ''; }, 2000); }
+}
+async function _setPwdSubmit() {
+  const oldP = document.getElementById('set-pwd-old').value;
+  const newP = document.getElementById('set-pwd-new').value;
+  const msg = document.getElementById('set-pwd-msg');
+  if (!oldP || !newP) { msg.innerHTML = '<span style="color:var(--err)">✗ أكمل الحقول</span>'; return; }
+  if (newP.length < 6) { msg.innerHTML = '<span style="color:var(--err)">✗ كلمة المرور قصيرة</span>'; return; }
+  msg.textContent = 'جاري الحفظ...';
+  const out = await Auth.changePassword(oldP, newP);
+  if (out.ok) {
+    msg.innerHTML = '<span style="color:var(--ok)">✓ تم التغيير</span>';
+    document.getElementById('set-pwd-old').value = '';
+    document.getElementById('set-pwd-new').value = '';
+  } else {
+    msg.innerHTML = `<span style="color:var(--err)">✗ ${out.error || 'فشل'}</span>`;
+  }
 }
 
 async function _ownerCreateInvite() {
@@ -9944,26 +10440,6 @@ function revokeAccessKey(key) {
   const keys = getAccessKeys().filter(k => k !== key);
   saveAccessKeys(keys);
   renderDashboard();
-}
-
-function renderAboutTab() {
-  return `
-    <div class="ts-section">
-      <h4>ℹ️ عن المنصة</h4>
-      <p class="txs clm mb2">منصة شخصية لتخطيط الرحلات مع دعم متعدد الرحلات، مكتبات مواقع لكل دولة، وتزامن سحابي.</p>
-      <ul class="tip-list">
-        <li>📅 جدول يومي مع أنشطة وفنادق وانتقالات</li>
-        <li>📚 مكتبة مواقع لكل دولة (يمكن إضافة مكتبات جديدة)</li>
-        <li>☁️ مزامنة تلقائية عبر الأجهزة برمز شخصي</li>
-        <li>🖨️ تصدير كل يوم على شكل PDF</li>
-        <li>🔐 صلاحيات للأشخاص الآخرين عبر مفاتيح ضيوف</li>
-      </ul>
-    </div>
-    <div class="ts-section">
-      <h4>📜 الرخصة</h4>
-      <p class="txs clm">منصة خاصة - لا تستخدم بدون إذن المالك.</p>
-    </div>
-  `;
 }
 
 function renderTripCard(t) {
