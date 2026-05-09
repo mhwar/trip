@@ -2754,10 +2754,7 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   مزامنة
 </button>
 
-<footer>
-  <p id="footer-text">رحلة كوريا الجنوبية · 14-24 مايو 2026 · مرجع التذكرة: 9T7ZEZ · يُحفظ تلقائياً في متصفحك</p>
-  <button onclick="openAdminLogin()" style="background:none;border:none;font-size:0.65rem;color:var(--muted);cursor:pointer;padding:0.25rem 0.5rem;margin-top:0.2rem;opacity:0.5">🔐 دخول الإدارة</button>
-</footer>
+<footer><p id="footer-text">رحلة كوريا الجنوبية · 14-24 مايو 2026 · مرجع التذكرة: 9T7ZEZ · يُحفظ تلقائياً في متصفحك</p></footer>
 
 </div><!-- /trip-view -->
 
@@ -8563,6 +8560,13 @@ function openSyncModal() {
       </button>
     </div>
     <div class="sync-box">
+
+      ${!isOwner() ? `
+      <button class="btn btn-pri" style="width:100%;font-size:1rem;padding:0.8rem;margin-bottom:1rem;border-radius:var(--r-md)" onclick="closeModal();openAdminLogin()">
+        🔐 دخول الإدارة
+      </button>
+      <div class="sync-divider"><span>أو تحميل بيانات الرحلة</span></div>
+      ` : ''}
 
       <div style="background:var(--accent-soft);border:1px solid var(--accent-lt);border-radius:var(--r-md);padding:0.75rem 1rem;margin-bottom:1rem">
         <div style="font-size:0.75rem;font-weight:600;color:var(--accent-dk);margin-bottom:0.5rem">📂 نقل البيانات عبر ملف (موثوق 100%)</div>
