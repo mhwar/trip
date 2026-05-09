@@ -8032,6 +8032,61 @@ function renderLibrary() {
 
     <div id="lib-result-bar"></div>
     <div id="lib-list"></div>
+
+    ${isKoreaTrip() ? `
+<details class="card" style="margin-top:1.5rem;padding:0">
+  <summary style="padding:1rem 1.25rem;font-weight:700;cursor:pointer;font-size:1rem;list-style:none;display:flex;justify-content:space-between;align-items:center">
+    🌾 الغذاء الآمن في كوريا — حلال وخالٍ من الجلوتين
+    <span style="font-size:0.75rem;color:var(--muted);font-weight:400">اضغط للعرض ▼</span>
+  </summary>
+  <div style="padding:0 1.25rem 1.25rem">
+    <h5 style="margin:1rem 0 0.5rem;color:var(--accent)">🕌 مطاعم حلال معتمدة</h5>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:0.82rem">
+        <thead><tr style="background:var(--cream)">
+          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">المطعم</th>
+          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">المنطقة</th>
+          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">النوع</th>
+          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">ملاحظة</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">Madinah Restaurant</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">إيتيوون</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">عربي/حلال</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">معتمد اتحاد المسلمين الكوري</td></tr>
+          <tr style="background:var(--cream)"><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">Halal Guys Korea</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">إيتيوون / هونداي</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">أمريكي</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">سلسلة عالمية حلال</td></tr>
+          <tr><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">EID Halal Korean</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">إيتيوون</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">كوري</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">حلال + أطباق كورية أصيلة</td></tr>
+          <tr style="background:var(--cream)"><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">Songdo Chicken</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">بوسان</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">دجاج</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">حلال في المنطقة السياحية</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h5 style="margin:1.25rem 0 0.5rem;color:var(--accent)">🌾 منتجات خالية من الجلوتين (GF)</h5>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:0.82rem">
+        <thead><tr style="background:var(--cream)">
+          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">المنتج</th>
+          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">أين يُباع</th>
+          <th style="padding:0.4rem 0.6rem;text-align:right;border:1px solid var(--border)">ملاحظة</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">تتوك (كعك الأرز)</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">في كل مكان</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">طبيعياً خالٍ من الجلوتين ✓</td></tr>
+          <tr style="background:var(--cream)"><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">Sam Yang Rice Noodle</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">CU / GS25</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">شعيرية أرز GF</td></tr>
+          <tr><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">Ottogi Rice Ramen</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">E-Mart / Lotte</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">رامن أرز GF</td></tr>
+          <tr style="background:var(--cream)"><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">CJ Hetbahn Cooked Rice</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">سوبرماركت</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">أرز جاهز GF</td></tr>
+          <tr><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">Samyang Honey Butter Chips</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">편의점 (متاجر)</td><td style="padding:0.4rem 0.6rem;border:1px solid var(--border)">شيبس خالٍ من الجلوتين</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h5 style="margin:1.25rem 0 0.5rem;color:var(--accent)">💡 نصائح مهمة</h5>
+    <ul style="font-size:0.83rem;line-height:1.8;padding-right:1.2rem;color:var(--text)">
+      <li>صلصة الصويا (간장) تحتوي قمح — استبدلها بـ <strong>tamari (타마리)</strong></li>
+      <li>ابحث في Naver Maps بـ <strong>할랄</strong> (حلال) للمطاعم القريبة</li>
+      <li>احمل ورقة: <strong>저는 글루텐 불내증이 있어요</strong> (أنا لدي حساسية جلوتين)</li>
+      <li>آمن عموماً: أرز، بطاطا، كيمتشي (تحقق من المكونات)</li>
+      <li>تطبيق <strong>HalalTrip</strong> يعرض المطاعم الحلال بالقرب منك</li>
+    </ul>
+  </div>
+</details>
+` : ''}
   `;
   renderLibList();
 }
@@ -10780,23 +10835,12 @@ function openShareModalFor(tripId) {
 }
 
 async function openShareModal() {
-  const trip = TripsRegistry.get(Trip.current) || TripsRegistry.KOREA_DEFAULT;
-  const t = state.tripInfo || {};
-  const title = t.customTitle || trip.name || "رحلتي";
-  const days = state.itinerary.length;
-  const cities = [...new Set(state.itinerary.map(d => d.city).filter(Boolean))];
-  const cityNames = cities.map(c => cityById(c)?.name || c).join(" · ");
-
   openModal(`
     <div class="modal-h">
       <h3>📤 مشاركة الرحلة</h3>
       <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="sync-box">
-      <div style="background:var(--cream);border-radius:var(--r-md);padding:0.75rem;margin-bottom:1rem;text-align:center">
-        <div style="font-size:1rem;font-weight:700;color:var(--ink)">${title}</div>
-        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem">${days} أيام · ${cityNames}</div>
-      </div>
       <div id="_share-upload-status" style="text-align:center;padding:1.5rem 0;color:var(--muted);font-size:0.85rem">
         <div style="font-size:1.5rem;margin-bottom:0.5rem">⏳</div>
         جاري رفع الرحلة...
@@ -10815,30 +10859,15 @@ async function openShareModal() {
 
   if (ok) {
     const safeUrl = url.replace(/'/g, "\\'");
-    const isAuthed = Auth.isLoggedIn();
     box.parentElement.innerHTML = `
-      <div style="padding:0.5rem 0 0.75rem">
-        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.4rem;text-align:center">🔗 رابط عرض عام (للقراءة فقط)</div>
-        <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-md);padding:0.6rem 0.75rem;font-family:monospace;font-size:0.78rem;direction:ltr;word-break:break-all;cursor:pointer;margin-bottom:0.5rem"
+      <div style="text-align:center;padding:0.25rem 0 0.5rem">
+        <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-md);padding:0.65rem 0.75rem;font-family:monospace;font-size:0.82rem;direction:ltr;word-break:break-all;cursor:pointer;margin-bottom:0.75rem"
              onclick="navigator.clipboard?.writeText('${safeUrl}');this.style.background='rgba(34,197,94,0.08)';this.style.borderColor='var(--ok)';setTimeout(()=>{this.style.background='';this.style.borderColor=''},1500)">${url}</div>
-        <button class="btn btn-out btn-sm" style="width:100%" onclick="navigator.clipboard?.writeText('${safeUrl}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='📋 نسخ الرابط العام',1500)">📋 نسخ الرابط العام</button>
+        <button class="btn btn-pri" style="width:100%;font-size:0.95rem;padding:0.65rem" onclick="navigator.clipboard?.writeText('${safeUrl}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='📋 نسخ الرابط',2000)">
+          📋 نسخ الرابط
+        </button>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:0.6rem">رابط للقراءة · يتحدث تلقائياً مع كل تعديل</div>
       </div>
-      ${isAuthed ? `
-        <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)">
-          <div style="font-weight:700;font-size:0.92rem;margin-bottom:0.6rem">🎫 إنشاء رابط مشاركة بصلاحيات محددة</div>
-          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.75rem">حدد ما يمكن للعميل/المستلم فعله عبر الرابط:</p>
-          <div style="display:flex;flex-direction:column;gap:0.5rem">
-            <button class="btn btn-out" onclick="_createShareLink('${code}','view')">👁️ عرض فقط</button>
-            <button class="btn btn-out" onclick="_createShareLink('${code}','tasks')">✏️ عرض + تعليم المهام والملاحظات</button>
-            <button class="btn btn-pri" onclick="_createShareLink('${code}','full')">🛠️ تعديل كامل (مثل عضو فريق)</button>
-          </div>
-          <div id="_share-link-result" style="margin-top:0.75rem"></div>
-        </div>
-      ` : `
-        <div style="margin-top:0.5rem;padding:0.6rem;background:var(--cream);border-radius:8px;font-size:0.78rem;color:var(--muted);text-align:center">
-          سجّل دخول لإنشاء روابط مشاركة بصلاحيات محددة (عرض/تعديل مهام/تعديل كامل).
-        </div>
-      `}
     `;
   } else {
     box.innerHTML = `
