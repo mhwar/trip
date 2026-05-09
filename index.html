@@ -2709,115 +2709,11 @@ body.perms-tasks::before {
   background: #0ea5e9; color: #fff; text-align: center; padding: 0.4rem;
   font-size: 0.78rem; font-family: system-ui;
 }
-body.perms-view, body.perms-tasks { padding-top: 32px !important; }
+body.perms-view, body.perms-tasks { padding-top: 0 !important; }
 </style>
 </head>
 <body>
 
-<!-- Real login bar (hidden once authenticated). Inline so it works even if main JS fails. -->
-<div id="auth-bar" style="position:fixed;top:0;left:0;right:0;background:#0ea5e9;color:#fff;padding:0.6rem 0.75rem;z-index:9999;display:flex;gap:0.4rem;align-items:center;justify-content:center;flex-wrap:wrap;font-family:system-ui,sans-serif;direction:rtl;box-shadow:0 2px 8px rgba(0,0,0,0.15)">
-  <span style="font-size:0.85rem;font-weight:600">🔐 الإدارة:</span>
-  <input id="auth-bar-email" type="email" placeholder="البريد الإلكتروني" autocomplete="email" inputmode="email"
-         value="info@mhwar.sa"
-         style="padding:0.45rem 0.6rem;border-radius:6px;border:0;font-size:0.9rem;direction:ltr;min-width:160px">
-  <input id="auth-bar-pwd" type="password" placeholder="كلمة المرور" autocomplete="current-password"
-         style="padding:0.45rem 0.6rem;border-radius:6px;border:0;font-size:0.9rem;direction:ltr;min-width:120px">
-  <button id="auth-bar-btn" onclick="_authBarLogin()" style="padding:0.45rem 1rem;background:#fff;color:#0ea5e9;border:0;border-radius:6px;font-weight:700;cursor:pointer">دخول</button>
-  <button id="auth-bar-signup" onclick="_authBarSignup()" style="padding:0.45rem 0.85rem;background:#16a34a;color:#fff;border:0;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.85rem">+ إنشاء حساب</button>
-  <span id="auth-bar-msg" style="font-size:0.8rem;width:100%;text-align:center"></span>
-</div>
-<div id="auth-bar-loggedin" style="position:fixed;top:0;left:0;right:0;background:#16a34a;color:#fff;padding:0.4rem 0.75rem;z-index:9999;display:none;align-items:center;justify-content:flex-end;gap:0.6rem;font-family:system-ui,sans-serif;direction:rtl;font-size:0.82rem;box-shadow:0 2px 8px rgba(0,0,0,0.1)">
-  <span id="auth-bar-user"></span>
-  <button onclick="_authBarLogout()" style="padding:0.3rem 0.7rem;background:rgba(255,255,255,0.2);color:#fff;border:0;border-radius:4px;font-size:0.78rem;cursor:pointer">خروج</button>
-</div>
-<script>
-  (function(){
-    var token = localStorage.getItem("kt2_session_token");
-    if (token) {
-      var bar = document.getElementById("auth-bar"); if (bar) bar.style.display = "none";
-      var li = document.getElementById("auth-bar-loggedin"); if (li) li.style.display = "flex";
-      try {
-        var u = JSON.parse(localStorage.getItem("kt2_session_user") || "null");
-        var label = document.getElementById("auth-bar-user");
-        if (label && u) label.textContent = "👤 " + (u.email || "") + " (" + (u.role === "owner" ? "مالك" : "فريق") + ")";
-      } catch {}
-      document.body.style.paddingTop = "32px";
-    } else {
-      document.body.style.paddingTop = "72px";
-    }
-  })();
-  async function _authBarSignup(){
-    var email = ((document.getElementById("auth-bar-email")||{}).value || "").trim();
-    var pwd   = (document.getElementById("auth-bar-pwd")||{}).value || "";
-    var msg   = document.getElementById("auth-bar-msg");
-    if (!email || pwd.length < 6) { if (msg) msg.textContent = "✗ أدخل البريد وكلمة مرور (٦ أحرف على الأقل) ثم اضغط 'إنشاء حساب'"; return; }
-    if (msg) msg.textContent = "جاري إنشاء الحساب...";
-    try {
-      var res = await fetch("/.netlify/functions/auth?action=setup", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, password: pwd })
-      });
-      var j = await res.json().catch(function(){ return {}; });
-      if (!res.ok) {
-        if (res.status === 409) {
-          if (msg) msg.textContent = "ℹ️ حساب المالك موجود مسبقاً — استخدم زر 'دخول'";
-        } else {
-          if (msg) msg.textContent = "✗ " + (j.error || "فشل");
-        }
-        return;
-      }
-      localStorage.setItem("kt2_session_token", j.token);
-      localStorage.setItem("kt2_session_user", JSON.stringify(j.user));
-      localStorage.setItem("kt2_is_owner", "1");
-      if (msg) msg.textContent = "✓ تم إنشاء الحساب — جاري التحويل...";
-      setTimeout(function(){ location.href = "/?dashboard=1"; }, 600);
-    } catch (e) {
-      if (msg) msg.textContent = "✗ خطأ في الاتصال";
-    }
-  }
-  async function _authBarLogin(){
-    var emailEl = document.getElementById("auth-bar-email");
-    var pwdEl   = document.getElementById("auth-bar-pwd");
-    var msgEl   = document.getElementById("auth-bar-msg");
-    var btn     = document.getElementById("auth-bar-btn");
-    var email = (emailEl && emailEl.value || "").trim();
-    var pwd   = (pwdEl && pwdEl.value || "");
-    if (!email || !pwd) { if (msgEl) msgEl.textContent = "✗ البريد وكلمة المرور مطلوبان"; return; }
-    if (btn) { btn.disabled = true; btn.textContent = "..."; }
-    try {
-      var res = await fetch("/.netlify/functions/auth?action=login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, password: pwd })
-      });
-      var j = await res.json().catch(function(){ return {}; });
-      if (!res.ok) { if (msgEl) msgEl.textContent = "✗ " + (j.error || "فشل تسجيل الدخول"); return; }
-      localStorage.setItem("kt2_session_token", j.token);
-      localStorage.setItem("kt2_session_user", JSON.stringify(j.user));
-      localStorage.setItem("kt2_is_owner", "1");
-      if (msgEl) msgEl.textContent = "✓ تم — جاري التحويل...";
-      setTimeout(function(){ location.href = "/?dashboard=1"; }, 500);
-    } catch (e) {
-      if (msgEl) msgEl.textContent = "✗ خطأ في الاتصال";
-    } finally {
-      if (btn) { btn.disabled = false; btn.textContent = "دخول"; }
-    }
-  }
-  async function _authBarLogout(){
-    var token = localStorage.getItem("kt2_session_token");
-    if (token) {
-      try {
-        await fetch("/.netlify/functions/auth?action=logout", {
-          method: "POST", headers: { "Authorization": "Bearer " + token }
-        });
-      } catch {}
-    }
-    localStorage.removeItem("kt2_session_token");
-    localStorage.removeItem("kt2_session_user");
-    localStorage.removeItem("kt2_is_owner");
-    location.href = "/";
-  }
-</script>
 
 <!-- Dashboard view (shown when in dashboard mode) -->
 <div id="dashboard-view" hidden></div>
@@ -9120,14 +9016,14 @@ let _tripsSearch = "";
 
 function _dashTabs() {
   return [
-    { key:'overview',     label:'نظرة عامة',         icon:'🏠', requires:null,    render: renderOverviewDashTab },
-    { key:'trips',        label:'الرحلات',            icon:'✈️', requires:null,    render: renderTripsTab },
-    { key:'destinations', label:'الوجهات',            icon:'🌍', requires:null,    render: renderDestinationsTab },
-    { key:'education',    label:'الابتعاث والتعليم',  icon:'🎓', requires:null,    render: renderEducationTab },
-    { key:'store',        label:'المتجر',             icon:'🛒', requires:null,    render: renderStoreTab },
-    { key:'crm',          label:'العملاء',            icon:'👥', requires:'owner', render: renderCrmTab },
-    { key:'team',         label:'الفريق والصلاحيات',  icon:'🔐', requires:'owner', render: renderTeamTab },
-    { key:'settings',     label:'الإعدادات',          icon:'⚙️', requires:null,    render: renderSettingsTab },
+    { key:'overview',     label:'نظرة عامة',         icon:'🏠', iconLucide:'home',         render: renderOverviewDashTab },
+    { key:'trips',        label:'الرحلات',            icon:'✈️', iconLucide:'plane',        render: renderTripsTab },
+    { key:'destinations', label:'الوجهات',            icon:'🌍', iconLucide:'map-pin',      render: renderDestinationsTab },
+    { key:'education',    label:'الابتعاث والتعليم',  icon:'🎓', iconLucide:'graduation-cap', render: renderEducationTab },
+    { key:'store',        label:'المتجر',             icon:'🛒', iconLucide:'shopping-bag', render: renderStoreTab },
+    { key:'crm',          label:'العملاء',            icon:'👥', iconLucide:'users',        render: renderCrmTab },
+    { key:'team',         label:'الفريق والصلاحيات',  icon:'🔐', iconLucide:'shield',       render: renderTeamTab },
+    { key:'settings',     label:'الإعدادات',          icon:'⚙️', iconLucide:'settings',     render: renderSettingsTab },
   ];
 }
 
@@ -9145,15 +9041,13 @@ function _dashTabActions(key) {
 function renderDashboard() {
   const dash = $("dashboard-view");
   const u = Auth.getUser();
-  const role = u && u.role;
-  const tabs = _dashTabs().filter(t => !t.requires || t.requires === role || role === 'owner');
-  // ensure current tab is visible to user
+  const tabs = _dashTabs(); // all tabs accessible
   let cur = tabs.find(t => t.key === _dashTab);
   if (!cur) { _dashTab = 'overview'; cur = tabs[0]; }
 
   const navHtml = tabs.map(t => `
     <button class="dash-nav-item ${t.key === _dashTab ? 'act' : ''}" onclick="switchDashTab('${t.key}')">
-      <span class="dash-nav-icon">${t.icon}</span><span>${t.label}</span>
+      <span class="dash-nav-icon">${icon(t.iconLucide || 'circle', 18)}</span><span>${t.label}</span>
     </button>
   `).join('');
 
@@ -9176,7 +9070,7 @@ function renderDashboard() {
       <main class="dash-main">
         <header class="dash-topbar">
           <button class="dash-burger" onclick="document.getElementById('dash-sidebar').classList.toggle('open')" aria-label="القائمة">☰</button>
-          <h2 class="dash-title">${cur.icon} ${cur.label}</h2>
+          <h2 class="dash-title">${icon(cur.iconLucide || 'circle', 20)} ${cur.label}</h2>
           <div class="dash-actions">${_dashTabActions(cur.key)}</div>
         </header>
         <div class="dash-content" id="dash-content">${body}</div>
