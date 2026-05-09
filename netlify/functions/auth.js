@@ -244,6 +244,40 @@ exports.handler = async (event) => {
     }
   }
 
+  // ─── change-password ──────────────────────────────────────────────────
+  if (action === "change-password" && event.httpMethod === "POST") {
+    const token = getBearer(event);
+    const session = await getSession(sessionsStore, token);
+    if (!session) return json(401, { error: "not authenticated" });
+    const oldPwd = String(body.oldPassword || "");
+    const newPwd = String(body.newPassword || "");
+    if (newPwd.length < 6) return json(400, { error: "password too short" });
+    const user = await getUser(usersStore, session.email);
+    if (!user) return json(404, { error: "user not found" });
+    let ok = false;
+    try { ok = verifyPassword(oldPwd, user.salt, user.passwordHash); } catch {}
+    if (!ok) return json(401, { error: "wrong current password" });
+    const { salt, passwordHash } = hashPassword(newPwd);
+    await usersStore.setJSON(session.email, { ...user, salt, passwordHash });
+    return json(200, { ok: true });
+  }
+
+  // ─── team-list (owner only) ───────────────────────────────────────────
+  if (action === "team-list" && event.httpMethod === "GET") {
+    const token = getBearer(event);
+    const session = await getSession(sessionsStore, token);
+    if (!session || session.role !== "owner") return json(403, { error: "owner only" });
+    const out = [];
+    try {
+      const list = await usersStore.list();
+      for (const blob of (list.blobs || [])) {
+        const u = await usersStore.get(blob.key, { type: "json" });
+        if (u) out.push({ email: u.email, role: u.role, createdAt: u.createdAt });
+      }
+    } catch {}
+    return json(200, { ok: true, users: out });
+  }
+
   return json(400, { error: "unknown action" });
 };
 
