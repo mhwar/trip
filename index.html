@@ -5091,11 +5091,6 @@ function renderItinerary() {
 
     <div class="day-tabs-wrap">
       <div class="day-tabs" id="day-tabs"></div>
-      <div class="day-tabs-actions">
-        <button class="dt-add" onclick="addNewDay(state.itinerary.length - 1)" title="إضافة يوم في النهاية">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-      </div>
     </div>
 
     <div id="day-content"></div>
@@ -5137,10 +5132,8 @@ function renderDayTabs() {
         <div class="dt-c" style="opacity:0.85">${cityShort}</div>
       </button>
     `;
-    // "+" between days (except after last day, that gets its own end-of-strip button)
-    if (i < state.itinerary.length - 1) {
-      html += `<div class="dt-between"><button class="dt-between-btn" onclick="addNewDay(${i})" title="إضافة يوم بين اليوم ${d.day} و${d.day + 1}">+</button></div>`;
-    }
+    // "+" after every day including the last
+    html += `<div class="dt-between"><button class="dt-between-btn" onclick="addNewDay(${i})" title="إضافة يوم${i < state.itinerary.length - 1 ? ` بين اليوم ${d.day} و${d.day + 1}` : ' في النهاية'}">+</button></div>`;
   });
   tabs.innerHTML = html;
 }
@@ -5645,26 +5638,26 @@ function renderTimelineItem(it) {
       <div class="tl-card ${cardClass}">
         <div class="tl-card-info">
           <div class="tl-card-t">
-            ${it.type === 'transport' ? '<span class="tl-critical-badge">⚡ موعد حرج</span>' : ''}
+            ${it.type === 'transport' ? '<span class="tl-critical-badge"><span class="material-symbols-rounded" style="font-size:.75rem;vertical-align:middle">bolt</span> موعد حرج</span>' : ''}
             ${it.text}
-            ${it.locked ? '<span class="tl-lock" title="بند مقفول - حجز مهم">🔒</span>' : ''}
-            ${it.done ? '<span style="font-size:.7rem;color:var(--ok);margin-right:.3rem">✓ مكتمل</span>' : ''}
+            ${it.locked ? '<span class="tl-lock" title="بند مقفول - حجز مهم"><span class="material-symbols-rounded" style="font-size:.8rem;vertical-align:middle">lock</span></span>' : ''}
+            ${it.done ? '<span style="font-size:.7rem;color:var(--ok);margin-right:.3rem;display:inline-flex;align-items:center;gap:.1rem"><span class="material-symbols-rounded" style="font-size:.85rem">check_circle</span>مكتمل</span>' : ''}
           </div>
           <div class="tl-card-m">
             ${typePill}
             ${pillExtra}
             ${ref?.price ? `<span class="pill pill-sm">${ref.price}</span>` : ''}
-            ${it.requiresTicket ? '<span class="pill pill-sm pill-ticket">🎟️ يحتاج تذكرة</span>' : ''}
+            ${it.requiresTicket ? '<span class="pill pill-sm pill-ticket"><span class="material-symbols-rounded" style="font-size:.75rem;vertical-align:middle">confirmation_number</span> تذكرة</span>' : ''}
           </div>
           ${noteText ? `<div class="tl-tr-note">${noteText}</div>` : ''}
           ${it.notes ? `<div class="tl-item-notes"><span class="tl-note-ic"><span class="material-symbols-rounded">edit_note</span></span><span>${it.notes}</span></div>` : ''}
           ${it.bookingLink ? `<a class="tl-card-link" href="${it.bookingLink}" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span class="material-symbols-rounded" style="font-size:.85rem;vertical-align:middle">open_in_new</span>
             فتح رابط الحجز
           </a>` : ''}
         </div>
         <button class="tl-card-menu" onclick="_cardMenu('${it.id}',event)" title="خيارات">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="5" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="12" cy="19" r="1.2"/></svg>
+          <span class="material-symbols-rounded" style="font-size:1.1rem">more_vert</span>
         </button>
       </div>
     </div>
@@ -8683,12 +8676,58 @@ function _showGFGuide() {
     <div style="margin-bottom:.9rem">
       <div style="font-size:.7rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.35rem">${LCN[cid]||cid}</div>
       ${its.map(i=>`
-        <div style="display:flex;align-items:center;gap:.5rem;padding:.35rem 0;border-bottom:1px solid #fef9c3">
-          <span style="font-size:1.05rem">${i.icon||'🍽️'}</span>
-          <span style="font-size:.84rem;font-weight:600;flex:1;color:#1e293b">${i.name}</span>
-          <span style="font-size:.68rem;color:#78716c;background:#fef9c3;border-radius:6px;padding:.1rem .35rem">${i.area||''}</span>
+        <div style="display:flex;align-items:flex-start;gap:.5rem;padding:.4rem 0;border-bottom:1px solid #fef9c3">
+          <span style="font-size:1rem;flex-shrink:0;margin-top:.1rem">${i.icon||'🍽️'}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.82rem;font-weight:700;color:#1e293b">${i.name}${i.halal?'<span style="font-size:.6rem;margin-right:.25rem;padding:.1rem .3rem;border-radius:4px;background:#dcfce7;color:#166534">حلال</span>':''}</div>
+            ${i.gfNote?`<div style="font-size:.68rem;color:#a16207;margin-top:.08rem">${i.gfNote}</div>`:''}
+          </div>
+          <span style="font-size:.65rem;color:#78716c;background:#fef9c3;border-radius:6px;padding:.1rem .35rem;white-space:nowrap;flex-shrink:0">${i.area||''}</span>
         </div>`).join('')}
     </div>`).join('');
+
+  const halalGfSection = (() => {
+    const dual = items.filter(x => x.halal);
+    if (!dual.length) return '';
+    return `<div style="margin-top:1rem;padding:.8rem;background:linear-gradient(135deg,#f0fdf4,#fefce8);border-radius:12px;border:1px solid rgba(22,163,74,0.2)">
+      <div style="font-size:.76rem;font-weight:700;color:#15803d;margin-bottom:.55rem;display:flex;align-items:center;gap:.35rem">
+        <span class="material-symbols-rounded" style="font-size:.95rem">verified</span>
+        حلال + خالٍ من الجلوتين (${dual.length} موقع)
+      </div>
+      ${dual.map(i=>`
+        <div style="display:flex;align-items:flex-start;gap:.5rem;padding:.4rem 0;border-bottom:1px solid rgba(22,163,74,0.12)">
+          <span style="font-size:1rem;flex-shrink:0">${i.icon||'🍽️'}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.82rem;font-weight:700;color:#14532d">${i.name}</div>
+            <div style="font-size:.68rem;color:#166534;margin-top:.1rem">${i.gfNote||''}${i.area ? ' · '+i.area : ''}</div>
+          </div>
+          <span style="font-size:.63rem;padding:.12rem .4rem;border-radius:6px;background:#dcfce7;color:#166534;white-space:nowrap;flex-shrink:0">${i.city||''}</span>
+        </div>`).join('')}
+    </div>`;
+  })();
+
+  const gfSafeDishes = `
+    <div style="margin-top:1rem;padding:.75rem;background:#fffbeb;border-radius:10px;border:1px solid #fde68a">
+      <div style="font-size:.74rem;font-weight:700;color:#92400e;margin-bottom:.45rem;display:flex;align-items:center;gap:.3rem">
+        <span class="material-symbols-rounded" style="font-size:.9rem">restaurant_menu</span>
+        أطباق كورية آمنة GF بطبعها
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem .5rem">
+        ${[
+          ['bibimbap 비빔밥','أرز مع خضار — اطلب بدون صلصة سويا'],
+          ['bulgogi 불고기','لحم مشوي — اطلب بدون مارينيد'],
+          ['galbi 갈비','ضلوع مشوية — طبيعية GF'],
+          ['haemul 해물','مأكولات بحرية مشوية — آمنة'],
+          ['samgyeopsal 삼겹살','لحم خنزير مشوي (غير حلال) / بديله دجاج'],
+          ['japchae 잡채','شعيرية بطاطا حلوة — GF طبيعي'],
+          ['gimbap 김밥','لفائف أرز — تجنب إضافة الصلصة'],
+          ['hoeddeopbap 회덮밥','أرز مع سمك طازج — GF']
+        ].map(([k,v])=>`<div style="padding:.25rem .3rem;border-radius:6px;background:rgba(255,255,255,0.7)">
+          <div style="font-size:.72rem;font-weight:700;color:#78350f">${k}</div>
+          <div style="font-size:.62rem;color:#92400e;line-height:1.4">${v}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
 
   const gfProducts = `
     <div style="margin-top:1.1rem">
@@ -8784,6 +8823,8 @@ function _showGFGuide() {
       ${items.length ? `
         <div style="font-size:.72rem;font-weight:700;color:#94a3b8;letter-spacing:.05em;margin-bottom:.5rem">📍 مواقع GF في المكتبة</div>
         ${itemsHtml}` : '<div style="font-size:.85rem;color:#94a3b8;text-align:center;padding:1rem">لا توجد مواقع GF في المكتبة المرتبطة حالياً</div>'}
+      ${halalGfSection}
+      ${gfSafeDishes}
       ${gfProducts}
       ${gfSweets}
       ${tips}
