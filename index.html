@@ -4738,11 +4738,13 @@ function updateCountdown() {
 
 function renderOverview() {
   const totalItems = state.itinerary.reduce((s, d) => s + d.items.length, 0);
+  const doneItems = state.itinerary.reduce((s, d) => s + d.items.filter(it => it.done).length, 0);
   const filledDays = state.itinerary.filter(d => d.items.length > 0).length;
   const totalDays = state.itinerary.length || 1;
   const lib = allLib();
   const halalCount = lib.filter(l => l.halal).length;
-  const gfCount = lib.filter(l => l.gf).length;
+  const tasks = state.tasks || [];
+  const tasksDone = tasks.filter(t => t.done).length;
   const trip = TripsRegistry.get(Trip.current) || TripsRegistry.KOREA_DEFAULT;
   const tripCities = getTripCities();
 
@@ -4765,9 +4767,9 @@ function renderOverview() {
 
     <div class="lib-stats">
       <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded">calendar_month</span></div><div class="lib-stat-v">${filledDays}/${totalDays}</div><div class="lib-stat-l">أيام مخططة</div></div>
-      <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded">location_on</span></div><div class="lib-stat-v">${totalItems}</div><div class="lib-stat-l">نشاط مضاف</div></div>
+      <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded">location_on</span></div><div class="lib-stat-v">${totalItems}${doneItems > 0 ? `<span style="font-size:0.58rem;color:var(--ok);display:block;font-weight:600;line-height:1">✓ ${doneItems} منجز</span>` : ''}</div><div class="lib-stat-l">نشاط مضاف</div></div>
       <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded" style="color:#16a34a">lunch_dining</span></div><div class="lib-stat-v">${halalCount}</div><div class="lib-stat-l">مطعم حلال</div></div>
-      <div class="lib-stat"><div class="lib-stat-i"><span class="material-symbols-rounded" style="color:#a16207">spa</span></div><div class="lib-stat-v">${gfCount}</div><div class="lib-stat-l">خيار GF</div></div>
+      <div class="lib-stat" onclick="openTasksModal()" style="cursor:pointer"><div class="lib-stat-i"><span class="material-symbols-rounded" style="color:${tasksDone === tasks.length && tasks.length > 0 ? 'var(--ok)' : 'var(--accent)'}">checklist</span></div><div class="lib-stat-v">${tasksDone}/${tasks.length || 0}</div><div class="lib-stat-l">مهام جاهزة</div></div>
     </div>
 
     ${(() => {
@@ -4815,6 +4817,38 @@ function renderOverview() {
           <button class="today-banner-btn" onclick="switchTab('itinerary')">عرض اليوم</button>
         </div>`;
       }
+    })()}
+
+    ${(() => {
+      if (!state.itinerary.length) return '';
+      const segs = getHotelSegments();
+      if (!segs.length) return '';
+      const totalNights = segs.reduce((s, sg) => s + sg.nightsNeeded, 0);
+      const bookedNights = segs.reduce((s, sg) => s + sg.coveredCount, 0);
+      const allDone = totalNights > 0 && bookedNights === totalNights;
+      const pct = totalNights ? Math.round((bookedNights / totalNights) * 100) : 0;
+      const borderColor = allDone ? 'rgba(22,163,74,0.35)' : bookedNights === 0 ? 'rgba(239,68,68,0.2)' : 'rgba(245,158,11,0.3)';
+      const cityChips = segs.map(sg => {
+        const chipSt = sg.allCovered
+          ? 'background:#dcfce7;color:#166534'
+          : sg.noCovered
+            ? 'background:#fee2e2;color:#991b1b'
+            : 'background:#fef9c3;color:#854d0e';
+        return `<span style="font-size:0.7rem;padding:0.18rem 0.5rem;border-radius:99px;${chipSt}">${sg.cityName} · ${sg.nightsNeeded} ل</span>`;
+      }).join('');
+      return `<div class="card mb3" style="border-color:${borderColor}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">
+          <div style="display:flex;align-items:center;gap:0.45rem">
+            <span style="font-size:1.1rem">🏨</span>
+            <span style="font-weight:700;color:var(--ink);font-size:0.88rem">السكن</span>
+            ${allDone ? '<span style="font-size:0.68rem;padding:0.15rem 0.45rem;border-radius:99px;background:#dcfce7;color:#166534;font-weight:600">✓ كامل</span>' : ''}
+          </div>
+          <button class="btn btn-out btn-sm" onclick="_openHotelOverview()" style="font-size:0.72rem;padding:0.28rem 0.65rem">إدارة السكن</button>
+        </div>
+        <div style="display:flex;gap:0.35rem;flex-wrap:wrap;margin-bottom:0.5rem">${cityChips}</div>
+        <div class="task-prog"><div class="task-prog-f" style="width:${pct}%;background:${allDone ? 'var(--ok)' : 'var(--accent)'}"></div></div>
+        <div style="font-size:0.68rem;color:var(--muted);margin-top:0.25rem">${bookedNights} من ${totalNights} ليلة محجوزة · ${pct}%</div>
+      </div>`;
     })()}
 
     ${totalItems === 0 ? `
@@ -6359,7 +6393,11 @@ function applyHeroImage(dataUrl) {
 }
 function loadHeroImage() {
   const saved = localStorage.getItem("kt2_hero_img");
-  if (saved) applyHeroImage(saved);
+  if (saved) {
+    applyHeroImage(saved);
+  } else if (isKoreaTrip()) {
+    applyHeroImage("https://images.unsplash.com/photo-1517154421773-0529f29ea451?auto=format&fit=crop&w=1200&q=80");
+  }
 }
 
 function openTasksModal() {
