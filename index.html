@@ -777,6 +777,34 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .day-hotel-out-add{display:inline-flex;align-items:center;gap:.35rem;font-size:.72rem;padding:.3rem .7rem;border:1.5px dashed #fca5a5;border-radius:999px;background:transparent;color:#991b1b;cursor:pointer;font-family:inherit;margin-bottom:.85rem;transition:all .15s}
 .day-hotel-out-add:hover{background:#fef2f2;border-style:solid}
 
+/* ── Hotel Overview Sheet ── */
+.hov-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9500;display:flex;align-items:flex-end;justify-content:center }
+.hov-box { background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;direction:rtl;font-family:system-ui;max-height:88dvh;display:flex;flex-direction:column }
+.hov-header { padding:1.1rem 1.1rem 0.5rem;flex-shrink:0 }
+.hov-handle { width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:0 auto 1rem }
+.hov-title { font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:0.15rem }
+.hov-sub { font-size:0.75rem;color:#94a3b8 }
+.hov-body { overflow-y:auto;flex:1;padding:0.75rem 1.1rem }
+.hov-seg { border:1.5px solid #e5e7eb;border-radius:14px;margin-bottom:0.75rem;overflow:hidden }
+.hov-seg-hd { padding:0.75rem 0.875rem;display:flex;align-items:center;gap:0.65rem }
+.hov-seg-color { width:10px;height:36px;border-radius:5px;flex-shrink:0 }
+.hov-seg-meta { flex:1;min-width:0 }
+.hov-seg-city { font-size:0.9rem;font-weight:700;color:#0f172a }
+.hov-seg-days { font-size:0.72rem;color:#6b7280;margin-top:0.1rem }
+.hov-seg-badge { font-size:0.68rem;font-weight:700;padding:0.2rem 0.55rem;border-radius:999px;white-space:nowrap;flex-shrink:0 }
+.hov-seg-bd { padding:0 0.875rem 0.75rem }
+.hov-hotel-name { font-size:0.82rem;font-weight:600;color:#0f172a;margin-bottom:0.35rem;display:flex;align-items:center;gap:0.4rem }
+.hov-nights-bar { display:flex;gap:3px;margin-bottom:0.5rem }
+.hov-night-dot { height:6px;flex:1;border-radius:3px }
+.hov-seg-acts { display:flex;gap:0.4rem;flex-wrap:wrap }
+.hov-act { display:inline-flex;align-items:center;gap:0.3rem;padding:0.35rem 0.7rem;border-radius:999px;border:1.5px solid #e5e7eb;background:#fff;font-size:0.75rem;font-weight:600;color:#374151;cursor:pointer;font-family:inherit;transition:all .12s }
+.hov-act:hover { border-color:#1a4d4a;background:#f0fdf4;color:#1a4d4a }
+.hov-act-pri { background:#1a4d4a;border-color:#1a4d4a;color:#fff }
+.hov-act-pri:hover { background:#0f3330;border-color:#0f3330;color:#fff }
+.hov-footer { padding:0.75rem 1.1rem 1.5rem;flex-shrink:0;border-top:1px solid #f1f5f9 }
+.hov-summary { display:flex;gap:0.5rem;margin-bottom:0.6rem;flex-wrap:wrap }
+.hov-summary-chip { font-size:0.72rem;padding:0.25rem 0.6rem;border-radius:999px;background:#f1f5f9;color:#475569 }
+
 /* Day progress bar */
 .day-progress{position:relative;height:6px;border-radius:3px;background:#e5e7eb;margin-bottom:1.1rem;margin-top:.3rem;overflow:visible}
 .day-progress-bar{height:100%;background:linear-gradient(90deg,#10b981,#059669);border-radius:3px;transition:width .3s}
@@ -5288,6 +5316,10 @@ function renderDayContent() {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span>إضافة ▾</span>
       </button>
+      <button class="day-tb-btn" onclick="_openHotelOverview()" title="خطة السكن">
+        <span class="material-symbols-rounded" style="font-size:1rem">hotel</span>
+        <span>السكن</span>
+      </button>
       <button class="day-tb-btn day-tb-view-toggle" onclick="toggleDayViewMode()" title="${_dayViewMode === 'timeline' ? 'عرض مضغوط' : 'عرض التايم لاين'}">
         <span class="material-symbols-rounded">${_dayViewMode === 'timeline' ? 'view_agenda' : 'timeline'}</span>
       </button>
@@ -5727,6 +5759,42 @@ function quickAdd() {
 function getTripStartDate() {
   const sd = state.tripInfo?.startDate;
   return sd ? new Date(sd) : new Date(TRIP_START);
+}
+
+function getHotelSegments() {
+  const segs = [];
+  let i = 0;
+  while (i < state.itinerary.length) {
+    const city = state.itinerary[i].city || '';
+    let j = i + 1;
+    while (j < state.itinerary.length && (state.itinerary[j].city || '') === city) j++;
+    const days = state.itinerary.slice(i, j);
+    const covered = days.filter(d => d.hotel?.name).length;
+    const hotelNames = [...new Set(days.map(d => d.hotel?.name).filter(Boolean))];
+    const color = (state.cityColors && state.cityColors[city]) || '#1a4d4a';
+    const LCN = typeof LIB_CITY_NAMES !== 'undefined' ? LIB_CITY_NAMES : {};
+    segs.push({
+      cityId: city,
+      cityName: LCN[city] || city || 'غير محددة',
+      color,
+      startIdx: i,
+      endIdx: j - 1,
+      dayCount: days.length,
+      nightsNeeded: days.length, // one hotel night per day
+      startDay: state.itinerary[i].day,
+      endDay: state.itinerary[j-1].day,
+      startDate: state.itinerary[i].dateLabel || '',
+      endDate: state.itinerary[j-1].dateLabel || '',
+      hotelNames,
+      primaryHotel: hotelNames[0] || null,
+      coveredCount: covered,
+      allCovered: covered === days.length,
+      partCovered: covered > 0 && covered < days.length,
+      noCovered: covered === 0,
+    });
+    i = j;
+  }
+  return segs;
 }
 
 function renumberDays() {
@@ -7958,9 +8026,13 @@ function saveDayMeta() {
 function openDayHotelPicker(dayIdx) {
   const day = state.itinerary[dayIdx];
   const h = day.hotel || {};
-  const remainingDays = state.itinerary.length - dayIdx;
   const cityKey = day.city || "";
-  const defaultNights = h.nights || Math.min(3, remainingDays);
+  // Calculate remaining days in this city segment for smart night suggestion
+  let segEnd = dayIdx;
+  while (segEnd + 1 < state.itinerary.length && (state.itinerary[segEnd + 1].city || '') === cityKey) segEnd++;
+  const segRemainingNights = segEnd - dayIdx + 1;
+  const remainingDays = state.itinerary.length - dayIdx;
+  const defaultNights = h.nights || segRemainingNights;
 
   // Pull hotels from LIB (AI-generated) and from CITIES districts (built-in)
   const libHotels = (typeof allLib === "function" ? allLib() : (typeof LIB !== "undefined" ? LIB : []))
@@ -8921,6 +8993,101 @@ function _showTransportGuide() {
     </div>`;
   overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
   document.body.appendChild(overlay);
+}
+
+// ── Hotel Overview Sheet ────────────────────────────────────────────────
+function _openHotelOverview() {
+  const existing = document.getElementById('hov-overlay');
+  if (existing) { existing.remove(); return; }
+  const segs = getHotelSegments();
+  const totalNightsNeeded = segs.reduce((s, sg) => s + sg.nightsNeeded, 0);
+  const totalBooked = segs.reduce((s, sg) => s + sg.coveredCount, 0);
+  const allDone = segs.every(sg => sg.allCovered);
+
+  const segHtml = segs.map(sg => {
+    const r = parseInt(sg.color.slice(1,3),16)||26, gv = parseInt(sg.color.slice(3,5),16)||77, bv = parseInt(sg.color.slice(5,7),16)||74;
+    const badgeStyle = sg.allCovered
+      ? 'background:#dcfce7;color:#166534'
+      : sg.partCovered
+        ? 'background:#fef9c3;color:#854d0e'
+        : 'background:#fee2e2;color:#991b1b';
+    const badgeText = sg.allCovered ? '✓ محجوز' : sg.noCovered ? '⚠ غير محجوز' : `${sg.coveredCount}/${sg.dayCount} محجوز`;
+
+    const nightDots = Array.from({length: sg.nightsNeeded}, (_, k) => {
+      const dayI = sg.startIdx + k;
+      const booked = state.itinerary[dayI]?.hotel?.name;
+      return `<div class="hov-night-dot" style="background:${booked ? sg.color : '#e5e7eb'}" title="يوم ${sg.startDay + k}"></div>`;
+    }).join('');
+
+    const hotelNamesHtml = sg.hotelNames.length
+      ? sg.hotelNames.map(n => `<span style="font-size:0.78rem;font-weight:600;color:#0f172a">${n.replace(/^✨ /,'')}</span>`).join('<span style="color:#94a3b8;font-size:0.7rem"> · </span>')
+      : `<span style="color:#94a3b8;font-style:italic;font-size:0.78rem">لم يُحدَّد فندق بعد</span>`;
+
+    // First unbooked day index
+    const firstUnbooked = (() => { for (let k = sg.startIdx; k <= sg.endIdx; k++) { if (!state.itinerary[k]?.hotel?.name) return k; } return sg.startIdx; })();
+
+    return `
+      <div class="hov-seg" style="border-color:rgba(${r},${gv},${bv},0.3)">
+        <div class="hov-seg-hd" style="background:rgba(${r},${gv},${bv},0.06)">
+          <div class="hov-seg-color" style="background:${sg.color}"></div>
+          <div class="hov-seg-meta">
+            <div class="hov-seg-city">${sg.cityName}</div>
+            <div class="hov-seg-days">يوم ${sg.startDay}–${sg.endDay} · ${sg.dateLabel || sg.startDate}${sg.startDate !== sg.endDate ? ' → ' + sg.endDate : ''} · ${sg.nightsNeeded} ليلة</div>
+          </div>
+          <span class="hov-seg-badge" style="${badgeStyle}">${badgeText}</span>
+        </div>
+        <div class="hov-seg-bd">
+          <div class="hov-hotel-name">${hotelNamesHtml}</div>
+          <div class="hov-nights-bar">${nightDots}</div>
+          <div class="hov-seg-acts">
+            ${sg.noCovered
+              ? `<button class="hov-act hov-act-pri" onclick="document.getElementById('hov-overlay').remove();state.activeDayIdx=${sg.startIdx};Trip.save('uidx',${sg.startIdx});renderItinerary();openDayHotelPicker(${sg.startIdx})">+ حجز الآن (${sg.nightsNeeded} ليالٍ)</button>`
+              : `<button class="hov-act" onclick="document.getElementById('hov-overlay').remove();state.activeDayIdx=${sg.startIdx};Trip.save('uidx',${sg.startIdx});renderItinerary();openDayHotelPicker(${sg.startIdx})">✏️ تعديل</button>`
+            }
+            ${sg.primaryHotel ? `<button class="hov-act" onclick="_hovClearSegment(${sg.startIdx},${sg.endIdx})">🗑️ مسح القطعة</button>` : ''}
+            <button class="hov-act" onclick="document.getElementById('hov-overlay').remove();state.activeDayIdx=${sg.startIdx};Trip.save('uidx',${sg.startIdx});renderItinerary()">عرض الأيام</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const totalChip = `<span class="hov-summary-chip">🌙 ${totalNightsNeeded} ليلة إجمالاً</span>`;
+  const bookedChip = `<span class="hov-summary-chip" style="${allDone ? 'background:#dcfce7;color:#166534' : ''}">${allDone ? '✓ كل السكن محجوز' : `${totalBooked}/${totalNightsNeeded} محجوز`}</span>`;
+  const segChip = `<span class="hov-summary-chip">🏙️ ${segs.length} ${segs.length === 1 ? 'وجهة' : 'وجهات'}</span>`;
+
+  const ov = document.createElement('div');
+  ov.id = 'hov-overlay';
+  ov.className = 'hov-overlay';
+  ov.innerHTML = `
+    <div class="hov-box">
+      <div class="hov-header">
+        <div class="hov-handle"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div class="hov-title">🏨 خطة السكن</div>
+            <div class="hov-sub">السكن موزعاً على وجهات الرحلة</div>
+          </div>
+          <button onclick="document.getElementById('hov-overlay').remove()" style="background:none;border:1.5px solid #e5e7eb;border-radius:50%;width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#94a3b8;font-size:1rem;flex-shrink:0">✕</button>
+        </div>
+        <div class="hov-summary" style="margin-top:0.6rem">${totalChip}${bookedChip}${segChip}</div>
+      </div>
+      <div class="hov-body">${segHtml}</div>
+      <div class="hov-footer">
+        <button onclick="document.getElementById('hov-overlay').remove()" style="width:100%;padding:0.75rem;background:#f1f5f9;color:#374151;border:0;border-radius:12px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:inherit">إغلاق</button>
+      </div>
+    </div>`;
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+  document.body.appendChild(ov);
+}
+
+function _hovClearSegment(startIdx, endIdx) {
+  if (!confirm('مسح بيانات السكن لكل هذه الأيام؟')) return;
+  for (let i = startIdx; i <= endIdx; i++) {
+    if (state.itinerary[i]) state.itinerary[i].hotel = null;
+  }
+  saveItin();
+  document.getElementById('hov-overlay')?.remove();
+  renderItinerary();
 }
 
 // ── Library filter sheet ────────────────────────────────────────────────
