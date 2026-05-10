@@ -8891,7 +8891,7 @@ function _showTransportGuide() {
 // ── Library filter sheet ────────────────────────────────────────────────
 function _libFltActiveCount() {
   const f = state.libFilters;
-  return (f.types?.length || 0) + (f.halal ? 1 : 0) + (f.gf ? 1 : 0) + (f.fav ? 1 : 0);
+  return (f.types?.length || 0) + (f.halal ? 1 : 0) + (f.gf ? 1 : 0) + (f.fav ? 1 : 0) + (f.city && f.city !== 'all' ? 1 : 0);
 }
 
 function _syncLibFltBar() {
@@ -8908,8 +8908,10 @@ function _syncLibFltBar() {
 
 function _buildLibFltTagsHtml() {
   const f = state.libFilters;
+  const LCN = typeof LIB_CITY_NAMES !== 'undefined' ? LIB_CITY_NAMES : {};
   const typeLabels = {food:'مطاعم',attraction:'معالم',entertainment:'ترفيه',shop:'تسوق',mosque:'مساجد',festival:'فعاليات'};
   const tags = [];
+  if (f.city && f.city !== 'all') tags.push(`<span class="lib-flt-tag">📍 ${LCN[f.city]||f.city}<button onclick="state.libFilters.city='all';renderLibList();_syncLibFltBar()" title="إزالة">×</button></span>`);
   (f.types||[]).forEach(t => tags.push(`<span class="lib-flt-tag">${typeLabels[t]||t}<button onclick="state.libFilters.types=state.libFilters.types.filter(x=>x!=='${t}');renderLibList();_syncLibFltBar()" title="إزالة">×</button></span>`));
   if(f.halal) tags.push(`<span class="lib-flt-tag">🥩 حلال<button onclick="state.libFilters.halal=false;renderLibList();_syncLibFltBar()" title="إزالة">×</button></span>`);
   if(f.gf) tags.push(`<span class="lib-flt-tag">🌾 GF<button onclick="state.libFilters.gf=false;renderLibList();_syncLibFltBar()" title="إزالة">×</button></span>`);
@@ -8927,6 +8929,19 @@ function _openLibFltSheet() {
   const total = all.length;
   const f = state.libFilters;
 
+  // Build city list from library items
+  const LCN = typeof LIB_CITY_NAMES !== 'undefined' ? LIB_CITY_NAMES : {};
+  const cityIds = [...new Set(all.map(x=>x.city).filter(c=>c&&c!=='all'))];
+  const cityBtns = cityIds.map(cid => {
+    const isAct = f.city === cid;
+    const color = (state.cityColors && state.cityColors[cid]) || '#1a4d4a';
+    const cnt = all.filter(x=>x.city===cid).length;
+    return `<button class="lib-pill flt-city-btn${isAct?' act':''}" data-city="${cid}"
+      onclick="_libFltCitySet('${cid}')"
+      style="${isAct?`background:${color};border-color:${color};color:#fff`:''}"
+      >${LCN[cid]||cid} <span class="lib-pill-count">${cnt}</span></button>`;
+  }).join('');
+
   const ov = document.createElement('div');
   ov.id = 'lib-flt-overlay';
   ov.className = 'flt-sheet-overlay';
@@ -8936,6 +8951,12 @@ function _openLibFltSheet() {
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
         <div style="font-size:1rem;font-weight:700;color:#0f172a">تصفية المواقع</div>
         <button onclick="document.getElementById('lib-flt-overlay').remove();_syncLibFltBar()" style="background:none;border:0;cursor:pointer;color:#94a3b8;font-size:1.2rem;padding:0;line-height:1">✕</button>
+      </div>
+
+      <div class="flt-section-label">المدينة</div>
+      <div class="flt-type-grid">
+        <button class="lib-pill flt-city-btn${f.city==='all'?' act':''}" data-city="all" onclick="_libFltCitySet('all')">الكل <span class="lib-pill-count">${total}</span></button>
+        ${cityBtns}
       </div>
 
       <div class="flt-section-label">النوع <span style="font-weight:400;color:#cbd5e1;text-transform:none">(يمكن تحديد أكثر من واحد)</span></div>
@@ -8964,7 +8985,7 @@ function _openLibFltSheet() {
         <option value="type"    ${f.sort==='type'?'selected':''}>النوع</option>
       </select>
 
-      <button class="flt-clear-btn" onclick="state.libFilters={city:state.libFilters.city,types:[],halal:false,gf:false,fav:false,q:state.libFilters.q,sort:'default'};renderLibList();_syncLibFltBar();document.getElementById('lib-flt-overlay').remove()">
+      <button class="flt-clear-btn" onclick="state.libFilters={city:'all',types:[],halal:false,gf:false,fav:false,q:state.libFilters.q,sort:'default'};renderLibList();_syncLibFltBar();document.getElementById('lib-flt-overlay').remove()">
         🗑️ مسح كل الفلاتر
       </button>
     </div>`;
@@ -8987,6 +9008,20 @@ function _libFltTypeSet(t) {
   document.querySelectorAll('.flt-type-btn').forEach(b => {
     if (b.dataset.type === 'all') b.classList.toggle('act', types.length === 0);
     else b.classList.toggle('act', types.includes(b.dataset.type));
+  });
+}
+
+function _libFltCitySet(cid) {
+  state.libFilters.city = cid;
+  renderLibList();
+  _syncLibFltBar();
+  const color = (state.cityColors && cid !== 'all' && state.cityColors[cid]) || '#1a4d4a';
+  document.querySelectorAll('.flt-city-btn').forEach(b => {
+    const isAct = b.dataset.city === cid;
+    b.classList.toggle('act', isAct);
+    b.style.background = isAct && cid !== 'all' ? color : '';
+    b.style.borderColor = isAct && cid !== 'all' ? color : '';
+    b.style.color = isAct && cid !== 'all' ? '#fff' : '';
   });
 }
 
