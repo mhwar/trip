@@ -5773,6 +5773,26 @@ function getHotelSegments() {
     const hotelNames = [...new Set(days.map(d => d.hotel?.name).filter(Boolean))];
     const color = (state.cityColors && state.cityColors[city]) || '#1a4d4a';
     const LCN = typeof LIB_CITY_NAMES !== 'undefined' ? LIB_CITY_NAMES : {};
+
+    // Check-in = first day of segment
+    // Check-out = first day of NEXT segment (the morning you leave)
+    // This matches how booking apps work: "May 14 → May 17" = 3 nights
+    const checkInDate = state.itinerary[i].date || '';
+    const checkInLabel = state.itinerary[i].dateLabel || '';
+    let checkOutDate = '', checkOutLabel = '';
+    if (j < state.itinerary.length) {
+      // Next segment's first day = checkout morning
+      checkOutDate = state.itinerary[j].date || '';
+      checkOutLabel = state.itinerary[j].dateLabel || '';
+    } else if (checkInDate) {
+      // Last segment: compute by adding nights to start date
+      const d = new Date(checkInDate);
+      d.setDate(d.getDate() + days.length);
+      const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+      checkOutDate = d.toISOString().split('T')[0];
+      checkOutLabel = `${d.getDate()} ${months[d.getMonth()]}`;
+    }
+
     segs.push({
       cityId: city,
       cityName: LCN[city] || city || 'غير محددة',
@@ -5780,11 +5800,13 @@ function getHotelSegments() {
       startIdx: i,
       endIdx: j - 1,
       dayCount: days.length,
-      nightsNeeded: days.length, // one hotel night per day
+      nightsNeeded: days.length,
       startDay: state.itinerary[i].day,
       endDay: state.itinerary[j-1].day,
       startDate: state.itinerary[i].dateLabel || '',
       endDate: state.itinerary[j-1].dateLabel || '',
+      checkInDate, checkInLabel,
+      checkOutDate, checkOutLabel,
       hotelNames,
       primaryHotel: hotelNames[0] || null,
       coveredCount: covered,
@@ -9016,15 +9038,23 @@ function _openHotelOverview() {
     const nightDots = Array.from({length: sg.nightsNeeded}, (_, k) => {
       const dayI = sg.startIdx + k;
       const booked = state.itinerary[dayI]?.hotel?.name;
-      return `<div class="hov-night-dot" style="background:${booked ? sg.color : '#e5e7eb'}" title="يوم ${sg.startDay + k}"></div>`;
+      return `<div class="hov-night-dot" style="background:${booked ? sg.color : '#e5e7eb'}" title="ليلة ${k+1}"></div>`;
     }).join('');
 
     const hotelNamesHtml = sg.hotelNames.length
-      ? sg.hotelNames.map(n => `<span style="font-size:0.78rem;font-weight:600;color:#0f172a">${n.replace(/^✨ /,'')}</span>`).join('<span style="color:#94a3b8;font-size:0.7rem"> · </span>')
+      ? sg.hotelNames.map(n => `<span style="font-size:0.82rem;font-weight:600;color:#0f172a">${n.replace(/^✨ /,'')}</span>`).join('<span style="color:#94a3b8;font-size:0.7rem"> · </span>')
       : `<span style="color:#94a3b8;font-style:italic;font-size:0.78rem">لم يُحدَّد فندق بعد</span>`;
 
-    // First unbooked day index
-    const firstUnbooked = (() => { for (let k = sg.startIdx; k <= sg.endIdx; k++) { if (!state.itinerary[k]?.hotel?.name) return k; } return sg.startIdx; })();
+    // Booking recommendation: checkin → checkout dates (how booking apps show it)
+    const bookingRec = sg.checkInLabel && sg.checkOutLabel
+      ? `<div style="margin:0.5rem 0 0.45rem;padding:0.45rem 0.65rem;background:rgba(${r},${gv},${bv},0.07);border-right:3px solid ${sg.color};border-radius:0 6px 6px 0;font-size:0.75rem;color:#374151;line-height:1.55">
+          <span style="font-weight:700;color:${sg.color}">📅 في تطبيق الحجز:</span>
+          <span style="font-weight:700"> دخول ${sg.checkInLabel}</span>
+          <span style="color:#94a3b8"> ← </span>
+          <span style="font-weight:700">خروج ${sg.checkOutLabel}</span>
+          <span style="color:#6b7280"> · ${sg.nightsNeeded} ليالٍ · ${sg.dayCount} أيام نشاط</span>
+        </div>`
+      : '';
 
     return `
       <div class="hov-seg" style="border-color:rgba(${r},${gv},${bv},0.3)">
@@ -9032,20 +9062,24 @@ function _openHotelOverview() {
           <div class="hov-seg-color" style="background:${sg.color}"></div>
           <div class="hov-seg-meta">
             <div class="hov-seg-city">${sg.cityName}</div>
-            <div class="hov-seg-days">يوم ${sg.startDay}–${sg.endDay} · ${sg.dateLabel || sg.startDate}${sg.startDate !== sg.endDate ? ' → ' + sg.endDate : ''} · ${sg.nightsNeeded} ليلة</div>
+            <div class="hov-seg-days">يوم ${sg.startDay}–${sg.endDay} · ${sg.startDate}${sg.startDate !== sg.endDate ? ' → ' + sg.endDate : ''}</div>
           </div>
           <span class="hov-seg-badge" style="${badgeStyle}">${badgeText}</span>
         </div>
         <div class="hov-seg-bd">
-          <div class="hov-hotel-name">${hotelNamesHtml}</div>
-          <div class="hov-nights-bar">${nightDots}</div>
+          <div class="hov-hotel-name" style="margin-top:0.5rem">${hotelNamesHtml}</div>
+          ${bookingRec}
+          <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.5rem">
+            <div class="hov-nights-bar" style="flex:1">${nightDots}</div>
+            <span style="font-size:0.68rem;color:#6b7280;white-space:nowrap">${sg.nightsNeeded} ليلة</span>
+          </div>
           <div class="hov-seg-acts">
             ${sg.noCovered
-              ? `<button class="hov-act hov-act-pri" onclick="document.getElementById('hov-overlay').remove();state.activeDayIdx=${sg.startIdx};Trip.save('uidx',${sg.startIdx});renderItinerary();openDayHotelPicker(${sg.startIdx})">+ حجز الآن (${sg.nightsNeeded} ليالٍ)</button>`
+              ? `<button class="hov-act hov-act-pri" onclick="document.getElementById('hov-overlay').remove();state.activeDayIdx=${sg.startIdx};Trip.save('uidx',${sg.startIdx});renderItinerary();openDayHotelPicker(${sg.startIdx})">🏨 حجز (${sg.nightsNeeded} ليالٍ)</button>`
               : `<button class="hov-act" onclick="document.getElementById('hov-overlay').remove();state.activeDayIdx=${sg.startIdx};Trip.save('uidx',${sg.startIdx});renderItinerary();openDayHotelPicker(${sg.startIdx})">✏️ تعديل</button>`
             }
-            ${sg.primaryHotel ? `<button class="hov-act" onclick="_hovClearSegment(${sg.startIdx},${sg.endIdx})">🗑️ مسح القطعة</button>` : ''}
-            <button class="hov-act" onclick="document.getElementById('hov-overlay').remove();state.activeDayIdx=${sg.startIdx};Trip.save('uidx',${sg.startIdx});renderItinerary()">عرض الأيام</button>
+            ${sg.primaryHotel ? `<button class="hov-act" onclick="_hovClearSegment(${sg.startIdx},${sg.endIdx})">🗑️ مسح</button>` : ''}
+            <button class="hov-act" onclick="document.getElementById('hov-overlay').remove();state.activeDayIdx=${sg.startIdx};Trip.save('uidx',${sg.startIdx});renderItinerary()">📅 عرض الأيام</button>
           </div>
         </div>
       </div>`;
