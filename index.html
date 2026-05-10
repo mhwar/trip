@@ -10361,21 +10361,30 @@ function drawMarkers() {
 function computeHotelBudget() {
   const segs = getHotelSegments();
   return segs.map(seg => {
-    let costPerNight = 0;
+    let costPerNight = 0, hotelNameFromPicker = '', hotelNameFromItem = '';
     for (let i = seg.startIdx; i <= seg.endIdx; i++) {
       const d = state.itinerary[i];
-      if (d.hotel?.costPerNight) { costPerNight = d.hotel.costPerNight; break; }
+      // From day.hotel (hotel picker widget)
+      if (!hotelNameFromPicker && d.hotel?.name) hotelNameFromPicker = d.hotel.name;
+      if (!costPerNight && d.hotel?.costPerNight) costPerNight = d.hotel.costPerNight;
+      // From day.items (hotel-type timeline items)
+      if (!hotelNameFromItem) {
+        const hi = (d.items || []).find(it => it.type === 'hotel');
+        if (hi) hotelNameFromItem = hi.text || '';
+      }
     }
+    const hotelName = hotelNameFromPicker || hotelNameFromItem || '';
     return {
       cityId: seg.cityId,
       cityName: seg.cityName,
       nights: seg.nightsNeeded,
-      hotelName: seg.primaryHotel || '',
+      hotelName,
       costPerNight,
       totalCost: costPerNight * seg.nightsNeeded,
       allCovered: seg.allCovered,
       partCovered: seg.partCovered,
-      noCovered: seg.noCovered
+      noCovered: seg.noCovered,
+      hasHotelItem: !!(hotelNameFromPicker || hotelNameFromItem)
     };
   });
 }
@@ -10394,11 +10403,15 @@ function updateSegHotelCost(cityId, val) {
 
 function renderBudget() {
   const hotelItems = computeHotelBudget();
-  const hotelTotal = hotelItems.reduce((s, h) => s + h.totalCost, 0);
-  // Manual budget: skip hotel rows (icon 🏨) since we now auto-compute them
-  const manualItems = state.budget.filter(b => b.icon !== '🏨');
-  const totalEst = manualItems.reduce((s, b) => s + b.estimated, 0) + hotelTotal;
-  const totalAct = manualItems.reduce((s, b) => s + b.actual, 0) + hotelTotal;
+  const hotelAutoTotal = hotelItems.reduce((s, h) => s + h.totalCost, 0);
+  // Manual rows: separate hotel rows from non-hotel rows
+  const manualHotelItems = state.budget.filter(b => b.icon === '🏨');
+  const manualNonHotelItems = state.budget.filter(b => b.icon !== '🏨');
+  const manualHotelEst = manualHotelItems.reduce((s, b) => s + b.estimated, 0);
+  // If ANY segment has auto-computed cost, use auto total; else fall back to manual hotel estimates
+  const hotelTotal = hotelAutoTotal > 0 ? hotelAutoTotal : manualHotelEst;
+  const totalEst = manualNonHotelItems.reduce((s, b) => s + b.estimated, 0) + hotelTotal;
+  const totalAct = manualNonHotelItems.reduce((s, b) => s + b.actual, 0) + (hotelAutoTotal > 0 ? hotelAutoTotal : manualHotelItems.reduce((s, b) => s + b.actual, 0));
   const remaining = totalEst - totalAct;
   const isUK = isUKTrip();
   // Currency config: UK = SAR primary + GBP secondary; Korea = USD primary + SAR secondary
@@ -10415,43 +10428,51 @@ function renderBudget() {
   const hotelSectionHTML = hotelItems.length ? `
     <div class="card mb3">
       <div class="flx itm mb3" style="justify-content:space-between">
-        <h4 class="fb7 cli txm" style="margin:0">🏨 السكن — محسوب من الجدول</h4>
-        <span class="pill pill-sm" style="background:rgba(26,77,74,0.12);color:var(--accent);border-color:rgba(26,77,74,0.3)">تلقائي</span>
+        <h4 class="fb7 cli txm" style="margin:0">🏨 السكن — مرتبط بالجدول</h4>
+        ${hotelAutoTotal > 0
+          ? `<span class="pill pill-sm" style="background:rgba(22,163,74,0.12);color:#16a34a;border-color:rgba(22,163,74,0.3)">✓ تلقائي</span>`
+          : `<span class="pill pill-sm" style="background:rgba(26,77,74,0.08);color:var(--muted)">أدخل السعر/ليلة</span>`}
       </div>
       ${hotelItems.map(h => {
-        const booked = h.allCovered || h.partCovered;
-        const bookIcon = h.allCovered ? '✅' : h.partCovered ? '🟡' : '⬜';
+        const bookIcon = h.allCovered ? '✅' : h.partCovered ? '🟡' : h.hasHotelItem ? '🏨' : '⬜';
         const totalStr = h.costPerNight > 0 ? fmtMain(h.totalCost) : '—';
         const perNightStr = h.costPerNight > 0 ? fmtMain(h.costPerNight) : '';
         return `
         <div class="mb3">
           <div class="b-row">
-            <div class="b-icon">${bookIcon}</div>
+            <div class="b-icon" style="font-size:1rem">${bookIcon}</div>
             <div class="b-info">
-              <div class="b-n">${h.cityName}${h.hotelName ? ` · ${h.hotelName}` : ''}</div>
+              <div class="b-n">${h.cityName}${h.hotelName ? ` · <span style="font-weight:500;color:var(--ink-soft)">${h.hotelName}</span>` : ''}</div>
               <div class="b-num">
                 <span>${h.nights} ليلة${perNightStr ? ` × ${perNightStr}` : ''}</span>
-                ${h.costPerNight > 0 ? `<span style="color:var(--accent);font-weight:700">${totalStr}</span>` : '<span style="color:var(--muted);font-size:.7rem">أدخل السعر ▼</span>'}
+                ${h.costPerNight > 0
+                  ? `<span style="color:var(--accent);font-weight:700">${totalStr}</span>`
+                  : `<span style="color:var(--muted);font-size:.68rem">${hotelAutoTotal > 0 ? 'لم يُدخل سعر' : 'أدخل السعر/ليلة ←'}</span>`}
               </div>
             </div>
-            <input class="b-inp" type="number" min="0" step="any" value="${h.costPerNight || ''}" placeholder="سعر/ليلة"
+            <input class="b-inp" type="number" min="0" step="any" value="${h.costPerNight || ''}" placeholder="—"
               oninput="updateSegHotelCost('${h.cityId}', this.value)" title="السعر لليلة الواحدة">
           </div>
-          ${h.costPerNight > 0 ? `<div class="b-prog"><div class="b-prog-f" style="width:100%;background:var(--accent);opacity:0.6"></div></div>` : `<div class="b-prog" style="opacity:0.3"><div class="b-prog-f" style="width:0%"></div></div>`}
+          <div class="b-prog"><div class="b-prog-f" style="width:${h.costPerNight > 0 ? '100' : '0'}%;background:var(--accent);opacity:0.55"></div></div>
         </div>`;
       }).join('')}
-      ${hotelTotal > 0 ? `
+      ${hotelAutoTotal > 0 ? `
       <div class="flx itm" style="justify-content:space-between;border-top:1px solid var(--border);padding-top:0.5rem;margin-top:0.25rem">
-        <span class="txs clm fb6">إجمالي السكن</span>
-        <span class="fb7 cli">${fmtMain(hotelTotal)} <span style="font-weight:400;color:var(--muted);font-size:.72rem">(${fmtSec(hotelTotal)})</span></span>
+        <span class="txs clm fb6">إجمالي السكن (محسوب)</span>
+        <span class="fb7 cli">${fmtMain(hotelAutoTotal)} <span style="font-weight:400;color:var(--muted);font-size:.72rem">(${fmtSec(hotelAutoTotal)})</span></span>
+      </div>` : manualHotelEst > 0 ? `
+      <div class="flx itm" style="justify-content:space-between;border-top:1px solid var(--border);padding-top:0.5rem;margin-top:0.25rem;opacity:0.7">
+        <span class="txs clm fb6">التقدير اليدوي للسكن</span>
+        <span class="fb7" style="color:var(--muted)">${fmtMain(manualHotelEst)}</span>
       </div>` : ''}
     </div>` : '';
 
-  // ── Manual categories HTML ──
-  const manualHTML = manualItems.length ? `
+  // ── Manual non-hotel categories HTML ──
+  // Hotel rows (🏨) are shown above in the auto section; manual hotel estimates remain as fallback in totals
+  const manualHTML = manualNonHotelItems.length ? `
     <div class="card mb3">
       <h4 class="fb7 cli mb3 txm">📊 مصاريف أخرى</h4>
-      ${manualItems.map(b => {
+      ${manualNonHotelItems.map(b => {
         const pct = b.estimated > 0 ? Math.min(100, (b.actual / b.estimated) * 100) : 0;
         const over = b.actual > b.estimated;
         return `
