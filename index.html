@@ -2696,7 +2696,7 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .b-n { font-size: 0.8rem; font-weight: 600; color: var(--ink); }
 .b-num { font-size: 0.65rem; display: flex; gap: 0.5rem; margin-top: 1px; color: var(--muted); }
 .b-inp {
-  width: 4rem;
+  width: 5rem;
   padding: 0.3rem 0.4rem;
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -5067,6 +5067,19 @@ function renderOverview() {
         <div style="font-size:1.5rem;margin-bottom:0.4rem">📚</div>
         <div class="fb7 cli mb1">مكتبة المواقع</div>
         <p class="txs clm">${isKoreaTrip() ? `${LIB.length}+ موقع جاهز - مطاعم حلال، معالم، فعاليات، أسواق` : isUKTrip() ? `${UK_LIB.length}+ موقع جاهز - مساجد، مطاعم حلال، معالم، جولات` : 'ستُضاف المكتبة قريباً لهذه الوجهة'}</p>
+      </button>
+      <button class="card" onclick="switchTab('budget')" style="text-align:right;cursor:pointer">
+        ${(() => {
+          const hi = computeHotelBudget();
+          const ht = hi.reduce((s,h) => s+h.totalCost, 0);
+          const mi = state.budget.filter(b => b.icon !== '🏨');
+          const tot = ht + mi.reduce((s,b) => s+b.estimated, 0);
+          const cur = isUKTrip() ? 'ر.س' : '$';
+          return `<div style="font-size:1.5rem;margin-bottom:0.4rem">💰</div>
+                  <div class="fb7 cli mb1">الميزانية الذكية</div>
+                  <p class="txs clm">مرتبطة بالجدول — السكن تلقائي</p>
+                  ${tot > 0 ? `<div class="txx clm mt2 fb6" style="color:var(--accent)">${tot.toLocaleString()} ${cur} إجمالي مخطط</div>` : ''}`;
+        })()}
       </button>
     </div>
 
@@ -8551,6 +8564,13 @@ function openDayHotelPicker(dayIdx) {
         <input type="url" class="input" id="dh-link" value="${h.bookingLink || ''}" placeholder="https://...">
       </div>
       <div class="fld">
+        <label>السعر لليلة (اختياري — يُضاف للميزانية تلقائياً)</label>
+        <div style="display:flex;align-items:center;gap:0.4rem">
+          <input type="number" class="input" id="dh-cost" min="0" step="any" value="${h.costPerNight || ''}" placeholder="0" style="flex:1">
+          <span style="font-size:.8rem;color:var(--muted);white-space:nowrap">${isUKTrip() ? 'ر.س / ليلة' : '$ / ليلة'}</span>
+        </div>
+      </div>
+      <div class="fld">
         <label>ملاحظات (رقم الغرفة، مرجع الحجز...)</label>
         <textarea class="input" id="dh-notes" rows="2">${h.notes || ''}</textarea>
       </div>
@@ -8583,6 +8603,9 @@ function _pickHotelFromLib(libId, dayIdx) {
   }
   if (!it) return;
   const nights = parseInt($("dh-nights-val")?.textContent, 10) || 1;
+  // Try to extract a numeric cost from the library price string (e.g. "من $120", "£130/night", "1200 ر.س")
+  const _pm = (it.price || '').replace(/[،,]/g, '').match(/(\d+(?:\.\d+)?)/);
+  const costPerNight = _pm ? parseFloat(_pm[1]) : 0;
   const hotel = {
     name: it.name,
     address: it.area || '',
@@ -8590,7 +8613,8 @@ function _pickHotelFromLib(libId, dayIdx) {
     checkOut: '11:00',
     nights,
     bookingLink: it.bookingLink || '',
-    notes: ''
+    notes: '',
+    costPerNight
   };
   const endIdx = Math.min(state.itinerary.length - 1, dayIdx + nights - 1);
   for (let i = dayIdx; i <= endIdx; i++) {
@@ -8621,7 +8645,8 @@ function _saveDayHotelManual(dayIdx) {
     checkOut: $("dh-cout").value || "11:00",
     nights,
     bookingLink: $("dh-link").value.trim(),
-    notes: $("dh-notes").value.trim()
+    notes: $("dh-notes").value.trim(),
+    costPerNight: parseFloat($("dh-cost")?.value) || 0
   };
   const startIdx = dayIdx;
   const endIdx = Math.min(state.itinerary.length - 1, startIdx + nights - 1);
@@ -10333,44 +10358,100 @@ function drawMarkers() {
 //   BUDGET SECTION
 // ═══════════════════════════════════════════════════════════
 
+function computeHotelBudget() {
+  const segs = getHotelSegments();
+  return segs.map(seg => {
+    let costPerNight = 0;
+    for (let i = seg.startIdx; i <= seg.endIdx; i++) {
+      const d = state.itinerary[i];
+      if (d.hotel?.costPerNight) { costPerNight = d.hotel.costPerNight; break; }
+    }
+    return {
+      cityId: seg.cityId,
+      cityName: seg.cityName,
+      nights: seg.nightsNeeded,
+      hotelName: seg.primaryHotel || '',
+      costPerNight,
+      totalCost: costPerNight * seg.nightsNeeded,
+      allCovered: seg.allCovered,
+      partCovered: seg.partCovered,
+      noCovered: seg.noCovered
+    };
+  });
+}
+
+function updateSegHotelCost(cityId, val) {
+  const cost = Math.max(0, parseFloat(val) || 0);
+  state.itinerary.forEach(d => {
+    if ((d.city || '') === cityId) {
+      if (!d.hotel) d.hotel = {};
+      d.hotel.costPerNight = cost;
+    }
+  });
+  saveItin();
+  renderBudget();
+}
+
 function renderBudget() {
-  const totalEst = state.budget.reduce((s, b) => s + b.estimated, 0);
-  const totalAct = state.budget.reduce((s, b) => s + b.actual, 0);
+  const hotelItems = computeHotelBudget();
+  const hotelTotal = hotelItems.reduce((s, h) => s + h.totalCost, 0);
+  // Manual budget: skip hotel rows (icon 🏨) since we now auto-compute them
+  const manualItems = state.budget.filter(b => b.icon !== '🏨');
+  const totalEst = manualItems.reduce((s, b) => s + b.estimated, 0) + hotelTotal;
+  const totalAct = manualItems.reduce((s, b) => s + b.actual, 0) + hotelTotal;
   const remaining = totalEst - totalAct;
-  const usdToSar = 3.75;
+  const isUK = isUKTrip();
+  // Currency config: UK = SAR primary + GBP secondary; Korea = USD primary + SAR secondary
+  const currSym   = isUK ? 'ر.س' : '$';
+  const secSym    = isUK ? '£'   : 'ر.س';
+  const secRate   = isUK ? (1/4.75) : 3.75; // SAR→GBP or USD→SAR
+  const fmtMain   = (v) => `${v.toLocaleString()} ${currSym}`;
+  const fmtSec    = (v) => `${Math.round(v * secRate).toLocaleString()} ${secSym}`;
 
   const _budgetTarget = $("modal-budget-content") || $("sec-budget");
   if (!_budgetTarget) return;
-  _budgetTarget.innerHTML = `
-    <div class="sec-t">
-      <div class="sec-t-r">
-        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/></svg></div>
-        <h2>الميزانية</h2>
-      </div>
-      <p>تتبع مصاريف الرحلة - تحفظ تلقائياً</p>
-    </div>
 
-    <div class="bud-stats">
-      <div class="card bud-stat">
-        <div class="bud-l">المخطط</div>
-        <div class="bud-v">${'$'+totalEst.toLocaleString()}</div>
-        <div class="bud-sar">${(totalEst*usdToSar).toLocaleString()} ر.س</div>
-      </div>
-      <div class="card bud-stat bud-act-c">
-        <div class="bud-l">المنفق</div>
-        <div class="bud-v">${'$'+totalAct.toLocaleString()}</div>
-        <div class="bud-sar">${(totalAct*usdToSar).toLocaleString()} ر.س</div>
-      </div>
-      <div class="card bud-stat bud-rem-c">
-        <div class="bud-l">المتبقي</div>
-        <div class="bud-v">${'$'+remaining.toLocaleString()}</div>
-        <div class="bud-sar">${(remaining*usdToSar).toLocaleString()} ر.س</div>
-      </div>
-    </div>
-
+  // ── Hotel auto section HTML ──
+  const hotelSectionHTML = hotelItems.length ? `
     <div class="card mb3">
-      <h4 class="fb7 cli mb2 txm">📊 تفاصيل المصاريف</h4>
-      ${state.budget.map(b => {
+      <div class="flx itm mb3" style="justify-content:space-between">
+        <h4 class="fb7 cli txm" style="margin:0">🏨 السكن — محسوب من الجدول</h4>
+        <span class="pill pill-sm" style="background:rgba(26,77,74,0.12);color:var(--accent);border-color:rgba(26,77,74,0.3)">تلقائي</span>
+      </div>
+      ${hotelItems.map(h => {
+        const booked = h.allCovered || h.partCovered;
+        const bookIcon = h.allCovered ? '✅' : h.partCovered ? '🟡' : '⬜';
+        const totalStr = h.costPerNight > 0 ? fmtMain(h.totalCost) : '—';
+        const perNightStr = h.costPerNight > 0 ? fmtMain(h.costPerNight) : '';
+        return `
+        <div class="mb3">
+          <div class="b-row">
+            <div class="b-icon">${bookIcon}</div>
+            <div class="b-info">
+              <div class="b-n">${h.cityName}${h.hotelName ? ` · ${h.hotelName}` : ''}</div>
+              <div class="b-num">
+                <span>${h.nights} ليلة${perNightStr ? ` × ${perNightStr}` : ''}</span>
+                ${h.costPerNight > 0 ? `<span style="color:var(--accent);font-weight:700">${totalStr}</span>` : '<span style="color:var(--muted);font-size:.7rem">أدخل السعر ▼</span>'}
+              </div>
+            </div>
+            <input class="b-inp" type="number" min="0" step="any" value="${h.costPerNight || ''}" placeholder="سعر/ليلة"
+              oninput="updateSegHotelCost('${h.cityId}', this.value)" title="السعر لليلة الواحدة">
+          </div>
+          ${h.costPerNight > 0 ? `<div class="b-prog"><div class="b-prog-f" style="width:100%;background:var(--accent);opacity:0.6"></div></div>` : `<div class="b-prog" style="opacity:0.3"><div class="b-prog-f" style="width:0%"></div></div>`}
+        </div>`;
+      }).join('')}
+      ${hotelTotal > 0 ? `
+      <div class="flx itm" style="justify-content:space-between;border-top:1px solid var(--border);padding-top:0.5rem;margin-top:0.25rem">
+        <span class="txs clm fb6">إجمالي السكن</span>
+        <span class="fb7 cli">${fmtMain(hotelTotal)} <span style="font-weight:400;color:var(--muted);font-size:.72rem">(${fmtSec(hotelTotal)})</span></span>
+      </div>` : ''}
+    </div>` : '';
+
+  // ── Manual categories HTML ──
+  const manualHTML = manualItems.length ? `
+    <div class="card mb3">
+      <h4 class="fb7 cli mb3 txm">📊 مصاريف أخرى</h4>
+      ${manualItems.map(b => {
         const pct = b.estimated > 0 ? Math.min(100, (b.actual / b.estimated) * 100) : 0;
         const over = b.actual > b.estimated;
         return `
@@ -10380,36 +10461,68 @@ function renderBudget() {
               <div class="b-info">
                 <div class="b-n">${b.category}</div>
                 <div class="b-num">
-                  <span>المخطط: $${b.estimated}</span>
-                  <span style="color:${over ? 'var(--err)' : 'var(--accent)'}">المنفق: $${b.actual}</span>
+                  <span>المخطط: ${fmtMain(b.estimated)}</span>
+                  <span style="color:${over ? 'var(--err)' : 'var(--accent)'}">المنفق: ${fmtMain(b.actual)}</span>
                 </div>
               </div>
               <input class="b-inp" type="number" min="0" value="${b.actual}" oninput="updateBud('${b.id}', this.value)">
             </div>
             <div class="b-prog"><div class="b-prog-f" style="width:${pct}%;background:${over ? 'var(--err)' : 'var(--accent)'}"></div></div>
-          </div>
-        `;
+          </div>`;
       }).join('')}
-    </div>
+    </div>` : '';
 
+  // ── Currency converter ──
+  const converterHTML = isUK ? `
     <div class="card card-cream">
       <h4 class="fb7 cli mb2 txm">💱 محول العملات (تقريبي)</h4>
       <div class="gr g3">
-        <div class="card">
-          <div class="txx clm">USD → KRW</div>
-          <div class="fb7 cli">$1 ≈ ₩1,330</div>
-        </div>
-        <div class="card">
-          <div class="txx clm">USD → SAR</div>
-          <div class="fb7 cli">$1 ≈ 3.75 ر.س</div>
-        </div>
-        <div class="card">
-          <div class="txx clm">SAR → KRW</div>
-          <div class="fb7 cli">1 ر.س ≈ ₩355</div>
-        </div>
+        <div class="card"><div class="txx clm">SAR → GBP</div><div class="fb7 cli">1 ر.س ≈ £0.21</div></div>
+        <div class="card"><div class="txx clm">GBP → SAR</div><div class="fb7 cli">£1 ≈ 4.75 ر.س</div></div>
+        <div class="card"><div class="txx clm">GBP → USD</div><div class="fb7 cli">£1 ≈ $1.27</div></div>
       </div>
       <p class="txx clm mt2">⚠️ الأسعار تقريبية - تحقق من البنك قبل السفر</p>
+    </div>` : `
+    <div class="card card-cream">
+      <h4 class="fb7 cli mb2 txm">💱 محول العملات (تقريبي)</h4>
+      <div class="gr g3">
+        <div class="card"><div class="txx clm">USD → KRW</div><div class="fb7 cli">$1 ≈ ₩1,330</div></div>
+        <div class="card"><div class="txx clm">USD → SAR</div><div class="fb7 cli">$1 ≈ 3.75 ر.س</div></div>
+        <div class="card"><div class="txx clm">SAR → KRW</div><div class="fb7 cli">1 ر.س ≈ ₩355</div></div>
+      </div>
+      <p class="txx clm mt2">⚠️ الأسعار تقريبية - تحقق من البنك قبل السفر</p>
+    </div>`;
+
+  _budgetTarget.innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/></svg></div>
+        <h2>الميزانية الذكية</h2>
+      </div>
+      <p>مرتبطة بالجدول — السكن يُحسب تلقائياً</p>
     </div>
+
+    <div class="bud-stats">
+      <div class="card bud-stat">
+        <div class="bud-l">الإجمالي المخطط</div>
+        <div class="bud-v">${fmtMain(totalEst)}</div>
+        <div class="bud-sar">${fmtSec(totalEst)}</div>
+      </div>
+      <div class="card bud-stat bud-act-c">
+        <div class="bud-l">المنفق / المحجوز</div>
+        <div class="bud-v">${fmtMain(totalAct)}</div>
+        <div class="bud-sar">${fmtSec(totalAct)}</div>
+      </div>
+      <div class="card bud-stat bud-rem-c">
+        <div class="bud-l">المتبقي</div>
+        <div class="bud-v" style="color:${remaining < 0 ? 'var(--err)' : 'inherit'}">${fmtMain(remaining)}</div>
+        <div class="bud-sar">${fmtSec(remaining)}</div>
+      </div>
+    </div>
+
+    ${hotelSectionHTML}
+    ${manualHTML}
+    ${converterHTML}
   `;
 }
 
