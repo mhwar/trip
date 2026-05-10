@@ -3351,11 +3351,18 @@ const TripsRegistry = {
     startDate: "2026-05-14", endDate: "2026-05-24",
     createdAt: "2026-01-01"
   },
+  UK_DEFAULT: {
+    id: "uk", name: "بريطانيا", destination: "المملكة المتحدة",
+    icon: "🇬🇧", color: "#1e3a5f", isBuiltIn: true, countryLib: "uk",
+    startDate: "2026-08-14", endDate: "2026-08-23",
+    createdAt: "2026-01-01"
+  },
   list() {
     const stored = (() => {
       try { return JSON.parse(localStorage.getItem("kt2_trips_registry") || "[]"); } catch { return []; }
     })();
     if (!stored.find(t => t.id === "korea")) stored.unshift(this.KOREA_DEFAULT);
+    if (!stored.find(t => t.id === "uk")) stored.splice(1, 0, this.UK_DEFAULT);
     return stored;
   },
   save(list) { localStorage.setItem("kt2_trips_registry", JSON.stringify(list)); },
@@ -3366,7 +3373,7 @@ const TripsRegistry = {
     this.save(list);
   },
   remove(id) {
-    if (id === "korea") return false;
+    if (id === "korea" || id === "uk") return false;
     const list = this.list().filter(t => t.id !== id);
     this.save(list);
     // Clean up trip data
@@ -3403,6 +3410,10 @@ function isKoreaTrip() {
   if (Trip.current === "korea") return true;
   const t = TripsRegistry.get(Trip.current);
   return t?.countryLib === "korea";
+}
+function isUKTrip() {
+  const t = TripsRegistry.get(Trip.current);
+  return t?.countryLib === "uk";
 }
 
 function getRouteParams() {
@@ -3717,6 +3728,109 @@ const CITIES = [
         hotels: [
           { rank: 1, name: "Hotel Foret Premier Nampo", price: "$110-150", note: "حديث - إطلالة المرفأ", lat: 35.0989, lng: 129.0328 },
           { rank: 2, name: "Toyoko Inn Busan Jungang", price: "$70-95", note: "اقتصادي ياباني موثوق", lat: 35.1004, lng: 129.0367 }
+        ]
+      }
+    ]
+  }
+];
+
+// ── UK Cities (London · Edinburgh · Manchester) ─────────────
+const UK_CITIES = [
+  {
+    id: "london", name: "لندن", nameEn: "London",
+    lat: 51.5074, lng: -0.1278,
+    tag: "العاصمة الإمبراطورية",
+    desc: "إحدى أكبر مدن العالم وأكثرها تنوعاً — تاريخ يمتد لألفي عام، متاحف عالمية مجانية، حدائق ملكية، وطعام حلال في كل حي.",
+    highlights: ["برج لندن","متحف البريطاني","قصر باكنغهام","سوق بوروه","مسجد ريجنت بارك","كوفنت غاردن"],
+    districts: [
+      {
+        id: "westminster", name: "ويستمنستر", nameEn: "Westminster",
+        tag: "قلب التاريخ والسياسة",
+        pros: ["🏛️ قصر باكنغهام ودير ويستمنستر","🕰️ برلمان ومئذنة بيغ بن","🌳 حدائق سانت جيمس الملكية","🚇 مترو قريب"],
+        bestFor: "المعالم التاريخية والصور الرائعة",
+        hotels: [
+          { rank: 1, name: "✨ The Goring Hotel", price: "£350-500", note: "فندق ملكي 5★ - المفضل للعائلة المالكة - خدمة استثنائية", lat: 51.4974, lng: -0.1468 },
+          { rank: 2, name: "Intercontinental London Park Lane", price: "£280-400", note: "5★ إطلالة على هايد بارك - فاخر ومركزي", lat: 51.5065, lng: -0.1510 },
+          { rank: 3, name: "ibis London Euston", price: "£100-140", note: "3★ موقع ممتاز - نظيف وعملي", lat: 51.5277, lng: -0.1340 }
+        ]
+      },
+      {
+        id: "eastlondon", name: "إيست لندن / وايتشابل", nameEn: "East London",
+        tag: "✨ الحي الإسلامي - مسلم-فريندلي",
+        pros: ["🕌 مسجد شرق لندن","🥩 شارع بريك لين كامل حلال","🛍️ أسواق الأحد الشهيرة","💷 أسعار أوفر من وسط لندن"],
+        bestFor: "✨ الأنسب للعائلات المسلمة",
+        hotels: [
+          { rank: 1, name: "Premier Inn London Stepney Green", price: "£110-150", note: "3★ قريب مشياً لمسجد شرق لندن وبريك لين", lat: 51.5178, lng: -0.0415 },
+          { rank: 2, name: "Travelodge London Bethnal Green", price: "£70-100", note: "بودجت مريح - قريب من بريك لين", lat: 51.5267, lng: -0.0558 }
+        ]
+      },
+      {
+        id: "kensington", name: "كينسينغتون / نوتينغ هيل", nameEn: "Kensington",
+        tag: "الراقي والهادئ",
+        pros: ["🌳 هايد بارك وكينسينغتون غاردنز","🌈 منازل نوتينغ هيل الملونة","🏛️ متحف V&A والعلوم مجانية","🛍️ سوق بورتوبيلو السبت"],
+        bestFor: "العائلات التي تفضل الهدوء والجمال",
+        hotels: [
+          { rank: 1, name: "The Milestone Hotel Kensington", price: "£280-380", note: "5★ مقابل قصر كينسينغتون - روعة فيكتورية", lat: 51.5025, lng: -0.1898 },
+          { rank: 2, name: "Holiday Inn Kensington Forum", price: "£150-200", note: "4★ أمام محطة مترو - مريح ومركزي", lat: 51.4958, lng: -0.1929 }
+        ]
+      }
+    ]
+  },
+  {
+    id: "edinburgh", name: "إدنبرة", nameEn: "Edinburgh",
+    lat: 55.9533, lng: -3.1883,
+    tag: "عاصمة إسكتلندا التاريخية",
+    desc: "مدينة تقع على قمة بركان متطفئ — قلعتها تهيمن على المدينة من الأعالي، ومدينتها القديمة UNESCO، والمهرجان السنوي يحوّلها في أغسطس لأكبر مهرجان فنون بالعالم.",
+    highlights: ["قلعة إدنبرة","رويال مايل","آرثر سيت","قصر هوليرود","مسجد نيودينغتون","فرنج فيستيفال"],
+    districts: [
+      {
+        id: "oldtown_edin", name: "المدينة القديمة (Old Town)", nameEn: "Old Town",
+        tag: "قلب التاريخ والثقافة",
+        pros: ["🏰 قلعة إدنبرة على بعد دقائق","🏘️ رويال مايل الشارع الأيقوني","🎭 معظم عروض الفرنج هنا","🚶 كل المعالم مشياً"],
+        bestFor: "المغامرة التاريخية والسياحة الكلاسيكية",
+        hotels: [
+          { rank: 1, name: "✨ The Scotsman Hotel", price: "£180-280", note: "✨ 5★ في مبنى صحيفة تاريخية على رويال مايل - حمام سباحة داخلي!", lat: 55.9509, lng: -3.1893 },
+          { rank: 2, name: "Radisson Collection Hotel Royal Mile", price: "£160-230", note: "5★ على الشارع الملكي - موقع مثالي", lat: 55.9511, lng: -3.1885 },
+          { rank: 3, name: "ibis Edinburgh Centre Royal Mile", price: "£90-120", note: "3★ عملي وموقعه مثالي", lat: 55.9499, lng: -3.1877 }
+        ]
+      },
+      {
+        id: "newtown_edin", name: "المدينة الجديدة (New Town)", nameEn: "New Town",
+        tag: "أنيق وجورجي الطراز",
+        pros: ["🛍️ شارع جورج للتسوق","🏛️ عمارة جورجية محمية UNESCO","☕ كافيهات ومطاعم راقية","🚶 مسافة مشي لكل المعالم"],
+        bestFor: "الباحثين عن الهدوء والأناقة",
+        hotels: [
+          { rank: 1, name: "Kimpton Charlotte Square Hotel", price: "£200-300", note: "5★ في شارع شارلوت سكوير التاريخي", lat: 55.9530, lng: -3.2037 },
+          { rank: 2, name: "Mercure Edinburgh Haymarket", price: "£100-150", note: "4★ قريب محطة هايماركت", lat: 55.9437, lng: -3.2111 }
+        ]
+      }
+    ]
+  },
+  {
+    id: "manchester", name: "مانشستر", nameEn: "Manchester",
+    lat: 53.4808, lng: -2.2426,
+    tag: "مدينة الكرة والثقافة",
+    desc: "مدينة المصانع التي أعادت اختراع نفسها — كرة قدم عالمية، موسيقى أسطورية، حي كاري مايل الحلال الأشهر في بريطانيا، وشعب يرحّب بكل القادمين.",
+    highlights: ["شارع كاري مايل الحلال","أولد ترافورد","نورثرن كوارتر","سالفورد كيز","مسجد مانشستر المركزي"],
+    districts: [
+      {
+        id: "rusholme", name: "رشولم (كاري مايل)", nameEn: "Rusholme",
+        tag: "✨ حي حلال كامل",
+        pros: ["🥩 شارع كاري مايل كله حلال","🕌 مسجد مانشستر المركزي قريب","💷 أسعار ممتازة للطعام","🛒 متاجر حلال ومحلات عربية"],
+        bestFor: "✨ الأفضل لتجربة الطعام الحلال والأجواء الإسلامية",
+        hotels: [
+          { rank: 1, name: "Premier Inn Manchester City Centre", price: "£80-120", note: "3★ مريح ومركزي - مترو قريب", lat: 53.4782, lng: -2.2399 },
+          { rank: 2, name: "Adagio Manchester Piccadilly", price: "£90-130", note: "3★ شقق بمطبخ - مثالي للعائلات", lat: 53.4800, lng: -2.2322 }
+        ]
+      },
+      {
+        id: "citycenter_mcr", name: "وسط مانشستر", nameEn: "City Centre",
+        tag: "الحيوية والترفيه",
+        pros: ["🛍️ تريفورد وأرنديل للتسوق","🎨 نورثرن كوارتر الفني","⚽ قطار لأولد ترافورد","🏛️ رات هول الشهير"],
+        bestFor: "المتسوقين ومحبي كرة القدم والموسيقى",
+        hotels: [
+          { rank: 1, name: "✨ Kimpton Clocktower Hotel", price: "£150-220", note: "✨ 5★ في مبنى جامعة تاريخية - تحفة معمارية", lat: 53.4771, lng: -2.2427 },
+          { rank: 2, name: "DoubleTree by Hilton Manchester", price: "£110-160", note: "4★ مركزي ومريح", lat: 53.4784, lng: -2.2410 }
         ]
       }
     ]
@@ -4179,7 +4293,7 @@ const UK_LIB = [
 // ═══════════════════════════════════════════════════════════
 //   BUILTIN LIBRARY SEEDER
 // ═══════════════════════════════════════════════════════════
-const LIBS_VERSION = 3; // bump when TURKEY_LIB or UK_LIB content changes
+const LIBS_VERSION = 4; // bump when TURKEY_LIB or UK_LIB content changes
 function seedBuiltinLibraries() {
   try {
     const storedVer = parseInt(localStorage.getItem("kt2_libs_version") || "0");
@@ -4517,7 +4631,7 @@ const TABS = [
   { id: "info", label: "معلومات", svg: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>' }
 ];
 
-const CITY_COLORS_DEFAULT = { seoul: "#1a4d4a", jeju: "#c9442b", busan: "#b8924a" };
+const CITY_COLORS_DEFAULT = { seoul: "#1a4d4a", jeju: "#c9442b", busan: "#b8924a", london: "#1e3a5f", edinburgh: "#2d5a1f", manchester: "#7c1d1d" };
 // Will be overridden from state after state init
 let CITY_COLORS = { ...CITY_COLORS_DEFAULT };
 
@@ -4593,7 +4707,7 @@ const Storage = {
 };
 
 const $ = (id) => document.getElementById(id);
-const cityById = (id) => CITIES.find(c => c.id === id);
+const cityById = (id) => CITIES.find(c => c.id === id) || UK_CITIES.find(c => c.id === id);
 const libById = (id) => allLib().find(l => l.id === id) || LIB.find(l => l.id === id);
 
 const TRIP_INFO_DEFAULT = {
@@ -4614,6 +4728,63 @@ const TRIP_INFO_DEFAULT = {
   ],
   notes: ""
 };
+
+const UK_TRIP_INFO_DEFAULT = {
+  destination: "المملكة المتحدة",
+  startDate: "2026-08-14",
+  endDate: "2026-08-23",
+  travelers: 2,
+  ticketRef: "",
+  outboundFlights: [
+    { airline: "رحلة السفر", from: "المطار المحلي", to: "لندن هيثرو (LHR)", depDate: "2026-08-14", depTime: "", arrTime: "", pnr: "" }
+  ],
+  returnFlights: [
+    { airline: "رحلة العودة", from: "مانشستر (MAN)", to: "المطار المحلي", depDate: "2026-08-23", depTime: "", arrTime: "", pnr: "" }
+  ],
+  notes: ""
+};
+
+const UK_BUDGET_DEFAULT = [
+  { id: "uk_b1", category: "فنادق لندن (3 ليالٍ)", estimated: 4200, actual: 0, icon: "🏨" },
+  { id: "uk_b2", category: "فنادق إدنبرة (3 ليالٍ)", estimated: 2800, actual: 0, icon: "🏨" },
+  { id: "uk_b3", category: "فنادق مانشستر (2 ليلتان)", estimated: 1600, actual: 0, icon: "🏨" },
+  { id: "uk_b4", category: "تذاكر الطيران (ذهاب وعودة)", estimated: 5000, actual: 0, icon: "✈️" },
+  { id: "uk_b5", category: "تذاكر القطار (لندن ← إدنبرة ← مانشستر)", estimated: 1400, actual: 0, icon: "🚄" },
+  { id: "uk_b6", category: "الطعام (9 أيام × زوجان)", estimated: 2700, actual: 0, icon: "🍽️" },
+  { id: "uk_b7", category: "تذاكر المعالم والجولات", estimated: 1800, actual: 0, icon: "🎫" },
+  { id: "uk_b8", category: "التسوق والتذكارات", estimated: 2000, actual: 0, icon: "🛍️" },
+  { id: "uk_b9", category: "المواصلات الداخلية (أندرغراوند)", estimated: 600, actual: 0, icon: "🚇" },
+  { id: "uk_b10", category: "SIM بريطاني / بيانات", estimated: 150, actual: 0, icon: "📱" },
+  { id: "uk_b11", category: "تأمين السفر", estimated: 400, actual: 0, icon: "🛡️" }
+];
+
+const UK_TASKS_DEFAULT = [
+  // تأشيرة وتوثيق
+  { id:"ukt1", cat:"docs", catLabel:"📄 وثائق وتأشيرة", label:"تقديم طلب تأشيرة بريطانيا UK Standard Visitor Visa", priority:"high", timing:"قبل شهرين", done:false },
+  { id:"ukt2", cat:"docs", catLabel:"📄 وثائق وتأشيرة", label:"استخراج تأمين سفر شامل (يشمل الرعاية الصحية بالـNHS)", priority:"high", timing:"قبل شهر", done:false },
+  { id:"ukt3", cat:"docs", catLabel:"📄 وثائق وتأشيرة", label:"التحقق من صلاحية جواز السفر (6 أشهر على الأقل)", priority:"high", timing:"قبل شهرين", done:false },
+  { id:"ukt4", cat:"docs", catLabel:"📄 وثائق وتأشيرة", label:"طباعة تذاكر الطيران وتأكيدات الفنادق", priority:"med", timing:"قبل أسبوع", done:false },
+  // حجوزات
+  { id:"ukt5", cat:"booking", catLabel:"🏨 حجوزات", label:"حجز فندق لندن (3 ليالٍ)", priority:"high", timing:"قبل شهرين", done:false },
+  { id:"ukt6", cat:"booking", catLabel:"🏨 حجوزات", label:"حجز فندق إدنبرة (3 ليالٍ)", priority:"high", timing:"قبل شهرين", done:false },
+  { id:"ukt7", cat:"booking", catLabel:"🏨 حجوزات", label:"حجز فندق مانشستر (2 ليلتان)", priority:"high", timing:"قبل شهرين", done:false },
+  { id:"ukt8", cat:"booking", catLabel:"🏨 حجوزات", label:"حجز قطار لندن → إدنبرة (Avanti / LNER على trainline.com)", priority:"high", timing:"قبل 3 أشهر", done:false },
+  { id:"ukt9", cat:"booking", catLabel:"🏨 حجوزات", label:"حجز قطار إدنبرة → مانشستر (TransPennine / Avanti)", priority:"high", timing:"قبل 3 أشهر", done:false },
+  { id:"ukt10", cat:"booking", catLabel:"🏨 حجوزات", label:"حجز جولة برج لندن (Tower of London) مسبقاً", priority:"med", timing:"قبل أسبوعين", done:false },
+  { id:"ukt11", cat:"booking", catLabel:"🏨 حجوزات", label:"حجز جولة قلعة إدنبرة مسبقاً (موصى به جداً في أغسطس)", priority:"med", timing:"قبل أسبوعين", done:false },
+  // تطبيقات
+  { id:"ukt12", cat:"apps", catLabel:"📱 تطبيقات وتحضيرات", label:"تحميل تطبيق Citymapper للمواصلات (لندن ومانشستر)", priority:"high", timing:"قبل أسبوع", done:false },
+  { id:"ukt13", cat:"apps", catLabel:"📱 تطبيقات وتحضيرات", label:"تحميل تطبيق Trainline لقطارات بريطانيا", priority:"high", timing:"قبل أسبوع", done:false },
+  { id:"ukt14", cat:"apps", catLabel:"📱 تطبيقات وتحضيرات", label:"تحميل تطبيق Google Maps مع Offline Map للمدن الثلاث", priority:"med", timing:"قبل أسبوع", done:false },
+  { id:"ukt15", cat:"apps", catLabel:"📱 تطبيقات وتحضيرات", label:"شراء SIM بريطانية (Giffgaff / Three / EE) أو تفعيل roaming", priority:"med", timing:"قبل السفر", done:false },
+  // حلال
+  { id:"ukt16", cat:"food", catLabel:"🥩 الحلال", label:"حفظ قائمة مطاعم بريك لين الحلالة (لندن)", priority:"med", timing:"قبل أسبوع", done:false },
+  { id:"ukt17", cat:"food", catLabel:"🥩 الحلال", label:"حفظ عنوان Mosque Kitchen إدنبرة", priority:"med", timing:"قبل أسبوع", done:false },
+  { id:"ukt18", cat:"food", catLabel:"🥩 الحلال", label:"حفظ شارع كاري مايل مانشستر (Rusholme)", priority:"med", timing:"قبل أسبوع", done:false },
+  // مواعيد وطقس
+  { id:"ukt19", cat:"misc", catLabel:"🌤️ متفرقات", label:"مراجعة توقعات الطقس (أغسطس عموماً معتدل: 18-24°م)", priority:"low", timing:"قبل أسبوع", done:false },
+  { id:"ukt20", cat:"misc", catLabel:"🌤️ متفرقات", label:"تجهيز مظلة خفيفة ومعطف للمطر (البشير!)", priority:"low", timing:"قبل السفر", done:false }
+];
 
 const state = {
   active: Trip.load("tab", "overview"),
@@ -4754,7 +4925,7 @@ function renderOverview() {
         <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
         <h2>لوحة الرحلة</h2>
       </div>
-      <p>${isKoreaTrip() ? 'ابدأ من هنا - مكتبة المواقع جاهزة، الجدول فارغ، أنت تختار' : `لوحة معلومات رحلة ${trip.name}`}</p>
+      <p>${isKoreaTrip() ? 'ابدأ من هنا - مكتبة المواقع جاهزة، الجدول فارغ، أنت تختار' : isUKTrip() ? 'لندن · إدنبرة · مانشستر — رحلة بريطانيا كاملة جاهزة' : `لوحة معلومات رحلة ${trip.name}`}</p>
     </div>
 
     ${window._cloudLoadFailed ? `
@@ -4857,10 +5028,10 @@ function renderOverview() {
           <div style="font-size:2rem">🚀</div>
           <div class="fls">
             <div class="fb7 cli mb1" style="font-size:1rem">جدولك فارغ - ابدأ الآن</div>
-            <p class="txs cls mb2">${isKoreaTrip() ? 'يمكنك استيراد القالب الجاهز (11 يوم) ثم تعديله، أو بناء جدولك من الصفر بالكامل.' : 'ابنِ جدول رحلتك خطوة بخطوة.'}</p>
+            <p class="txs cls mb2">${isKoreaTrip() ? 'يمكنك استيراد القالب الجاهز (11 يوم) ثم تعديله، أو بناء جدولك من الصفر بالكامل.' : isUKTrip() ? 'يمكنك استيراد القالب الجاهز (10 أيام: لندن + إدنبرة + مانشستر) ثم تعديله.' : 'ابنِ جدول رحلتك خطوة بخطوة.'}</p>
             <div class="flx g5 fwr">
-              ${isKoreaTrip() ? `<button class="btn btn-pri" onclick="importTemplate()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              ${(isKoreaTrip() || isUKTrip()) ? `<button class="btn btn-pri" onclick="importTemplate()">
+                <span class="material-symbols-rounded" style="font-size:1rem;vertical-align:middle">download</span>
                 استيراد القالب الجاهز
               </button>` : ''}
               <button class="btn btn-out" onclick="switchTab('itinerary')">
@@ -4895,7 +5066,7 @@ function renderOverview() {
       <button class="card" onclick="switchTab('library')" style="text-align:right;cursor:pointer">
         <div style="font-size:1.5rem;margin-bottom:0.4rem">📚</div>
         <div class="fb7 cli mb1">مكتبة المواقع</div>
-        <p class="txs clm">${isKoreaTrip() ? `${LIB.length}+ موقع جاهز - مطاعم حلال، معالم، فعاليات، أسواق` : 'ستُضاف المكتبة قريباً لهذه الوجهة'}</p>
+        <p class="txs clm">${isKoreaTrip() ? `${LIB.length}+ موقع جاهز - مطاعم حلال، معالم، فعاليات، أسواق` : isUKTrip() ? `${UK_LIB.length}+ موقع جاهز - مساجد، مطاعم حلال، معالم، جولات` : 'ستُضاف المكتبة قريباً لهذه الوجهة'}</p>
       </button>
     </div>
 
@@ -4936,6 +5107,36 @@ function renderOverview() {
         </div>
       </div>
       <p class="txs clm mt2" style="border-top:1px dashed var(--border);padding-top:0.6rem">💡 <strong>منطق الترتيب:</strong> وصول مباشر لسيول 10:50ص (يوم كامل!)، استشفاء + مهرجان الفوانيس + DMZ + Nami، ثم تنقل ذكي بـ✈️ للجزيرة و🚄 KTX للعودة.</p>
+    </div>
+    ` : isUKTrip() ? `
+    <div class="card card-acc mb3">
+      <div class="trip-flow">
+        <div class="trip-leg">
+          <div class="trip-leg-num" style="background:#1e3a5f">1</div>
+          <div class="trip-leg-info">
+            <div class="trip-leg-t">لندن · 3 ليالٍ</div>
+            <div class="trip-leg-d">14-17 أغسطس · ويستمنستر + برج لندن + بريك لين + متحف بريطاني</div>
+          </div>
+        </div>
+        <div class="trip-arrow">🚄 LNER King's Cross → Edinburgh Waverley (4س30د)</div>
+        <div class="trip-leg">
+          <div class="trip-leg-num" style="background:#2d5a1f">2</div>
+          <div class="trip-leg-info">
+            <div class="trip-leg-t">إدنبرة · 3 ليالٍ</div>
+            <div class="trip-leg-d">18-20 أغسطس · القلعة + رويال مايل + آرثر سيت + مهرجان فرنج</div>
+          </div>
+        </div>
+        <div class="trip-arrow">🚄 TransPennine Edinburgh → Manchester Piccadilly (3س30د)</div>
+        <div class="trip-leg">
+          <div class="trip-leg-num" style="background:#7c1d1d">3</div>
+          <div class="trip-leg-info">
+            <div class="trip-leg-t">مانشستر · 2 ليلتان</div>
+            <div class="trip-leg-d">21-22 أغسطس · كاري مايل + أولد ترافورد + نورثرن كوارتر</div>
+          </div>
+        </div>
+        <div class="trip-arrow">✈️ مطار مانشستر (MAN) → المطار المحلي</div>
+      </div>
+      <p class="txs clm mt2" style="border-top:1px dashed var(--border);padding-top:0.6rem">💡 <strong>منطق الترتيب:</strong> الوصول للندن (يوم كامل)، ثم انتقال شمالاً لإدنبرة بأجمل قطار بريطاني، ثم جنوباً لمانشستر، والمغادرة من مطارها مباشرة.</p>
     </div>
     ` : (tripCities.length > 0 ? `
     <div class="card card-acc mb3">
@@ -5007,6 +5208,40 @@ function renderOverview() {
     </div>
     `}
 
+    ${isUKTrip() ? `
+    <h3 class="fb7 cli mb2 mt3" style="font-size:1rem">🚄 قطارات التنقل الداخلي</h3>
+    <div class="gr mdg2 mb3">
+      <div class="card card-acc">
+        <div class="flx itm g5 mb2"><div style="font-size:1.5rem">🚄</div><strong class="fb7 cla">لندن → إدنبرة</strong></div>
+        <ul class="tip-list" style="margin-top:0.5rem">
+          <li><strong>LNER</strong>: King's Cross → Edinburgh Waverley · <span class="cli fb6">4س30د</span></li>
+          <li>احجز مبكراً على <strong>trainline.com</strong> بأسعار تبدأ من <span class="cli fb6">£25</span></li>
+          <li>Standard Advance: أرخص · Anytime: أغلى لكن مرن</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:rgba(124,29,29,0.3)">
+        <div class="flx itm g5 mb2"><div style="font-size:1.5rem">🚄</div><strong style="color:#7c1d1d">إدنبرة → مانشستر</strong></div>
+        <ul class="tip-list" style="margin-top:0.5rem">
+          <li><strong>TransPennine/Avanti</strong>: Edinburgh → Manchester Piccadilly · <span style="color:#7c1d1d;font-weight:600">3س30د</span></li>
+          <li>احجز على <strong>avantiwc.com</strong> أو trainline</li>
+          <li>تصدر تذاكر Advance 12 أسبوعاً مسبقاً</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="fb7 cli mb2 mt3" style="font-size:1rem">💡 نصائح سريعة لبريطانيا</h3>
+    <div class="card mb3">
+      <ul class="tip-list">
+        <li>💳 بطاقة الائتمان مقبولة في كل مكان — لا تحتاج كثير كاش</li>
+        <li>🚇 Oyster Card أو contactless للمترو (لندن) وباصات مانشستر</li>
+        <li>☁️ الطقس متقلب — مظلة خفيفة ضرورية حتى في أغسطس</li>
+        <li>🕌 مساجد في المدن الثلاث — أوقات الصلاة تتفاوت (الفجر متأخر جداً في الصيف)</li>
+        <li>🥩 حي رشولم مانشستر و بريك لين لندن = أفضل حلال في بريطانيا</li>
+        <li>🏛️ معظم المتاحف مجانية (البريطاني، ناشيونال غاليري، V&A، تيت...)</li>
+      </ul>
+    </div>
+    ` : ''}
+
     ${isKoreaTrip() ? `
     <h3 class="fb7 cli mb2 mt3" style="font-size:1rem">🎉 مهرجانات تتزامن مع رحلتك</h3>
     <div class="card mb4">
@@ -5028,10 +5263,136 @@ function importTemplate() {
   if (state.itinerary.some(d => d.items.length > 0)) {
     if (!confirm("جدولك يحتوي على عناصر. الاستيراد سيستبدلها بالقالب. متابعة؟")) return;
   }
-  state.itinerary = makeTemplateItinerary();
+  state.itinerary = isUKTrip() ? makeUKTemplateItinerary() : makeTemplateItinerary();
   saveItin();
   alert("✅ تم استيراد القالب! انتقل لتبويب الجدول.");
   switchTab('itinerary');
+}
+
+function makeUKSkeletonDays() {
+  const start = new Date("2026-08-14");
+  const cities = ["london","london","london","london","edinburgh","edinburgh","edinburgh","manchester","manchester","manchester"];
+  const months = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+  const wdays  = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+  return Array.from({length:10},(_,i)=>{
+    const d = new Date(start); d.setDate(d.getDate()+i);
+    return { day:i+1, date:d.toISOString().split('T')[0],
+      dateLabel:`${d.getDate()} ${months[d.getMonth()]}`,
+      weekday:wdays[d.getDay()], city:cities[i], title:"", type:"normal", flight:null, hotel:null, items:[] };
+  });
+}
+
+function makeUKTemplateItinerary() {
+  const it = makeUKSkeletonDays();
+
+  // يوم 1 - لندن: الوصول والاستكشاف الأول
+  it[0] = { ...it[0], title:"الوصول إلى لندن — هيثرو والاستكشاف الأول",
+    type:"arrival",
+    items:[
+      { id:"uk1", time:"10:00", text:"🛬 الوصول لمطار هيثرو — الهجرة واستلام الحقائب", type:"transport", lat:51.4700, lng:-0.4543, locked:true },
+      { id:"uk2", time:"11:30", text:"🚄 قطار Heathrow Express → محطة Paddington (15 دقيقة)", type:"transport", lat:51.5154, lng:-0.1755, locked:true },
+      { id:"uk3", time:"13:00", text:"🏨 تسجيل الوصول للفندق / إيداع الحقائب", type:"hotel" },
+      { id:"uk4", time:"14:30", text:"🌳 حديقة هايد بارك — استرخاء أول يوم", type:"attraction", refId:"uk_a10", lat:51.5073, lng:-0.1657 },
+      { id:"uk5", time:"16:30", text:"🛒 سوبرماركت Tesco/Sainsbury's — مشتريات أساسية", type:"shop", lat:51.5074, lng:-0.1278 },
+      { id:"uk6", time:"19:00", text:"🍛 عشاء في مطاعم وايتشابل الحلال", type:"food", refId:"uk_f3", halal:true, lat:51.5178, lng:-0.0590 }
+    ]};
+
+  // يوم 2 - لندن: ويستمنستر وقلب العاصمة
+  it[1] = { ...it[1], title:"ويستمنستر وقلب التاريخ البريطاني",
+    items:[
+      { id:"uk7", time:"09:00", text:"🕰️ برلمان لندن ومئذنة بيغ بن + جسر ويستمنستر", type:"attraction", refId:"uk_a6", lat:51.4999, lng:-0.1246 },
+      { id:"uk8", time:"10:30", text:"⛪ دير ويستمنستر (من الخارج + الساحة)", type:"attraction", refId:"uk_a5", lat:51.4994, lng:-0.1273 },
+      { id:"uk9", time:"11:30", text:"👑 قصر باكنغهام + تغيير الحرس (11ص يومياً)", type:"attraction", refId:"uk_a4", lat:51.5014, lng:-0.1419 },
+      { id:"uk10", time:"13:30", text:"🥙 غداء في بريك لين — أفضل مطاعم حلال لندن", type:"food", refId:"uk_f2", halal:true, lat:51.5209, lng:-0.0718 },
+      { id:"uk11", time:"15:30", text:"🎨 ناشيونال غاليري (مجاني) — فان غوخ ورافائيل", type:"attraction", refId:"uk_a7", lat:51.5089, lng:-0.1283 },
+      { id:"uk12", time:"18:00", text:"🌊 جسر واترلو — أجمل غروب لندن على التيمز", type:"attraction", refId:"uk_a8", lat:51.5065, lng:-0.1165 },
+      { id:"uk13", time:"19:30", text:"🍽️ عشاء في مطاعم بريكستون ماركت الحلالة", type:"food", refId:"uk_f1", halal:true, lat:51.4613, lng:-0.1156 }
+    ]};
+
+  // يوم 3 - لندن: برج لندن وساوث بانك والثقافة
+  it[2] = { ...it[2], title:"برج لندن وجسر البرج وساوث بانك",
+    items:[
+      { id:"uk14", time:"09:00", text:"🏰 برج لندن — التاج الملكي والتاريخ النورماني (احجز مسبقاً!)", type:"attraction", refId:"uk_a1", lat:51.5081, lng:-0.0759, locked:true, requiresTicket:true },
+      { id:"uk15", time:"12:00", text:"🌉 جسر البرج — المشي فوقه والإطلالة", type:"attraction", refId:"uk_a2", lat:51.5055, lng:-0.0754 },
+      { id:"uk16", time:"13:30", text:"🥖 غداء في سوق بوروه ماركت — تجربة الطعام الشهيرة", type:"food", refId:"uk_a11", halal:true, lat:51.5055, lng:-0.0910 },
+      { id:"uk17", time:"15:00", text:"🖼️ تيت مودرن (مجاني) — فن معاصر عالمي", type:"attraction", refId:"uk_a9", lat:51.5076, lng:-0.0994 },
+      { id:"uk18", time:"17:30", text:"🎩 جولة نهر التيمز الشهيرة (30-45 دقيقة)", type:"tour", refId:"uk_t2", lat:51.5065, lng:-0.1165 },
+      { id:"uk19", time:"20:00", text:"🍛 عشاء في مطاعم وايتشابل الحلال", type:"food", refId:"uk_f3", halal:true, lat:51.5178, lng:-0.0590 }
+    ]};
+
+  // يوم 4 - لندن: نوتينغ هيل وتسوق وخاتمة
+  it[3] = { ...it[3], title:"نوتينغ هيل وبورتوبيلو والمتحف البريطاني",
+    items:[
+      { id:"uk20", time:"09:30", text:"🏛️ المتحف البريطاني (مجاني) — حجر رشيد والمومياوات", type:"attraction", refId:"uk_a3", lat:51.5194, lng:-0.1270 },
+      { id:"uk21", time:"12:30", text:"☕ غداء في مطاعم بلومزبري الحلالة", type:"food", halal:true, lat:51.5194, lng:-0.1270 },
+      { id:"uk22", time:"14:00", text:"🌈 حي نوتينغ هيل — المنازل الملونة وسوق بورتوبيلو", type:"attraction", refId:"uk_a12", lat:51.5142, lng:-0.1961 },
+      { id:"uk23", time:"16:00", text:"🛍️ تسوق أكسفورد ستريت + ريجنت ستريت", type:"shop", lat:51.5152, lng:-0.1417 },
+      { id:"uk24", time:"20:00", text:"🏨 التجهيز لرحلة إدنبرة غداً", type:"hotel" }
+    ]};
+
+  // يوم 5 - إدنبرة: الوصول والقلعة
+  it[4] = { ...it[4], title:"🚄 انتقال لندن → إدنبرة + قلعة إدنبرة",
+    type:"arrival",
+    items:[
+      { id:"uk25", time:"08:00", text:"🚄 قطار London King's Cross → Edinburgh Waverley (4س30د LNER)", type:"transport", lat:51.5322, lng:-0.1225, locked:true },
+      { id:"uk26", time:"12:30", text:"🏨 تسجيل الوصول للفندق وإيداع الحقائب", type:"hotel" },
+      { id:"uk27", time:"14:00", text:"🏰 قلعة إدنبرة — التاج الإسكتلندي (احجز مسبقاً!)", type:"attraction", refId:"uk_a13", lat:55.9485, lng:-3.1999, locked:true, requiresTicket:true },
+      { id:"uk28", time:"17:00", text:"🏰 رويال مايل — تجوّل في الشارع الأيقوني", type:"attraction", refId:"uk_a14", lat:55.9498, lng:-3.1885 },
+      { id:"uk29", time:"19:00", text:"🍛 عشاء في Mosque Kitchen — الأشهر حلالاً في إدنبرة", type:"food", refId:"uk_f5", halal:true, lat:55.9340, lng:-3.1714 }
+    ]};
+
+  // يوم 6 - إدنبرة: آرثر سيت وهوليرود
+  it[5] = { ...it[5], title:"آرثر سيت البركاني وقصر هوليرود",
+    items:[
+      { id:"uk30", time:"08:30", text:"🗻 تسلق آرثر سيت (251م) — إطلالة 360° على إدنبرة!", type:"attraction", refId:"uk_a16", lat:55.9444, lng:-3.1617 },
+      { id:"uk31", time:"11:00", text:"👑 قصر هوليرود — إقامة الملك الرسمية في إسكتلندا", type:"attraction", refId:"uk_a15", lat:55.9523, lng:-3.1722 },
+      { id:"uk32", time:"13:30", text:"🍛 غداء في مطاعم نيكولسون ستريت الحلالة", type:"food", refId:"uk_f6", halal:true, lat:55.9395, lng:-3.1831 },
+      { id:"uk33", time:"15:00", text:"🏛️ المتحف الوطني الإسكتلندي (مجاني)", type:"attraction", refId:"uk_a18", lat:55.9471, lng:-3.1902 },
+      { id:"uk34", time:"17:30", text:"🕌 مسجد إدنبرة + صلاة المغرب", type:"mosque", refId:"uk_m3", lat:55.9338, lng:-3.1713 },
+      { id:"uk35", time:"19:30", text:"🛍️ شارع جورج وتسوق المدينة الجديدة", type:"shop", refId:"uk_a17", lat:55.9525, lng:-3.1978 }
+    ]};
+
+  // يوم 7 - إدنبرة: مهرجان فرنج (أغسطس) أو يوم حر
+  it[6] = { ...it[6], title:"مهرجان الفرنج الأشهر عالمياً 🎭 (أغسطس)",
+    items:[
+      { id:"uk36", time:"10:00", text:"🎭 جولة في فعاليات مهرجان إدنبرة فرنج — عروض مجانية", type:"attraction", refId:"uk_a19", lat:55.9533, lng:-3.1883 },
+      { id:"uk37", time:"13:00", text:"🍛 غداء Mosque Kitchen — الوجبة الأشهر بالمهرجان", type:"food", refId:"uk_f5", halal:true, lat:55.9340, lng:-3.1714 },
+      { id:"uk38", time:"15:00", text:"🎭 عرض فرنج متخصص — اختر من البرنامج الرسمي", type:"attraction", lat:55.9533, lng:-3.1883, requiresTicket:true },
+      { id:"uk39", time:"18:00", text:"📸 Calton Hill — إطلالة غروب أسطورية", type:"attraction", lat:55.9554, lng:-3.1786 },
+      { id:"uk40", time:"20:30", text:"🏨 التجهيز لقطار مانشستر غداً", type:"hotel" }
+    ]};
+
+  // يوم 8 - مانشستر: الوصول وكاري مايل
+  it[7] = { ...it[7], title:"🚄 انتقال إدنبرة → مانشستر + كاري مايل",
+    type:"arrival",
+    items:[
+      { id:"uk41", time:"09:00", text:"🚄 قطار Edinburgh → Manchester Piccadilly (3س30د TransPennine)", type:"transport", lat:55.9510, lng:-3.1888, locked:true },
+      { id:"uk42", time:"13:00", text:"🏨 تسجيل الوصول + إيداع الحقائب", type:"hotel" },
+      { id:"uk43", time:"14:30", text:"🕌 مسجد مانشستر المركزي + تجوّل", type:"mosque", refId:"uk_m4", lat:53.4788, lng:-2.2415 },
+      { id:"uk44", time:"17:00", text:"🎨 نورثرن كوارتر — غرافيتي وكافيهات وموسيقى", type:"attraction", refId:"uk_a21", lat:53.4843, lng:-2.2334 },
+      { id:"uk45", time:"19:00", text:"🍛 عشاء شارع كاري مايل رشولم — تجربة لا تُنسى!", type:"food", refId:"uk_f7", halal:true, lat:53.4558, lng:-2.2145 }
+    ]};
+
+  // يوم 9 - مانشستر: أولد ترافورد وسالفورد
+  it[8] = { ...it[8], title:"أولد ترافورد وسالفورد كيز",
+    items:[
+      { id:"uk46", time:"09:30", text:"⚽ جولة ملعب أولد ترافورد ومتحف مانشستر يونايتد", type:"tour", refId:"uk_t6", lat:53.4631, lng:-2.2913, requiresTicket:true },
+      { id:"uk47", time:"12:00", text:"🍛 غداء في مطاعم لونزايت الحلالة", type:"food", refId:"uk_f8", halal:true, lat:53.4608, lng:-2.2001 },
+      { id:"uk48", time:"14:00", text:"🏛️ متحف مانشستر (مجاني) — إسكتلندا والعلوم", type:"attraction", refId:"uk_a20", lat:53.4667, lng:-2.2335 },
+      { id:"uk49", time:"16:30", text:"🛍️ تسوق نهائي في تريفورد سنتر أو أرنديل", type:"shop", lat:53.4638, lng:-2.3017 },
+      { id:"uk50", time:"20:00", text:"🍛 عشاء وداع في كاري مايل + تجهيز الحقائب", type:"food", halal:true, lat:53.4558, lng:-2.2145 }
+    ]};
+
+  // يوم 10 - المغادرة
+  it[9] = { ...it[9], title:"يوم المغادرة من مانشستر",
+    type:"arrival",
+    items:[
+      { id:"uk51", time:"06:00", text:"🏨 Checkout الفندق + التوجه للمطار", type:"hotel" },
+      { id:"uk52", time:"08:00", text:"🚄 قطار/تاكسي → مطار مانشستر (MAN)", type:"transport", lat:53.3658, lng:-2.2701, locked:true },
+      { id:"uk53", time:"11:00", text:"🛫 رحلة العودة من مطار مانشستر", type:"transport", lat:53.3658, lng:-2.2701, locked:true }
+    ]};
+
+  return it;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -6390,6 +6751,8 @@ function loadHeroImage() {
     applyHeroImage(saved);
   } else if (isKoreaTrip()) {
     applyHeroImage("https://images.unsplash.com/photo-1517154421773-0529f29ea451?auto=format&fit=crop&w=1200&q=80");
+  } else if (isUKTrip()) {
+    applyHeroImage("https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1200&q=80");
   }
 }
 
@@ -13175,13 +13538,14 @@ async function initApp() {
     }, 90000);
   }
 
-  // Reload state from current trip's storage
+  // Reload state from current trip's storage (use trip-specific defaults)
+  const _uk = isUKTrip();
   state.itinerary = Trip.load("itin", makeEmptyItinerary());
   state.customLib = Trip.load("clib", []);
-  state.budget    = Trip.load("bud",  BUDGET_DEFAULT);
-  state.tasks     = Trip.load("tasks", TASKS_DEFAULT);
+  state.budget    = Trip.load("bud",  _uk ? UK_BUDGET_DEFAULT : BUDGET_DEFAULT);
+  state.tasks     = Trip.load("tasks", _uk ? UK_TASKS_DEFAULT : TASKS_DEFAULT);
   state.favs      = Trip.load("favs", []);
-  state.tripInfo  = Trip.load("tripinfo", TRIP_INFO_DEFAULT);
+  state.tripInfo  = Trip.load("tripinfo", _uk ? UK_TRIP_INFO_DEFAULT : TRIP_INFO_DEFAULT);
   state.cityColors    = Trip.load("citycolors", { ...CITY_COLORS_DEFAULT });
   state.customCities  = Trip.load("customcities", []);
   state.active    = Trip.load("tab", "overview");
