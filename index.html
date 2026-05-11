@@ -4623,6 +4623,24 @@ const APPS = [
   { name: "KakaoMap", note: "خرائط بديلة", icon: "📍" }
 ];
 
+const UK_APPS = [
+  { name: "Citymapper", note: "أفضل تطبيق مواصلات لندن", icon: "🗺️" },
+  { name: "Trainline", note: "حجز قطارات بريطانيا", icon: "🚄" },
+  { name: "TfL Go", note: "خرائط مترو لندن الرسمية", icon: "🚇" },
+  { name: "Google Maps", note: "ملاحة وأوقات المحلات", icon: "📍" },
+  { name: "Uber / Bolt", note: "سيارات أجرة بديل التاكسي", icon: "🚕" },
+  { name: "Muslim Pro", note: "أوقات الصلاة وإيجاد المساجد", icon: "🕌" },
+  { name: "HalalTrip", note: "مطاعم حلال بالموقع", icon: "🥩" },
+  { name: "NHS App", note: "طوارئ طبية - 111 للمشورة", icon: "🏥" }
+];
+
+const UK_EMERGENCY = [
+  { name: "الطوارئ العامة (إسعاف/شرطة/إطفاء)", phone: "999", note: "للحالات الخطرة فقط" },
+  { name: "NHS — المشورة الطبية", phone: "111", note: "24/7 للمشاكل الطبية غير الطارئة" },
+  { name: "السفارة السعودية — لندن", phone: "+44-20-7917-3000", note: "30 Charles St, Mayfair" },
+  { name: "القنصلية السعودية — مانشستر", phone: "+44-161-832-7581", note: "للإقليم الشمالي" }
+];
+
 const TABS = [
   { id: "overview", label: "نظرة عامة", svg: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>' },
   { id: "itinerary", label: "الجدول", svg: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' },
@@ -5273,12 +5291,74 @@ function renderOverview() {
 }
 
 function importTemplate() {
-  if (state.itinerary.some(d => d.items.length > 0)) {
-    if (!confirm("جدولك يحتوي على عناصر. الاستيراد سيستبدلها بالقالب. متابعة؟")) return;
+  _showTemplatePicker();
+}
+
+function _showTemplatePicker() {
+  const isUK = isUKTrip();
+  const opts = isUK ? [
+    { id:'uk5', label:'لندن فقط', days: 5, desc:'الأيام 1-5 · الوصول + المعالم الرئيسية + المغادرة', icon:'🏙️' },
+    { id:'uk7', label:'لندن + إدنبرة', days: 7, desc:'الأيام 1-7 · لندن (4 أيام) + إدنبرة (3 أيام)', icon:'🏰' },
+    { id:'uk10', label:'الجولة الكاملة', days: 10, desc:'10 أيام · لندن + إدنبرة + مانشستر', icon:'🇬🇧' }
+  ] : [
+    { id:'kr5', label:'سيول فقط', days: 5, desc:'الأيام 1-5 · سيول · الوصول + المعالم + DMZ', icon:'🏙️' },
+    { id:'kr11', label:'الجولة الكاملة', days: 11, desc:'11 يوم · سيول + جيجو + بوسان + العودة', icon:'🇰🇷' }
+  ];
+
+  openModal(`
+    <div class="modal-h">
+      <h3>📅 اختر قالب الجدول</h3>
+      <button class="modal-x" onclick="closeModal()">✕</button>
+    </div>
+    <p style="font-size:.82rem;color:var(--muted);margin:0 0 1rem">اختر النمط الذي يناسب مدة رحلتك — يمكنك تعديله بعد التطبيق</p>
+    <div style="display:flex;flex-direction:column;gap:0.75rem">
+      ${opts.map(o => `
+        <button class="card" style="text-align:right;cursor:pointer;padding:0.9rem 1rem;display:flex;align-items:center;gap:0.75rem" onclick="_applyTemplateOption('${o.id}')">
+          <div style="font-size:1.8rem;flex-shrink:0">${o.icon}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;color:var(--ink);font-size:.9rem">${o.label}</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">${o.desc}</div>
+          </div>
+          <div style="font-size:.72rem;font-weight:700;color:var(--accent);background:rgba(26,77,74,.1);padding:.2rem .5rem;border-radius:.3rem;flex-shrink:0">${o.days} أيام</div>
+        </button>
+      `).join('')}
+    </div>
+    <p style="font-size:.72rem;color:var(--muted);margin-top:1rem;text-align:center">⚠️ سيستبدل القالب الجدول الحالي</p>
+  `);
+}
+
+function _applyTemplateOption(optId) {
+  const hasItems = state.itinerary.some(d => d.items.length > 0);
+  if (hasItems && !confirm("جدولك يحتوي على عناصر. الاستيراد سيستبدلها. متابعة؟")) return;
+
+  let days;
+  if (optId === 'uk10') {
+    days = makeUKTemplateItinerary();
+  } else if (optId === 'uk7') {
+    days = makeUKTemplateItinerary().slice(0, 7);
+    // Fix: add a departure day at the end
+    const last = days[days.length-1];
+    days[days.length-1] = {...last, title:'المغادرة', items:[
+      ...last.items.filter(it=>it.type!=='hotel'),
+      { id:'uk_dep', time:'12:00', text:'المغادرة من إدنبرة', type:'transport', locked:true }
+    ]};
+  } else if (optId === 'uk5') {
+    // London only: take first 4 London days + a departure day
+    const full = makeUKTemplateItinerary();
+    days = full.slice(0, 4);
+    days.push({...full[9], day:5, city:'london', title:'المغادرة من لندن', items:[
+      { id:'uk_dep5', time:'10:00', text:'الخروج من الفندق والمغادرة', type:'transport', locked:true }
+    ]});
+  } else if (optId === 'kr11') {
+    days = makeTemplateItinerary();
+  } else if (optId === 'kr5') {
+    days = makeTemplateItinerary().slice(0, 5);
   }
-  state.itinerary = isUKTrip() ? makeUKTemplateItinerary() : makeTemplateItinerary();
+
+  state.itinerary = days;
+  renumberDays();
   saveItin();
-  alert("✅ تم استيراد القالب! انتقل لتبويب الجدول.");
+  closeModal();
   switchTab('itinerary');
 }
 
@@ -10690,6 +10770,160 @@ function addCustomTask() {
 
 
 function renderInfo() {
+  if (isUKTrip()) { renderInfoUK(); return; }
+  renderInfoKorea();
+}
+
+function renderInfoUK() {
+  $("sec-info").innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+        <h2>معلومات رحلة بريطانيا</h2>
+      </div>
+      <p>التأشيرة · العملة · المواصلات · الطقس · الطوارئ</p>
+    </div>
+
+    <div class="gr mdg2 mb3">
+      <div class="card card-acc">
+        <h4 class="fb7 cla mb2 txm">📋 التأشيرة البريطانية</h4>
+        <ul class="tip-list">
+          <li>Standard Visitor Visa — تأشيرة الزيارة القياسية</li>
+          <li>التقديم عبر: gov.uk/standard-visitor-visa</li>
+          <li>التكلفة: ~115£ (≈ 547 ر.س)</li>
+          <li>مدة المعالجة: 3-8 أسابيع — قدّم مبكراً</li>
+          <li>المدة: حتى 6 أشهر متعددة الدخول</li>
+          <li>تأكد من صلاحية الجواز أكثر من 6 أشهر</li>
+        </ul>
+      </div>
+
+      <div class="card card-orng">
+        <h4 class="fb7 clp mb2 txm">💷 العملة والدفع</h4>
+        <ul class="tip-list">
+          <li>الجنيه الإسترليني £ — 1£ ≈ 4.75 ر.س</li>
+          <li>Contactless مقبول في كل مكان (بطاقتك مباشرة)</li>
+          <li>ATM متوفر في كل الشوارع الرئيسية</li>
+          <li>تجنب الصرف في المطار — عمولة مرتفعة</li>
+          <li>Revolut / Wise للصرف بسعر الإنترنت</li>
+        </ul>
+      </div>
+
+      <div class="card" style="background:rgba(30,58,95,0.07);border-color:rgba(30,58,95,0.2)">
+        <h4 class="fb7 mb2 txm" style="color:#1e3a5f">🚇 المواصلات الداخلية</h4>
+        <ul class="tip-list">
+          <li><strong>لندن:</strong> Oyster Card أو بطاقتك على الـ Tube/Bus مباشرة</li>
+          <li><strong>لندن → إدنبرة:</strong> LNER (4-5 ساعات) عبر Trainline</li>
+          <li><strong>إدنبرة → مانشستر:</strong> TransPennine (~3.5 ساعة)</li>
+          <li><strong>إدنبرة:</strong> تراموي Edinburgh Trams + ScotRail</li>
+          <li><strong>مانشستر:</strong> Metrolink تراموي + Stagecoach</li>
+          <li>💡 القطار أرخص 50-70% عند الحجز قبل أسبوعين</li>
+        </ul>
+      </div>
+
+      <div class="card card-gold">
+        <h4 class="fb7 mb2 txm" style="color:#92400e">🌤️ الطقس في أغسطس</h4>
+        <ul class="tip-list">
+          <li>لندن: 19-24°م — أدفأ مناطق بريطانيا</li>
+          <li>إدنبرة: 14-19°م — بارد وضبابي أحياناً</li>
+          <li>مانشستر: 16-21°م — ماطر أكثر</li>
+          <li>الجو متقلب — مظلة خفيفة ضرورية دائماً</li>
+          <li>☀️ الشمس حتى 21:00م — يوم طويل جداً!</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card mb3">
+      <h4 class="fb7 cli mb2 txm">📱 تطبيقات أساسية</h4>
+      <div class="app-grid">
+        ${UK_APPS.map(a => `
+          <div class="app-c">
+            <div class="app-i">${a.icon}</div>
+            <div class="app-n">${a.name}</div>
+            <div class="app-no">${a.note}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="card mb3">
+      <h4 class="fb7 cli mb2 txm">🕌 أوقات الصلاة (أغسطس — تقريبية)</h4>
+      <div class="gr g3">
+        <div class="card" style="text-align:center;padding:.6rem">
+          <div class="txx clm">الفجر</div>
+          <div class="fb7 cli">03:30–04:00</div>
+          <div class="txx clm" style="font-size:.6rem">مبكر جداً في الصيف</div>
+        </div>
+        <div class="card" style="text-align:center;padding:.6rem">
+          <div class="txx clm">الظهر</div>
+          <div class="fb7 cli">13:15–13:30</div>
+        </div>
+        <div class="card" style="text-align:center;padding:.6rem">
+          <div class="txx clm">العصر</div>
+          <div class="fb7 cli">18:00–18:30</div>
+        </div>
+        <div class="card" style="text-align:center;padding:.6rem">
+          <div class="txx clm">المغرب</div>
+          <div class="fb7 cli">20:30–21:00</div>
+        </div>
+        <div class="card" style="text-align:center;padding:.6rem">
+          <div class="txx clm">العشاء</div>
+          <div class="fb7 cli">22:00–22:30</div>
+        </div>
+      </div>
+      <p class="txx clm mt2">⚠️ مواقيت تقريبية — استخدم Muslim Pro للدقة بحسب موقعك</p>
+    </div>
+
+    <div class="gr mdg2 mb3">
+      <div class="tc" style="background:#16a34a">
+        <div class="tc-t flx jb itm">
+          <span>🥩 طلب طعام حلال (إنجليزي)</span>
+          <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;padding:0.25rem 0.5rem;font-size:0.65rem" onclick="copyKorean(this, 'Is this halal? Does it contain pork or alcohol?')">📋 نسخ</button>
+        </div>
+        <div class="tc-text" style="font-family:sans-serif;font-size:1rem;letter-spacing:0">"Is this halal?"
+"Does it contain pork or alcohol?"
+"I'm Muslim — I only eat halal meat."</div>
+        <p class="txs mt2" style="opacity:0.9;border-top:1px solid rgba(255,255,255,0.2);padding-top:0.5rem">"هل هذا حلال؟ / هل يحتوي على خنزير أو كحول؟ / أنا مسلم، آكل الحلال فقط"</p>
+      </div>
+
+      <div class="tc" style="background:var(--gold)">
+        <div class="tc-t flx jb itm">
+          <span>🌾 طلب طعام GF (إنجليزي)</span>
+          <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;padding:0.25rem 0.5rem;font-size:0.65rem" onclick="copyKorean(this, 'Is this gluten-free? I have a gluten allergy.')">📋 نسخ</button>
+        </div>
+        <div class="tc-text" style="font-family:sans-serif;font-size:1rem;letter-spacing:0">"Is this gluten-free?"
+"I have a gluten / wheat allergy."
+"Can you check the ingredients please?"</div>
+        <p class="txs mt2" style="opacity:0.9;border-top:1px solid rgba(255,255,255,0.2);padding-top:0.5rem">"هل هذا خالٍ من الجلوتين؟ / عندي حساسية قمح / ممكن تتأكد من المكونات؟"</p>
+      </div>
+    </div>
+
+    <div class="card mb3">
+      <h4 class="fb7 cli mb2 txm">🔌 معلومات عملية</h4>
+      <ul class="tip-list">
+        <li>🔌 الكهرباء: 230V — قابس Type G ثلاثي الأسنان — تحتاج محول</li>
+        <li>🕐 التوقيت: BST (UTC+1) في أغسطس — فارق 2 ساعة عن السعودية</li>
+        <li>🌐 الإنترنت: SIM بريطانية Giffgaff/Three من 10£ — أو eSIM من Airalo/Holafly</li>
+        <li>🚑 الصحة: NHS مجاناً لحالات الطوارئ — احتفظ بتأمين السفر</li>
+        <li>🧳 الحقائب: حد وزن متروالرياض-لندن عادةً 23-30كغ — تحقق من شركتك</li>
+      </ul>
+    </div>
+
+    <div class="card card-orng">
+      <h4 class="fb7 clp mb2 txm">📞 أرقام الطوارئ</h4>
+      ${UK_EMERGENCY.map(e => `
+        <div class="em-row">
+          <div class="fls">
+            <div class="em-n">${e.name}</div>
+            <div class="em-m">${e.note}</div>
+          </div>
+          <a class="em-p" href="tel:${e.phone.replace(/\s/g,'')}">${e.phone}</a>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderInfoKorea() {
   $("sec-info").innerHTML = `
     <div class="sec-t">
       <div class="sec-t-r">
