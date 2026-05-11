@@ -276,6 +276,50 @@ footer{background:var(--navy-d);padding:3.25rem 0 1.5rem}
 /* Reveal */
 [data-r]{opacity:0;transform:translateY(24px);transition:opacity .55s,transform .55s}
 [data-r].on{opacity:1;transform:none}
+
+/* ════ READY ITINERARIES ════ */
+.itin-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:3rem}
+.itin-card{position:relative;border-radius:var(--rxl);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--sh-md);transition:transform .35s,box-shadow .35s}
+.itin-card:hover{transform:translateY(-8px);box-shadow:var(--sh-lg)}
+.itin-korea{background:linear-gradient(155deg,#120018 0%,#1d0030 45%,#2e0a20 100%)}
+.itin-uk{background:linear-gradient(155deg,#080f22 0%,#0d1f40 45%,#132650 100%)}
+.itin-bg-flag{position:absolute;bottom:-20px;left:-10px;font-size:13rem;opacity:.07;line-height:1;transform:rotate(-10deg);pointer-events:none;user-select:none;z-index:0}
+.itin-bg-pat{position:absolute;inset:0;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpolygon points='30,4 34,11 30,18 26,11' fill='white' opacity='0.03'/%3E%3C/svg%3E");background-size:60px 60px}
+.itin-glow{position:absolute;top:-30px;right:-30px;width:250px;height:250px;border-radius:50%;opacity:.2;filter:blur(60px);pointer-events:none;z-index:0}
+.itin-korea .itin-glow{background:radial-gradient(circle,#d63af9 0%,transparent 70%)}
+.itin-uk .itin-glow{background:radial-gradient(circle,#3a6fdf 0%,transparent 70%)}
+.itin-top{position:relative;z-index:1;padding:1.75rem 2rem;flex:1}
+.itin-meta-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.itin-dur-badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:.32rem .85rem;font-size:.73rem;font-weight:800;color:#fff;display:inline-flex;align-items:center;gap:.4rem}
+.itin-hot-tag{background:var(--orange);color:#fff;border-radius:999px;padding:.28rem .72rem;font-size:.67rem;font-weight:800;animation:hotpulse 2.4s ease-in-out infinite}
+@keyframes hotpulse{0%,100%{box-shadow:0 0 0 0 rgba(244,123,32,.6)}50%{box-shadow:0 0 0 6px rgba(244,123,32,0)}}
+.itin-star-tag{background:var(--teal);color:#fff;border-radius:999px;padding:.28rem .72rem;font-size:.67rem;font-weight:800}
+.itin-flag-wrap{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+.itin-flag{font-size:2.8rem;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
+.itin-days-lbl{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;padding:.32rem .75rem;font-size:.76rem;font-weight:700;color:rgba(255,255,255,.8)}
+.itin-title{font-size:1.65rem;font-weight:900;color:#fff;line-height:1.15;margin-bottom:.4rem;letter-spacing:-.02em}
+.itin-sub{font-size:.86rem;color:rgba(255,255,255,.58);margin-bottom:1.35rem;line-height:1.65}
+.itin-cities{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.35rem}
+.itin-city-pill{display:flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:999px;padding:.28rem .72rem;font-size:.75rem;font-weight:700;color:rgba(255,255,255,.9)}
+.itin-city-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.itin-korea .itin-city-dot{background:#d63af9}
+.itin-uk .itin-city-dot{background:#5b8de8}
+.itin-highlights{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.85rem}
+.itin-hl{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:.6rem;padding:.68rem .85rem;display:flex;align-items:flex-start;gap:.55rem}
+.itin-hl-ic{font-size:1.05rem;flex-shrink:0;margin-top:.05rem}
+.itin-hl-txt{font-size:.71rem;color:rgba(255,255,255,.78);font-weight:600;line-height:1.45}
+.itin-more{display:flex;align-items:center;gap:.55rem;padding:.52rem .85rem;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.14);border-radius:.55rem;font-size:.71rem;color:rgba(255,255,255,.32)}
+.itin-foot{position:relative;z-index:1;padding:1.1rem 2rem;background:rgba(0,0,0,.42);backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.itin-price-lbl{font-size:.6rem;color:rgba(255,255,255,.38);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.18rem}
+.itin-price-val{font-size:1.45rem;font-weight:900;color:#fff;line-height:1;display:flex;align-items:baseline;gap:.28rem}
+.itin-price-cur{font-size:.68rem;color:rgba(255,255,255,.5)}
+.itin-cta-group{display:flex;gap:.45rem;align-items:center}
+.btn-itin-book{background:var(--teal);color:#fff;padding:.68rem 1.3rem;border-radius:var(--r);font-weight:800;font-size:.86rem;border:none;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap;font-family:'Cairo',sans-serif}
+.btn-itin-book:hover{background:var(--teal-d);transform:translateY(-1px);box-shadow:0 6px 20px rgba(41,173,168,.45)}
+.btn-itin-wa{background:rgba(37,211,102,.13);color:#4adf7d;border:1.5px solid rgba(37,211,102,.28);padding:.68rem .9rem;border-radius:var(--r);font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.35rem;font-family:'Cairo',sans-serif}
+.btn-itin-wa:hover{background:rgba(37,211,102,.22);border-color:rgba(37,211,102,.5)}
+@media(max-width:820px){.itin-grid{grid-template-columns:1fr}}
+@media(max-width:500px){.itin-top{padding:1.35rem 1.25rem}.itin-foot{padding:.9rem 1.25rem}.itin-title{font-size:1.35rem}.itin-highlights{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -297,6 +341,7 @@ footer{background:var(--navy-d);padding:3.25rem 0 1.5rem}
       <div class="nav-links" id="nav-links">
         <a href="#categories" class="nav-lnk">خدماتنا</a>
         <a href="#destinations" class="nav-lnk">الوجهات</a>
+        <a href="#itineraries" class="nav-lnk">جداول جاهزة</a>
         <a href="#packages" class="nav-lnk">الباقات</a>
         <a href="#how" class="nav-lnk">كيف نعمل</a>
         <a href="#contact" class="nav-lnk">تواصل</a>
@@ -417,6 +462,118 @@ footer{background:var(--navy-d);padding:3.25rem 0 1.5rem}
       <button class="dest-tab" onclick="showDest('domestic',this)"><span>🇸🇦</span> داخلي</button>
     </div>
     <div class="dest-grid" id="dest-grid"></div>
+  </div>
+</section>
+
+<!-- ════ READY ITINERARIES ════ -->
+<section class="section" id="itineraries">
+  <div class="container">
+    <div class="text-center" data-r>
+      <div class="eyebrow">جداول جاهزة للحجز</div>
+      <h2 class="h2">رحلات مصممة يوم بيوم — جاهزة فوراً</h2>
+      <p class="sub">جداول سفر احترافية مُجرَّبة ومكتملة التفاصيل — احجزها كما هي أو عدّلها حسب رغبتك</p>
+    </div>
+    <div class="itin-grid" data-r>
+
+      <!-- ── Korea ── -->
+      <div class="itin-card itin-korea">
+        <div class="itin-bg-flag">🇰🇷</div>
+        <div class="itin-bg-pat"></div>
+        <div class="itin-glow"></div>
+        <div class="itin-top">
+          <div class="itin-meta-row">
+            <span class="itin-dur-badge">⏱ 11 يوم / 10 ليالٍ</span>
+            <span class="itin-hot-tag">🔥 الأكثر حجزاً</span>
+          </div>
+          <div class="itin-flag-wrap">
+            <span class="itin-flag">🇰🇷</span>
+            <span class="itin-days-lbl">جدول كامل · 11 يوماً</span>
+          </div>
+          <h3 class="itin-title">رحلة كوريا الجنوبية</h3>
+          <p class="itin-sub">11 يوماً من السحر الآسيوي — ثلاث مدن، تجارب لا تُنسى</p>
+          <div class="itin-cities">
+            <span class="itin-city-pill"><span class="itin-city-dot"></span>سيول</span>
+            <span class="itin-city-pill"><span class="itin-city-dot"></span>جزيرة جيجو</span>
+            <span class="itin-city-pill"><span class="itin-city-dot"></span>بوسان</span>
+          </div>
+          <div class="itin-highlights">
+            <div class="itin-hl"><span class="itin-hl-ic">🏯</span><span class="itin-hl-txt">القلاع والمعابد التاريخية</span></div>
+            <div class="itin-hl"><span class="itin-hl-ic">🍜</span><span class="itin-hl-txt">جولات المطبخ الكوري الأصيل</span></div>
+            <div class="itin-hl"><span class="itin-hl-ic">🌋</span><span class="itin-hl-txt">جزيرة جيجو البركانية</span></div>
+            <div class="itin-hl"><span class="itin-hl-ic">🌆</span><span class="itin-hl-txt">أحياء سيول الكوزموبوليتية</span></div>
+          </div>
+          <div class="itin-more">🔒&nbsp; +7 تجارب وأنشطة مثيرة مخفية في الجدول الكامل</div>
+        </div>
+        <div class="itin-foot">
+          <div>
+            <div class="itin-price-lbl">يبدأ من</div>
+            <div class="itin-price-val">4,500 <span class="itin-price-cur">ر.س</span></div>
+          </div>
+          <div class="itin-cta-group">
+            <button class="btn-itin-wa" onclick="bookItin('كوريا الجنوبية','11 يوم / 10 ليالٍ','4,500')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.553 4.104 1.522 5.829L.057 23.998l6.305-1.453A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.85 0-3.587-.504-5.079-1.382l-.361-.214-3.742.862.882-3.63-.236-.374A9.956 9.956 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+              واتساب
+            </button>
+            <button class="btn-itin-book" onclick="bookItin('كوريا الجنوبية','11 يوم / 10 ليالٍ','4,500')">
+              احجز الجدول
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── UK ── -->
+      <div class="itin-card itin-uk">
+        <div class="itin-bg-flag">🇬🇧</div>
+        <div class="itin-bg-pat"></div>
+        <div class="itin-glow"></div>
+        <div class="itin-top">
+          <div class="itin-meta-row">
+            <span class="itin-dur-badge">⏱ 10 أيام / 9 ليالٍ</span>
+            <span class="itin-star-tag">⭐ موصى به</span>
+          </div>
+          <div class="itin-flag-wrap">
+            <span class="itin-flag">🇬🇧</span>
+            <span class="itin-days-lbl">جدول كامل · 10 أيام</span>
+          </div>
+          <h3 class="itin-title">رحلة بريطانيا الكلاسيكية</h3>
+          <p class="itin-sub">10 أيام بين ثلاث مدن أيقونية — تاريخ عريق وتجربة أوروبية لا مثيل لها</p>
+          <div class="itin-cities">
+            <span class="itin-city-pill"><span class="itin-city-dot"></span>لندن</span>
+            <span class="itin-city-pill"><span class="itin-city-dot"></span>إدنبرة</span>
+            <span class="itin-city-pill"><span class="itin-city-dot"></span>مانشستر</span>
+          </div>
+          <div class="itin-highlights">
+            <div class="itin-hl"><span class="itin-hl-ic">🏰</span><span class="itin-hl-txt">برج لندن وقصر باكنغهام</span></div>
+            <div class="itin-hl"><span class="itin-hl-ic">🏔️</span><span class="itin-hl-txt">قلعة إدنبرة ومرتفعات اسكتلندا</span></div>
+            <div class="itin-hl"><span class="itin-hl-ic">🎭</span><span class="itin-hl-txt">المتاحف والمسارح العالمية</span></div>
+            <div class="itin-hl"><span class="itin-hl-ic">🏟️</span><span class="itin-hl-txt">تراث مانشستر الثقافي والرياضي</span></div>
+          </div>
+          <div class="itin-more">🔒&nbsp; +5 تجارب وأنشطة مثيرة مخفية في الجدول الكامل</div>
+        </div>
+        <div class="itin-foot">
+          <div>
+            <div class="itin-price-lbl">يبدأ من</div>
+            <div class="itin-price-val">5,500 <span class="itin-price-cur">ر.س</span></div>
+          </div>
+          <div class="itin-cta-group">
+            <button class="btn-itin-wa" onclick="bookItin('بريطانيا','10 أيام / 9 ليالٍ','5,500')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.553 4.104 1.522 5.829L.057 23.998l6.305-1.453A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.85 0-3.587-.504-5.079-1.382l-.361-.214-3.742.862.882-3.63-.236-.374A9.956 9.956 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+              واتساب
+            </button>
+            <button class="btn-itin-book" onclick="bookItin('بريطانيا','10 أيام / 9 ليالٍ','5,500')">
+              احجز الجدول
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="text-center" style="margin-top:2.25rem" data-r>
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:1rem">هل وجهتك ليست هنا؟ نبني لك جدول سفر مخصص من الصفر</p>
+      <a href="#contact" class="btn btn-outline">اطلب جدول مخصص ✨</a>
+    </div>
   </div>
 </section>
 
@@ -793,6 +950,11 @@ function doSearch(){
   document.querySelectorAll('[data-type]').forEach(b=>b.classList.toggle('act', b.dataset.type===CUR_TYPE));
   renderPkg();
   document.getElementById('packages').scrollIntoView({behavior:'smooth'});
+}
+
+function bookItin(dest, dur, price){
+  const msg = `مرحباً خطّار 👋\n\nأود الاستفسار عن الجدول الجاهز:\n\n🌍 الوجهة: ${dest}\n⏱ المدة: ${dur}\n💰 السعر المعروض: ${price} ر.س\n\nأرجو التواصل لتأكيد الحجز وتفاصيل الجدول الكامل.`;
+  window.open('https://wa.me/966500000000?text='+encodeURIComponent(msg),'_blank');
 }
 
 function setFtype(btn){
