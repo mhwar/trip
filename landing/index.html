@@ -88,11 +88,13 @@ nav.scrolled{padding:.55rem 0;box-shadow:var(--sh-xs)}
 .nav-end{display:flex;align-items:center;gap:.55rem;flex-shrink:0}
 .nav-burger{display:none;padding:.5rem;color:var(--ink);border-radius:.55rem}
 .nav-burger:hover{background:var(--pearl-deep)}
+.nav-mobile-cta{display:none}
 @media(max-width:920px){
   .nav-links{display:none;position:absolute;top:100%;right:0;left:0;flex-direction:column;background:#fff;border-bottom:1px solid var(--line);padding:.8rem 1.5rem;gap:.15rem;box-shadow:var(--sh-md)}
   .nav-links.open{display:flex}
   .nav-burger{display:flex}
   .nav-end .btn{display:none}
+  .nav-mobile-cta{display:inline-flex!important;margin-top:.6rem;justify-content:center}
 }
 
 /* ════════════════════════════════════════ HERO ════════════════════════════════════════ */
@@ -427,12 +429,180 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
 .planner-btn{display:flex;align-items:center;gap:.5rem;background:var(--ink);color:#fff;padding:.7rem 1.25rem;border-radius:999px;font-size:.82rem;font-weight:600;box-shadow:0 8px 26px rgba(10,37,64,.35);border:1px solid rgba(255,255,255,.1);transition:all .2s}
 .planner-btn:hover{transform:translateY(-2px);background:#06192e;box-shadow:0 14px 32px rgba(10,37,64,.45)}
 
+/* ════════════════════════════════════════ NAME MEANING ════════════════════════════════════════ */
+.nm-wrap{padding:5rem 0;position:relative;overflow:hidden;background:linear-gradient(180deg,var(--pearl) 0%,#fff 100%);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.nm-wrap::before{content:'خطّار';position:absolute;font-family:'Plus Jakarta Sans','Readex Pro',sans-serif;font-size:28rem;font-weight:900;color:rgba(10,37,64,.025);top:50%;right:50%;transform:translate(50%,-50%);pointer-events:none;line-height:1;white-space:nowrap;z-index:0;letter-spacing:-.05em}
+.nm-wrap > .wrap{position:relative;z-index:1}
+.nm-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin:3rem 0 2.5rem;position:relative}
+.nm-step{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:2rem 1.6rem;text-align:center;position:relative;transition:all .35s var(--ease);overflow:hidden}
+.nm-step:hover{transform:translateY(-4px);border-color:transparent;box-shadow:var(--sh-lg)}
+.nm-step::before{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(90deg,var(--sky) 0%,var(--sky-deep) 100%);transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease)}
+.nm-step:hover::before{transform:scaleX(1)}
+.nm-num{position:absolute;top:1rem;left:1.2rem;font-size:.7rem;font-weight:800;color:var(--ink-faint);font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:.1em}
+.nm-ic{width:64px;height:64px;border-radius:var(--r-md);background:linear-gradient(135deg,var(--sky-soft) 0%,#D7E5FB 100%);color:var(--sky-deep);display:flex;align-items:center;justify-content:center;margin:0 auto 1.4rem;box-shadow:0 4px 14px rgba(46,124,246,.18)}
+.nm-ic .ms{font-size:1.85rem}
+.nm-word{font-size:2.1rem;font-weight:800;color:var(--ink);letter-spacing:-.025em;margin-bottom:.25rem;font-family:'Plus Jakarta Sans','Readex Pro',sans-serif;line-height:1}
+.nm-word-tag{display:inline-block;font-size:.7rem;font-weight:700;color:var(--sky);background:var(--sky-soft);padding:.22rem .6rem;border-radius:999px;margin-bottom:1rem}
+.nm-desc{font-size:.92rem;color:var(--ink-soft);line-height:1.75}
+.nm-arrow{position:absolute;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;background:#fff;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;z-index:2;color:var(--sky)}
+.nm-arrow-1{left:-20px}
+.nm-arrow-2{left:-20px}
+.nm-tagline{text-align:center;font-size:1.25rem;font-weight:700;color:var(--ink);letter-spacing:-.015em;margin-top:1rem;padding:1.5rem 2rem;background:linear-gradient(135deg,var(--ink) 0%,#143869 100%);color:#fff;border-radius:var(--r-lg);box-shadow:var(--sh-md);position:relative;overflow:hidden}
+.nm-tagline::before{content:'"';position:absolute;top:-30px;right:20px;font-size:7rem;color:rgba(255,255,255,.08);font-family:'Plus Jakarta Sans',serif;line-height:1;font-weight:900}
+.nm-tagline::after{content:'"';position:absolute;bottom:-60px;left:20px;font-size:7rem;color:rgba(255,255,255,.08);font-family:'Plus Jakarta Sans',serif;line-height:1;font-weight:900}
+@media(max-width:760px){.nm-steps{grid-template-columns:1fr;gap:1rem}.nm-arrow{display:none}.nm-wrap::before{font-size:14rem}.nm-tagline{font-size:1.05rem;padding:1.25rem 1.5rem}}
+
+/* ════════════════════════════════════════ FEATURED PROGRAM ════════════════════════════════════════ */
+.fp{display:grid;grid-template-columns:1.2fr 1fr;gap:0;background:#fff;border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--sh-lg);border:1px solid var(--line);margin-top:3rem}
+.fp-left{padding:3rem 2.75rem;display:flex;flex-direction:column;justify-content:center}
+.fp-tag{display:inline-flex;align-items:center;gap:.4rem;font-size:.7rem;font-weight:700;color:var(--sky);background:var(--sky-soft);padding:.35rem .8rem;border-radius:999px;width:fit-content;margin-bottom:1.1rem;letter-spacing:.06em;text-transform:uppercase}
+.fp-tag .ms{font-size:.85rem}
+.fp-t{font-size:1.85rem;font-weight:800;color:var(--ink);letter-spacing:-.025em;line-height:1.18;margin-bottom:.55rem}
+.fp-s{font-size:.95rem;color:var(--ink-muted);font-weight:500;margin-bottom:1.1rem}
+.fp-d{font-size:.92rem;color:var(--ink-soft);line-height:1.78;margin-bottom:1.7rem}
+.fp-feats{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:2rem}
+.fp-feat{display:flex;align-items:center;gap:.55rem;font-size:.82rem;color:var(--ink-soft);font-weight:500}
+.fp-feat .ms{color:var(--sky);font-size:1.05rem}
+.fp-cta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.fp-price{display:flex;align-items:baseline;gap:.4rem;padding:.65rem 1.1rem;background:var(--pearl-deep);border-radius:var(--r-sm);border:1px solid var(--line)}
+.fp-price-v{font-size:1.15rem;font-weight:800;color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;line-height:1}
+.fp-price-n{font-size:.7rem;color:var(--ink-muted);font-weight:500}
+.fp-go{display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 1.5rem;background:var(--sky);color:#fff;border-radius:999px;font-weight:700;font-size:.92rem;transition:all .25s var(--ease);box-shadow:0 8px 22px rgba(46,124,246,.28)}
+.fp-go:hover{background:var(--sky-deep);transform:translateY(-2px);box-shadow:0 16px 36px rgba(46,124,246,.4)}
+.fp-right{position:relative;background:linear-gradient(135deg,#0A2540 0%,#143869 50%,#1957C2 100%);overflow:hidden;min-height:380px;display:flex;align-items:center;justify-content:center;padding:2rem}
+.fp-right::before{content:'';position:absolute;top:-50px;right:-50px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(46,124,246,.4) 0%,transparent 70%);filter:blur(50px)}
+.fp-browser{position:relative;width:90%;max-width:380px;background:#fff;border-radius:var(--r-md);box-shadow:0 30px 70px rgba(0,0,0,.4);overflow:hidden;z-index:1}
+.fp-browser-bar{display:flex;align-items:center;gap:.5rem;background:#F4F2EC;padding:.6rem .85rem;border-bottom:1px solid #E5E0D2}
+.fp-dots{display:flex;gap:.3rem;flex-shrink:0}
+.fp-dot{width:9px;height:9px;border-radius:50%;background:#E2D5BB}
+.fp-dot:nth-child(1){background:#FF5F57}
+.fp-dot:nth-child(2){background:#FFBD2E}
+.fp-dot:nth-child(3){background:#28C840}
+.fp-url{flex:1;background:#fff;border-radius:.4rem;padding:.32rem .65rem;font-size:.7rem;color:var(--ink-muted);font-family:'Plus Jakarta Sans',monospace;display:flex;align-items:center;gap:.35rem;direction:ltr;font-weight:500;border:1px solid var(--line)}
+.fp-url .ms{font-size:.8rem;color:var(--sky)}
+.fp-screen{padding:1.1rem;background:#fff}
+.fp-screen-row{display:flex;align-items:center;gap:.55rem;padding:.65rem .7rem;border-radius:.55rem;margin-bottom:.4rem;background:var(--pearl)}
+.fp-screen-row:last-child{margin-bottom:0}
+.fp-sc-ic{width:28px;height:28px;border-radius:.4rem;background:var(--sky-soft);color:var(--sky);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fp-sc-ic .ms{font-size:.95rem}
+.fp-sc-info{flex:1;min-width:0}
+.fp-sc-t{font-size:.72rem;font-weight:700;color:var(--ink);margin-bottom:.1rem}
+.fp-sc-m{font-size:.6rem;color:var(--ink-muted)}
+.fp-sc-time{font-size:.62rem;font-weight:700;color:var(--ink-muted);background:#fff;padding:.18rem .45rem;border-radius:.35rem;font-family:'Plus Jakarta Sans',monospace}
+@media(max-width:880px){.fp{grid-template-columns:1fr}.fp-left{padding:2.25rem 1.75rem}.fp-right{min-height:300px;padding:1.5rem}.fp-t{font-size:1.5rem}}
+@media(max-width:500px){.fp-feats{grid-template-columns:1fr}.fp-cta{flex-direction:column;align-items:stretch}.fp-go{justify-content:center}}
+
 /* ════════════════════════════════════════ REVEAL ════════════════════════════════════════ */
 [data-r]{opacity:0;transform:translateY(28px);transition:opacity .65s var(--ease),transform .65s var(--ease);transition-delay:var(--d,0ms)}
 [data-r].on{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:0.001ms!important;animation-iteration-count:1!important;transition-duration:0.001ms!important}
   [data-r]{opacity:1;transform:none}
+}
+
+/* ════════════════════════════════════════ MOBILE REFINEMENTS ════════════════════════════════════════ */
+@media(max-width:640px){
+  .wrap{padding:0 1.1rem}
+  .hero{padding:2.5rem 0 3rem;min-height:auto}
+  .hero-h1{font-size:clamp(1.85rem,8vw,2.4rem);line-height:1.1;margin-bottom:1rem}
+  .hero-desc{font-size:.95rem;margin-bottom:1.5rem}
+  .hero-tag{font-size:.7rem;padding:.35rem .85rem;margin-bottom:1.1rem}
+  .smart-search{padding:.55rem;gap:.35rem}
+  .ss-field{padding:.55rem .85rem}
+  .ss-field-lbl{font-size:.58rem}
+  .ss-field select{font-size:.82rem}
+  .ss-go{padding:.85rem 1.2rem;font-size:.86rem}
+  .hero-chips{gap:.4rem;margin-top:1.2rem}
+  .hero-chip{font-size:.72rem;padding:.36rem .8rem;gap:.35rem}
+  .hero-stats{grid-template-columns:repeat(2,1fr);gap:1rem 1.5rem;margin-top:2.25rem;padding-top:1.5rem}
+  .hstat-num{font-size:1.7rem}
+  .hstat-lbl{font-size:.68rem;margin-top:.25rem}
+  /* Trust band */
+  .trust{padding:1.5rem 0}
+  .trust-row{gap:.85rem;justify-content:center}
+  .trust-lbl{font-size:.66rem;text-align:center;width:100%}
+  .trust-logos{gap:.65rem}
+  .trust-logo{font-size:.7rem;padding:.32rem .7rem}
+  /* Section eyebrows */
+  .eyebrow{font-size:.66rem;padding:.32rem .75rem}
+  .h2{font-size:clamp(1.45rem,5.5vw,1.85rem);line-height:1.2}
+  .lede{font-size:.92rem;line-height:1.7}
+  /* Pillars */
+  .pillar{padding:1.6rem 1.4rem;min-height:auto}
+  .pillar-1{min-height:auto;padding:1.85rem 1.5rem}
+  .pillar-t{font-size:1.18rem}
+  .pillar-1 .pillar-t{font-size:1.3rem}
+  .pillar-s{font-size:.85rem}
+  .pillar-feats li{font-size:.78rem}
+  .pillar-ic{width:48px;height:48px;margin-bottom:.9rem}
+  .pillar-1 .pillar-ic{width:54px;height:54px}
+  .pillar-4-row{flex-direction:row;align-items:center}
+  .pillar-4-ic{width:44px;height:44px}
+  .pillar-4{padding:1.4rem 1.4rem;flex-direction:column;align-items:stretch}
+  .pillar-4 .pillar-arrow{margin-top:1rem;align-self:flex-start}
+  /* Featured Program */
+  .fp-left{padding:1.85rem 1.4rem}
+  .fp-t{font-size:1.4rem}
+  .fp-d{font-size:.88rem;margin-bottom:1.4rem}
+  .fp-right{min-height:260px;padding:1.25rem}
+  .fp-cta{gap:.7rem}
+  /* Itineraries */
+  .itin-meta{flex-wrap:wrap;gap:.5rem;margin-bottom:1.2rem}
+  .itin-top{padding:1.5rem 1.3rem}
+  .itin-foot{flex-direction:column;align-items:stretch;gap:.85rem;padding:1.1rem 1.3rem}
+  .itin-cta{justify-content:flex-end}
+  .itin-hl{grid-template-columns:1fr}
+  .itin-hl-i{padding:.65rem .8rem}
+  /* Destinations */
+  .dest-bento{gap:.7rem;grid-auto-rows:130px}
+  .dest{padding:.85rem}
+  .dest-name{font-size:.92rem}
+  .dest.featured .dest-name{font-size:1.2rem}
+  .dest.featured .dest-bg{font-size:4.5rem}
+  .dest.featured .dest-badge{font-size:.6rem;padding:.22rem .6rem}
+  /* Packages */
+  .pkg-filters{gap:.4rem;margin-bottom:1.5rem}
+  .pkg-chip{padding:.4rem .85rem;font-size:.72rem}
+  .pkg-sep-v{display:none}
+  /* Testimonials */
+  .tsm-wrap{padding:2.5rem 0;border-radius:var(--r-lg)}
+  .tsm{padding:1.6rem 1.4rem}
+  .tsm-q{font-size:.88rem}
+  /* Journey */
+  .journey{margin-top:2.5rem}
+  .jstep-num{width:60px;height:60px;font-size:1.2rem}
+  /* Contact */
+  .contact-left{padding:2rem 1.5rem}
+  .contact-right{padding:2rem 1.5rem}
+  .contact-left .h2{font-size:1.5rem}
+  .contact-phone-v{font-size:.88rem}
+  .ftypes{gap:.32rem}
+  .ftype{padding:.42rem .8rem;font-size:.72rem}
+  /* CTA band */
+  .cta-band{padding:3rem 0}
+  .cta-t{font-size:1.6rem}
+  .cta-d{font-size:.92rem}
+  /* Footer */
+  footer{padding:2.5rem 0 1.25rem}
+  .foot-grid{gap:1.85rem;margin-bottom:2rem}
+  .foot-d{font-size:.78rem}
+  .foot-input input{font-size:.78rem}
+  .foot-input button{padding:.5rem .85rem;font-size:.72rem}
+  /* Planner floating btn — smaller */
+  #planner{bottom:1rem;left:1rem}
+  .planner-btn{padding:.55rem 1rem;font-size:.76rem}
+  /* Nav: ensure CTA stays visible inside burger via separate display in open menu */
+  .nav-links.open .btn{display:inline-flex;margin-top:.4rem;justify-content:center}
+}
+
+@media(max-width:380px){
+  .hero-h1{font-size:1.7rem}
+  .h2{font-size:1.35rem}
+  .hero-stats{grid-template-columns:repeat(2,1fr);gap:.85rem 1rem}
+  .hstat-num{font-size:1.45rem}
+  .nav-brand{font-size:1.05rem}
+  .nav-logo img,#logo-nav-fb{width:38px!important;height:38px!important}
+  .dest-bento{grid-template-columns:1fr 1fr;grid-auto-rows:118px}
 }
 </style>
 </head>
@@ -452,12 +622,14 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
         <span class="nav-brand">خطّار</span>
       </a>
       <div class="nav-links" id="navLinks">
+        <a href="#meaning" class="nav-lnk">خطّار؟</a>
         <a href="#pillars" class="nav-lnk">خدماتنا</a>
+        <a href="#program" class="nav-lnk">منصتنا</a>
         <a href="#itineraries" class="nav-lnk">جداول جاهزة</a>
         <a href="#destinations" class="nav-lnk">الوجهات</a>
-        <a href="#packages" class="nav-lnk">الباقات</a>
-        <a href="#testimonials" class="nav-lnk">آراء العملاء</a>
+        <a href="#testimonials" class="nav-lnk">الآراء</a>
         <a href="#contact" class="nav-lnk">تواصل</a>
+        <a href="#contact" class="btn btn-sky btn-sm nav-mobile-cta">احجز استشارة</a>
       </div>
       <div class="nav-end">
         <a href="#contact" class="btn btn-sky btn-sm">احجز استشارة</a>
@@ -568,6 +740,19 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
   </div>
 </section>
 
+<!-- ════════════ NAME MEANING ════════════ -->
+<section class="nm-wrap" id="meaning">
+  <div class="wrap">
+    <div class="tc" data-r>
+      <div class="eyebrow" id="nmEye">هوية خطّار</div>
+      <h2 class="h2" id="nmTitle">أكثر من اسم — فكرة كاملة</h2>
+      <p class="lede" id="nmLede"></p>
+    </div>
+    <div class="nm-steps" id="nmSteps"></div>
+    <div class="nm-tagline" data-r id="nmTagline"></div>
+  </div>
+</section>
+
 <!-- ════════════ PILLARS (Bento) ════════════ -->
 <section class="section" id="pillars">
   <div class="wrap">
@@ -627,8 +812,20 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
   </div>
 </section>
 
+<!-- ════════════ FEATURED PROGRAM ════════════ -->
+<section class="section section-pearl" id="program">
+  <div class="wrap">
+    <div class="tc" data-r>
+      <div class="eyebrow" id="fpEye">أداة احترافية</div>
+      <h2 class="h2" id="fpTitle">منصّتنا التفاعلية</h2>
+      <p class="lede" id="fpLede">أدوات تكميلية تجعل تخطيط رحلتك أسهل وأمتع</p>
+    </div>
+    <div class="fp" id="fpCard" data-r></div>
+  </div>
+</section>
+
 <!-- ════════════ ITINERARIES ════════════ -->
-<section class="section section-pearl" id="itineraries">
+<section class="section" id="itineraries">
   <div class="wrap">
     <div class="tc" data-r>
       <div class="eyebrow">جداول جاهزة للحجز</div>
@@ -999,12 +1196,77 @@ fetch('../landing-data.json').then(r=>r.json()).then(d=>{D=d;init()}).catch(e=>c
 
 function init(){
   renderTrust();
+  renderNameMeaning();
+  renderFeaturedProgram();
   renderDestSel();
   showDest('international', document.querySelector('.dest-tab.act'));
   renderFilters();
   renderPkg();
   renderWhy();
   renderTestimonials();
+}
+
+/* ════════════════════ NAME MEANING ════════════════════ */
+function renderNameMeaning(){
+  if(!D || !D.nameMeaning) return;
+  const nm = D.nameMeaning;
+  document.getElementById('nmEye').textContent = nm.eyebrow;
+  document.getElementById('nmTitle').textContent = nm.title;
+  document.getElementById('nmLede').textContent = nm.lede;
+  const tags = ['الفكرة الأولى','الخطوة الثانية','المسافر'];
+  document.getElementById('nmSteps').innerHTML = nm.steps.map((s,i)=>`
+    <div class="nm-step" data-r style="--d:${i*100}ms">
+      <div class="nm-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="nm-ic"><span class="ms">${s.mi}</span></div>
+      <div class="nm-word">${s.word}</div>
+      <div class="nm-word-tag">${s.title}</div>
+      <p class="nm-desc">${s.desc}</p>
+    </div>
+  `).join('');
+  document.getElementById('nmTagline').textContent = nm.tagline;
+  document.querySelectorAll('.nm-step[data-r], #nmTagline[data-r]').forEach(el=>obs.observe(el));
+}
+
+/* ════════════════════ FEATURED PROGRAM ════════════════════ */
+function renderFeaturedProgram(){
+  if(!D || !D.featuredProgram) return;
+  const fp = D.featuredProgram;
+  document.getElementById('fpEye').textContent = fp.eyebrow;
+  document.getElementById('fpCard').innerHTML = `
+    <div class="fp-left">
+      <span class="fp-tag"><span class="ms">verified</span> ${fp.eyebrow}</span>
+      <h3 class="fp-t">${fp.title}</h3>
+      <p class="fp-s">${fp.subtitle}</p>
+      <p class="fp-d">${fp.desc}</p>
+      <div class="fp-feats">
+        ${(fp.features||[]).map(f=>`<div class="fp-feat"><span class="ms">${f.mi}</span> ${f.text}</div>`).join('')}
+      </div>
+      <div class="fp-cta">
+        <div class="fp-price">
+          <span class="fp-price-v">${fp.price}</span>
+          <span class="fp-price-n">${fp.priceNote||''}</span>
+        </div>
+        <a href="${fp.url}" target="_blank" rel="noopener" class="fp-go">
+          <span class="ms">open_in_new</span>
+          ادخل ${fp.urlLabel}
+        </a>
+      </div>
+    </div>
+    <div class="fp-right">
+      <div class="fp-browser">
+        <div class="fp-browser-bar">
+          <div class="fp-dots"><span class="fp-dot"></span><span class="fp-dot"></span><span class="fp-dot"></span></div>
+          <div class="fp-url"><span class="ms">lock</span>${fp.urlLabel}</div>
+        </div>
+        <div class="fp-screen">
+          <div class="fp-screen-row"><div class="fp-sc-ic"><span class="ms">flight_takeoff</span></div><div class="fp-sc-info"><div class="fp-sc-t">وصول مطار هيثرو</div><div class="fp-sc-m">المملكة المتحدة · لندن</div></div><span class="fp-sc-time">09:30</span></div>
+          <div class="fp-screen-row"><div class="fp-sc-ic"><span class="ms">hotel</span></div><div class="fp-sc-info"><div class="fp-sc-t">فندق راديسون بلازا</div><div class="fp-sc-m">تسجيل دخول · 3 ليالٍ</div></div><span class="fp-sc-time">14:00</span></div>
+          <div class="fp-screen-row"><div class="fp-sc-ic"><span class="ms">restaurant</span></div><div class="fp-sc-info"><div class="fp-sc-t">عشاء في Dishoom</div><div class="fp-sc-m">مطعم هندي حلال</div></div><span class="fp-sc-time">19:30</span></div>
+          <div class="fp-screen-row"><div class="fp-sc-ic"><span class="ms">attractions</span></div><div class="fp-sc-info"><div class="fp-sc-t">برج لندن</div><div class="fp-sc-m">جولة 3 ساعات</div></div><span class="fp-sc-time">10:00</span></div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 /* ════════════════════ TRUST ════════════════════ */
