@@ -1395,6 +1395,8 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .dash-header-tag { font-size:0.78rem; opacity:0.75; margin-top:0.15rem; }
 .dash-topbar { background:#fff; border-bottom:1px solid #e5e7eb; padding:1rem 1.5rem; display:flex; align-items:center; gap:1rem; box-shadow:0 1px 3px rgba(0,0,0,0.03); }
 .dash-burger { display:none; background:transparent; border:0; font-size:1.4rem; cursor:pointer; padding:0.3rem 0.5rem; color:#fff; }
+.dash-landing-btn { display:inline-flex; align-items:center; gap:0.4rem; background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.25); border-radius:0.5rem; padding:0.45rem 0.85rem; font-size:0.78rem; font-weight:600; text-decoration:none; transition:background 0.15s; white-space:nowrap; }
+.dash-landing-btn:hover { background:rgba(255,255,255,0.22); }
 .dash-title { margin:0; font-size:1.15rem; font-weight:700; flex:1; }
 .dash-content { padding:1.5rem; max-width:1400px; width:100%; margin:0 auto; }
 .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:1.5rem; }
@@ -1555,6 +1557,89 @@ footer p { font-size: 0.7rem; color: var(--muted); }
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 0.5rem; gap: 0.5rem; flex-wrap: wrap;
 }
+/* ── Edora brand link in header ── */
+.edora-brand-link {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  text-decoration: none; color: white;
+  font-size: 0.75rem; font-weight: 700;
+  background: rgba(26,77,74,0.8);
+  padding: 0.35rem 0.7rem; border-radius: 999px;
+  border: 1px solid rgba(26,77,74,0.5);
+  transition: background 0.15s;
+  letter-spacing: 0.01em;
+}
+.edora-brand-link:hover { background: rgba(26,77,74,0.95); }
+.edora-brand-e {
+  width: 1.1rem; height: 1.1rem;
+  background: var(--accent); border-radius: 0.25rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 900; color: white;
+  flex-shrink: 0;
+}
+
+/* ── Services tab special style ── */
+.nav-t-special { border-top: 2px solid var(--accent) !important; }
+.nav-t-special.act { background: rgba(26,77,74,0.12) !important; color: var(--accent) !important; border-color: var(--accent) !important; }
+.nav-t-special svg { color: #1a3a9e; }
+
+/* ── Edora Services Section ── */
+.edora-pkg-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-bottom: 1.5rem; }
+.edora-pkg-card {
+  border-radius: var(--r-md); border: 1px solid var(--border);
+  overflow: hidden; background: var(--paper);
+}
+.edora-pkg-head {
+  padding: 0.9rem 1rem 0.75rem;
+  display: flex; align-items: flex-start; gap: 0.75rem;
+}
+.edora-pkg-icon { font-size: 1.6rem; flex-shrink: 0; line-height: 1; }
+.edora-pkg-info { flex: 1; min-width: 0; }
+.edora-pkg-name { font-size: 0.92rem; font-weight: 700; color: var(--ink); }
+.edora-pkg-tagline { font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
+.edora-pkg-meta { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.5rem; }
+.edora-badge { font-size: 0.6rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 999px; color: white; }
+.edora-pkg-price {
+  padding: 0.5rem 1rem; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--cream);
+}
+.edora-pkg-price-val { font-size: 0.88rem; font-weight: 700; color: var(--ink); }
+.edora-pkg-price-note { font-size: 0.65rem; color: var(--muted); }
+.edora-pkg-feats { padding: 0.65rem 1rem; }
+.edora-pkg-feat { font-size: 0.75rem; color: var(--ink-soft); padding: 0.2rem 0; display: flex; align-items: flex-start; gap: 0.4rem; }
+.edora-pkg-feat::before { content: '✓'; color: var(--ok); font-weight: 700; flex-shrink: 0; }
+.edora-pkg-hl { display: flex; gap: 0.5rem; padding: 0.5rem 1rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.edora-hl-item { flex: 1; min-width: 0; text-align: center; padding: 0.4rem 0.3rem; }
+.edora-hl-icon { font-size: 1rem; }
+.edora-hl-val { font-size: 0.72rem; font-weight: 700; color: var(--ink); margin-top: 0.1rem; }
+.edora-hl-lbl { font-size: 0.6rem; color: var(--muted); }
+.edora-wa-btn {
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  width: 100%; padding: 0.65rem;
+  background: #25d366; color: white;
+  font-size: 0.82rem; font-weight: 700;
+  border-radius: 0 0 var(--r-md) var(--r-md);
+  text-decoration: none; transition: background 0.15s;
+}
+.edora-wa-btn:hover { background: #1db954; }
+.edora-srv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 1.5rem; }
+@media (min-width: 500px) { .edora-srv-grid { grid-template-columns: repeat(3, 1fr); } }
+.edora-srv-card {
+  background: var(--paper); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 0.75rem;
+  text-align: center;
+}
+.edora-srv-icon { font-size: 1.4rem; margin-bottom: 0.3rem; }
+.edora-srv-title { font-size: 0.75rem; font-weight: 700; color: var(--ink); margin-bottom: 0.3rem; }
+.edora-srv-items { font-size: 0.65rem; color: var(--muted); line-height: 1.6; }
+.edora-stats-bar {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem; margin-bottom: 1.25rem;
+}
+.edora-stat { background: var(--paper); border: 1px solid var(--border); border-radius: var(--r-md); padding: 0.65rem; text-align: center; }
+.edora-stat-v { font-size: 1.2rem; font-weight: 800; color: var(--accent); }
+.edora-stat-l { font-size: 0.6rem; color: var(--muted); margin-top: 0.1rem; }
+
 .hdr-back-btn {
   background: var(--paper); color: var(--ink-soft);
   font-size: 0.75rem; padding: 0.4rem 0.85rem;
@@ -2696,7 +2781,7 @@ footer p { font-size: 0.7rem; color: var(--muted); }
 .b-n { font-size: 0.8rem; font-weight: 600; color: var(--ink); }
 .b-num { font-size: 0.65rem; display: flex; gap: 0.5rem; margin-top: 1px; color: var(--muted); }
 .b-inp {
-  width: 4rem;
+  width: 5rem;
   padding: 0.3rem 0.4rem;
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -3025,6 +3110,10 @@ body.perms-view, body.perms-tasks { padding-top: 0 !important; }
         <span id="hdr-tag-text">رحلتي</span>
       </div>
       <div style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center">
+        <a href="landing/" class="edora-brand-link" title="خطّار — الموقع الرئيسي">
+          <span class="edora-brand-e">خ</span>
+          <span>خطّار</span>
+        </a>
         <span id="auto-sync-indicator" style="font-size:0.7rem;color:var(--ink-soft);opacity:0;transition:opacity 0.3s"></span>
         <button class="hdr-share-btn" onclick="openShareModal()" title="رابط المشاركة">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
@@ -3079,6 +3168,7 @@ body.perms-view, body.perms-tasks { padding-top: 0 !important; }
   <section class="sec" id="sec-budget"></section>
   <section class="sec" id="sec-info"></section>
   <section class="sec" id="sec-tripinfo"></section>
+  <section class="sec" id="sec-services"></section>
 </main>
 
 <button class="fab" id="fab" hidden onclick="quickAdd()" title="إضافة سريعة">
@@ -4623,12 +4713,31 @@ const APPS = [
   { name: "KakaoMap", note: "خرائط بديلة", icon: "📍" }
 ];
 
+const UK_APPS = [
+  { name: "Citymapper", note: "أفضل تطبيق مواصلات لندن", icon: "🗺️" },
+  { name: "Trainline", note: "حجز قطارات بريطانيا", icon: "🚄" },
+  { name: "TfL Go", note: "خرائط مترو لندن الرسمية", icon: "🚇" },
+  { name: "Google Maps", note: "ملاحة وأوقات المحلات", icon: "📍" },
+  { name: "Uber / Bolt", note: "سيارات أجرة بديل التاكسي", icon: "🚕" },
+  { name: "Muslim Pro", note: "أوقات الصلاة وإيجاد المساجد", icon: "🕌" },
+  { name: "HalalTrip", note: "مطاعم حلال بالموقع", icon: "🥩" },
+  { name: "NHS App", note: "طوارئ طبية - 111 للمشورة", icon: "🏥" }
+];
+
+const UK_EMERGENCY = [
+  { name: "الطوارئ العامة (إسعاف/شرطة/إطفاء)", phone: "999", note: "للحالات الخطرة فقط" },
+  { name: "NHS — المشورة الطبية", phone: "111", note: "24/7 للمشاكل الطبية غير الطارئة" },
+  { name: "السفارة السعودية — لندن", phone: "+44-20-7917-3000", note: "30 Charles St, Mayfair" },
+  { name: "القنصلية السعودية — مانشستر", phone: "+44-161-832-7581", note: "للإقليم الشمالي" }
+];
+
 const TABS = [
   { id: "overview", label: "نظرة عامة", svg: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>' },
   { id: "itinerary", label: "الجدول", svg: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' },
   { id: "library", label: "الدليل السياحي", svg: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' },
   { id: "map", label: "الخريطة", svg: '<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>' },
-  { id: "info", label: "معلومات", svg: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>' }
+  { id: "info", label: "معلومات", svg: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>' },
+  { id: "services", label: "خدمات خطّار", svg: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>', special: true }
 ];
 
 const CITY_COLORS_DEFAULT = { seoul: "#1a4d4a", jeju: "#c9442b", busan: "#b8924a", london: "#1e3a5f", edinburgh: "#2d5a1f", manchester: "#7c1d1d" };
@@ -4866,7 +4975,7 @@ function allLib() {
 
 function renderNav() {
   $("nav-tabs").innerHTML = TABS.map(t => `
-    <button class="nav-t ${state.active === t.id ? "act" : ""}" data-tab="${t.id}">
+    <button class="nav-t ${state.active === t.id ? "act" : ""}${t.special ? " nav-t-special" : ""}" data-tab="${t.id}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${t.svg}</svg>
       ${t.label}
     </button>
@@ -4896,6 +5005,7 @@ function renderSection(id) {
   else if (id === "budget") renderBudget();
   else if (id === "info") renderInfo();
   else if (id === "tripinfo") renderTripInfo();
+  else if (id === "services") renderServices();
 }
 
 function updateCountdown() {
@@ -5067,6 +5177,19 @@ function renderOverview() {
         <div style="font-size:1.5rem;margin-bottom:0.4rem">📚</div>
         <div class="fb7 cli mb1">مكتبة المواقع</div>
         <p class="txs clm">${isKoreaTrip() ? `${LIB.length}+ موقع جاهز - مطاعم حلال، معالم، فعاليات، أسواق` : isUKTrip() ? `${UK_LIB.length}+ موقع جاهز - مساجد، مطاعم حلال، معالم، جولات` : 'ستُضاف المكتبة قريباً لهذه الوجهة'}</p>
+      </button>
+      <button class="card" onclick="switchTab('budget')" style="text-align:right;cursor:pointer">
+        ${(() => {
+          const hi = computeHotelBudget();
+          const ht = hi.reduce((s,h) => s+h.totalCost, 0);
+          const mi = state.budget.filter(b => b.icon !== '🏨');
+          const tot = ht + mi.reduce((s,b) => s+b.estimated, 0);
+          const cur = isUKTrip() ? 'ر.س' : '$';
+          return `<div style="font-size:1.5rem;margin-bottom:0.4rem">💰</div>
+                  <div class="fb7 cli mb1">الميزانية الذكية</div>
+                  <p class="txs clm">مرتبطة بالجدول — السكن تلقائي</p>
+                  ${tot > 0 ? `<div class="txx clm mt2 fb6" style="color:var(--accent)">${tot.toLocaleString()} ${cur} إجمالي مخطط</div>` : ''}`;
+        })()}
       </button>
     </div>
 
@@ -5260,12 +5383,74 @@ function renderOverview() {
 }
 
 function importTemplate() {
-  if (state.itinerary.some(d => d.items.length > 0)) {
-    if (!confirm("جدولك يحتوي على عناصر. الاستيراد سيستبدلها بالقالب. متابعة؟")) return;
+  _showTemplatePicker();
+}
+
+function _showTemplatePicker() {
+  const isUK = isUKTrip();
+  const opts = isUK ? [
+    { id:'uk5', label:'لندن فقط', days: 5, desc:'الأيام 1-5 · الوصول + المعالم الرئيسية + المغادرة', icon:'🏙️' },
+    { id:'uk7', label:'لندن + إدنبرة', days: 7, desc:'الأيام 1-7 · لندن (4 أيام) + إدنبرة (3 أيام)', icon:'🏰' },
+    { id:'uk10', label:'الجولة الكاملة', days: 10, desc:'10 أيام · لندن + إدنبرة + مانشستر', icon:'🇬🇧' }
+  ] : [
+    { id:'kr5', label:'سيول فقط', days: 5, desc:'الأيام 1-5 · سيول · الوصول + المعالم + DMZ', icon:'🏙️' },
+    { id:'kr11', label:'الجولة الكاملة', days: 11, desc:'11 يوم · سيول + جيجو + بوسان + العودة', icon:'🇰🇷' }
+  ];
+
+  openModal(`
+    <div class="modal-h">
+      <h3>📅 اختر قالب الجدول</h3>
+      <button class="modal-x" onclick="closeModal()">✕</button>
+    </div>
+    <p style="font-size:.82rem;color:var(--muted);margin:0 0 1rem">اختر النمط الذي يناسب مدة رحلتك — يمكنك تعديله بعد التطبيق</p>
+    <div style="display:flex;flex-direction:column;gap:0.75rem">
+      ${opts.map(o => `
+        <button class="card" style="text-align:right;cursor:pointer;padding:0.9rem 1rem;display:flex;align-items:center;gap:0.75rem" onclick="_applyTemplateOption('${o.id}')">
+          <div style="font-size:1.8rem;flex-shrink:0">${o.icon}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;color:var(--ink);font-size:.9rem">${o.label}</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">${o.desc}</div>
+          </div>
+          <div style="font-size:.72rem;font-weight:700;color:var(--accent);background:rgba(26,77,74,.1);padding:.2rem .5rem;border-radius:.3rem;flex-shrink:0">${o.days} أيام</div>
+        </button>
+      `).join('')}
+    </div>
+    <p style="font-size:.72rem;color:var(--muted);margin-top:1rem;text-align:center">⚠️ سيستبدل القالب الجدول الحالي</p>
+  `);
+}
+
+function _applyTemplateOption(optId) {
+  const hasItems = state.itinerary.some(d => d.items.length > 0);
+  if (hasItems && !confirm("جدولك يحتوي على عناصر. الاستيراد سيستبدلها. متابعة؟")) return;
+
+  let days;
+  if (optId === 'uk10') {
+    days = makeUKTemplateItinerary();
+  } else if (optId === 'uk7') {
+    days = makeUKTemplateItinerary().slice(0, 7);
+    // Fix: add a departure day at the end
+    const last = days[days.length-1];
+    days[days.length-1] = {...last, title:'المغادرة', items:[
+      ...last.items.filter(it=>it.type!=='hotel'),
+      { id:'uk_dep', time:'12:00', text:'المغادرة من إدنبرة', type:'transport', locked:true }
+    ]};
+  } else if (optId === 'uk5') {
+    // London only: take first 4 London days + a departure day
+    const full = makeUKTemplateItinerary();
+    days = full.slice(0, 4);
+    days.push({...full[9], day:5, city:'london', title:'المغادرة من لندن', items:[
+      { id:'uk_dep5', time:'10:00', text:'الخروج من الفندق والمغادرة', type:'transport', locked:true }
+    ]});
+  } else if (optId === 'kr11') {
+    days = makeTemplateItinerary();
+  } else if (optId === 'kr5') {
+    days = makeTemplateItinerary().slice(0, 5);
   }
-  state.itinerary = isUKTrip() ? makeUKTemplateItinerary() : makeTemplateItinerary();
+
+  state.itinerary = days;
+  renumberDays();
   saveItin();
-  alert("✅ تم استيراد القالب! انتقل لتبويب الجدول.");
+  closeModal();
   switchTab('itinerary');
 }
 
@@ -8551,6 +8736,13 @@ function openDayHotelPicker(dayIdx) {
         <input type="url" class="input" id="dh-link" value="${h.bookingLink || ''}" placeholder="https://...">
       </div>
       <div class="fld">
+        <label>السعر لليلة (اختياري — يُضاف للميزانية تلقائياً)</label>
+        <div style="display:flex;align-items:center;gap:0.4rem">
+          <input type="number" class="input" id="dh-cost" min="0" step="any" value="${h.costPerNight || ''}" placeholder="0" style="flex:1">
+          <span style="font-size:.8rem;color:var(--muted);white-space:nowrap">${isUKTrip() ? 'ر.س / ليلة' : '$ / ليلة'}</span>
+        </div>
+      </div>
+      <div class="fld">
         <label>ملاحظات (رقم الغرفة، مرجع الحجز...)</label>
         <textarea class="input" id="dh-notes" rows="2">${h.notes || ''}</textarea>
       </div>
@@ -8583,6 +8775,9 @@ function _pickHotelFromLib(libId, dayIdx) {
   }
   if (!it) return;
   const nights = parseInt($("dh-nights-val")?.textContent, 10) || 1;
+  // Try to extract a numeric cost from the library price string (e.g. "من $120", "£130/night", "1200 ر.س")
+  const _pm = (it.price || '').replace(/[،,]/g, '').match(/(\d+(?:\.\d+)?)/);
+  const costPerNight = _pm ? parseFloat(_pm[1]) : 0;
   const hotel = {
     name: it.name,
     address: it.area || '',
@@ -8590,7 +8785,8 @@ function _pickHotelFromLib(libId, dayIdx) {
     checkOut: '11:00',
     nights,
     bookingLink: it.bookingLink || '',
-    notes: ''
+    notes: '',
+    costPerNight
   };
   const endIdx = Math.min(state.itinerary.length - 1, dayIdx + nights - 1);
   for (let i = dayIdx; i <= endIdx; i++) {
@@ -8621,7 +8817,8 @@ function _saveDayHotelManual(dayIdx) {
     checkOut: $("dh-cout").value || "11:00",
     nights,
     bookingLink: $("dh-link").value.trim(),
-    notes: $("dh-notes").value.trim()
+    notes: $("dh-notes").value.trim(),
+    costPerNight: parseFloat($("dh-cost")?.value) || 0
   };
   const startIdx = dayIdx;
   const endIdx = Math.min(state.itinerary.length - 1, startIdx + nights - 1);
@@ -10333,44 +10530,121 @@ function drawMarkers() {
 //   BUDGET SECTION
 // ═══════════════════════════════════════════════════════════
 
+function computeHotelBudget() {
+  const segs = getHotelSegments();
+  return segs.map(seg => {
+    let costPerNight = 0, hotelNameFromPicker = '', hotelNameFromItem = '';
+    for (let i = seg.startIdx; i <= seg.endIdx; i++) {
+      const d = state.itinerary[i];
+      // From day.hotel (hotel picker widget)
+      if (!hotelNameFromPicker && d.hotel?.name) hotelNameFromPicker = d.hotel.name;
+      if (!costPerNight && d.hotel?.costPerNight) costPerNight = d.hotel.costPerNight;
+      // From day.items (hotel-type timeline items)
+      if (!hotelNameFromItem) {
+        const hi = (d.items || []).find(it => it.type === 'hotel');
+        if (hi) hotelNameFromItem = hi.text || '';
+      }
+    }
+    const hotelName = hotelNameFromPicker || hotelNameFromItem || '';
+    return {
+      cityId: seg.cityId,
+      cityName: seg.cityName,
+      nights: seg.nightsNeeded,
+      hotelName,
+      costPerNight,
+      totalCost: costPerNight * seg.nightsNeeded,
+      allCovered: seg.allCovered,
+      partCovered: seg.partCovered,
+      noCovered: seg.noCovered,
+      hasHotelItem: !!(hotelNameFromPicker || hotelNameFromItem)
+    };
+  });
+}
+
+function updateSegHotelCost(cityId, val) {
+  const cost = Math.max(0, parseFloat(val) || 0);
+  state.itinerary.forEach(d => {
+    if ((d.city || '') === cityId) {
+      if (!d.hotel) d.hotel = {};
+      d.hotel.costPerNight = cost;
+    }
+  });
+  saveItin();
+  renderBudget();
+}
+
 function renderBudget() {
-  const totalEst = state.budget.reduce((s, b) => s + b.estimated, 0);
-  const totalAct = state.budget.reduce((s, b) => s + b.actual, 0);
+  const hotelItems = computeHotelBudget();
+  const hotelAutoTotal = hotelItems.reduce((s, h) => s + h.totalCost, 0);
+  // Manual rows: separate hotel rows from non-hotel rows
+  const manualHotelItems = state.budget.filter(b => b.icon === '🏨');
+  const manualNonHotelItems = state.budget.filter(b => b.icon !== '🏨');
+  const manualHotelEst = manualHotelItems.reduce((s, b) => s + b.estimated, 0);
+  // If ANY segment has auto-computed cost, use auto total; else fall back to manual hotel estimates
+  const hotelTotal = hotelAutoTotal > 0 ? hotelAutoTotal : manualHotelEst;
+  const totalEst = manualNonHotelItems.reduce((s, b) => s + b.estimated, 0) + hotelTotal;
+  const totalAct = manualNonHotelItems.reduce((s, b) => s + b.actual, 0) + (hotelAutoTotal > 0 ? hotelAutoTotal : manualHotelItems.reduce((s, b) => s + b.actual, 0));
   const remaining = totalEst - totalAct;
-  const usdToSar = 3.75;
+  const isUK = isUKTrip();
+  // Currency config: UK = SAR primary + GBP secondary; Korea = USD primary + SAR secondary
+  const currSym   = isUK ? 'ر.س' : '$';
+  const secSym    = isUK ? '£'   : 'ر.س';
+  const secRate   = isUK ? (1/4.75) : 3.75; // SAR→GBP or USD→SAR
+  const fmtMain   = (v) => `${v.toLocaleString()} ${currSym}`;
+  const fmtSec    = (v) => `${Math.round(v * secRate).toLocaleString()} ${secSym}`;
 
   const _budgetTarget = $("modal-budget-content") || $("sec-budget");
   if (!_budgetTarget) return;
-  _budgetTarget.innerHTML = `
-    <div class="sec-t">
-      <div class="sec-t-r">
-        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/></svg></div>
-        <h2>الميزانية</h2>
-      </div>
-      <p>تتبع مصاريف الرحلة - تحفظ تلقائياً</p>
-    </div>
 
-    <div class="bud-stats">
-      <div class="card bud-stat">
-        <div class="bud-l">المخطط</div>
-        <div class="bud-v">${'$'+totalEst.toLocaleString()}</div>
-        <div class="bud-sar">${(totalEst*usdToSar).toLocaleString()} ر.س</div>
-      </div>
-      <div class="card bud-stat bud-act-c">
-        <div class="bud-l">المنفق</div>
-        <div class="bud-v">${'$'+totalAct.toLocaleString()}</div>
-        <div class="bud-sar">${(totalAct*usdToSar).toLocaleString()} ر.س</div>
-      </div>
-      <div class="card bud-stat bud-rem-c">
-        <div class="bud-l">المتبقي</div>
-        <div class="bud-v">${'$'+remaining.toLocaleString()}</div>
-        <div class="bud-sar">${(remaining*usdToSar).toLocaleString()} ر.س</div>
-      </div>
-    </div>
-
+  // ── Hotel auto section HTML ──
+  const hotelSectionHTML = hotelItems.length ? `
     <div class="card mb3">
-      <h4 class="fb7 cli mb2 txm">📊 تفاصيل المصاريف</h4>
-      ${state.budget.map(b => {
+      <div class="flx itm mb3" style="justify-content:space-between">
+        <h4 class="fb7 cli txm" style="margin:0">🏨 السكن — مرتبط بالجدول</h4>
+        ${hotelAutoTotal > 0
+          ? `<span class="pill pill-sm" style="background:rgba(22,163,74,0.12);color:#16a34a;border-color:rgba(22,163,74,0.3)">✓ تلقائي</span>`
+          : `<span class="pill pill-sm" style="background:rgba(26,77,74,0.08);color:var(--muted)">أدخل السعر/ليلة</span>`}
+      </div>
+      ${hotelItems.map(h => {
+        const bookIcon = h.allCovered ? '✅' : h.partCovered ? '🟡' : h.hasHotelItem ? '🏨' : '⬜';
+        const totalStr = h.costPerNight > 0 ? fmtMain(h.totalCost) : '—';
+        const perNightStr = h.costPerNight > 0 ? fmtMain(h.costPerNight) : '';
+        return `
+        <div class="mb3">
+          <div class="b-row">
+            <div class="b-icon" style="font-size:1rem">${bookIcon}</div>
+            <div class="b-info">
+              <div class="b-n">${h.cityName}${h.hotelName ? ` · <span style="font-weight:500;color:var(--ink-soft)">${h.hotelName}</span>` : ''}</div>
+              <div class="b-num">
+                <span>${h.nights} ليلة${perNightStr ? ` × ${perNightStr}` : ''}</span>
+                ${h.costPerNight > 0
+                  ? `<span style="color:var(--accent);font-weight:700">${totalStr}</span>`
+                  : `<span style="color:var(--muted);font-size:.68rem">${hotelAutoTotal > 0 ? 'لم يُدخل سعر' : 'أدخل السعر/ليلة ←'}</span>`}
+              </div>
+            </div>
+            <input class="b-inp" type="number" min="0" step="any" value="${h.costPerNight || ''}" placeholder="—"
+              oninput="updateSegHotelCost('${h.cityId}', this.value)" title="السعر لليلة الواحدة">
+          </div>
+          <div class="b-prog"><div class="b-prog-f" style="width:${h.costPerNight > 0 ? '100' : '0'}%;background:var(--accent);opacity:0.55"></div></div>
+        </div>`;
+      }).join('')}
+      ${hotelAutoTotal > 0 ? `
+      <div class="flx itm" style="justify-content:space-between;border-top:1px solid var(--border);padding-top:0.5rem;margin-top:0.25rem">
+        <span class="txs clm fb6">إجمالي السكن (محسوب)</span>
+        <span class="fb7 cli">${fmtMain(hotelAutoTotal)} <span style="font-weight:400;color:var(--muted);font-size:.72rem">(${fmtSec(hotelAutoTotal)})</span></span>
+      </div>` : manualHotelEst > 0 ? `
+      <div class="flx itm" style="justify-content:space-between;border-top:1px solid var(--border);padding-top:0.5rem;margin-top:0.25rem;opacity:0.7">
+        <span class="txs clm fb6">التقدير اليدوي للسكن</span>
+        <span class="fb7" style="color:var(--muted)">${fmtMain(manualHotelEst)}</span>
+      </div>` : ''}
+    </div>` : '';
+
+  // ── Manual non-hotel categories HTML ──
+  // Hotel rows (🏨) are shown above in the auto section; manual hotel estimates remain as fallback in totals
+  const manualHTML = manualNonHotelItems.length ? `
+    <div class="card mb3">
+      <h4 class="fb7 cli mb3 txm">📊 مصاريف أخرى</h4>
+      ${manualNonHotelItems.map(b => {
         const pct = b.estimated > 0 ? Math.min(100, (b.actual / b.estimated) * 100) : 0;
         const over = b.actual > b.estimated;
         return `
@@ -10380,36 +10654,68 @@ function renderBudget() {
               <div class="b-info">
                 <div class="b-n">${b.category}</div>
                 <div class="b-num">
-                  <span>المخطط: $${b.estimated}</span>
-                  <span style="color:${over ? 'var(--err)' : 'var(--accent)'}">المنفق: $${b.actual}</span>
+                  <span>المخطط: ${fmtMain(b.estimated)}</span>
+                  <span style="color:${over ? 'var(--err)' : 'var(--accent)'}">المنفق: ${fmtMain(b.actual)}</span>
                 </div>
               </div>
               <input class="b-inp" type="number" min="0" value="${b.actual}" oninput="updateBud('${b.id}', this.value)">
             </div>
             <div class="b-prog"><div class="b-prog-f" style="width:${pct}%;background:${over ? 'var(--err)' : 'var(--accent)'}"></div></div>
-          </div>
-        `;
+          </div>`;
       }).join('')}
-    </div>
+    </div>` : '';
 
+  // ── Currency converter ──
+  const converterHTML = isUK ? `
     <div class="card card-cream">
       <h4 class="fb7 cli mb2 txm">💱 محول العملات (تقريبي)</h4>
       <div class="gr g3">
-        <div class="card">
-          <div class="txx clm">USD → KRW</div>
-          <div class="fb7 cli">$1 ≈ ₩1,330</div>
-        </div>
-        <div class="card">
-          <div class="txx clm">USD → SAR</div>
-          <div class="fb7 cli">$1 ≈ 3.75 ر.س</div>
-        </div>
-        <div class="card">
-          <div class="txx clm">SAR → KRW</div>
-          <div class="fb7 cli">1 ر.س ≈ ₩355</div>
-        </div>
+        <div class="card"><div class="txx clm">SAR → GBP</div><div class="fb7 cli">1 ر.س ≈ £0.21</div></div>
+        <div class="card"><div class="txx clm">GBP → SAR</div><div class="fb7 cli">£1 ≈ 4.75 ر.س</div></div>
+        <div class="card"><div class="txx clm">GBP → USD</div><div class="fb7 cli">£1 ≈ $1.27</div></div>
       </div>
       <p class="txx clm mt2">⚠️ الأسعار تقريبية - تحقق من البنك قبل السفر</p>
+    </div>` : `
+    <div class="card card-cream">
+      <h4 class="fb7 cli mb2 txm">💱 محول العملات (تقريبي)</h4>
+      <div class="gr g3">
+        <div class="card"><div class="txx clm">USD → KRW</div><div class="fb7 cli">$1 ≈ ₩1,330</div></div>
+        <div class="card"><div class="txx clm">USD → SAR</div><div class="fb7 cli">$1 ≈ 3.75 ر.س</div></div>
+        <div class="card"><div class="txx clm">SAR → KRW</div><div class="fb7 cli">1 ر.س ≈ ₩355</div></div>
+      </div>
+      <p class="txx clm mt2">⚠️ الأسعار تقريبية - تحقق من البنك قبل السفر</p>
+    </div>`;
+
+  _budgetTarget.innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/></svg></div>
+        <h2>الميزانية الذكية</h2>
+      </div>
+      <p>مرتبطة بالجدول — السكن يُحسب تلقائياً</p>
     </div>
+
+    <div class="bud-stats">
+      <div class="card bud-stat">
+        <div class="bud-l">الإجمالي المخطط</div>
+        <div class="bud-v">${fmtMain(totalEst)}</div>
+        <div class="bud-sar">${fmtSec(totalEst)}</div>
+      </div>
+      <div class="card bud-stat bud-act-c">
+        <div class="bud-l">المنفق / المحجوز</div>
+        <div class="bud-v">${fmtMain(totalAct)}</div>
+        <div class="bud-sar">${fmtSec(totalAct)}</div>
+      </div>
+      <div class="card bud-stat bud-rem-c">
+        <div class="bud-l">المتبقي</div>
+        <div class="bud-v" style="color:${remaining < 0 ? 'var(--err)' : 'inherit'}">${fmtMain(remaining)}</div>
+        <div class="bud-sar">${fmtSec(remaining)}</div>
+      </div>
+    </div>
+
+    ${hotelSectionHTML}
+    ${manualHTML}
+    ${converterHTML}
   `;
 }
 
@@ -10556,6 +10862,160 @@ function addCustomTask() {
 
 
 function renderInfo() {
+  if (isUKTrip()) { renderInfoUK(); return; }
+  renderInfoKorea();
+}
+
+function renderInfoUK() {
+  $("sec-info").innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div class="sec-t-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+        <h2>معلومات رحلة بريطانيا</h2>
+      </div>
+      <p>التأشيرة · العملة · المواصلات · الطقس · الطوارئ</p>
+    </div>
+
+    <div class="gr mdg2 mb3">
+      <div class="card card-acc">
+        <h4 class="fb7 cla mb2 txm">📋 التأشيرة البريطانية</h4>
+        <ul class="tip-list">
+          <li>Standard Visitor Visa — تأشيرة الزيارة القياسية</li>
+          <li>التقديم عبر: gov.uk/standard-visitor-visa</li>
+          <li>التكلفة: ~115£ (≈ 547 ر.س)</li>
+          <li>مدة المعالجة: 3-8 أسابيع — قدّم مبكراً</li>
+          <li>المدة: حتى 6 أشهر متعددة الدخول</li>
+          <li>تأكد من صلاحية الجواز أكثر من 6 أشهر</li>
+        </ul>
+      </div>
+
+      <div class="card card-orng">
+        <h4 class="fb7 clp mb2 txm">💷 العملة والدفع</h4>
+        <ul class="tip-list">
+          <li>الجنيه الإسترليني £ — 1£ ≈ 4.75 ر.س</li>
+          <li>Contactless مقبول في كل مكان (بطاقتك مباشرة)</li>
+          <li>ATM متوفر في كل الشوارع الرئيسية</li>
+          <li>تجنب الصرف في المطار — عمولة مرتفعة</li>
+          <li>Revolut / Wise للصرف بسعر الإنترنت</li>
+        </ul>
+      </div>
+
+      <div class="card" style="background:rgba(30,58,95,0.07);border-color:rgba(30,58,95,0.2)">
+        <h4 class="fb7 mb2 txm" style="color:#1e3a5f">🚇 المواصلات الداخلية</h4>
+        <ul class="tip-list">
+          <li><strong>لندن:</strong> Oyster Card أو بطاقتك على الـ Tube/Bus مباشرة</li>
+          <li><strong>لندن → إدنبرة:</strong> LNER (4-5 ساعات) عبر Trainline</li>
+          <li><strong>إدنبرة → مانشستر:</strong> TransPennine (~3.5 ساعة)</li>
+          <li><strong>إدنبرة:</strong> تراموي Edinburgh Trams + ScotRail</li>
+          <li><strong>مانشستر:</strong> Metrolink تراموي + Stagecoach</li>
+          <li>💡 القطار أرخص 50-70% عند الحجز قبل أسبوعين</li>
+        </ul>
+      </div>
+
+      <div class="card card-gold">
+        <h4 class="fb7 mb2 txm" style="color:#92400e">🌤️ الطقس في أغسطس</h4>
+        <ul class="tip-list">
+          <li>لندن: 19-24°م — أدفأ مناطق بريطانيا</li>
+          <li>إدنبرة: 14-19°م — بارد وضبابي أحياناً</li>
+          <li>مانشستر: 16-21°م — ماطر أكثر</li>
+          <li>الجو متقلب — مظلة خفيفة ضرورية دائماً</li>
+          <li>☀️ الشمس حتى 21:00م — يوم طويل جداً!</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card mb3">
+      <h4 class="fb7 cli mb2 txm">📱 تطبيقات أساسية</h4>
+      <div class="app-grid">
+        ${UK_APPS.map(a => `
+          <div class="app-c">
+            <div class="app-i">${a.icon}</div>
+            <div class="app-n">${a.name}</div>
+            <div class="app-no">${a.note}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="card mb3">
+      <h4 class="fb7 cli mb2 txm">🕌 أوقات الصلاة (أغسطس — تقريبية)</h4>
+      <div class="gr g3">
+        <div class="card" style="text-align:center;padding:.6rem">
+          <div class="txx clm">الفجر</div>
+          <div class="fb7 cli">03:30–04:00</div>
+          <div class="txx clm" style="font-size:.6rem">مبكر جداً في الصيف</div>
+        </div>
+        <div class="card" style="text-align:center;padding:.6rem">
+          <div class="txx clm">الظهر</div>
+          <div class="fb7 cli">13:15–13:30</div>
+        </div>
+        <div class="card" style="text-align:center;padding:.6rem">
+          <div class="txx clm">العصر</div>
+          <div class="fb7 cli">18:00–18:30</div>
+        </div>
+        <div class="card" style="text-align:center;padding:.6rem">
+          <div class="txx clm">المغرب</div>
+          <div class="fb7 cli">20:30–21:00</div>
+        </div>
+        <div class="card" style="text-align:center;padding:.6rem">
+          <div class="txx clm">العشاء</div>
+          <div class="fb7 cli">22:00–22:30</div>
+        </div>
+      </div>
+      <p class="txx clm mt2">⚠️ مواقيت تقريبية — استخدم Muslim Pro للدقة بحسب موقعك</p>
+    </div>
+
+    <div class="gr mdg2 mb3">
+      <div class="tc" style="background:#16a34a">
+        <div class="tc-t flx jb itm">
+          <span>🥩 طلب طعام حلال (إنجليزي)</span>
+          <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;padding:0.25rem 0.5rem;font-size:0.65rem" onclick="copyKorean(this, 'Is this halal? Does it contain pork or alcohol?')">📋 نسخ</button>
+        </div>
+        <div class="tc-text" style="font-family:sans-serif;font-size:1rem;letter-spacing:0">"Is this halal?"
+"Does it contain pork or alcohol?"
+"I'm Muslim — I only eat halal meat."</div>
+        <p class="txs mt2" style="opacity:0.9;border-top:1px solid rgba(255,255,255,0.2);padding-top:0.5rem">"هل هذا حلال؟ / هل يحتوي على خنزير أو كحول؟ / أنا مسلم، آكل الحلال فقط"</p>
+      </div>
+
+      <div class="tc" style="background:var(--gold)">
+        <div class="tc-t flx jb itm">
+          <span>🌾 طلب طعام GF (إنجليزي)</span>
+          <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;padding:0.25rem 0.5rem;font-size:0.65rem" onclick="copyKorean(this, 'Is this gluten-free? I have a gluten allergy.')">📋 نسخ</button>
+        </div>
+        <div class="tc-text" style="font-family:sans-serif;font-size:1rem;letter-spacing:0">"Is this gluten-free?"
+"I have a gluten / wheat allergy."
+"Can you check the ingredients please?"</div>
+        <p class="txs mt2" style="opacity:0.9;border-top:1px solid rgba(255,255,255,0.2);padding-top:0.5rem">"هل هذا خالٍ من الجلوتين؟ / عندي حساسية قمح / ممكن تتأكد من المكونات؟"</p>
+      </div>
+    </div>
+
+    <div class="card mb3">
+      <h4 class="fb7 cli mb2 txm">🔌 معلومات عملية</h4>
+      <ul class="tip-list">
+        <li>🔌 الكهرباء: 230V — قابس Type G ثلاثي الأسنان — تحتاج محول</li>
+        <li>🕐 التوقيت: BST (UTC+1) في أغسطس — فارق 2 ساعة عن السعودية</li>
+        <li>🌐 الإنترنت: SIM بريطانية Giffgaff/Three من 10£ — أو eSIM من Airalo/Holafly</li>
+        <li>🚑 الصحة: NHS مجاناً لحالات الطوارئ — احتفظ بتأمين السفر</li>
+        <li>🧳 الحقائب: حد وزن متروالرياض-لندن عادةً 23-30كغ — تحقق من شركتك</li>
+      </ul>
+    </div>
+
+    <div class="card card-orng">
+      <h4 class="fb7 clp mb2 txm">📞 أرقام الطوارئ</h4>
+      ${UK_EMERGENCY.map(e => `
+        <div class="em-row">
+          <div class="fls">
+            <div class="em-n">${e.name}</div>
+            <div class="em-m">${e.note}</div>
+          </div>
+          <a class="em-p" href="tel:${e.phone.replace(/\s/g,'')}">${e.phone}</a>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderInfoKorea() {
   $("sec-info").innerHTML = `
     <div class="sec-t">
       <div class="sec-t-r">
@@ -10659,6 +11119,135 @@ function renderInfo() {
           <a class="em-p" href="tel:${e.phone.replace(/\s/g,'')}">${e.phone}</a>
         </div>
       `).join('')}
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════
+//   EDORA SERVICES TAB
+// ═══════════════════════════════════════════════════════════
+
+const EDORA_PACKAGES = [
+  { id:1, icon:'📚', badge:'الأكثر طلباً', badgeColor:'#1a3a9e',
+    name:'باقة اللغة المكثفة', tagline:'أتقن الإنجليزية في قلب لندن',
+    dest:'لندن / إدنبرة', duration:'4–8 أسابيع', price:'يبدأ من 5,500 ريال',
+    features:['20 ساعة لغة أسبوعياً مع مدرسين بريطانيين','سكن في منزل عائلة بريطانية','رحلات ثقافية نهاية الأسبوع','شهادة Cambridge المعتمدة','استقبال من المطار ذهاباً وإياباً','تأمين طبي شامل'],
+    highlights:[{icon:'🗣️',label:'المستوى',val:'مبتدئ → متقدم'},{icon:'👨‍🏫',label:'حجم الفصل',val:'< 12 طالباً'},{icon:'📅',label:'الانطلاق',val:'كل شهر'}] },
+  { id:2, icon:'🏛️', badge:'الأفضل قيمة', badgeColor:'#c9921a',
+    name:'باقة الدراسة الجامعية', tagline:'قبولك الجامعي — مضمون ومتكامل',
+    dest:'بريطانيا', duration:'فصل دراسي', price:'حسب الجامعة',
+    features:['قبول جامعي في أفضل 80+ جامعة','استشارة أكاديمية متكاملة','إعداد ملف القبول كاملاً','تأشيرة الدراسة طويلة الأمد','سكن جامعي أو خارجي','متابعة مستمرة من مستشار شخصي'],
+    highlights:[{icon:'🏛️',label:'الجامعات',val:'+80 جامعة'},{icon:'📄',label:'نسبة القبول',val:'97%'},{icon:'⏱️',label:'المعالجة',val:'4–6 أسابيع'}] },
+  { id:3, icon:'🏔️', badge:'حصري', badgeColor:'#7c5fc9',
+    name:'باقة اسكتلندا الساحرة', tagline:'تعلّم وتجوّل في أجمل بلاد العالم',
+    dest:'إدنبرة / هايلاندز', duration:'2–3 أسابيع', price:'يبدأ من 7,200 ريال',
+    features:['دروس إنجليزية صباحية مكثفة','جولات يومية في هايلاندز الخلابة','زيارة قلاع اسكتلندا التاريخية','مرشد سياحي عربي متخصص','فنادق 4 نجوم في إدنبرة وغلاسكو'],
+    highlights:[{icon:'🏔️',label:'الوجهات',val:'8 مواقع'},{icon:'🌟',label:'التقييم',val:'4.9/5'},{icon:'👥',label:'المجموعة',val:'< 15 شخصاً'}] },
+  { id:4, icon:'☀️', badge:'للشباب', badgeColor:'#0d9a6a',
+    name:'باقة الصيف للطلاب', tagline:'صيف مليء بالتعلم والمغامرة',
+    dest:'أكسفورد / كامبريدج', duration:'3–6 أسابيع', price:'يبدأ من 4,800 ريال',
+    features:['برنامج أكاديمي صيفي في أكسفورد','إقامة في المهاجع الجامعية','أنشطة ترفيهية وثقافية يومية','رياضات وأندية متنوعة','شهادة مشاركة معتمدة'],
+    highlights:[{icon:'🎓',label:'العمر',val:'14 – 22 سنة'},{icon:'🏫',label:'الجامعة',val:'أكسفورد/كامبريدج'},{icon:'☀️',label:'الموسم',val:'يونيو – أغسطس'}] }
+];
+
+const EDORA_SERVICES_LIST = [
+  { icon:'🗺️', title:'جولات سياحية', items:['داخل إدنبرة ولندن','هايلاندز ويوم كامل','جولات خاصة وجماعية','شهر العسل والتصوير'] },
+  { icon:'🏨', title:'السكن والفنادق', items:['فنادق 3-5 نجوم','شقق فندقية','منتجعات ريفية اسكتلندا','باقات عائلية'] },
+  { icon:'🚗', title:'النقل والاستقبال', items:['استقبال من المطار','سيارة VIP مع سائق','نقل بين المدن','خدمة يومية للرحلات'] },
+  { icon:'🎓', title:'الاستشارات التعليمية', items:['اختيار الجامعة والتخصص','إعداد ملف القبول','كتابة SOP و CV','متابعة القبول'] },
+  { icon:'🛂', title:'التأشيرات', items:['تأشيرة بريطانيا السياحية','تأشيرة الدراسة','كندا وأستراليا','حجز IELTS/TOEFL'] },
+  { icon:'🤝', title:'خدمات ما بعد الوصول', items:['استقبال الطلاب الجدد','فتح حساب بنكي','شريحة اتصال','دعم الأيام الأولى'] }
+];
+
+function renderServices() {
+  const target = $("sec-services");
+  if (!target) return;
+  target.innerHTML = `
+    <div class="sec-t">
+      <div class="sec-t-r">
+        <div style="width:2.2rem;height:2.2rem;background:var(--accent);border-radius:0.5rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span style="color:white;font-weight:900;font-size:1.15rem;font-family:Arial">خ</span>
+        </div>
+        <h2>خدمات خطّار</h2>
+      </div>
+      <p>دراسة · سياحة · تأشيرات في بريطانيا واسكتلندا</p>
+      <a href="landing/" target="_blank" style="display:inline-flex;align-items:center;gap:0.3rem;font-size:0.75rem;color:var(--accent);text-decoration:none;margin-top:0.5rem;font-weight:600">
+        الموقع الكامل
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+    </div>
+
+    <div class="edora-stats-bar">
+      <div class="edora-stat"><div class="edora-stat-v">5,000+</div><div class="edora-stat-l">عميل سعيد</div></div>
+      <div class="edora-stat"><div class="edora-stat-v">97%</div><div class="edora-stat-l">نسبة القبول</div></div>
+      <div class="edora-stat"><div class="edora-stat-v">80+</div><div class="edora-stat-l">جامعة بريطانية</div></div>
+    </div>
+
+    <h3 class="fb7 cli mb2" style="font-size:0.95rem">📦 الباقات المتاحة</h3>
+    <p class="txs clm mb3">اضغط على واتساب لمعرفة المزيد أو الحجز</p>
+    <div class="edora-pkg-grid">
+      ${EDORA_PACKAGES.map(pkg => `
+        <div class="edora-pkg-card">
+          <div class="edora-pkg-head">
+            <div class="edora-pkg-icon">${pkg.icon}</div>
+            <div class="edora-pkg-info">
+              <div class="edora-pkg-name">${pkg.name}</div>
+              <div class="edora-pkg-tagline">${pkg.tagline}</div>
+              <div class="edora-pkg-meta">
+                <span class="edora-badge" style="background:${pkg.badgeColor}">${pkg.badge}</span>
+                <span class="pill pill-sm" style="font-size:.6rem">📍 ${pkg.dest}</span>
+                <span class="pill pill-sm" style="font-size:.6rem">⏱ ${pkg.duration}</span>
+              </div>
+            </div>
+          </div>
+          <div class="edora-pkg-price">
+            <div>
+              <div class="edora-pkg-price-val">${pkg.price}</div>
+            </div>
+          </div>
+          <div class="edora-pkg-feats">
+            ${pkg.features.map(f => `<div class="edora-pkg-feat">${f}</div>`).join('')}
+          </div>
+          <div class="edora-pkg-hl">
+            ${pkg.highlights.map(h => `
+              <div class="edora-hl-item">
+                <div class="edora-hl-icon">${h.icon}</div>
+                <div class="edora-hl-val">${h.val}</div>
+                <div class="edora-hl-lbl">${h.label}</div>
+              </div>`).join('')}
+          </div>
+          <a href="https://wa.me/966500000000?text=${encodeURIComponent('السلام عليكم، أريد الاستفسار عن: ' + pkg.name)}" target="_blank" class="edora-wa-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+            استفسر عبر واتساب
+          </a>
+        </div>
+      `).join('')}
+    </div>
+
+    <h3 class="fb7 cli mb2 mt3" style="font-size:0.95rem">🛎️ خدماتنا الشاملة</h3>
+    <div class="edora-srv-grid">
+      ${EDORA_SERVICES_LIST.map(s => `
+        <div class="edora-srv-card">
+          <div class="edora-srv-icon">${s.icon}</div>
+          <div class="edora-srv-title">${s.title}</div>
+          <div class="edora-srv-items">${s.items.join(' · ')}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="card" style="background:linear-gradient(135deg,var(--accent),#1e6b66);color:white;text-align:center;margin-bottom:1rem">
+      <div style="font-size:1.6rem;margin-bottom:0.4rem">📞</div>
+      <div style="font-weight:700;font-size:0.95rem;margin-bottom:0.3rem">تواصل مع خطّار</div>
+      <p style="font-size:0.78rem;opacity:0.9;margin-bottom:1rem">فريقنا متاح للإجابة على استفساراتك وتقديم الباقة المناسبة لك</p>
+      <div style="display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap">
+        <a href="https://wa.me/966500000000" target="_blank" style="display:inline-flex;align-items:center;gap:0.4rem;background:#25d366;color:white;padding:0.6rem 1.1rem;border-radius:999px;text-decoration:none;font-size:0.82rem;font-weight:700">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+          واتساب
+        </a>
+        <a href="landing/" target="_blank" style="display:inline-flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.2);color:white;padding:0.6rem 1.1rem;border-radius:999px;text-decoration:none;font-size:0.82rem;font-weight:700;border:1px solid rgba(255,255,255,0.3)">
+          الموقع الكامل ↗
+        </a>
+      </div>
     </div>
   `;
 }
@@ -11063,6 +11652,10 @@ function renderDashboard() {
               <span class="dash-header-tag">إدارة الرحلات والوجهات</span>
             </div>
           </div>
+          <a href="landing/" target="_blank" class="dash-landing-btn" title="الصفحة التعريفية لخطّار">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            الصفحة التعريفية
+          </a>
           <button class="dash-burger" onclick="document.getElementById('dash-sidebar').classList.toggle('open')" aria-label="القائمة">☰</button>
         </header>
         <div class="dash-topbar">
