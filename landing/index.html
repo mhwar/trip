@@ -7,666 +7,853 @@
 <meta name="description" content="منصة شاملة للسياحة والدراسة — وجهات داخلية وخارجية، برامج ابتعاث، باقات مختارة">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Readex+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* ════════════════════════════════════════ TOKENS ════════════════════════════════════════ */
 :root{
-  --teal:#29ADA8; --teal-d:#1D8A86; --teal-l:#E6F7F7; --teal-xl:#F2FBFB;
-  --orange:#F47B20; --orange-l:#FEF0E6; --orange-d:#C05A10;
-  --navy:#2D2A7F; --navy-d:#1E1B60; --navy-l:#EEEDF8; --navy-xl:#F5F4FA;
-  --ink:#1a1a30; --soft:#4a4a72; --muted:#8888aa; --border:#E5E5F0;
-  --bg:#FAFAFE; --white:#fff;
-  --r:.6rem; --rmd:.85rem; --rlg:1.1rem; --rxl:1.6rem;
-  --sh-sm:0 1px 6px rgba(45,42,127,.06);
-  --sh:0 4px 20px rgba(45,42,127,.08);
-  --sh-md:0 12px 40px rgba(45,42,127,.14);
-  --sh-lg:0 24px 70px rgba(45,42,127,.2);
+  --ink:#0A2540; --ink-soft:#2C3E5C; --ink-muted:#6B7C93; --ink-faint:#9AABBF;
+  --sky:#2E7CF6; --sky-deep:#1957C2; --sky-soft:#E7F0FE; --sky-glow:#5B9DF9;
+  --pearl:#FAFAF7; --pearl-deep:#F4F2EC; --sand:#F5EFE6; --sand-deep:#ECE3D2;
+  --gold:#C9A86B;
+  --line:rgba(10,37,64,.08); --line-strong:rgba(10,37,64,.14);
+  --glass:rgba(255,255,255,.65); --glass-strong:rgba(255,255,255,.85);
+  --sh-xs:0 1px 2px rgba(10,37,64,.04);
+  --sh-sm:0 4px 12px rgba(10,37,64,.05);
+  --sh-md:0 20px 50px rgba(10,37,64,.06);
+  --sh-lg:0 32px 80px rgba(10,37,64,.10);
+  --sh-glow:0 16px 40px rgba(46,124,246,.32);
+  --r-sm:12px; --r-md:20px; --r-lg:28px; --r-xl:40px;
+  --ease:cubic-bezier(.2,.7,.2,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Cairo',-apple-system,sans-serif;background:var(--white);color:var(--ink);direction:rtl;-webkit-font-smoothing:antialiased;line-height:1.6}
+body{font-family:'Readex Pro','Plus Jakarta Sans',-apple-system,sans-serif;background:var(--pearl);color:var(--ink);direction:rtl;-webkit-font-smoothing:antialiased;line-height:1.7;font-weight:400}
 a{text-decoration:none;color:inherit}
 img{max-width:100%;display:block}
-button{font-family:'Cairo',sans-serif;cursor:pointer}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,select,textarea{font-family:inherit}
+::selection{background:var(--sky);color:#fff}
 
-/* Layout */
-.container{max-width:1180px;margin:0 auto;padding:0 1.5rem}
-.section{padding:5rem 0}
-.section-tight{padding:3.5rem 0}
-.section-alt{background:var(--bg)}
-.eyebrow{display:inline-block;font-size:.7rem;font-weight:700;color:var(--teal);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.55rem;padding:.3rem .8rem;background:var(--teal-l);border-radius:999px}
-.h1{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:900;color:var(--navy);line-height:1.12;letter-spacing:-.02em}
-.h2{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:900;color:var(--navy);line-height:1.2;margin-bottom:.7rem;letter-spacing:-.01em}
-.sub{font-size:1rem;color:var(--soft);line-height:1.8;max-width:580px}
-.text-center{text-align:center}
-.text-center .sub{margin:0 auto}
+/* ════════════════════════════════════════ LAYOUT & TYPE ════════════════════════════════════════ */
+.wrap{max-width:1220px;margin:0 auto;padding:0 1.5rem}
+.section{padding:7rem 0;position:relative}
+.section-sand{background:var(--sand)}
+.section-pearl{background:var(--pearl-deep)}
+.section-dark{background:var(--ink);color:#fff}
+.eyebrow{display:inline-flex;align-items:center;gap:.45rem;font-size:.72rem;font-weight:600;color:var(--sky);letter-spacing:.14em;text-transform:uppercase;margin-bottom:1.1rem;padding:.4rem .9rem;background:var(--sky-soft);border-radius:999px}
+.eyebrow::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--sky)}
+.section-dark .eyebrow{background:rgba(46,124,246,.18);color:var(--sky-glow)}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans','Readex Pro',sans-serif;font-weight:800;color:var(--ink);letter-spacing:-.025em;line-height:1.12}
+.h1{font-size:clamp(2.4rem,5.2vw,4rem);font-weight:800;letter-spacing:-.03em}
+.h2{font-size:clamp(1.8rem,3.3vw,2.6rem);margin-bottom:.85rem}
+.h3{font-size:1.15rem;font-weight:700;letter-spacing:-.01em}
+.lede{font-size:1.05rem;color:var(--ink-soft);line-height:1.75;max-width:620px;font-weight:400}
+.section-dark h1,.section-dark h2,.section-dark h3{color:#fff}
+.section-dark .lede{color:rgba(255,255,255,.7)}
+.tc{text-align:center}
+.tc .lede{margin:0 auto}
 
-/* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.78rem 1.5rem;border-radius:var(--r);font-weight:700;font-size:.9rem;border:none;transition:all .2s;white-space:nowrap;line-height:1}
-.btn-teal{background:var(--teal);color:#fff}
-.btn-teal:hover{background:var(--teal-d);transform:translateY(-2px);box-shadow:0 8px 24px rgba(41,173,168,.4)}
-.btn-navy{background:var(--navy);color:#fff}
-.btn-navy:hover{background:var(--navy-d);transform:translateY(-2px);box-shadow:0 8px 24px rgba(45,42,127,.35)}
-.btn-orange{background:var(--orange);color:#fff}
-.btn-orange:hover{background:var(--orange-d);transform:translateY(-2px)}
+/* ════════════════════════════════════════ BUTTONS ════════════════════════════════════════ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;padding:.85rem 1.6rem;border-radius:999px;font-weight:600;font-size:.92rem;transition:all .25s var(--ease);white-space:nowrap;line-height:1;letter-spacing:-.005em;cursor:pointer;font-family:inherit;border:none}
+.btn-sky{background:var(--sky);color:#fff;box-shadow:0 8px 22px rgba(46,124,246,.28)}
+.btn-sky:hover{background:var(--sky-deep);transform:translateY(-2px);box-shadow:0 16px 36px rgba(46,124,246,.42)}
+.btn-ink{background:var(--ink);color:#fff}
+.btn-ink:hover{background:#06192e;transform:translateY(-2px);box-shadow:var(--sh-lg)}
 .btn-wa{background:#25D366;color:#fff}
-.btn-wa:hover{background:#1ab955;transform:translateY(-2px)}
-.btn-ghost{background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.3)}
-.btn-ghost:hover{background:rgba(255,255,255,.22)}
-.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border)}
-.btn-outline:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-l)}
-.btn-sm{padding:.5rem 1.1rem;font-size:.8rem}
-.btn-lg{padding:.95rem 1.9rem;font-size:1rem}
+.btn-wa:hover{background:#1ab955;transform:translateY(-2px);box-shadow:0 12px 30px rgba(37,211,102,.4)}
+.btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(10px)}
+.btn-ghost:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.32)}
+.btn-line{background:#fff;color:var(--ink);border:1px solid var(--line-strong)}
+.btn-line:hover{border-color:var(--sky);color:var(--sky);background:var(--sky-soft)}
+.btn-sm{padding:.6rem 1.15rem;font-size:.82rem}
+.btn-lg{padding:1rem 1.9rem;font-size:1rem}
 .btn-full{width:100%}
 
-/* Badges */
-.bd{display:inline-flex;align-items:center;gap:.25rem;font-size:.68rem;font-weight:700;padding:.22rem .65rem;border-radius:999px;line-height:1.4;white-space:nowrap}
-.bd-o{background:var(--orange-l);color:var(--orange)}
-.bd-t{background:var(--teal-l);color:var(--teal-d)}
-.bd-n{background:var(--navy-l);color:var(--navy)}
-
-/* ════ NAV ════ */
-nav{position:sticky;top:0;z-index:200;background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:.6rem 0}
-nav.scrolled{box-shadow:var(--sh-sm)}
-.nav-inner{display:flex;align-items:center;gap:1.5rem}
-.nav-logo{display:flex;align-items:center;gap:.65rem;flex-shrink:0}
-.nav-logo img{width:46px;height:46px;object-fit:contain}
-.nav-brand-name{font-size:1.15rem;font-weight:900;color:var(--navy);letter-spacing:-.01em}
-.nav-links{display:flex;align-items:center;gap:0;margin:0 auto}
-.nav-lnk{padding:.45rem .95rem;border-radius:var(--r);font-size:.85rem;font-weight:600;color:var(--soft);transition:all .15s}
-.nav-lnk:hover{color:var(--teal);background:var(--teal-l)}
-.nav-end{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
-.nav-burger{display:none;background:none;border:none;padding:.45rem;color:var(--navy);border-radius:.5rem}
-.nav-burger:hover{background:var(--bg)}
-@media(max-width:880px){
-  .nav-links{display:none;flex-direction:column;position:absolute;top:100%;right:0;left:0;background:#fff;border-bottom:1px solid var(--border);padding:.7rem 1.25rem;gap:.15rem;box-shadow:var(--sh)}
+/* ════════════════════════════════════════ NAV (glass) ════════════════════════════════════════ */
+nav{position:sticky;top:0;z-index:200;background:var(--glass-strong);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--line);padding:.9rem 0;transition:padding .25s var(--ease)}
+nav.scrolled{padding:.55rem 0;box-shadow:var(--sh-xs)}
+.nav-row{display:flex;align-items:center;gap:1.5rem}
+.nav-logo{display:flex;align-items:center;gap:.7rem;flex-shrink:0}
+.nav-logo img{width:42px;height:42px;object-fit:contain}
+.nav-brand{font-size:1.15rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;font-family:'Plus Jakarta Sans','Readex Pro',sans-serif}
+.nav-links{display:flex;align-items:center;gap:.15rem;margin:0 auto}
+.nav-lnk{padding:.5rem 1rem;border-radius:999px;font-size:.86rem;font-weight:500;color:var(--ink-soft);transition:all .15s}
+.nav-lnk:hover{color:var(--sky);background:var(--sky-soft)}
+.nav-end{display:flex;align-items:center;gap:.55rem;flex-shrink:0}
+.nav-burger{display:none;padding:.5rem;color:var(--ink);border-radius:.55rem}
+.nav-burger:hover{background:var(--pearl-deep)}
+@media(max-width:920px){
+  .nav-links{display:none;position:absolute;top:100%;right:0;left:0;flex-direction:column;background:#fff;border-bottom:1px solid var(--line);padding:.8rem 1.5rem;gap:.15rem;box-shadow:var(--sh-md)}
   .nav-links.open{display:flex}
   .nav-burger{display:flex}
   .nav-end .btn{display:none}
 }
 
-/* ════ HERO ════ */
-.hero{position:relative;background:var(--navy-d);overflow:hidden;padding:5rem 0 4.5rem;min-height:88vh;display:flex;align-items:center}
-.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 70% 20%,rgba(41,173,168,.22) 0%,transparent 55%),radial-gradient(ellipse at 20% 90%,rgba(244,123,32,.16) 0%,transparent 50%),radial-gradient(circle at 50% 50%,rgba(45,42,127,.5) 0%,transparent 80%)}
-.hero-pat{position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70' viewBox='0 0 70 70'%3E%3Cpolygon points='35,5 40,13 35,21 30,13' fill='%2329ADA8' opacity='0.07'/%3E%3Ccircle cx='12' cy='35' r='3' fill='%23F47B20' opacity='0.08'/%3E%3Ccircle cx='58' cy='35' r='3' fill='%23F47B20' opacity='0.08'/%3E%3C/svg%3E");background-size:70px 70px;animation:patshift 30s linear infinite}
-@keyframes patshift{to{background-position:70px 70px}}
-.hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:1.2fr auto;gap:4rem;align-items:center;width:100%}
-.hero-eyebrow{margin-bottom:1.25rem}
-.hero-eyebrow .bd{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);padding:.32rem .85rem;font-size:.72rem}
-.hero-title{font-size:clamp(2rem,5vw,3.3rem);font-weight:900;color:#fff;line-height:1.12;letter-spacing:-.02em;margin-bottom:1.1rem}
-.hero-title .hl{background:linear-gradient(90deg,var(--teal),#5fcfca);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-.hero-title .hl2{color:var(--orange)}
-.hero-desc{font-size:1.05rem;color:rgba(255,255,255,.72);line-height:1.85;margin-bottom:2.25rem;max-width:520px}
+/* ════════════════════════════════════════ HERO ════════════════════════════════════════ */
+.hero{position:relative;padding:5rem 0 6rem;overflow:hidden;min-height:88vh;display:flex;align-items:center}
+.hero-blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;pointer-events:none}
+.hero-blob-1{top:-100px;right:-120px;width:540px;height:540px;background:radial-gradient(circle,var(--sky-glow) 0%,transparent 65%)}
+.hero-blob-2{bottom:-160px;left:-100px;width:540px;height:540px;background:radial-gradient(circle,var(--sand-deep) 0%,transparent 65%)}
+.hero-dots{position:absolute;inset:0;opacity:.5;pointer-events:none;background-image:radial-gradient(rgba(10,37,64,.08) 1px,transparent 1px);background-size:24px 24px}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.25fr 1fr;gap:4rem;align-items:center;width:100%}
+.hero-tag{margin-bottom:1.5rem;display:inline-flex;align-items:center;gap:.5rem;padding:.45rem 1rem;background:rgba(255,255,255,.7);border:1px solid var(--line);border-radius:999px;font-size:.76rem;font-weight:500;color:var(--ink-soft);backdrop-filter:blur(10px)}
+.hero-tag-dot{width:7px;height:7px;border-radius:50%;background:var(--sky);box-shadow:0 0 0 4px rgba(46,124,246,.2)}
+.hero-h1{font-size:clamp(2.4rem,5.5vw,4.2rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;margin-bottom:1.25rem;color:var(--ink)}
+.hero-h1 .accent{background:linear-gradient(120deg,var(--sky) 0%,var(--sky-deep) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;display:inline-block;position:relative}
+.hero-h1 .accent::after{content:'';position:absolute;bottom:6px;right:0;left:0;height:10px;background:rgba(46,124,246,.14);z-index:-1;border-radius:6px;transform:skewX(-6deg)}
+.hero-desc{font-size:1.08rem;color:var(--ink-soft);line-height:1.75;margin-bottom:2rem;max-width:540px}
 
-/* Search bar */
-.search-bar{background:#fff;border-radius:var(--rlg);padding:.6rem;box-shadow:0 24px 64px rgba(0,0,0,.35);display:grid;grid-template-columns:repeat(3,1fr) auto;gap:.5rem;align-items:center}
-.search-field{padding:.65rem .85rem;border-radius:var(--r);background:var(--bg)}
-.search-field-lbl{font-size:.62rem;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.2rem}
-.search-field-sel{width:100%;border:none;background:transparent;font-family:'Cairo',sans-serif;font-size:.88rem;font-weight:700;color:var(--navy);padding:0;cursor:pointer}
-.search-field-sel:focus{outline:none}
-.search-btn{padding:1rem 1.5rem;background:var(--teal);color:#fff;border:none;border-radius:var(--r);font-weight:700;font-size:.92rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.4rem}
-.search-btn:hover{background:var(--teal-d);transform:translateY(-1px)}
-@media(max-width:640px){.search-bar{grid-template-columns:1fr;gap:.4rem}.search-btn{justify-content:center}}
+/* Smart search pill */
+.smart-search{background:#fff;border-radius:999px;padding:.5rem;display:flex;align-items:stretch;gap:.25rem;box-shadow:var(--sh-lg);max-width:640px;border:1px solid rgba(255,255,255,.9)}
+.ss-field{padding:.55rem 1.15rem;flex:1;min-width:0;border-radius:999px;transition:background .15s;cursor:pointer;position:relative}
+.ss-field:hover{background:var(--pearl-deep)}
+.ss-field-lbl{font-size:.62rem;font-weight:700;color:var(--ink-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.15rem}
+.ss-field select{width:100%;border:none;background:transparent;font-family:inherit;font-size:.86rem;font-weight:600;color:var(--ink);padding:0;cursor:pointer;outline:none;-webkit-appearance:none;appearance:none}
+.ss-sep{width:1px;background:var(--line);margin:.55rem 0}
+.ss-go{padding:.85rem 1.5rem;background:var(--sky);color:#fff;border-radius:999px;font-weight:700;font-size:.88rem;display:flex;align-items:center;gap:.45rem;transition:all .2s;flex-shrink:0;box-shadow:0 6px 18px rgba(46,124,246,.3)}
+.ss-go:hover{background:var(--sky-deep);transform:scale(1.03);box-shadow:0 10px 26px rgba(46,124,246,.45)}
+@media(max-width:680px){.smart-search{flex-direction:column;border-radius:var(--r-lg);padding:.7rem}.ss-sep{display:none}.ss-go{justify-content:center;border-radius:var(--r-md)}}
 
-.hero-quicks{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.5rem}
-.hero-quick{display:flex;align-items:center;gap:.45rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:.4rem .95rem;font-size:.76rem;font-weight:600;color:rgba(255,255,255,.85);cursor:pointer;transition:all .15s}
-.hero-quick:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)}
+.hero-chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.4rem}
+.hero-chip{display:inline-flex;align-items:center;gap:.4rem;background:#fff;border:1px solid var(--line);border-radius:999px;padding:.4rem .9rem;font-size:.76rem;font-weight:500;color:var(--ink-soft);transition:all .18s}
+.hero-chip:hover{border-color:var(--sky);color:var(--sky);transform:translateY(-2px);box-shadow:var(--sh-sm)}
 
-.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2.75rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,.1)}
-.hstat-val{font-size:1.85rem;font-weight:900;color:var(--teal);line-height:1}
-.hstat-lbl{font-size:.7rem;color:rgba(255,255,255,.55);margin-top:.25rem;font-weight:600}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:3rem;padding-top:2.25rem;border-top:1px solid var(--line)}
+.hstat-num{font-size:2rem;font-weight:800;color:var(--ink);line-height:1;letter-spacing:-.02em;font-family:'Plus Jakarta Sans',sans-serif}
+.hstat-num::after{content:'+';color:var(--sky);margin-right:2px}
+.hstat-lbl{font-size:.74rem;color:var(--ink-muted);margin-top:.4rem;font-weight:500}
 
-.hero-visual{position:relative;display:flex;align-items:center;justify-content:center}
-.hero-logo-wrap{position:relative;width:300px;height:300px;display:flex;align-items:center;justify-content:center}
-.hero-logo-glow{position:absolute;inset:-30px;background:radial-gradient(circle,rgba(41,173,168,.25) 0%,transparent 70%);border-radius:50%;animation:pulse 4s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.08);opacity:1}}
-.hero-logo-img{width:280px;height:280px;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 12px 36px rgba(41,173,168,.4))}
+/* Floating cards (right column) */
+.hero-stage{position:relative;height:480px}
+.float-card{position:absolute;background:#fff;border-radius:var(--r-lg);padding:1.1rem;box-shadow:var(--sh-md);border:1px solid var(--line);will-change:transform;transition:box-shadow .4s var(--ease)}
+.float-1{top:20px;right:20px;width:240px;transform:rotate(-3deg)}
+.float-2{top:120px;left:0;width:260px;z-index:2;transform:rotate(2deg)}
+.float-3{bottom:20px;right:60px;width:230px;transform:rotate(-1deg);z-index:3}
+.fc-img{height:90px;border-radius:var(--r-md);margin-bottom:.85rem;display:flex;align-items:center;justify-content:center;font-size:2.4rem;position:relative;overflow:hidden}
+.fc-img-1{background:linear-gradient(135deg,#0A2540 0%,#1957C2 100%);color:#fff}
+.fc-img-2{background:linear-gradient(135deg,#E7F0FE 0%,#F5EFE6 100%);color:var(--ink)}
+.fc-img-3{background:linear-gradient(135deg,#F5EFE6 0%,#ECE3D2 100%);color:var(--ink)}
+.fc-tag{position:absolute;top:.5rem;left:.5rem;font-size:.6rem;font-weight:700;background:rgba(255,255,255,.95);color:var(--ink);padding:.2rem .55rem;border-radius:999px}
+.fc-t{font-size:.86rem;font-weight:700;color:var(--ink);margin-bottom:.25rem;letter-spacing:-.01em}
+.fc-m{font-size:.7rem;color:var(--ink-muted);display:flex;align-items:center;gap:.4rem}
+.fc-m::before{content:'⏱';opacity:.6}
+.fc-price{display:flex;align-items:center;justify-content:space-between;margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line)}
+.fc-p-v{font-size:1.05rem;font-weight:800;color:var(--ink)}
+.fc-p-c{font-size:.65rem;color:var(--ink-muted);font-weight:500}
+.fc-stars{color:var(--gold);font-size:.7rem;letter-spacing:1px}
 
-@media(max-width:960px){.hero-inner{grid-template-columns:1fr}.hero-visual{display:none}.hero-stats{grid-template-columns:repeat(2,1fr)}.hero{min-height:auto;padding:4rem 0 3.5rem}}
+@media(max-width:960px){.hero-grid{grid-template-columns:1fr;gap:3rem}.hero-stage{display:none}.hero{padding:3.5rem 0 4rem;min-height:auto}.hero-stats{grid-template-columns:repeat(2,1fr)}}
 
-/* ════ CATEGORIES (3 محاور) ════ */
-.cats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3rem}
-.cat{position:relative;border-radius:var(--rxl);overflow:hidden;cursor:pointer;transition:all .3s;min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;padding:2rem;box-shadow:var(--sh)}
-.cat:hover{transform:translateY(-6px);box-shadow:var(--sh-lg)}
-.cat-bg{position:absolute;inset:0;z-index:0;transition:transform .5s}
-.cat:hover .cat-bg{transform:scale(1.05)}
-.cat-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.3) 60%,rgba(0,0,0,.65) 100%);z-index:1}
-.cat-pat{position:absolute;inset:0;z-index:1;opacity:.08;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpolygon points='30,4 36,12 30,20 24,12' fill='white'/%3E%3C/svg%3E");background-size:60px 60px}
-.cat-content{position:relative;z-index:2}
-.cat-icon{font-size:2.4rem;margin-bottom:.85rem;display:inline-block}
-.cat-title{font-size:1.4rem;font-weight:900;margin-bottom:.4rem;letter-spacing:-.01em}
-.cat-sub{font-size:.85rem;opacity:.92;margin-bottom:1rem;line-height:1.6}
-.cat-link{display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:700;padding:.5rem 1rem;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:999px;backdrop-filter:blur(8px);transition:all .2s}
-.cat:hover .cat-link{background:rgba(255,255,255,.25);transform:translateX(-3px)}
-@media(max-width:760px){.cats-grid{grid-template-columns:1fr}}
+/* ════════════════════════════════════════ TRUST BAND ════════════════════════════════════════ */
+.trust{padding:2rem 0;border-bottom:1px solid var(--line);background:#fff}
+.trust-row{display:flex;align-items:center;gap:2.5rem;flex-wrap:wrap;justify-content:center}
+.trust-lbl{font-size:.72rem;font-weight:600;color:var(--ink-muted);letter-spacing:.06em}
+.trust-logos{display:flex;align-items:center;gap:2rem;flex-wrap:wrap;justify-content:center}
+.trust-logo{font-size:.82rem;font-weight:700;color:var(--ink-muted);opacity:.55;transition:all .2s;letter-spacing:-.01em;font-family:'Plus Jakarta Sans',sans-serif;padding:.45rem .9rem;border:1px solid var(--line);border-radius:.55rem}
+.trust-logo:hover{opacity:1;color:var(--ink);border-color:var(--line-strong)}
 
-/* Category details popup */
-.cat-feats{position:absolute;inset:0;z-index:3;background:rgba(255,255,255,.97);color:var(--ink);padding:2rem;display:flex;flex-direction:column;justify-content:center;opacity:0;visibility:hidden;transition:all .25s;border-radius:var(--rxl)}
-.cat:hover .cat-feats{opacity:1;visibility:visible}
-.cat-feats-title{font-size:1.1rem;font-weight:900;color:var(--navy);margin-bottom:1rem}
-.cat-feats-list{list-style:none}
-.cat-feats-list li{font-size:.82rem;color:var(--soft);padding:.32rem 0;display:flex;align-items:center;gap:.55rem}
-.cat-feats-list li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0}
+/* ════════════════════════════════════════ BENTO PILLARS ════════════════════════════════════════ */
+.pillars{display:grid;grid-template-columns:1.4fr 1fr 1fr;grid-template-rows:auto auto;gap:1.1rem;margin-top:3rem}
+.pillar{position:relative;border-radius:var(--r-lg);overflow:hidden;padding:2rem;display:flex;flex-direction:column;justify-content:flex-end;min-height:280px;transition:transform .35s var(--ease),box-shadow .35s var(--ease);box-shadow:var(--sh-md);cursor:pointer}
+.pillar:hover{transform:translateY(-4px) scale(1.005);box-shadow:var(--sh-lg)}
+.pillar-bg{position:absolute;inset:0;z-index:0;transition:transform .55s var(--ease)}
+.pillar:hover .pillar-bg{transform:scale(1.04)}
+.pillar-content{position:relative;z-index:1}
+.pillar-ic{width:54px;height:54px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:1.65rem;margin-bottom:1.1rem;backdrop-filter:blur(10px)}
+.pillar-t{font-size:1.35rem;font-weight:800;margin-bottom:.45rem;letter-spacing:-.02em;color:#fff}
+.pillar-s{font-size:.86rem;line-height:1.6;color:rgba(255,255,255,.8);margin-bottom:1rem}
+.pillar-feats{list-style:none;display:flex;flex-direction:column;gap:.45rem;margin-top:.5rem}
+.pillar-feats li{font-size:.78rem;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:.55rem;font-weight:500}
+.pillar-feats li::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.6}
+.pillar-arrow{display:inline-flex;align-items:center;gap:.4rem;margin-top:1.1rem;font-size:.82rem;font-weight:700;padding:.55rem 1.1rem;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.22);border-radius:999px;backdrop-filter:blur(10px);width:fit-content;transition:all .2s;color:#fff}
+.pillar:hover .pillar-arrow{background:rgba(255,255,255,.26);padding-right:1.4rem}
 
-/* ════ DESTINATIONS ════ */
-.dest-tabs{display:flex;gap:.4rem;background:var(--bg);padding:.35rem;border-radius:var(--rmd);width:fit-content;margin:2rem auto 2.5rem}
-.dest-tab{padding:.55rem 1.4rem;border-radius:var(--r);background:transparent;border:none;font-family:'Cairo',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);transition:all .15s;display:flex;align-items:center;gap:.4rem}
-.dest-tab.act{background:#fff;color:var(--navy);box-shadow:var(--sh-sm)}
-.dest-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
-.dest-card{background:#fff;border-radius:var(--rlg);overflow:hidden;cursor:pointer;border:1.5px solid var(--border);transition:all .25s;display:flex;flex-direction:column}
-.dest-card:hover{border-color:var(--teal);transform:translateY(-4px);box-shadow:var(--sh-md)}
-.dest-img{height:120px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;background:linear-gradient(135deg,#F0FAFA 0%,#FEF0E6 100%);position:relative}
-.dest-img::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpolygon points='20,3 24,9 20,15 16,9' fill='%2329ADA8' opacity='0.06'/%3E%3C/svg%3E");background-size:40px}
-.dest-body{padding:1rem;flex:1}
-.dest-name{font-size:.98rem;font-weight:800;color:var(--navy);margin-bottom:.35rem;display:flex;align-items:center;justify-content:space-between}
-.dest-trips{font-size:.7rem;color:var(--muted);background:var(--bg);padding:.18rem .55rem;border-radius:999px;font-weight:700}
-.dest-from{display:flex;align-items:baseline;gap:.3rem;margin-top:.5rem;padding-top:.65rem;border-top:1px solid var(--border)}
-.dest-from-lbl{font-size:.65rem;color:var(--muted);font-weight:600}
-.dest-from-val{font-size:1rem;font-weight:900;color:var(--teal)}
-.dest-from-cur{font-size:.68rem;color:var(--muted)}
-@media(max-width:960px){.dest-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:680px){.dest-grid{grid-template-columns:repeat(2,1fr)}}
+.pillar-1{grid-row:span 2;background:linear-gradient(165deg,#0A2540 0%,#143869 60%,#1957C2 100%);min-height:520px}
+.pillar-1 .pillar-ic{background:rgba(46,124,246,.22);color:var(--sky-glow)}
+.pillar-1::before{content:'';position:absolute;top:-60px;left:-60px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(46,124,246,.4) 0%,transparent 70%);filter:blur(40px)}
+.pillar-2{background:linear-gradient(145deg,#2E7CF6 0%,#1957C2 100%)}
+.pillar-2 .pillar-ic{background:rgba(255,255,255,.2);color:#fff}
+.pillar-3{background:linear-gradient(145deg,#F5EFE6 0%,#E5D9C2 100%);color:var(--ink)}
+.pillar-3 .pillar-ic{background:rgba(10,37,64,.08);color:var(--ink)}
+.pillar-3 .pillar-t{color:var(--ink)}
+.pillar-3 .pillar-s{color:var(--ink-soft)}
+.pillar-3 .pillar-feats li{color:var(--ink-soft)}
+.pillar-3 .pillar-arrow{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pillar-3:hover .pillar-arrow{background:#06192e}
+.pillar-4{grid-column:span 2;background:#fff;border:1px solid var(--line);min-height:auto;padding:1.6rem 2rem;flex-direction:row;align-items:center;justify-content:space-between;gap:1rem}
+.pillar-4 .pillar-t{color:var(--ink);font-size:1.1rem;margin-bottom:.2rem}
+.pillar-4 .pillar-s{color:var(--ink-muted);margin-bottom:0;font-size:.84rem}
+.pillar-4 .pillar-arrow{background:var(--ink);color:#fff;border:none;margin-top:0;flex-shrink:0}
+.pillar-4:hover .pillar-arrow{background:#06192e}
 
-/* ════ PACKAGES ════ */
-.pkg-filters{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem}
-.pkg-filter-group{display:flex;gap:.3rem;flex-wrap:wrap}
-.pkg-chip{padding:.42rem 1rem;border-radius:999px;font-size:.78rem;font-weight:700;border:1.5px solid var(--border);background:#fff;color:var(--muted);transition:all .15s}
-.pkg-chip:hover{border-color:var(--teal);color:var(--teal)}
-.pkg-chip.act{background:var(--navy);border-color:var(--navy);color:#fff}
-.pkg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem}
-.pkg{background:#fff;border-radius:var(--rlg);border:1.5px solid var(--border);overflow:hidden;display:flex;flex-direction:column;transition:all .22s}
-.pkg:hover{transform:translateY(-5px);box-shadow:var(--sh-md);border-color:var(--teal)}
-.pkg-img{height:140px;display:flex;align-items:center;justify-content:center;font-size:3.2rem;position:relative;overflow:hidden}
-.pkg-img.bg-t{background:linear-gradient(135deg,#E6F7F7 0%,#B5E8E6 100%)}
-.pkg-img.bg-o{background:linear-gradient(135deg,#FEF0E6 0%,#FDC8A0 100%)}
-.pkg-img.bg-n{background:linear-gradient(135deg,#EEEDF8 0%,#C5C3E8 100%)}
-.pkg-img::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpolygon points='20,3 24,9 20,15 16,9' fill='white' opacity='0.3'/%3E%3C/svg%3E");background-size:40px}
-.pkg-badge-wrap{position:absolute;top:.8rem;right:.8rem;z-index:1}
-.pkg-body{padding:1.1rem;flex:1}
-.pkg-title{font-size:1rem;font-weight:900;color:var(--navy);margin-bottom:.3rem;line-height:1.25}
-.pkg-meta{font-size:.74rem;color:var(--muted);display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem}
-.pkg-meta span{display:flex;align-items:center;gap:.25rem}
-.pkg-sep{color:var(--border)}
+@media(max-width:900px){.pillars{grid-template-columns:1fr 1fr}.pillar-1{grid-row:span 1;min-height:340px}.pillar-4{grid-column:span 2;flex-direction:column;align-items:flex-start;text-align:right}}
+@media(max-width:560px){.pillars{grid-template-columns:1fr}.pillar-1,.pillar-4{grid-column:span 1}.pillar{min-height:240px}}
+
+/* ════════════════════════════════════════ PREMIUM ITINERARIES ════════════════════════════════════════ */
+.itin-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:3rem}
+.itin{position:relative;border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--sh-md);transition:transform .4s var(--ease),box-shadow .4s var(--ease)}
+.itin:hover{transform:translateY(-6px);box-shadow:var(--sh-lg)}
+.itin-korea{background:linear-gradient(160deg,#06192e 0%,#0A2540 45%,#143869 100%)}
+.itin-uk{background:linear-gradient(160deg,#0A2540 0%,#1957C2 65%,#2E7CF6 110%)}
+.itin-flag-bg{position:absolute;bottom:-30px;left:-20px;font-size:14rem;opacity:.06;line-height:1;transform:rotate(-12deg);pointer-events:none;user-select:none;z-index:0}
+.itin-glow{position:absolute;top:-40px;right:-40px;width:280px;height:280px;border-radius:50%;opacity:.35;filter:blur(70px);pointer-events:none;z-index:0}
+.itin-korea .itin-glow{background:radial-gradient(circle,var(--sky-glow) 0%,transparent 70%)}
+.itin-uk .itin-glow{background:radial-gradient(circle,#9bbef9 0%,transparent 70%)}
+.itin-top{position:relative;z-index:1;padding:1.85rem 2.1rem;flex:1}
+.itin-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+.itin-dur{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:.32rem .9rem;font-size:.74rem;font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:.4rem}
+.itin-hot{background:linear-gradient(90deg,var(--sky-glow) 0%,var(--sky) 50%,var(--sky-glow) 100%);background-size:200% 100%;color:#fff;border-radius:999px;padding:.3rem .8rem;font-size:.68rem;font-weight:700;animation:shimmer 3s linear infinite;display:inline-flex;align-items:center;gap:.35rem}
+@keyframes shimmer{to{background-position:-200% 0}}
+.itin-rec{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:.3rem .8rem;font-size:.68rem;font-weight:700;display:inline-flex;align-items:center;gap:.35rem;backdrop-filter:blur(10px)}
+.itin-flag-row{display:flex;align-items:center;gap:.85rem;margin-bottom:1rem}
+.itin-flag{font-size:2.8rem;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
+.itin-days{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:.55rem;padding:.32rem .8rem;font-size:.74rem;font-weight:600;color:rgba(255,255,255,.85)}
+.itin-t{font-size:1.7rem;font-weight:800;color:#fff;line-height:1.15;margin-bottom:.4rem;letter-spacing:-.025em;font-family:'Plus Jakarta Sans','Readex Pro',sans-serif}
+.itin-s{font-size:.88rem;color:rgba(255,255,255,.6);margin-bottom:1.35rem;line-height:1.6}
+.itin-cities{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.35rem}
+.itin-city{display:flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:999px;padding:.3rem .8rem;font-size:.76rem;font-weight:600;color:rgba(255,255,255,.92)}
+.itin-city-dot{width:5px;height:5px;border-radius:50%;background:var(--sky-glow);flex-shrink:0}
+.itin-hl{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:.9rem}
+.itin-hl-i{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:.7rem;padding:.7rem .85rem;display:flex;align-items:flex-start;gap:.55rem}
+.itin-hl-ic{font-size:1.05rem;flex-shrink:0}
+.itin-hl-t{font-size:.72rem;color:rgba(255,255,255,.78);font-weight:500;line-height:1.45}
+.itin-lock{display:flex;align-items:center;gap:.55rem;padding:.55rem .9rem;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.16);border-radius:.6rem;font-size:.71rem;color:rgba(255,255,255,.32)}
+.itin-foot{position:relative;z-index:1;padding:1.15rem 2.1rem;background:rgba(0,0,0,.4);backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.itin-p-lbl{font-size:.6rem;color:rgba(255,255,255,.38);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem}
+.itin-p-v{font-size:1.5rem;font-weight:800;color:#fff;line-height:1;font-family:'Plus Jakarta Sans',sans-serif}
+.itin-p-c{font-size:.7rem;color:rgba(255,255,255,.5);font-weight:500}
+.itin-cta{display:flex;gap:.45rem;align-items:center}
+.btn-book{background:var(--sky);color:#fff;padding:.72rem 1.4rem;border-radius:999px;font-weight:700;font-size:.86rem;display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap;transition:all .2s;box-shadow:0 6px 18px rgba(46,124,246,.35)}
+.btn-book:hover{background:var(--sky-deep);transform:translateY(-1px);box-shadow:0 10px 26px rgba(46,124,246,.5)}
+.btn-wa-mini{background:rgba(37,211,102,.14);color:#4adf7d;border:1px solid rgba(37,211,102,.28);padding:.7rem .95rem;border-radius:999px;font-weight:600;font-size:.8rem;display:inline-flex;align-items:center;gap:.35rem;transition:all .2s}
+.btn-wa-mini:hover{background:rgba(37,211,102,.22);border-color:rgba(37,211,102,.5)}
+@media(max-width:820px){.itin-grid{grid-template-columns:1fr}}
+@media(max-width:500px){.itin-top{padding:1.4rem 1.3rem}.itin-foot{padding:1rem 1.3rem}.itin-t{font-size:1.4rem}.itin-hl{grid-template-columns:1fr}}
+
+/* ════════════════════════════════════════ STUDY JOURNEY ════════════════════════════════════════ */
+.journey{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:4rem;position:relative}
+.journey::before{content:'';position:absolute;top:36px;right:calc(16.67% + 36px);left:calc(16.67% + 36px);height:2px;background:repeating-linear-gradient(to left,var(--line) 0,var(--line) 8px,transparent 8px,transparent 16px);z-index:0}
+.journey.lit::before{background:linear-gradient(to left,var(--sky) 0%,var(--sky-deep) 100%);height:2px;transition:background 1.2s ease}
+.jstep{position:relative;z-index:1;text-align:center}
+.jstep-num{width:72px;height:72px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;color:var(--ink-muted);margin:0 auto 1.4rem;position:relative;box-shadow:var(--sh-sm);border:2px solid var(--line);transition:all .5s var(--ease);font-family:'Plus Jakarta Sans',sans-serif}
+.journey.lit .jstep-num{background:linear-gradient(135deg,var(--sky) 0%,var(--sky-deep) 100%);color:#fff;border-color:var(--sky);box-shadow:var(--sh-glow)}
+.jstep-num::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:1.5px dashed var(--line);opacity:0;transition:opacity .4s}
+.journey.lit .jstep-num::after{opacity:.6;border-color:var(--sky)}
+.jstep-t{font-size:1.15rem;font-weight:700;color:var(--ink);margin-bottom:.55rem;letter-spacing:-.01em}
+.jstep-d{font-size:.88rem;color:var(--ink-soft);line-height:1.7;max-width:280px;margin:0 auto}
+@media(max-width:700px){.journey{grid-template-columns:1fr;gap:2.5rem}.journey::before{display:none}}
+
+/* ════════════════════════════════════════ DESTINATIONS BENTO ════════════════════════════════════════ */
+.dest-tabs{display:flex;gap:.35rem;background:#fff;padding:.35rem;border-radius:999px;width:fit-content;margin:0 auto 2.5rem;border:1px solid var(--line);box-shadow:var(--sh-xs)}
+.dest-tab{padding:.6rem 1.4rem;border-radius:999px;background:transparent;font-size:.85rem;font-weight:600;color:var(--ink-muted);transition:all .2s var(--ease);display:flex;align-items:center;gap:.45rem}
+.dest-tab.act{background:var(--ink);color:#fff}
+.dest-bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:170px;gap:1rem}
+.dest{position:relative;border-radius:var(--r-md);overflow:hidden;cursor:pointer;background:#fff;border:1px solid var(--line);transition:all .3s var(--ease);display:flex;flex-direction:column;justify-content:flex-end;padding:1.1rem}
+.dest:hover{transform:translateY(-4px);box-shadow:var(--sh-md);border-color:transparent}
+.dest-bg{position:absolute;inset:0;z-index:0;display:flex;align-items:center;justify-content:center;font-size:4rem;background:linear-gradient(135deg,var(--sky-soft) 0%,var(--sand) 100%);transition:transform .5s var(--ease)}
+.dest:hover .dest-bg{transform:scale(1.07)}
+.dest-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(10,37,64,.65) 100%)}
+.dest-content{position:relative;z-index:1;color:#fff}
+.dest-name{font-size:1rem;font-weight:700;margin-bottom:.2rem;letter-spacing:-.01em;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+.dest-meta{font-size:.7rem;color:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:space-between;font-weight:500}
+.dest-from{font-weight:700;color:#fff}
+.dest-from::before{content:'من ';font-weight:400;opacity:.7}
+.dest.featured{grid-column:span 2;grid-row:span 2}
+.dest.featured .dest-bg{font-size:8rem}
+.dest.featured .dest-name{font-size:1.5rem;font-weight:800;margin-bottom:.5rem}
+.dest.featured .dest-meta{font-size:.82rem}
+.dest.featured .dest-content::before{content:'⭐ الوجهة المميّزة';display:inline-block;background:var(--sky);color:#fff;padding:.25rem .7rem;border-radius:999px;font-size:.65rem;font-weight:700;margin-bottom:.6rem}
+@media(max-width:960px){.dest-bento{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:680px){.dest-bento{grid-template-columns:repeat(2,1fr);grid-auto-rows:140px}.dest.featured{grid-column:span 2;grid-row:span 2}.dest.featured .dest-bg{font-size:5rem}}
+
+/* ════════════════════════════════════════ PACKAGES (refined) ════════════════════════════════════════ */
+.pkg-filters{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:2rem;margin-top:2.5rem;align-items:center;justify-content:center}
+.pkg-fg{display:flex;gap:.35rem;flex-wrap:wrap}
+.pkg-sep-v{width:1px;background:var(--line);align-self:stretch;margin:0 .35rem}
+.pkg-chip{padding:.5rem 1.05rem;border-radius:999px;font-size:.78rem;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--ink-muted);transition:all .18s}
+.pkg-chip:hover{border-color:var(--sky);color:var(--sky)}
+.pkg-chip.act{background:var(--ink);border-color:var(--ink);color:#fff}
+.pkg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.2rem}
+.pkg{background:#fff;border-radius:var(--r-lg);border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;transition:all .3s var(--ease)}
+.pkg:hover{transform:translateY(-5px);box-shadow:var(--sh-lg);border-color:transparent}
+.pkg-img{height:150px;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden}
+.pkg-img.bg-1{background:linear-gradient(135deg,var(--sky-soft) 0%,#C5DDFB 100%)}
+.pkg-img.bg-2{background:linear-gradient(135deg,var(--sand) 0%,var(--sand-deep) 100%)}
+.pkg-img.bg-3{background:linear-gradient(135deg,#E2E8F0 0%,#CBD5E1 100%)}
+.pkg-badge{position:absolute;top:.85rem;right:.85rem;background:rgba(255,255,255,.95);color:var(--ink);padding:.25rem .7rem;border-radius:999px;font-size:.66rem;font-weight:700;backdrop-filter:blur(8px)}
+.pkg-body{padding:1.2rem 1.3rem;flex:1}
+.pkg-t{font-size:1.02rem;font-weight:700;color:var(--ink);margin-bottom:.35rem;letter-spacing:-.015em;line-height:1.3}
+.pkg-meta{font-size:.74rem;color:var(--ink-muted);display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem}
 .pkg-feats{list-style:none}
-.pkg-feat{display:flex;align-items:flex-start;gap:.4rem;font-size:.76rem;color:var(--soft);padding:.18rem 0;line-height:1.5}
-.pkg-feat::before{content:'✓';color:var(--teal);font-weight:700;flex-shrink:0;font-size:.78rem}
-.pkg-foot{display:flex;align-items:center;justify-content:space-between;padding:.95rem 1.1rem;background:var(--bg);border-top:1px solid var(--border)}
-.pkg-price-lbl{font-size:.6rem;color:var(--muted);font-weight:700;text-transform:uppercase}
-.pkg-price-val{font-size:1.3rem;font-weight:900;color:var(--navy);line-height:1}
-.pkg-price-cur{font-size:.7rem;color:var(--muted);margin-right:.15rem}
-.pkg-price-note{font-size:.82rem;font-weight:800;color:var(--teal)}
+.pkg-feat{display:flex;align-items:flex-start;gap:.45rem;font-size:.76rem;color:var(--ink-soft);padding:.2rem 0;line-height:1.55}
+.pkg-feat::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--sky);flex-shrink:0;margin-top:.5rem}
+.pkg-foot{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.3rem;background:var(--pearl-deep);border-top:1px solid var(--line)}
+.pkg-p-lbl{font-size:.6rem;color:var(--ink-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.pkg-p-v{font-size:1.25rem;font-weight:800;color:var(--ink);line-height:1;font-family:'Plus Jakarta Sans',sans-serif}
+.pkg-p-c{font-size:.7rem;color:var(--ink-muted);margin-right:.15rem;font-weight:500}
+.pkg-p-note{font-size:.82rem;font-weight:700;color:var(--sky)}
 
-/* ════ WHY ════ */
-.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem}
-.why{background:#fff;border:1.5px solid var(--border);border-radius:var(--rlg);padding:1.5rem 1.35rem;transition:all .2s}
-.why:hover{border-color:var(--teal);box-shadow:var(--sh);transform:translateY(-3px)}
-.why-ic{width:50px;height:50px;border-radius:var(--rmd);background:var(--teal-l);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1rem}
-.why-title{font-size:.95rem;font-weight:900;color:var(--navy);margin-bottom:.35rem}
-.why-desc{font-size:.78rem;color:var(--muted);line-height:1.65}
-@media(max-width:760px){.why-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:480px){.why-grid{grid-template-columns:1fr}}
+/* ════════════════════════════════════════ TESTIMONIALS ════════════════════════════════════════ */
+.tsm-wrap{background:var(--sand);border-radius:var(--r-xl);padding:4rem 0;position:relative;overflow:hidden}
+.tsm-wrap::before{content:'"';position:absolute;top:-50px;right:5%;font-size:18rem;color:rgba(10,37,64,.06);font-family:'Plus Jakarta Sans',serif;font-weight:900;line-height:1;pointer-events:none;direction:ltr}
+.tsm-viewport{overflow:hidden;margin-top:3rem;padding:1rem 0;position:relative}
+.tsm-track{display:flex;gap:1.25rem;transition:transform .6s var(--ease);will-change:transform}
+.tsm{flex:0 0 calc((100% - 2.5rem)/3);background:#fff;border-radius:var(--r-lg);padding:2rem 1.85rem;box-shadow:var(--sh-sm);display:flex;flex-direction:column;border:1px solid rgba(255,255,255,.6)}
+.tsm-stars{color:var(--gold);font-size:.95rem;letter-spacing:2px;margin-bottom:1rem}
+.tsm-q{font-size:.92rem;color:var(--ink);line-height:1.75;font-weight:400;margin-bottom:1.5rem;flex:1}
+.tsm-q::before{content:'"';color:var(--sky);margin-left:.15rem;font-weight:700}
+.tsm-q::after{content:'"';color:var(--sky);margin-right:.15rem;font-weight:700}
+.tsm-author{display:flex;align-items:center;gap:.85rem;padding-top:1.25rem;border-top:1px solid var(--line)}
+.tsm-av{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--sky) 0%,var(--sky-deep) 100%);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;font-family:'Plus Jakarta Sans',sans-serif}
+.tsm-info{flex:1;min-width:0}
+.tsm-n{font-size:.88rem;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.tsm-r{font-size:.72rem;color:var(--ink-muted)}
+.tsm-dest{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:600;color:var(--sky);background:var(--sky-soft);padding:.22rem .55rem;border-radius:999px;margin-top:.3rem}
+.tsm-nav{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:2rem}
+.tsm-dot{width:7px;height:7px;border-radius:50%;background:rgba(10,37,64,.18);transition:all .3s var(--ease);cursor:pointer}
+.tsm-dot.act{background:var(--sky);width:24px;border-radius:4px}
+@media(max-width:960px){.tsm{flex:0 0 calc((100% - 1.25rem)/2)}}
+@media(max-width:640px){.tsm{flex:0 0 100%}.tsm-wrap{padding:3rem 0}}
 
-/* ════ STEPS ════ */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2.5rem;position:relative;margin-top:3rem}
-.steps::before{content:'';position:absolute;top:30px;right:calc(16.67% + 14px);left:calc(16.67% + 14px);height:2px;background:linear-gradient(90deg,var(--teal) 0%,var(--orange) 100%);opacity:.22;border-radius:2px}
-.step{text-align:center;position:relative}
-.step-num{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;color:#fff;margin:0 auto 1.25rem;position:relative;z-index:1;box-shadow:0 6px 22px rgba(0,0,0,.2)}
-.step:nth-child(1) .step-num{background:linear-gradient(135deg,var(--teal),var(--teal-d))}
-.step:nth-child(2) .step-num{background:linear-gradient(135deg,var(--navy),var(--navy-d))}
-.step:nth-child(3) .step-num{background:linear-gradient(135deg,var(--orange),var(--orange-d))}
-.step-title{font-size:1.05rem;font-weight:900;color:var(--navy);margin-bottom:.5rem}
-.step-desc{font-size:.83rem;color:var(--soft);line-height:1.7}
-@media(max-width:640px){.steps{grid-template-columns:1fr;gap:2rem}.steps::before{display:none}}
+/* ════════════════════════════════════════ WHY ════════════════════════════════════════ */
+.why-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;grid-auto-rows:auto;gap:1.1rem;margin-top:3rem}
+.why{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:1.7rem 1.6rem;transition:all .3s var(--ease);position:relative;overflow:hidden}
+.why:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:transparent}
+.why:hover::before{opacity:1}
+.why::before{content:'';position:absolute;top:0;right:0;width:160px;height:160px;background:radial-gradient(circle at top right,var(--sky-soft) 0%,transparent 70%);opacity:0;transition:opacity .35s;pointer-events:none}
+.why-ic{width:46px;height:46px;border-radius:var(--r-sm);background:var(--sky-soft);color:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1.1rem;position:relative;z-index:1}
+.why-t{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:.4rem;letter-spacing:-.01em;position:relative;z-index:1}
+.why-d{font-size:.84rem;color:var(--ink-soft);line-height:1.7;position:relative;z-index:1}
+.why-1{grid-row:span 2;background:linear-gradient(165deg,#0A2540 0%,#1957C2 100%);color:#fff;border-color:transparent;padding:2.2rem 1.9rem}
+.why-1::before{display:none}
+.why-1 .why-ic{background:rgba(46,124,246,.22);color:var(--sky-glow);width:54px;height:54px;font-size:1.55rem}
+.why-1 .why-t{color:#fff;font-size:1.2rem}
+.why-1 .why-d{color:rgba(255,255,255,.7);font-size:.9rem}
+@media(max-width:900px){.why-grid{grid-template-columns:1fr 1fr}.why-1{grid-row:span 1;grid-column:span 2}}
+@media(max-width:560px){.why-grid{grid-template-columns:1fr}.why-1{grid-column:span 1}}
 
-/* ════ CONTACT ════ */
-.contact-wrap{background:linear-gradient(135deg,var(--navy-d) 0%,#252270 100%);border-radius:var(--rxl);padding:3.5rem;position:relative;overflow:hidden}
-.contact-wrap::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70' viewBox='0 0 70 70'%3E%3Cpolygon points='35,5 40,13 35,21 30,13' fill='%2329ADA8' opacity='0.05'/%3E%3C/svg%3E");background-size:70px 70px}
-.contact-inner{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
-.contact-text .h2{color:#fff}
-.contact-text .sub{color:rgba(255,255,255,.72)}
-.contact-perks{list-style:none;margin-top:1.5rem}
-.contact-perk{display:flex;gap:.65rem;font-size:.85rem;color:rgba(255,255,255,.78);padding:.4rem 0;align-items:center}
-.contact-perk::before{content:'✓';color:var(--teal);font-weight:900;font-size:1rem}
-.contact-form{background:#fff;border-radius:var(--rlg);padding:2rem;box-shadow:0 24px 64px rgba(0,0,0,.3)}
-.form-title{font-size:1rem;font-weight:900;color:var(--navy);padding-bottom:1rem;margin-bottom:1.25rem;border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:.5rem}
-.ftypes{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.1rem}
-.ftype{padding:.4rem .9rem;border-radius:999px;font-size:.75rem;font-weight:700;border:1.5px solid var(--border);background:#fff;color:var(--muted);transition:all .15s}
-.ftype.act{background:var(--teal);border-color:var(--teal);color:#fff}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
-.fld{margin-bottom:.85rem}
-.flbl{display:block;font-size:.74rem;font-weight:700;color:var(--navy);margin-bottom:.32rem}
-.fin,.fsel,.fta{width:100%;padding:.6rem .85rem;border:1.5px solid var(--border);border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:.84rem;color:var(--ink);background:var(--bg);transition:all .15s}
-.fin:focus,.fsel:focus,.fta:focus{outline:none;border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px rgba(41,173,168,.12)}
-.fta{resize:vertical;min-height:75px}
-@media(max-width:900px){.contact-inner{grid-template-columns:1fr}.contact-wrap{padding:2rem 1.5rem}}
+/* ════════════════════════════════════════ CONTACT ════════════════════════════════════════ */
+.contact{display:grid;grid-template-columns:1fr 1.1fr;gap:1.5rem;border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--sh-lg)}
+.contact-left{background:linear-gradient(165deg,#06192e 0%,#0A2540 60%,#143869 100%);padding:3.5rem 3rem;color:#fff;position:relative;overflow:hidden}
+.contact-left::before{content:'';position:absolute;top:-100px;right:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(46,124,246,.4) 0%,transparent 70%);filter:blur(60px)}
+.contact-left > *{position:relative;z-index:1}
+.contact-left .h2{color:#fff;margin-bottom:.8rem}
+.contact-left p{color:rgba(255,255,255,.72);font-size:.96rem;line-height:1.75;margin-bottom:1.75rem}
+.contact-perks{list-style:none;margin-bottom:2.25rem}
+.contact-perk{font-size:.88rem;color:rgba(255,255,255,.85);padding:.5rem 0;display:flex;align-items:center;gap:.65rem;font-weight:500}
+.contact-perk::before{content:'';width:18px;height:18px;border-radius:50%;background:rgba(46,124,246,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235B9DF9' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center}
+.contact-phone{display:flex;align-items:center;gap:.85rem;padding-top:1.5rem;margin-top:1.5rem;border-top:1px solid rgba(255,255,255,.1)}
+.contact-phone-ic{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-phone-lbl{font-size:.7rem;color:rgba(255,255,255,.5);font-weight:500}
+.contact-phone-v{font-size:.95rem;font-weight:700;color:#fff;direction:ltr;font-family:'Plus Jakarta Sans',sans-serif}
+
+.contact-right{background:#fff;padding:3rem 2.5rem}
+.contact-ftitle{font-size:.74rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1.5rem;display:flex;align-items:center;gap:.5rem}
+.contact-ftitle::before{content:'';width:24px;height:1px;background:var(--ink-muted)}
+.ftypes{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.ftype{padding:.5rem 1rem;border-radius:999px;font-size:.78rem;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--ink-muted);transition:all .15s}
+.ftype.act{background:var(--ink);border-color:var(--ink);color:#fff}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.fld{margin-bottom:1rem}
+.flbl{display:block;font-size:.74rem;font-weight:600;color:var(--ink);margin-bottom:.4rem}
+.fin,.fsel,.fta{width:100%;padding:.78rem 1rem;border:1px solid var(--line);border-radius:var(--r-sm);font-family:inherit;font-size:.88rem;color:var(--ink);background:#fff;transition:all .15s}
+.fin:focus,.fsel:focus,.fta:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 4px var(--sky-soft)}
+.fta{resize:vertical;min-height:90px}
+.contact-foot{font-size:.7rem;color:var(--ink-muted);text-align:center;margin-top:.85rem}
+.lottie-success{display:none;flex-direction:column;align-items:center;text-align:center;padding:1rem 0}
+.lottie-success.show{display:flex}
+.lottie-success svg{width:80px;height:80px;color:var(--sky)}
+.lottie-success-t{font-weight:700;color:var(--ink);margin-top:.5rem}
+.lottie-success-d{font-size:.84rem;color:var(--ink-muted);margin-top:.3rem}
+
+@media(max-width:900px){.contact{grid-template-columns:1fr}.contact-left,.contact-right{padding:2.5rem 1.75rem}}
 @media(max-width:500px){.frow{grid-template-columns:1fr}}
 
-/* CTA */
-.cta-band{background:linear-gradient(135deg,var(--teal) 0%,var(--teal-d) 100%);padding:3.5rem 0;text-align:center;position:relative;overflow:hidden}
-.cta-band::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpolygon points='30,4 36,12 30,20 24,12' fill='white' opacity='0.08'/%3E%3C/svg%3E");background-size:60px 60px}
-.cta-band > .container{position:relative;z-index:1}
-.cta-title{font-size:clamp(1.6rem,3vw,2.1rem);font-weight:900;color:#fff;margin-bottom:.6rem;letter-spacing:-.01em}
-.cta-sub{font-size:1rem;color:rgba(255,255,255,.9);margin-bottom:1.75rem}
-.cta-acts{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+/* ════════════════════════════════════════ CTA BAND ════════════════════════════════════════ */
+.cta-band{background:linear-gradient(135deg,var(--sky) 0%,var(--sky-deep) 100%);padding:4.5rem 0;text-align:center;position:relative;overflow:hidden}
+.cta-band::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.15) 1px,transparent 1px);background-size:24px 24px;opacity:.5}
+.cta-band > .wrap{position:relative;z-index:1}
+.cta-t{font-size:clamp(1.7rem,3vw,2.3rem);font-weight:800;color:#fff;margin-bottom:.7rem;letter-spacing:-.025em}
+.cta-d{font-size:1.05rem;color:rgba(255,255,255,.92);margin-bottom:2rem;max-width:540px;margin-left:auto;margin-right:auto}
+.cta-actions{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.cta-band .btn-line{background:#fff;color:var(--sky)}
+.cta-band .btn-line:hover{background:rgba(255,255,255,.92)}
 
-/* Footer */
-footer{background:var(--navy-d);padding:3.25rem 0 1.5rem}
-.footer-grid{display:grid;grid-template-columns:2.2fr 1fr 1fr 1fr;gap:2rem;margin-bottom:2.5rem}
-.footer-brand{display:flex;align-items:center;gap:.7rem;margin-bottom:.9rem}
-.footer-brand img{width:50px;height:50px;object-fit:contain;opacity:.95}
-.footer-brand-name{font-size:1.25rem;font-weight:900;color:#fff}
-.footer-desc{font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:1.25rem}
-.footer-socials{display:flex;gap:.5rem}
-.footer-soc{width:36px;height:36px;border-radius:.55rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .15s}
-.footer-soc:hover{background:var(--teal);border-color:var(--teal)}
-.footer-col-title{font-size:.82rem;font-weight:800;color:#fff;margin-bottom:1rem;padding-bottom:.55rem;border-bottom:1px solid rgba(255,255,255,.1)}
-.footer-lnks{list-style:none}
-.footer-lnks li{margin-bottom:.42rem}
-.footer-lnks a{font-size:.78rem;color:rgba(255,255,255,.55);transition:color .15s}
-.footer-lnks a:hover{color:var(--teal)}
-.footer-bot{border-top:1px solid rgba(255,255,255,.08);padding-top:1.25rem;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:rgba(255,255,255,.4)}
-.footer-teal{color:var(--teal);font-weight:700}
-@media(max-width:760px){.footer-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:480px){.footer-grid{grid-template-columns:1fr}.footer-bot{flex-direction:column;gap:.5rem;text-align:center}}
+/* ════════════════════════════════════════ FOOTER ════════════════════════════════════════ */
+footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr;gap:2.5rem;margin-bottom:3rem}
+.foot-brand{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem}
+.foot-brand img{width:46px;height:46px;object-fit:contain;opacity:.95}
+.foot-brand-n{font-size:1.25rem;font-weight:800;letter-spacing:-.02em;font-family:'Plus Jakarta Sans',sans-serif}
+.foot-d{font-size:.84rem;color:rgba(255,255,255,.55);line-height:1.7;margin-bottom:1.5rem;max-width:300px}
+.foot-socials{display:flex;gap:.5rem}
+.foot-soc{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.foot-soc:hover{background:var(--sky);border-color:var(--sky);transform:translateY(-2px)}
+.foot-soc svg{width:16px;height:16px;color:rgba(255,255,255,.7)}
+.foot-soc:hover svg{color:#fff}
+.foot-ct{font-size:.78rem;font-weight:700;color:#fff;margin-bottom:1.1rem;letter-spacing:.04em;text-transform:uppercase}
+.foot-lnks{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+.foot-lnks a{font-size:.82rem;color:rgba(255,255,255,.55);transition:color .15s}
+.foot-lnks a:hover{color:#fff}
+.foot-newsletter{margin-top:.5rem}
+.foot-newsletter p{font-size:.78rem;color:rgba(255,255,255,.55);margin-bottom:.85rem;line-height:1.6}
+.foot-input{display:flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:.3rem;align-items:center}
+.foot-input input{flex:1;background:transparent;border:none;outline:none;padding:.5rem .8rem;font-family:inherit;font-size:.82rem;color:#fff}
+.foot-input input::placeholder{color:rgba(255,255,255,.4)}
+.foot-input button{padding:.55rem 1.1rem;background:var(--sky);color:#fff;border-radius:999px;font-weight:700;font-size:.78rem;transition:all .2s}
+.foot-input button:hover{background:var(--sky-deep)}
+.foot-bot{border-top:1px solid rgba(255,255,255,.08);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.85rem;font-size:.76rem;color:rgba(255,255,255,.42)}
+.foot-bot a{color:rgba(255,255,255,.6)}
+.foot-bot a:hover{color:#fff}
+@media(max-width:880px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.foot-grid{grid-template-columns:1fr}.foot-bot{flex-direction:column;text-align:center}}
 
-/* Planner button */
-#planner-btn{position:fixed;bottom:1.5rem;left:1.5rem;z-index:9990}
-.planner-a{display:flex;align-items:center;gap:.5rem;background:var(--navy);color:#fff;padding:.7rem 1.25rem;border-radius:2rem;font-size:.84rem;font-weight:700;box-shadow:0 4px 24px rgba(0,0,0,.28);transition:all .2s;border:2px solid rgba(255,255,255,.12)}
-.planner-a:hover{background:var(--navy-d);transform:translateY(-2px)}
+/* ════════════════════════════════════════ PLANNER BTN ════════════════════════════════════════ */
+#planner{position:fixed;bottom:1.5rem;left:1.5rem;z-index:90}
+.planner-btn{display:flex;align-items:center;gap:.5rem;background:var(--ink);color:#fff;padding:.7rem 1.25rem;border-radius:999px;font-size:.82rem;font-weight:600;box-shadow:0 8px 26px rgba(10,37,64,.35);border:1px solid rgba(255,255,255,.1);transition:all .2s}
+.planner-btn:hover{transform:translateY(-2px);background:#06192e;box-shadow:0 14px 32px rgba(10,37,64,.45)}
 
-/* Reveal */
-[data-r]{opacity:0;transform:translateY(24px);transition:opacity .55s,transform .55s}
+/* ════════════════════════════════════════ REVEAL ════════════════════════════════════════ */
+[data-r]{opacity:0;transform:translateY(28px);transition:opacity .65s var(--ease),transform .65s var(--ease);transition-delay:var(--d,0ms)}
 [data-r].on{opacity:1;transform:none}
-
-/* ════ READY ITINERARIES ════ */
-.itin-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:3rem}
-.itin-card{position:relative;border-radius:var(--rxl);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--sh-md);transition:transform .35s,box-shadow .35s}
-.itin-card:hover{transform:translateY(-8px);box-shadow:var(--sh-lg)}
-.itin-korea{background:linear-gradient(155deg,#120018 0%,#1d0030 45%,#2e0a20 100%)}
-.itin-uk{background:linear-gradient(155deg,#080f22 0%,#0d1f40 45%,#132650 100%)}
-.itin-bg-flag{position:absolute;bottom:-20px;left:-10px;font-size:13rem;opacity:.07;line-height:1;transform:rotate(-10deg);pointer-events:none;user-select:none;z-index:0}
-.itin-bg-pat{position:absolute;inset:0;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpolygon points='30,4 34,11 30,18 26,11' fill='white' opacity='0.03'/%3E%3C/svg%3E");background-size:60px 60px}
-.itin-glow{position:absolute;top:-30px;right:-30px;width:250px;height:250px;border-radius:50%;opacity:.2;filter:blur(60px);pointer-events:none;z-index:0}
-.itin-korea .itin-glow{background:radial-gradient(circle,#d63af9 0%,transparent 70%)}
-.itin-uk .itin-glow{background:radial-gradient(circle,#3a6fdf 0%,transparent 70%)}
-.itin-top{position:relative;z-index:1;padding:1.75rem 2rem;flex:1}
-.itin-meta-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
-.itin-dur-badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:.32rem .85rem;font-size:.73rem;font-weight:800;color:#fff;display:inline-flex;align-items:center;gap:.4rem}
-.itin-hot-tag{background:var(--orange);color:#fff;border-radius:999px;padding:.28rem .72rem;font-size:.67rem;font-weight:800;animation:hotpulse 2.4s ease-in-out infinite}
-@keyframes hotpulse{0%,100%{box-shadow:0 0 0 0 rgba(244,123,32,.6)}50%{box-shadow:0 0 0 6px rgba(244,123,32,0)}}
-.itin-star-tag{background:var(--teal);color:#fff;border-radius:999px;padding:.28rem .72rem;font-size:.67rem;font-weight:800}
-.itin-flag-wrap{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
-.itin-flag{font-size:2.8rem;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
-.itin-days-lbl{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:.5rem;padding:.32rem .75rem;font-size:.76rem;font-weight:700;color:rgba(255,255,255,.8)}
-.itin-title{font-size:1.65rem;font-weight:900;color:#fff;line-height:1.15;margin-bottom:.4rem;letter-spacing:-.02em}
-.itin-sub{font-size:.86rem;color:rgba(255,255,255,.58);margin-bottom:1.35rem;line-height:1.65}
-.itin-cities{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.35rem}
-.itin-city-pill{display:flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:999px;padding:.28rem .72rem;font-size:.75rem;font-weight:700;color:rgba(255,255,255,.9)}
-.itin-city-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.itin-korea .itin-city-dot{background:#d63af9}
-.itin-uk .itin-city-dot{background:#5b8de8}
-.itin-highlights{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.85rem}
-.itin-hl{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:.6rem;padding:.68rem .85rem;display:flex;align-items:flex-start;gap:.55rem}
-.itin-hl-ic{font-size:1.05rem;flex-shrink:0;margin-top:.05rem}
-.itin-hl-txt{font-size:.71rem;color:rgba(255,255,255,.78);font-weight:600;line-height:1.45}
-.itin-more{display:flex;align-items:center;gap:.55rem;padding:.52rem .85rem;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.14);border-radius:.55rem;font-size:.71rem;color:rgba(255,255,255,.32)}
-.itin-foot{position:relative;z-index:1;padding:1.1rem 2rem;background:rgba(0,0,0,.42);backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
-.itin-price-lbl{font-size:.6rem;color:rgba(255,255,255,.38);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.18rem}
-.itin-price-val{font-size:1.45rem;font-weight:900;color:#fff;line-height:1;display:flex;align-items:baseline;gap:.28rem}
-.itin-price-cur{font-size:.68rem;color:rgba(255,255,255,.5)}
-.itin-cta-group{display:flex;gap:.45rem;align-items:center}
-.btn-itin-book{background:var(--teal);color:#fff;padding:.68rem 1.3rem;border-radius:var(--r);font-weight:800;font-size:.86rem;border:none;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap;font-family:'Cairo',sans-serif}
-.btn-itin-book:hover{background:var(--teal-d);transform:translateY(-1px);box-shadow:0 6px 20px rgba(41,173,168,.45)}
-.btn-itin-wa{background:rgba(37,211,102,.13);color:#4adf7d;border:1.5px solid rgba(37,211,102,.28);padding:.68rem .9rem;border-radius:var(--r);font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.35rem;font-family:'Cairo',sans-serif}
-.btn-itin-wa:hover{background:rgba(37,211,102,.22);border-color:rgba(37,211,102,.5)}
-@media(max-width:820px){.itin-grid{grid-template-columns:1fr}}
-@media(max-width:500px){.itin-top{padding:1.35rem 1.25rem}.itin-foot{padding:.9rem 1.25rem}.itin-title{font-size:1.35rem}.itin-highlights{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.001ms!important;animation-iteration-count:1!important;transition-duration:0.001ms!important}
+  [data-r]{opacity:1;transform:none}
+}
 </style>
 </head>
 <body>
 
-<!-- ════ NAV ════ -->
-<nav id="main-nav">
-  <div class="container">
-    <div class="nav-inner">
+<!-- ════════════ NAV ════════════ -->
+<nav id="mainNav">
+  <div class="wrap">
+    <div class="nav-row">
       <a href="#top" class="nav-logo">
         <img src="../assets/logo.png" alt="خطّار" id="logo-nav"
              onerror="this.style.display='none';document.getElementById('logo-nav-fb').style.display='block'">
-        <svg id="logo-nav-fb" style="display:none;width:46px;height:46px" viewBox="0 0 100 100">
-          <g fill="#29ADA8"><polygon points="50,4 56,11 50,18 44,11"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(30 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(60 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(90 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(120 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(150 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(180 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(210 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(240 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(270 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(300 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(330 50 50)"/></g>
-          <g fill="#F47B20"><circle cx="50" cy="12" r="2.8" transform="rotate(15 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(45 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(75 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(105 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(135 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(165 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(195 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(225 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(255 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(285 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(315 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(345 50 50)"/></g>
-          <text x="50" y="60" text-anchor="middle" font-family="Cairo,serif" font-size="19" font-weight="900" fill="#2D2A7F">خطّار</text>
+        <svg id="logo-nav-fb" style="display:none;width:42px;height:42px" viewBox="0 0 100 100">
+          <g fill="#2E7CF6"><circle cx="50" cy="50" r="36" fill="none" stroke="#2E7CF6" stroke-width="6"/><circle cx="50" cy="14" r="5"/><circle cx="50" cy="86" r="5"/><circle cx="14" cy="50" r="5"/><circle cx="86" cy="50" r="5"/></g>
+          <text x="50" y="58" text-anchor="middle" font-family="Plus Jakarta Sans,serif" font-size="20" font-weight="800" fill="#0A2540">خ</text>
         </svg>
-        <span class="nav-brand-name">خطّار</span>
+        <span class="nav-brand">خطّار</span>
       </a>
-      <div class="nav-links" id="nav-links">
-        <a href="#categories" class="nav-lnk">خدماتنا</a>
-        <a href="#destinations" class="nav-lnk">الوجهات</a>
+      <div class="nav-links" id="navLinks">
+        <a href="#pillars" class="nav-lnk">خدماتنا</a>
         <a href="#itineraries" class="nav-lnk">جداول جاهزة</a>
+        <a href="#destinations" class="nav-lnk">الوجهات</a>
         <a href="#packages" class="nav-lnk">الباقات</a>
-        <a href="#how" class="nav-lnk">كيف نعمل</a>
+        <a href="#testimonials" class="nav-lnk">آراء العملاء</a>
         <a href="#contact" class="nav-lnk">تواصل</a>
       </div>
       <div class="nav-end">
-        <a href="#contact" class="btn btn-teal btn-sm">احجز استشارة</a>
-        <button class="nav-burger" id="nav-burger" aria-label="القائمة">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <a href="#contact" class="btn btn-sky btn-sm">احجز استشارة</a>
+        <button class="nav-burger" id="navBurger" aria-label="القائمة">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
       </div>
     </div>
   </div>
 </nav>
 
-<!-- ════ HERO ════ -->
+<!-- ════════════ HERO ════════════ -->
 <section class="hero" id="top">
-  <div class="hero-bg"></div>
-  <div class="hero-pat"></div>
-  <div class="container">
-    <div class="hero-inner">
-      <div>
-        <div class="hero-eyebrow">
-          <span class="bd">✦ منصة السياحة والدراسة الذكية</span>
-        </div>
-        <h1 class="hero-title">
+  <div class="hero-dots"></div>
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+
+      <div data-r>
+        <div class="hero-tag"><span class="hero-tag-dot"></span> منصة السياحة والدراسة الذكية</div>
+        <h1 class="hero-h1">
           رحلتك تبدأ<br>
-          من <span class="hl">خطّار</span>
+          من <span class="accent">خطّار</span>
         </h1>
         <p class="hero-desc">منصة شاملة للسياحة والدراسة — وجهات داخلية وخارجية، برامج ابتعاث، باقات مختارة بأسعار شفافة وخدمة عربية.</p>
 
-        <div class="search-bar">
-          <div class="search-field">
-            <div class="search-field-lbl">ابحث عن</div>
-            <select class="search-field-sel" id="srch-type">
+        <div class="smart-search">
+          <div class="ss-field">
+            <div class="ss-field-lbl">نوع الخدمة</div>
+            <select id="ss-type">
               <option value="all">كل الخدمات</option>
               <option value="local">سياحة داخلية</option>
               <option value="intl">سياحة خارجية</option>
               <option value="study">دراسة وابتعاث</option>
             </select>
           </div>
-          <div class="search-field">
-            <div class="search-field-lbl">الوجهة</div>
-            <select class="search-field-sel" id="srch-dest">
-              <option value="">أي وجهة</option>
+          <div class="ss-sep"></div>
+          <div class="ss-field">
+            <div class="ss-field-lbl">الوجهة</div>
+            <select id="ss-dest"><option value="">أي وجهة</option></select>
+          </div>
+          <div class="ss-sep"></div>
+          <div class="ss-field">
+            <div class="ss-field-lbl">الميزانية</div>
+            <select id="ss-budget">
+              <option value="">أي ميزانية</option>
+              <option value="0-2000">أقل من 2,000</option>
+              <option value="2000-5000">2,000 – 5,000</option>
+              <option value="5000-10000">5,000 – 10,000</option>
+              <option value="10000-99999">+10,000</option>
             </select>
           </div>
-          <div class="search-field">
-            <div class="search-field-lbl">النوع</div>
-            <select class="search-field-sel" id="srch-cat">
-              <option value="all">كل الأنواع</option>
-              <option value="family">عائلية</option>
-              <option value="honeymoon">شهر عسل</option>
-              <option value="adventure">مغامرات</option>
-              <option value="culture">ثقافية</option>
-              <option value="religious">دينية</option>
-              <option value="study">دراسية</option>
-            </select>
-          </div>
-          <button class="search-btn" onclick="doSearch()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <button class="ss-go" onclick="doSearch()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             ابحث
           </button>
         </div>
 
-        <div class="hero-quicks">
-          <div class="hero-quick" onclick="quickJump('local')"><span>🇸🇦</span> داخلي</div>
-          <div class="hero-quick" onclick="quickJump('intl')"><span>🌍</span> خارجي</div>
-          <div class="hero-quick" onclick="quickJump('study')"><span>🎓</span> دراسة وابتعاث</div>
-          <div class="hero-quick" onclick="location='#packages'"><span>🎁</span> الباقات</div>
-          <div class="hero-quick" onclick="location='#contact'"><span>✨</span> رحلة مخصصة</div>
+        <div class="hero-chips">
+          <a class="hero-chip" onclick="quickJump('local')">🇸🇦 داخلي</a>
+          <a class="hero-chip" onclick="quickJump('intl')">🌍 خارجي</a>
+          <a class="hero-chip" onclick="quickJump('study')">🎓 دراسة وابتعاث</a>
+          <a class="hero-chip" href="#itineraries">✈ جداول جاهزة</a>
+          <a class="hero-chip" href="#contact">✨ رحلة مخصصة</a>
         </div>
 
         <div class="hero-stats">
-          <div><div class="hstat-val">+500</div><div class="hstat-lbl">عميل راضٍ</div></div>
-          <div><div class="hstat-val">+60</div><div class="hstat-lbl">باقة جاهزة</div></div>
-          <div><div class="hstat-val">+24</div><div class="hstat-lbl">وجهة</div></div>
-          <div><div class="hstat-val">+5</div><div class="hstat-lbl">سنوات خبرة</div></div>
+          <div><div class="hstat-num" data-tween="500">0</div><div class="hstat-lbl">عميل راضٍ</div></div>
+          <div><div class="hstat-num" data-tween="60">0</div><div class="hstat-lbl">باقة جاهزة</div></div>
+          <div><div class="hstat-num" data-tween="24">0</div><div class="hstat-lbl">وجهة</div></div>
+          <div><div class="hstat-num" data-tween="5">0</div><div class="hstat-lbl">سنوات خبرة</div></div>
         </div>
       </div>
-      <div class="hero-visual">
-        <div class="hero-logo-wrap">
-          <div class="hero-logo-glow"></div>
-          <img src="../assets/logo.png" alt="خطّار" class="hero-logo-img"
-               onerror="this.outerHTML=document.getElementById('logo-hero-fb').outerHTML">
-          <svg id="logo-hero-fb" style="display:none;width:280px;height:280px;position:relative;z-index:1;filter:drop-shadow(0 12px 36px rgba(41,173,168,.4))" viewBox="0 0 100 100">
-            <g fill="#29ADA8"><polygon points="50,4 56,11 50,18 44,11"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(30 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(60 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(90 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(120 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(150 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(180 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(210 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(240 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(270 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(300 50 50)"/><polygon points="50,4 56,11 50,18 44,11" transform="rotate(330 50 50)"/></g>
-            <g fill="#F47B20"><circle cx="50" cy="12" r="2.8" transform="rotate(15 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(45 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(75 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(105 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(135 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(165 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(195 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(225 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(255 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(285 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(315 50 50)"/><circle cx="50" cy="12" r="2.8" transform="rotate(345 50 50)"/></g>
-            <text x="50" y="60" text-anchor="middle" font-family="Cairo,serif" font-size="19" font-weight="900" fill="#fff" opacity=".9">خطّار</text>
-          </svg>
+
+      <div class="hero-stage" data-r style="--d:200ms">
+        <div class="float-card float-1" data-pll="0.02">
+          <div class="fc-img fc-img-1">🏝️<span class="fc-tag">شهر عسل</span></div>
+          <div class="fc-t">شهر عسل تايلاند</div>
+          <div class="fc-m">8 أيام · بوكيت وبانكوك</div>
+          <div class="fc-price"><div class="fc-stars">★★★★★</div><div><span class="fc-p-v">4,200</span><span class="fc-p-c"> ر.س</span></div></div>
+        </div>
+        <div class="float-card float-2" data-pll="0.04">
+          <div class="fc-img fc-img-2">🇰🇷<span class="fc-tag">جدول كامل</span></div>
+          <div class="fc-t">كوريا الجنوبية</div>
+          <div class="fc-m">11 يوم · سيول + جيجو + بوسان</div>
+          <div class="fc-price"><div class="fc-stars">★★★★★</div><div><span class="fc-p-v">4,500</span><span class="fc-p-c"> ر.س</span></div></div>
+        </div>
+        <div class="float-card float-3" data-pll="0.06">
+          <div class="fc-img fc-img-3">🏜️<span class="fc-tag">الأكثر طلباً</span></div>
+          <div class="fc-t">سحر العلا</div>
+          <div class="fc-m">4 أيام · العلا التاريخية</div>
+          <div class="fc-price"><div class="fc-stars">★★★★★</div><div><span class="fc-p-v">1,850</span><span class="fc-p-c"> ر.س</span></div></div>
         </div>
       </div>
+
     </div>
   </div>
 </section>
 
-<!-- ════ CATEGORIES ════ -->
-<section class="section" id="categories">
-  <div class="container">
-    <div class="text-center" data-r>
+<!-- ════════════ TRUST BAND ════════════ -->
+<section class="trust">
+  <div class="wrap">
+    <div class="trust-row">
+      <span class="trust-lbl">شركاء وموثوقون من</span>
+      <div class="trust-logos" id="trustLogos"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ PILLARS (Bento) ════════════ -->
+<section class="section" id="pillars">
+  <div class="wrap">
+    <div class="tc" data-r>
       <div class="eyebrow">محاور خدماتنا</div>
       <h2 class="h2">ثلاث منصات في منصة واحدة</h2>
-      <p class="sub">كل ما تحتاجه — من رحلة عائلية داخل المملكة، إلى ابتعاث جامعي خارج الحدود</p>
+      <p class="lede">من رحلة عائلية داخل المملكة، إلى ابتعاث جامعي خارج الحدود — كل شيء في مكان واحد</p>
     </div>
-    <div class="cats-grid" id="cats-grid"></div>
+
+    <div class="pillars">
+      <div class="pillar pillar-1" data-r style="--d:80ms" onclick="catJump('study')">
+        <div class="pillar-content">
+          <div class="pillar-ic">🎓</div>
+          <h3 class="pillar-t">الدراسة والابتعاث</h3>
+          <p class="pillar-s">برامج لغة معتمدة، قبول جامعي مضمون، ابتعاث حكومي وذاتي — كل ما يحتاجه الطالب لرحلة أكاديمية ناجحة</p>
+          <ul class="pillar-feats">
+            <li>برامج لغة مكثفة في أرقى المعاهد</li>
+            <li>قبول جامعي مضمون في بريطانيا وكندا وأستراليا</li>
+            <li>الابتعاث الحكومي والذاتي</li>
+            <li>دورات احترافية معتمدة</li>
+            <li>برامج صيفية للطلاب</li>
+            <li>استشارات أكاديمية متخصصة</li>
+          </ul>
+          <span class="pillar-arrow">استكشف الابتعاث ←</span>
+        </div>
+      </div>
+
+      <div class="pillar pillar-2" data-r style="--d:160ms" onclick="catJump('intl')">
+        <div class="pillar-content">
+          <div class="pillar-ic">🌍</div>
+          <h3 class="pillar-t">السياحة الخارجية</h3>
+          <p class="pillar-s">وجهات حول العالم — جولات مرشدة، شهر عسل، رحلات عائلية</p>
+          <span class="pillar-arrow">استكشف الوجهات ←</span>
+        </div>
+      </div>
+
+      <div class="pillar pillar-3" data-r style="--d:240ms" onclick="catJump('local')">
+        <div class="pillar-content">
+          <div class="pillar-ic">🇸🇦</div>
+          <h3 class="pillar-t">السياحة الداخلية</h3>
+          <p class="pillar-s">اكتشف جمال المملكة — العلا، أبها، نيوم، والمزيد</p>
+          <span class="pillar-arrow">استكشف المملكة ←</span>
+        </div>
+      </div>
+
+      <div class="pillar pillar-4" data-r style="--d:320ms" onclick="location='#contact'">
+        <div class="pillar-content">
+          <h3 class="pillar-t">لست متأكداً؟ نساعدك تختار</h3>
+          <p class="pillar-s">احصل على استشارة مجانية من فريقنا — نبني لك رحلة مخصصة حسب احتياجك وميزانيتك</p>
+        </div>
+        <span class="pillar-arrow">احجز استشارة مجانية ←</span>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- ════ DESTINATIONS ════ -->
-<section class="section section-alt" id="destinations">
-  <div class="container">
-    <div class="text-center" data-r>
+<!-- ════════════ ITINERARIES ════════════ -->
+<section class="section section-pearl" id="itineraries">
+  <div class="wrap">
+    <div class="tc" data-r>
+      <div class="eyebrow">جداول جاهزة للحجز</div>
+      <h2 class="h2">رحلات مصممة يوم بيوم — جاهزة فوراً</h2>
+      <p class="lede">جداول سفر احترافية مُجرَّبة ومكتملة التفاصيل — احجزها كما هي أو عدّلها حسب رغبتك</p>
+    </div>
+
+    <div class="itin-grid">
+      <!-- Korea -->
+      <div class="itin itin-korea" data-r style="--d:80ms">
+        <div class="itin-flag-bg">🇰🇷</div>
+        <div class="itin-glow"></div>
+        <div class="itin-top">
+          <div class="itin-meta">
+            <span class="itin-dur">⏱ 11 يوم / 10 ليالٍ</span>
+            <span class="itin-hot">✦ الأكثر حجزاً</span>
+          </div>
+          <div class="itin-flag-row">
+            <span class="itin-flag">🇰🇷</span>
+            <span class="itin-days">جدول كامل · 11 يوماً</span>
+          </div>
+          <h3 class="itin-t">رحلة كوريا الجنوبية</h3>
+          <p class="itin-s">11 يوماً من السحر الآسيوي — ثلاث مدن، تجارب لا تُنسى</p>
+          <div class="itin-cities">
+            <span class="itin-city"><span class="itin-city-dot"></span>سيول</span>
+            <span class="itin-city"><span class="itin-city-dot"></span>جزيرة جيجو</span>
+            <span class="itin-city"><span class="itin-city-dot"></span>بوسان</span>
+          </div>
+          <div class="itin-hl">
+            <div class="itin-hl-i"><span class="itin-hl-ic">🏯</span><span class="itin-hl-t">القلاع والمعابد التاريخية</span></div>
+            <div class="itin-hl-i"><span class="itin-hl-ic">🍜</span><span class="itin-hl-t">جولات المطبخ الكوري الأصيل</span></div>
+            <div class="itin-hl-i"><span class="itin-hl-ic">🌋</span><span class="itin-hl-t">جزيرة جيجو البركانية</span></div>
+            <div class="itin-hl-i"><span class="itin-hl-ic">🌆</span><span class="itin-hl-t">أحياء سيول الكوزموبوليتية</span></div>
+          </div>
+          <div class="itin-lock">🔒&nbsp; +7 تجارب وأنشطة مثيرة مخفية في الجدول الكامل</div>
+        </div>
+        <div class="itin-foot">
+          <div>
+            <div class="itin-p-lbl">يبدأ من</div>
+            <div><span class="itin-p-v">4,500</span> <span class="itin-p-c">ر.س</span></div>
+          </div>
+          <div class="itin-cta">
+            <button class="btn-wa-mini" onclick="bookItin('كوريا الجنوبية','11 يوم / 10 ليالٍ','4,500')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.553 4.104 1.522 5.829L.057 23.998l6.305-1.453A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.85 0-3.587-.504-5.079-1.382l-.361-.214-3.742.862.882-3.63-.236-.374A9.956 9.956 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+              واتساب
+            </button>
+            <button class="btn-book" onclick="bookItin('كوريا الجنوبية','11 يوم / 10 ليالٍ','4,500')">
+              احجز الجدول
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- UK -->
+      <div class="itin itin-uk" data-r style="--d:160ms">
+        <div class="itin-flag-bg">🇬🇧</div>
+        <div class="itin-glow"></div>
+        <div class="itin-top">
+          <div class="itin-meta">
+            <span class="itin-dur">⏱ 10 أيام / 9 ليالٍ</span>
+            <span class="itin-rec">⭐ موصى به</span>
+          </div>
+          <div class="itin-flag-row">
+            <span class="itin-flag">🇬🇧</span>
+            <span class="itin-days">جدول كامل · 10 أيام</span>
+          </div>
+          <h3 class="itin-t">رحلة بريطانيا الكلاسيكية</h3>
+          <p class="itin-s">10 أيام بين ثلاث مدن أيقونية — تاريخ عريق وتجربة أوروبية لا مثيل لها</p>
+          <div class="itin-cities">
+            <span class="itin-city"><span class="itin-city-dot"></span>لندن</span>
+            <span class="itin-city"><span class="itin-city-dot"></span>إدنبرة</span>
+            <span class="itin-city"><span class="itin-city-dot"></span>مانشستر</span>
+          </div>
+          <div class="itin-hl">
+            <div class="itin-hl-i"><span class="itin-hl-ic">🏰</span><span class="itin-hl-t">برج لندن وقصر باكنغهام</span></div>
+            <div class="itin-hl-i"><span class="itin-hl-ic">🏔️</span><span class="itin-hl-t">قلعة إدنبرة ومرتفعات اسكتلندا</span></div>
+            <div class="itin-hl-i"><span class="itin-hl-ic">🎭</span><span class="itin-hl-t">المتاحف والمسارح العالمية</span></div>
+            <div class="itin-hl-i"><span class="itin-hl-ic">🏟️</span><span class="itin-hl-t">تراث مانشستر الثقافي والرياضي</span></div>
+          </div>
+          <div class="itin-lock">🔒&nbsp; +5 تجارب وأنشطة مثيرة مخفية في الجدول الكامل</div>
+        </div>
+        <div class="itin-foot">
+          <div>
+            <div class="itin-p-lbl">يبدأ من</div>
+            <div><span class="itin-p-v">5,500</span> <span class="itin-p-c">ر.س</span></div>
+          </div>
+          <div class="itin-cta">
+            <button class="btn-wa-mini" onclick="bookItin('بريطانيا','10 أيام / 9 ليالٍ','5,500')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.553 4.104 1.522 5.829L.057 23.998l6.305-1.453A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.85 0-3.587-.504-5.079-1.382l-.361-.214-3.742.862.882-3.63-.236-.374A9.956 9.956 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+              واتساب
+            </button>
+            <button class="btn-book" onclick="bookItin('بريطانيا','10 أيام / 9 ليالٍ','5,500')">
+              احجز الجدول
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tc" style="margin-top:2.25rem" data-r>
+      <p style="font-size:.86rem;color:var(--ink-muted);margin-bottom:1rem">هل وجهتك ليست هنا؟ نبني لك جدول سفر مخصص من الصفر</p>
+      <a href="#contact" class="btn btn-line">اطلب جدول مخصص ✨</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ STUDY JOURNEY ════════════ -->
+<section class="section" id="how">
+  <div class="wrap">
+    <div class="tc" data-r>
+      <div class="eyebrow">رحلة الابتعاث</div>
+      <h2 class="h2">ثلاث خطوات حتى تطير</h2>
+      <p class="lede">عملية سلسة ومدروسة — من الاستشارة الأولى حتى الجلوس في قاعة المحاضرات</p>
+    </div>
+    <div class="journey" id="journey">
+      <div class="jstep" data-r style="--d:80ms">
+        <div class="jstep-num">1</div>
+        <h3 class="jstep-t">استشارة وتقييم</h3>
+        <p class="jstep-d">اجلس مع مستشار أكاديمي يفهم طموحك ويرشّح لك أفضل الجامعات والبرامج حسب ميزانيتك</p>
+      </div>
+      <div class="jstep" data-r style="--d:200ms">
+        <div class="jstep-num">2</div>
+        <h3 class="jstep-t">قبول وتأشيرة</h3>
+        <p class="jstep-d">نتولّى ملف القبول كاملاً، نتابع الردود، ونرتّب لك التأشيرة والسكن قبل موعد السفر</p>
+      </div>
+      <div class="jstep" data-r style="--d:320ms">
+        <div class="jstep-num">3</div>
+        <h3 class="jstep-t">سفر واستقرار</h3>
+        <p class="jstep-d">استقبال في المطار، توجيه للسكن، فتح حساب بنكي، وكل ما تحتاجه لتبدأ حياتك الجديدة بثقة</p>
+      </div>
+    </div>
+    <div class="tc" style="margin-top:3rem" data-r>
+      <a href="#contact" class="btn btn-ink">ابدأ ملف القبول مجاناً ←</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════ DESTINATIONS BENTO ════════════ -->
+<section class="section section-sand" id="destinations">
+  <div class="wrap">
+    <div class="tc" data-r>
       <div class="eyebrow">وجهاتنا</div>
       <h2 class="h2">اختر وجهتك المفضلة</h2>
-      <p class="sub">24+ وجهة داخلية وخارجية مختارة بعناية</p>
+      <p class="lede">24+ وجهة داخلية وخارجية مختارة بعناية — كل واحدة بتجربتها الخاصة</p>
     </div>
     <div class="dest-tabs">
       <button class="dest-tab act" onclick="showDest('international',this)"><span>🌍</span> خارجي</button>
       <button class="dest-tab" onclick="showDest('domestic',this)"><span>🇸🇦</span> داخلي</button>
     </div>
-    <div class="dest-grid" id="dest-grid"></div>
+    <div class="dest-bento" id="destBento"></div>
   </div>
 </section>
 
-<!-- ════ READY ITINERARIES ════ -->
-<section class="section" id="itineraries">
-  <div class="container">
-    <div class="text-center" data-r>
-      <div class="eyebrow">جداول جاهزة للحجز</div>
-      <h2 class="h2">رحلات مصممة يوم بيوم — جاهزة فوراً</h2>
-      <p class="sub">جداول سفر احترافية مُجرَّبة ومكتملة التفاصيل — احجزها كما هي أو عدّلها حسب رغبتك</p>
-    </div>
-    <div class="itin-grid" data-r>
-
-      <!-- ── Korea ── -->
-      <div class="itin-card itin-korea">
-        <div class="itin-bg-flag">🇰🇷</div>
-        <div class="itin-bg-pat"></div>
-        <div class="itin-glow"></div>
-        <div class="itin-top">
-          <div class="itin-meta-row">
-            <span class="itin-dur-badge">⏱ 11 يوم / 10 ليالٍ</span>
-            <span class="itin-hot-tag">🔥 الأكثر حجزاً</span>
-          </div>
-          <div class="itin-flag-wrap">
-            <span class="itin-flag">🇰🇷</span>
-            <span class="itin-days-lbl">جدول كامل · 11 يوماً</span>
-          </div>
-          <h3 class="itin-title">رحلة كوريا الجنوبية</h3>
-          <p class="itin-sub">11 يوماً من السحر الآسيوي — ثلاث مدن، تجارب لا تُنسى</p>
-          <div class="itin-cities">
-            <span class="itin-city-pill"><span class="itin-city-dot"></span>سيول</span>
-            <span class="itin-city-pill"><span class="itin-city-dot"></span>جزيرة جيجو</span>
-            <span class="itin-city-pill"><span class="itin-city-dot"></span>بوسان</span>
-          </div>
-          <div class="itin-highlights">
-            <div class="itin-hl"><span class="itin-hl-ic">🏯</span><span class="itin-hl-txt">القلاع والمعابد التاريخية</span></div>
-            <div class="itin-hl"><span class="itin-hl-ic">🍜</span><span class="itin-hl-txt">جولات المطبخ الكوري الأصيل</span></div>
-            <div class="itin-hl"><span class="itin-hl-ic">🌋</span><span class="itin-hl-txt">جزيرة جيجو البركانية</span></div>
-            <div class="itin-hl"><span class="itin-hl-ic">🌆</span><span class="itin-hl-txt">أحياء سيول الكوزموبوليتية</span></div>
-          </div>
-          <div class="itin-more">🔒&nbsp; +7 تجارب وأنشطة مثيرة مخفية في الجدول الكامل</div>
-        </div>
-        <div class="itin-foot">
-          <div>
-            <div class="itin-price-lbl">يبدأ من</div>
-            <div class="itin-price-val">4,500 <span class="itin-price-cur">ر.س</span></div>
-          </div>
-          <div class="itin-cta-group">
-            <button class="btn-itin-wa" onclick="bookItin('كوريا الجنوبية','11 يوم / 10 ليالٍ','4,500')">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.553 4.104 1.522 5.829L.057 23.998l6.305-1.453A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.85 0-3.587-.504-5.079-1.382l-.361-.214-3.742.862.882-3.63-.236-.374A9.956 9.956 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-              واتساب
-            </button>
-            <button class="btn-itin-book" onclick="bookItin('كوريا الجنوبية','11 يوم / 10 ليالٍ','4,500')">
-              احجز الجدول
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── UK ── -->
-      <div class="itin-card itin-uk">
-        <div class="itin-bg-flag">🇬🇧</div>
-        <div class="itin-bg-pat"></div>
-        <div class="itin-glow"></div>
-        <div class="itin-top">
-          <div class="itin-meta-row">
-            <span class="itin-dur-badge">⏱ 10 أيام / 9 ليالٍ</span>
-            <span class="itin-star-tag">⭐ موصى به</span>
-          </div>
-          <div class="itin-flag-wrap">
-            <span class="itin-flag">🇬🇧</span>
-            <span class="itin-days-lbl">جدول كامل · 10 أيام</span>
-          </div>
-          <h3 class="itin-title">رحلة بريطانيا الكلاسيكية</h3>
-          <p class="itin-sub">10 أيام بين ثلاث مدن أيقونية — تاريخ عريق وتجربة أوروبية لا مثيل لها</p>
-          <div class="itin-cities">
-            <span class="itin-city-pill"><span class="itin-city-dot"></span>لندن</span>
-            <span class="itin-city-pill"><span class="itin-city-dot"></span>إدنبرة</span>
-            <span class="itin-city-pill"><span class="itin-city-dot"></span>مانشستر</span>
-          </div>
-          <div class="itin-highlights">
-            <div class="itin-hl"><span class="itin-hl-ic">🏰</span><span class="itin-hl-txt">برج لندن وقصر باكنغهام</span></div>
-            <div class="itin-hl"><span class="itin-hl-ic">🏔️</span><span class="itin-hl-txt">قلعة إدنبرة ومرتفعات اسكتلندا</span></div>
-            <div class="itin-hl"><span class="itin-hl-ic">🎭</span><span class="itin-hl-txt">المتاحف والمسارح العالمية</span></div>
-            <div class="itin-hl"><span class="itin-hl-ic">🏟️</span><span class="itin-hl-txt">تراث مانشستر الثقافي والرياضي</span></div>
-          </div>
-          <div class="itin-more">🔒&nbsp; +5 تجارب وأنشطة مثيرة مخفية في الجدول الكامل</div>
-        </div>
-        <div class="itin-foot">
-          <div>
-            <div class="itin-price-lbl">يبدأ من</div>
-            <div class="itin-price-val">5,500 <span class="itin-price-cur">ر.س</span></div>
-          </div>
-          <div class="itin-cta-group">
-            <button class="btn-itin-wa" onclick="bookItin('بريطانيا','10 أيام / 9 ليالٍ','5,500')">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.553 4.104 1.522 5.829L.057 23.998l6.305-1.453A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.85 0-3.587-.504-5.079-1.382l-.361-.214-3.742.862.882-3.63-.236-.374A9.956 9.956 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-              واتساب
-            </button>
-            <button class="btn-itin-book" onclick="bookItin('بريطانيا','10 أيام / 9 ليالٍ','5,500')">
-              احجز الجدول
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-    <div class="text-center" style="margin-top:2.25rem" data-r>
-      <p style="font-size:.82rem;color:var(--muted);margin-bottom:1rem">هل وجهتك ليست هنا؟ نبني لك جدول سفر مخصص من الصفر</p>
-      <a href="#contact" class="btn btn-outline">اطلب جدول مخصص ✨</a>
-    </div>
-  </div>
-</section>
-
-<!-- ════ PACKAGES ════ -->
+<!-- ════════════ PACKAGES ════════════ -->
 <section class="section" id="packages">
-  <div class="container">
-    <div data-r>
+  <div class="wrap">
+    <div class="tc" data-r>
       <div class="eyebrow">باقات مختارة</div>
       <h2 class="h2">باقات جاهزة لكل احتياج</h2>
-      <p class="sub">سياحة عائلية، شهر عسل، مغامرات، أو دراسة — نوّع حسب اهتمامك</p>
+      <p class="lede">سياحة عائلية، شهر عسل، مغامرات، أو دراسة — نوّع حسب اهتمامك</p>
     </div>
-    <div class="pkg-filters" style="margin-top:2rem">
-      <div class="pkg-filter-group" id="filter-scope"></div>
-      <div style="width:1px;background:var(--border);margin:0 .25rem"></div>
-      <div class="pkg-filter-group" id="filter-type"></div>
+    <div class="pkg-filters" data-r>
+      <div class="pkg-fg" id="fScope"></div>
+      <div class="pkg-sep-v"></div>
+      <div class="pkg-fg" id="fType"></div>
     </div>
-    <div class="pkg-grid" id="pkg-grid"></div>
+    <div class="pkg-grid" id="pkgGrid"></div>
   </div>
 </section>
 
-<!-- ════ STEPS ════ -->
-<section class="section section-alt" id="how">
-  <div class="container">
-    <div class="text-center" data-r>
-      <div class="eyebrow">العملية</div>
-      <h2 class="h2">ثلاث خطوات فقط</h2>
-      <p class="sub">بسيط وسريع — من التواصل الأول حتى السفر</p>
-    </div>
-    <div class="steps">
-      <div class="step" data-r>
-        <div class="step-num">١</div>
-        <h3 class="step-title">اختر أو استفسر</h3>
-        <p class="step-desc">تصفّح الباقات أو تواصل معنا لطلب رحلة مخصصة حسب احتياجك وميزانيتك</p>
-      </div>
-      <div class="step" data-r>
-        <div class="step-num">٢</div>
-        <h3 class="step-title">جدول وعرض كامل</h3>
-        <p class="step-desc">نرسل لك خطة مفصّلة شاملة الفنادق، النقل، الجولات — تعدّلها معنا حتى تكون مثالية</p>
-      </div>
-      <div class="step" data-r>
-        <div class="step-num">٣</div>
-        <h3 class="step-title">سافر براحة</h3>
-        <p class="step-desc">نتابع كل تفصيلة معك — من التأشيرة إلى الاستقبال إلى العودة بسلام</p>
+<!-- ════════════ TESTIMONIALS ════════════ -->
+<section class="section" id="testimonials">
+  <div class="wrap">
+    <div class="tsm-wrap">
+      <div class="wrap">
+        <div class="tc" data-r>
+          <div class="eyebrow">آراء عملائنا</div>
+          <h2 class="h2">قصص حقيقية من رحلات حقيقية</h2>
+          <p class="lede">+500 عميل سعيد — كل واحد منهم له قصته معنا</p>
+        </div>
+        <div class="tsm-viewport" id="tsmViewport">
+          <div class="tsm-track" id="tsmTrack"></div>
+        </div>
+        <div class="tsm-nav" id="tsmNav"></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ════ WHY ════ -->
-<section class="section" id="why">
-  <div class="container">
-    <div class="text-center" data-r>
+<!-- ════════════ WHY ════════════ -->
+<section class="section section-pearl" id="why">
+  <div class="wrap">
+    <div class="tc" data-r>
       <div class="eyebrow">لماذا خطّار</div>
       <h2 class="h2">منصة تفهمك</h2>
-      <p class="sub">نُبسّط تخطيط الرحلات والدراسة بخبرة محلية ودولية</p>
+      <p class="lede">نُبسّط تخطيط الرحلات والدراسة بخبرة محلية ودولية</p>
     </div>
-    <div class="why-grid" style="margin-top:2.5rem" id="why-grid" data-r></div>
+    <div class="why-grid" id="whyGrid"></div>
   </div>
 </section>
 
-<!-- ════ CONTACT ════ -->
-<section class="section section-alt" id="contact">
-  <div class="container">
-    <div class="contact-wrap">
-      <div class="contact-inner">
-        <div class="contact-text">
-          <div class="eyebrow" style="background:rgba(41,173,168,.15);color:var(--teal)">تواصل معنا</div>
-          <h2 class="h2">ابدأ رحلتك اليوم</h2>
-          <p class="sub">أرسل طلبك وسيتواصل معك فريقنا خلال ساعة عمل</p>
-          <ul class="contact-perks">
-            <li class="contact-perk">استشارة أولية مجانية</li>
-            <li class="contact-perk">رد سريع خلال ساعة عمل</li>
-            <li class="contact-perk">عرض مخصص حسب الميزانية</li>
-            <li class="contact-perk">دعم كامل من البداية للنهاية</li>
-          </ul>
-          <a href="https://wa.me/966500000000" target="_blank" class="btn btn-wa btn-lg" style="margin-top:1.75rem">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.553 4.104 1.522 5.829L.057 23.998l6.305-1.453A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.85 0-3.587-.504-5.079-1.382l-.361-.214-3.742.862.882-3.63-.236-.374A9.956 9.956 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-            واتساب مباشر
-          </a>
-        </div>
-        <div class="contact-form">
-          <div class="form-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            أرسل طلبك
+<!-- ════════════ CONTACT ════════════ -->
+<section class="section" id="contact">
+  <div class="wrap">
+    <div class="contact">
+      <div class="contact-left">
+        <div class="eyebrow">تواصل معنا</div>
+        <h2 class="h2">ابدأ رحلتك اليوم</h2>
+        <p>أرسل طلبك وسيتواصل معك فريقنا خلال ساعة عمل بعرض مخصص حسب احتياجك</p>
+        <ul class="contact-perks">
+          <li class="contact-perk">استشارة أولية مجانية</li>
+          <li class="contact-perk">رد سريع خلال ساعة عمل</li>
+          <li class="contact-perk">عرض مخصص حسب الميزانية</li>
+          <li class="contact-perk">دعم كامل من البداية للنهاية</li>
+        </ul>
+        <a href="https://wa.me/966500000000" target="_blank" class="btn btn-wa btn-lg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.553 4.104 1.522 5.829L.057 23.998l6.305-1.453A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.85 0-3.587-.504-5.079-1.382l-.361-.214-3.742.862.882-3.63-.236-.374A9.956 9.956 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+          واتساب مباشر
+        </a>
+        <div class="contact-phone">
+          <div class="contact-phone-ic">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           </div>
-          <div style="margin-bottom:1rem">
+          <div>
+            <div class="contact-phone-lbl">اتصل بنا</div>
+            <div class="contact-phone-v">+966 50 000 0000</div>
+          </div>
+        </div>
+      </div>
+      <div class="contact-right">
+        <div id="formArea">
+          <div class="contact-ftitle">أرسل طلبك</div>
+          <div style="margin-bottom:1.25rem">
             <div class="flbl">نوع الطلب</div>
             <div class="ftypes">
               <button class="ftype act" onclick="setFtype(this)">🇸🇦 سياحة داخلية</button>
               <button class="ftype" onclick="setFtype(this)">🌍 سياحة خارجية</button>
               <button class="ftype" onclick="setFtype(this)">🎓 دراسة وابتعاث</button>
               <button class="ftype" onclick="setFtype(this)">💑 شهر عسل</button>
-              <button class="ftype" onclick="setFtype(this)">✨ رحلة مخصصة</button>
+              <button class="ftype" onclick="setFtype(this)">✨ مخصصة</button>
             </div>
           </div>
           <div class="frow">
@@ -687,62 +874,72 @@ footer{background:var(--navy-d);padding:3.25rem 0 1.5rem}
             </div>
           </div>
           <div class="fld"><label class="flbl">تفاصيل إضافية (اختياري)</label><textarea class="fta" id="f-notes" placeholder="عدد الأشخاص، التواريخ، اهتمامات خاصة..."></textarea></div>
-          <button class="btn btn-teal btn-full" onclick="submitForm()" style="padding:.85rem">
+          <button class="btn btn-sky btn-full btn-lg" onclick="submitForm()">
             إرسال الطلب
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
           </button>
-          <p style="font-size:.68rem;color:var(--muted);text-align:center;margin-top:.65rem">سيتواصل معك فريقنا خلال ساعة عمل · خدمة مجانية</p>
+          <p class="contact-foot">سيتواصل معك فريقنا خلال ساعة عمل · خدمة مجانية</p>
+        </div>
+        <div class="lottie-success" id="successArea">
+          <svg viewBox="0 0 80 80" fill="none">
+            <circle cx="40" cy="40" r="36" stroke="currentColor" stroke-width="3" opacity=".18"/>
+            <circle cx="40" cy="40" r="36" stroke="currentColor" stroke-width="3" stroke-dasharray="226" stroke-dashoffset="226" style="animation:dash 1s ease-out forwards"/>
+            <polyline points="26 41 36 51 56 31" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="50" stroke-dashoffset="50" style="animation:dash 0.6s 0.4s ease-out forwards"/>
+            <style>@keyframes dash{to{stroke-dashoffset:0}}</style>
+          </svg>
+          <div class="lottie-success-t">تم استقبال طلبك ✓</div>
+          <div class="lottie-success-d">سنفتح محادثة واتساب لتأكيد التفاصيل</div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ════ CTA ════ -->
+<!-- ════════════ CTA BAND ════════════ -->
 <div class="cta-band">
-  <div class="container">
-    <h2 class="cta-title">جاهز تبدأ رحلتك؟</h2>
-    <p class="cta-sub">تحدث مع فريقنا الآن — استشارة أولى مجانية دائماً</p>
-    <div class="cta-acts">
+  <div class="wrap">
+    <h2 class="cta-t">جاهز تبدأ رحلتك؟</h2>
+    <p class="cta-d">تحدث مع فريقنا الآن — استشارة أولى مجانية، ورد خلال ساعة</p>
+    <div class="cta-actions">
       <a href="https://wa.me/966500000000" target="_blank" class="btn btn-wa btn-lg">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.553 4.104 1.522 5.829L.057 23.998l6.305-1.453A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.85 0-3.587-.504-5.079-1.382l-.361-.214-3.742.862.882-3.63-.236-.374A9.956 9.956 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
         واتساب
       </a>
-      <a href="#contact" class="btn btn-ghost btn-lg">أرسل طلبك</a>
+      <a href="#contact" class="btn btn-line btn-lg">أرسل طلبك</a>
     </div>
   </div>
 </div>
 
-<!-- ════ FOOTER ════ -->
+<!-- ════════════ FOOTER ════════════ -->
 <footer>
-  <div class="container">
-    <div class="footer-grid">
+  <div class="wrap">
+    <div class="foot-grid">
       <div>
-        <div class="footer-brand">
+        <div class="foot-brand">
           <img src="../assets/logo.png" alt="خطّار" onerror="this.style.display='none'">
-          <span class="footer-brand-name">خطّار</span>
+          <span class="foot-brand-n">خطّار</span>
         </div>
-        <p class="footer-desc">منصة شاملة للسياحة والدراسة — وجهات داخلية وخارجية، برامج ابتعاث، باقات مختارة. منذ 2019.</p>
-        <div class="footer-socials">
-          <a href="#" class="footer-soc">📘</a>
-          <a href="#" class="footer-soc">📸</a>
-          <a href="#" class="footer-soc">🐦</a>
-          <a href="https://wa.me/966500000000" class="footer-soc">💬</a>
+        <p class="foot-d">منصة شاملة للسياحة والدراسة — وجهات داخلية وخارجية، برامج ابتعاث، باقات مختارة. منذ 2019.</p>
+        <div class="foot-socials">
+          <a href="#" class="foot-soc" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg></a>
+          <a href="#" class="foot-soc" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+          <a href="#" class="foot-soc" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+          <a href="https://wa.me/966500000000" class="foot-soc" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.117.553 4.104 1.522 5.829L.057 23.998l6.305-1.453A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.85 0-3.587-.504-5.079-1.382l-.361-.214-3.742.862.882-3.63-.236-.374A9.956 9.956 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg></a>
         </div>
       </div>
       <div>
-        <div class="footer-col-title">خدماتنا</div>
-        <ul class="footer-lnks">
-          <li><a href="#categories">السياحة الداخلية</a></li>
-          <li><a href="#categories">السياحة الخارجية</a></li>
-          <li><a href="#categories">الدراسة والابتعاث</a></li>
+        <div class="foot-ct">خدماتنا</div>
+        <ul class="foot-lnks">
+          <li><a href="#pillars">السياحة الداخلية</a></li>
+          <li><a href="#pillars">السياحة الخارجية</a></li>
+          <li><a href="#pillars">الدراسة والابتعاث</a></li>
+          <li><a href="#itineraries">جداول جاهزة</a></li>
           <li><a href="#packages">باقات مختارة</a></li>
-          <li><a href="#contact">رحلة مخصصة</a></li>
         </ul>
       </div>
       <div>
-        <div class="footer-col-title">وجهات شائعة</div>
-        <ul class="footer-lnks">
+        <div class="foot-ct">وجهات</div>
+        <ul class="foot-lnks">
           <li><a href="#destinations">العلا · أبها</a></li>
           <li><a href="#destinations">تركيا · جورجيا</a></li>
           <li><a href="#destinations">المملكة المتحدة</a></li>
@@ -751,72 +948,59 @@ footer{background:var(--navy-d);padding:3.25rem 0 1.5rem}
         </ul>
       </div>
       <div>
-        <div class="footer-col-title">تواصل</div>
-        <ul class="footer-lnks">
-          <li><a href="https://wa.me/966500000000">واتساب</a></li>
-          <li><a href="#contact">نموذج الطلب</a></li>
-          <li><a href="mailto:hello@khattar.sa">البريد الإلكتروني</a></li>
-          <li><a href="../">مخطط الرحلة</a></li>
-        </ul>
+        <div class="foot-ct">ابق على تواصل</div>
+        <div class="foot-newsletter">
+          <p>اشترك ليصلك أحدث الباقات والعروض الحصرية مباشرة على بريدك</p>
+          <div class="foot-input">
+            <input type="email" placeholder="بريدك الإلكتروني">
+            <button>اشترك</button>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="footer-bot">
-      <span>© 2025 <span class="footer-teal">خطّار</span> — جميع الحقوق محفوظة</span>
-      <span>صُنع بـ ❤ لكل مسافر عربي</span>
+    <div class="foot-bot">
+      <span>© 2026 خطّار — جميع الحقوق محفوظة</span>
+      <span>صُنع بـ ♥ لكل مسافر عربي</span>
     </div>
   </div>
 </footer>
 
-<!-- Planner -->
-<div id="planner-btn">
-  <a href="../" class="planner-a">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    مخطط الرحلة
-  </a>
-</div>
+<!-- Planner floating button -->
+<div id="planner"><a href="../" class="planner-btn">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+  مخطط الرحلة
+</a></div>
 
 <script>
+/* ════════════════════ STATE & FETCH ════════════════════ */
 let D = null;
-let CUR_SCOPE = 'all';
-let CUR_TYPE = 'all';
-let CUR_DEST = 'international';
+let CUR_SCOPE = 'all', CUR_TYPE = 'all', CUR_DEST = 'international';
+let tsmIdx = 0, tsmTimer = null;
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 fetch('../landing-data.json').then(r=>r.json()).then(d=>{D=d;init()}).catch(e=>console.error(e));
 
 function init(){
-  renderCats();
+  renderTrust();
   renderDestSel();
   showDest('international', document.querySelector('.dest-tab.act'));
   renderFilters();
   renderPkg();
   renderWhy();
+  renderTestimonials();
 }
 
-function renderCats(){
-  const g = document.getElementById('cats-grid');
-  if(!D || !D.categories) return;
-  g.innerHTML = D.categories.map(c => `
-    <div class="cat" onclick="catJump('${c.id}')">
-      <div class="cat-bg" style="background:${c.img}"></div>
-      <div class="cat-overlay"></div>
-      <div class="cat-pat"></div>
-      <div class="cat-content">
-        <div class="cat-icon">${c.icon}</div>
-        <div class="cat-title">${c.title}</div>
-        <div class="cat-sub">${c.subtitle}</div>
-        <span class="cat-link">استكشف ←</span>
-      </div>
-      <div class="cat-feats">
-        <div class="cat-feats-title">${c.icon} ${c.title}</div>
-        <ul class="cat-feats-list">${c.items.map(i=>`<li>${i}</li>`).join('')}</ul>
-      </div>
-    </div>
-  `).join('');
+/* ════════════════════ TRUST ════════════════════ */
+function renderTrust(){
+  const el = document.getElementById('trustLogos');
+  if(!D||!D.partners) return;
+  el.innerHTML = D.partners.map(p => `<span class="trust-logo">${p.label}</span>`).join('');
 }
 
+/* ════════════════════ DESTINATIONS ════════════════════ */
 function renderDestSel(){
-  const sel = document.getElementById('srch-dest');
-  if(!D || !sel) return;
+  const sel = document.getElementById('ss-dest');
+  if(!D||!sel) return;
   const all = [...(D.destinations.domestic||[]), ...(D.destinations.international||[])];
   sel.innerHTML = '<option value="">أي وجهة</option>' + all.map(d=>`<option value="${d.id}">${d.name}</option>`).join('');
 }
@@ -825,32 +1009,32 @@ function showDest(which, btn){
   document.querySelectorAll('.dest-tab').forEach(b=>b.classList.remove('act'));
   if(btn) btn.classList.add('act');
   CUR_DEST = which;
-  const g = document.getElementById('dest-grid');
+  const g = document.getElementById('destBento');
   if(!D) return;
-  g.innerHTML = (D.destinations[which]||[]).map(d=>`
-    <div class="dest-card" onclick="quickJump('${which==='domestic'?'local':'intl'}','${d.name}')">
-      <div class="dest-img">${d.icon}</div>
-      <div class="dest-body">
-        <div class="dest-name">
-          <span>${d.name}</span>
-          <span class="dest-trips">${d.trips} رحلة</span>
-        </div>
-        <div class="dest-from">
-          <span class="dest-from-lbl">يبدأ من</span>
-          <span class="dest-from-val">${d.from.toLocaleString()}</span>
-          <span class="dest-from-cur">ر.س</span>
+  const list = D.destinations[which] || [];
+  const featuredId = which==='international' ? (D.featured_destination||'uk') : 'alula';
+  const featured = list.find(d=>d.id===featuredId) || list[0];
+  const rest = list.filter(d=>d.id!==featured.id).slice(0,7);
+  const cards = [featured, ...rest];
+  g.innerHTML = cards.map((d,i)=>`
+    <div class="dest ${i===0?'featured':''}" onclick="quickJump('${which==='domestic'?'local':'intl'}','${d.name}')">
+      <div class="dest-bg">${d.icon}</div>
+      <div class="dest-content">
+        <div class="dest-name">${d.name}</div>
+        <div class="dest-meta">
+          <span>${d.trips} رحلة</span>
+          <span class="dest-from">${d.from.toLocaleString()} ر.س</span>
         </div>
       </div>
     </div>
   `).join('');
 }
 
+/* ════════════════════ PACKAGES ════════════════════ */
 function renderFilters(){
-  if(!D || !D.filters) return;
-  const fs = document.getElementById('filter-scope');
-  fs.innerHTML = D.filters.scope.map(f=>`<button class="pkg-chip ${f.id==='all'?'act':''}" data-scope="${f.id}" onclick="setScope('${f.id}',this)">${f.label}</button>`).join('');
-  const ft = document.getElementById('filter-type');
-  ft.innerHTML = D.filters.type.map(f=>`<button class="pkg-chip ${f.id==='all'?'act':''}" data-type="${f.id}" onclick="setType('${f.id}',this)">${f.label}</button>`).join('');
+  if(!D||!D.filters) return;
+  document.getElementById('fScope').innerHTML = D.filters.scope.map(f=>`<button class="pkg-chip ${f.id==='all'?'act':''}" data-scope="${f.id}" onclick="setScope('${f.id}',this)">${f.label}</button>`).join('');
+  document.getElementById('fType').innerHTML = D.filters.type.map(f=>`<button class="pkg-chip ${f.id==='all'?'act':''}" data-type="${f.id}" onclick="setType('${f.id}',this)">${f.label}</button>`).join('');
 }
 
 function setScope(s, btn){
@@ -859,6 +1043,7 @@ function setScope(s, btn){
   btn.classList.add('act');
   renderPkg();
 }
+
 function setType(t, btn){
   CUR_TYPE = t;
   document.querySelectorAll('[data-type]').forEach(b=>b.classList.remove('act'));
@@ -867,45 +1052,38 @@ function setType(t, btn){
 }
 
 function renderPkg(){
-  const g = document.getElementById('pkg-grid');
-  if(!D || !D.packages) return;
+  const g = document.getElementById('pkgGrid');
+  if(!D||!D.packages) return;
   let list = D.packages;
-  if(CUR_SCOPE !== 'all') list = list.filter(p => p.scope===CUR_SCOPE || p.scope==='any');
-  if(CUR_TYPE !== 'all') list = list.filter(p => p.type===CUR_TYPE || p.type==='custom');
+  if(CUR_SCOPE!=='all') list = list.filter(p=>p.scope===CUR_SCOPE || p.scope==='any');
+  if(CUR_TYPE!=='all') list = list.filter(p=>p.type===CUR_TYPE || p.type==='custom');
   if(list.length===0){
-    g.innerHTML = `<div style="grid-column:1/-1;padding:2.5rem;text-align:center;background:var(--bg);border-radius:var(--rlg);color:var(--muted)">لا توجد باقات بهذه الفلاتر. <button onclick="resetFilters()" style="color:var(--teal);background:none;border:none;font-weight:700;cursor:pointer;font-family:'Cairo'">إعادة تعيين</button></div>`;
+    g.innerHTML = `<div style="grid-column:1/-1;padding:3rem;text-align:center;background:#fff;border-radius:var(--r-lg);border:1px solid var(--line);color:var(--ink-muted)">لا توجد باقات بهذه الفلاتر. <button onclick="resetFilters()" style="color:var(--sky);background:none;border:none;font-weight:700;cursor:pointer;font-family:inherit">إعادة تعيين الفلاتر</button></div>`;
     return;
   }
   g.innerHTML = list.map(p=>{
-    const bgCls = p.badgeColor==='orange'?'bg-o':p.badgeColor==='navy'?'bg-n':'bg-t';
-    const bdCls = p.badgeColor==='orange'?'bd-o':p.badgeColor==='navy'?'bd-n':'bd-t';
+    const bg = p.badgeColor==='orange'?'bg-2':p.badgeColor==='navy'?'bg-3':'bg-1';
     return `
     <div class="pkg">
-      <div class="pkg-img ${bgCls}" style="position:relative">
-        <span style="position:relative;z-index:1;font-size:3rem">${p.icon}</span>
-        ${p.badge ? `<div class="pkg-badge-wrap"><span class="bd ${bdCls}">${p.badge}</span></div>` : ''}
+      <div class="pkg-img ${bg}">
+        <span>${p.icon}</span>
+        ${p.badge?`<span class="pkg-badge">${p.badge}</span>`:''}
       </div>
       <div class="pkg-body">
-        <div class="pkg-title">${p.title}</div>
-        <div class="pkg-meta">
-          <span>📍 ${p.location}</span>
-          <span class="pkg-sep">·</span>
-          <span>⏱ ${p.duration}</span>
-        </div>
-        <ul class="pkg-feats">
-          ${p.features.slice(0,4).map(f=>`<li class="pkg-feat">${f}</li>`).join('')}
-        </ul>
+        <div class="pkg-t">${p.title}</div>
+        <div class="pkg-meta"><span>📍 ${p.location}</span> · <span>⏱ ${p.duration}</span></div>
+        <ul class="pkg-feats">${p.features.slice(0,4).map(f=>`<li class="pkg-feat">${f}</li>`).join('')}</ul>
       </div>
       <div class="pkg-foot">
         <div>
           ${p.price>0
-            ? `<div class="pkg-price-lbl">يبدأ من</div><div><span class="pkg-price-val">${p.price.toLocaleString()}</span><span class="pkg-price-cur">${p.currency}</span></div>`
-            : `<div class="pkg-price-note">${p.priceNote||''}</div>`}
+            ? `<div class="pkg-p-lbl">يبدأ من</div><div><span class="pkg-p-v">${p.price.toLocaleString()}</span><span class="pkg-p-c">${p.currency}</span></div>`
+            : `<div class="pkg-p-note">${p.priceNote||''}</div>`}
         </div>
-        <a href="#contact" class="btn btn-teal btn-sm">احجز</a>
+        <a href="#contact" class="btn btn-sky btn-sm">احجز</a>
       </div>
-    </div>
-  `;}).join('');
+    </div>`;
+  }).join('');
 }
 
 function resetFilters(){
@@ -915,39 +1093,102 @@ function resetFilters(){
   renderPkg();
 }
 
+/* ════════════════════ WHY ════════════════════ */
 function renderWhy(){
-  const g = document.getElementById('why-grid');
-  if(!D || !D.why) return;
-  g.innerHTML = D.why.map(w=>`
-    <div class="why">
+  const g = document.getElementById('whyGrid');
+  if(!D||!D.why) return;
+  g.innerHTML = D.why.map((w,i)=>`
+    <div class="why ${i===0?'why-1':''}" data-r style="--d:${i*60}ms">
       <div class="why-ic">${w.icon}</div>
-      <div class="why-title">${w.title}</div>
-      <div class="why-desc">${w.desc}</div>
+      <h3 class="why-t">${w.title}</h3>
+      <p class="why-d">${w.desc}</p>
     </div>
   `).join('');
+  // Re-observe newly created reveal elements
+  document.querySelectorAll('.why[data-r]').forEach(el=>obs.observe(el));
 }
 
+/* ════════════════════ TESTIMONIALS ════════════════════ */
+function renderTestimonials(){
+  const t = document.getElementById('tsmTrack');
+  const nav = document.getElementById('tsmNav');
+  if(!D||!D.testimonials) return;
+  t.innerHTML = D.testimonials.map(ts=>`
+    <div class="tsm">
+      <div class="tsm-stars">${'★'.repeat(ts.rating||5)}</div>
+      <p class="tsm-q">${ts.quote}</p>
+      <div class="tsm-author">
+        <div class="tsm-av">${ts.avatar||ts.name[0]}</div>
+        <div class="tsm-info">
+          <div class="tsm-n">${ts.name}</div>
+          <div class="tsm-r">${ts.role}</div>
+          <span class="tsm-dest">✦ ${ts.destination}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  const slides = Math.max(1, D.testimonials.length - getTsmVisible() + 1);
+  nav.innerHTML = Array.from({length:slides},(_,i)=>`<span class="tsm-dot ${i===0?'act':''}" onclick="tsmGo(${i})"></span>`).join('');
+  if(!reduced) startTsmAuto();
+  const vp = document.getElementById('tsmViewport');
+  vp.addEventListener('mouseenter',()=>clearInterval(tsmTimer));
+  vp.addEventListener('mouseleave',()=>{if(!reduced) startTsmAuto()});
+}
+
+function getTsmVisible(){
+  return window.innerWidth<=640 ? 1 : window.innerWidth<=960 ? 2 : 3;
+}
+
+function tsmGo(i){
+  const total = D.testimonials.length;
+  const visible = getTsmVisible();
+  const maxIdx = Math.max(0, total - visible);
+  tsmIdx = Math.max(0, Math.min(maxIdx, i));
+  const cardWidth = document.querySelector('.tsm').offsetWidth + 20;
+  document.getElementById('tsmTrack').style.transform = `translateX(${tsmIdx * cardWidth}px)`;
+  document.querySelectorAll('.tsm-dot').forEach((d,j)=>d.classList.toggle('act', j===tsmIdx));
+}
+
+function startTsmAuto(){
+  clearInterval(tsmTimer);
+  tsmTimer = setInterval(()=>{
+    const total = D.testimonials.length;
+    const visible = getTsmVisible();
+    const maxIdx = Math.max(0, total - visible);
+    tsmGo(tsmIdx >= maxIdx ? 0 : tsmIdx + 1);
+  }, 5500);
+}
+
+window.addEventListener('resize',()=>{
+  if(D&&D.testimonials){
+    const total = D.testimonials.length;
+    const slides = Math.max(1, total - getTsmVisible() + 1);
+    const nav = document.getElementById('tsmNav');
+    nav.innerHTML = Array.from({length:slides},(_,i)=>`<span class="tsm-dot ${i===0?'act':''}" onclick="tsmGo(${i})"></span>`).join('');
+    tsmIdx = 0; tsmGo(0);
+  }
+});
+
+/* ════════════════════ CTAs ════════════════════ */
 function catJump(id){
-  if(id==='study'){ CUR_SCOPE='study'; }
-  else if(id==='local'){ CUR_SCOPE='local'; }
-  else if(id==='intl'){ CUR_SCOPE='intl'; }
+  const map = {study:'study', local:'local', intl:'intl'};
+  CUR_SCOPE = map[id] || 'all';
   document.querySelectorAll('[data-scope]').forEach(b=>b.classList.toggle('act', b.dataset.scope===CUR_SCOPE));
   renderPkg();
   document.getElementById('packages').scrollIntoView({behavior:'smooth'});
 }
+
 function quickJump(scope, dest){
   CUR_SCOPE = scope;
   document.querySelectorAll('[data-scope]').forEach(b=>b.classList.toggle('act', b.dataset.scope===scope));
   renderPkg();
   document.getElementById('packages').scrollIntoView({behavior:'smooth'});
 }
+
 function doSearch(){
-  const t = document.getElementById('srch-type').value;
-  const c = document.getElementById('srch-cat').value;
+  const t = document.getElementById('ss-type').value;
   if(t!=='all') CUR_SCOPE = t;
-  if(c!=='all') CUR_TYPE = c;
   document.querySelectorAll('[data-scope]').forEach(b=>b.classList.toggle('act', b.dataset.scope===CUR_SCOPE));
-  document.querySelectorAll('[data-type]').forEach(b=>b.classList.toggle('act', b.dataset.type===CUR_TYPE));
   renderPkg();
   document.getElementById('packages').scrollIntoView({behavior:'smooth'});
 }
@@ -961,31 +1202,109 @@ function setFtype(btn){
   document.querySelectorAll('.ftype').forEach(b=>b.classList.remove('act'));
   btn.classList.add('act');
 }
+
 function submitForm(){
   const name = document.getElementById('f-name').value.trim();
   const phone = document.getElementById('f-phone').value.trim();
-  if(!name || !phone){alert('يرجى إدخال الاسم ورقم الجوال');return}
+  if(!name||!phone){ alert('يرجى إدخال الاسم ورقم الجوال'); return; }
   const type = document.querySelector('.ftype.act')?.textContent || '';
   const dest = document.getElementById('f-dest').value;
   const budget = document.getElementById('f-budget').value;
   const notes = document.getElementById('f-notes').value.trim();
   const msg = `مرحباً خطّار 👋\n\nالاسم: ${name}\nالجوال: ${phone}\nنوع الطلب: ${type}${dest?'\nالوجهة: '+dest:''}\nالميزانية: ${budget}${notes?'\n\nتفاصيل: '+notes:''}`;
-  window.open('https://wa.me/966500000000?text='+encodeURIComponent(msg),'_blank');
+
+  document.getElementById('formArea').style.display='none';
+  document.getElementById('successArea').classList.add('show');
+  setTimeout(()=>{
+    window.open('https://wa.me/966500000000?text='+encodeURIComponent(msg),'_blank');
+  }, 1200);
 }
 
-document.getElementById('nav-burger').addEventListener('click',()=>{
-  document.getElementById('nav-links').classList.toggle('open');
-});
-
-const mainNav = document.getElementById('main-nav');
+/* ════════════════════ NAV + SCROLL ════════════════════ */
+const mainNav = document.getElementById('mainNav');
 window.addEventListener('scroll',()=>{
   mainNav.classList.toggle('scrolled', window.scrollY > 20);
 },{passive:true});
 
+document.getElementById('navBurger').addEventListener('click',()=>{
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+document.querySelectorAll('.nav-lnk').forEach(a=>a.addEventListener('click',()=>{
+  document.getElementById('navLinks').classList.remove('open');
+}));
+
+/* ════════════════════ REVEAL OBSERVER ════════════════════ */
 const obs = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');obs.unobserve(e.target);}});
-},{threshold:.08});
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('on');
+      obs.unobserve(e.target);
+    }
+  });
+},{threshold:.1, rootMargin:'0px 0px -40px 0px'});
+
 document.querySelectorAll('[data-r]').forEach(el=>obs.observe(el));
+
+/* ════════════════════ STAT COUNTERS ════════════════════ */
+const statObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const el = e.target;
+      const target = parseInt(el.dataset.tween,10);
+      if(reduced){ el.textContent = target; return; }
+      const start = performance.now(), dur = 1400;
+      function step(now){
+        const t = Math.min(1,(now-start)/dur);
+        const eased = 1 - Math.pow(1-t,3);
+        el.textContent = Math.round(target * eased);
+        if(t<1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+      statObs.unobserve(el);
+    }
+  });
+},{threshold:.5});
+
+document.querySelectorAll('[data-tween]').forEach(el=>statObs.observe(el));
+
+/* ════════════════════ PARALLAX (hero float cards) ════════════════════ */
+if(!reduced){
+  const stage = document.querySelector('.hero-stage');
+  if(stage){
+    let raf=null, mx=0, my=0;
+    stage.parentElement.parentElement.addEventListener('mousemove',(e)=>{
+      const rect = stage.getBoundingClientRect();
+      const cx = rect.left + rect.width/2;
+      const cy = rect.top + rect.height/2;
+      mx = (e.clientX - cx) / 30;
+      my = (e.clientY - cy) / 30;
+      if(!raf) raf = requestAnimationFrame(applyPll);
+    });
+    function applyPll(){
+      raf = null;
+      stage.querySelectorAll('[data-pll]').forEach(c=>{
+        const f = parseFloat(c.dataset.pll);
+        const baseRot = c.classList.contains('float-1') ? -3 : c.classList.contains('float-2') ? 2 : -1;
+        c.style.transform = `translate(${mx*f*20}px,${my*f*20}px) rotate(${baseRot}deg)`;
+      });
+    }
+  }
+}
+
+/* ════════════════════ JOURNEY DASHED LINE LIT ════════════════════ */
+const journey = document.getElementById('journey');
+if(journey){
+  const litObs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        setTimeout(()=>journey.classList.add('lit'), 400);
+        litObs.unobserve(e.target);
+      }
+    });
+  },{threshold:.4});
+  litObs.observe(journey);
+}
 </script>
 </body>
 </html>
