@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Readex+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet">
 <style>
 /* ════════════════════════════════════════ TOKENS ════════════════════════════════════════ */
 :root{
@@ -17,10 +18,10 @@
   --gold:#C9A86B;
   --line:rgba(10,37,64,.08); --line-strong:rgba(10,37,64,.14);
   --glass:rgba(255,255,255,.65); --glass-strong:rgba(255,255,255,.85);
-  --sh-xs:0 1px 2px rgba(10,37,64,.04);
-  --sh-sm:0 4px 12px rgba(10,37,64,.05);
-  --sh-md:0 20px 50px rgba(10,37,64,.06);
-  --sh-lg:0 32px 80px rgba(10,37,64,.10);
+  --sh-xs:0 1px 3px rgba(10,37,64,.05);
+  --sh-sm:0 4px 14px rgba(10,37,64,.06);
+  --sh-md:0 20px 50px rgba(10,37,64,.08);
+  --sh-lg:0 32px 80px rgba(10,37,64,.14);
   --sh-glow:0 16px 40px rgba(46,124,246,.32);
   --r-sm:12px; --r-md:20px; --r-lg:28px; --r-xl:40px;
   --ease:cubic-bezier(.2,.7,.2,1);
@@ -34,14 +35,19 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 input,select,textarea{font-family:inherit}
 ::selection{background:var(--sky);color:#fff}
 
+/* Material Symbols Rounded — base style (shared with dashboard) */
+.material-symbols-rounded{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;font-size:1.1rem;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;user-select:none;vertical-align:middle}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;user-select:none;vertical-align:middle}
+
 /* ════════════════════════════════════════ LAYOUT & TYPE ════════════════════════════════════════ */
 .wrap{max-width:1220px;margin:0 auto;padding:0 1.5rem}
-.section{padding:7rem 0;position:relative}
+.section{padding:6.5rem 0;position:relative}
+@media(max-width:760px){.section{padding:4rem 0}}
 .section-sand{background:var(--sand)}
 .section-pearl{background:var(--pearl-deep)}
 .section-dark{background:var(--ink);color:#fff}
-.eyebrow{display:inline-flex;align-items:center;gap:.45rem;font-size:.72rem;font-weight:600;color:var(--sky);letter-spacing:.14em;text-transform:uppercase;margin-bottom:1.1rem;padding:.4rem .9rem;background:var(--sky-soft);border-radius:999px}
-.eyebrow::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--sky)}
+.eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:600;color:var(--sky-deep);letter-spacing:.14em;text-transform:uppercase;margin-bottom:1.2rem;padding:.42rem .95rem;background:var(--sky-soft);border-radius:999px;border:1px solid rgba(46,124,246,.12)}
+.eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--sky);box-shadow:0 0 0 3px rgba(46,124,246,.18)}
 .section-dark .eyebrow{background:rgba(46,124,246,.18);color:var(--sky-glow)}
 h1,h2,h3,h4{font-family:'Plus Jakarta Sans','Readex Pro',sans-serif;font-weight:800;color:var(--ink);letter-spacing:-.025em;line-height:1.12}
 .h1{font-size:clamp(2.4rem,5.2vw,4rem);font-weight:800;letter-spacing:-.03em}
@@ -100,7 +106,7 @@ nav.scrolled{padding:.55rem 0;box-shadow:var(--sh-xs)}
 .hero-tag-dot{width:7px;height:7px;border-radius:50%;background:var(--sky);box-shadow:0 0 0 4px rgba(46,124,246,.2)}
 .hero-h1{font-size:clamp(2.4rem,5.5vw,4.2rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;margin-bottom:1.25rem;color:var(--ink)}
 .hero-h1 .accent{background:linear-gradient(120deg,var(--sky) 0%,var(--sky-deep) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;display:inline-block;position:relative}
-.hero-h1 .accent::after{content:'';position:absolute;bottom:6px;right:0;left:0;height:10px;background:rgba(46,124,246,.14);z-index:-1;border-radius:6px;transform:skewX(-6deg)}
+.hero-h1 .accent::after{content:'';position:absolute;bottom:4px;right:-2px;left:-2px;height:12px;background:linear-gradient(90deg,rgba(46,124,246,.18) 0%,rgba(46,124,246,.06) 100%);z-index:-1;border-radius:8px}
 .hero-desc{font-size:1.08rem;color:var(--ink-soft);line-height:1.75;margin-bottom:2rem;max-width:540px}
 
 /* Smart search pill */
@@ -135,8 +141,9 @@ nav.scrolled{padding:.55rem 0;box-shadow:var(--sh-xs)}
 .fc-img-3{background:linear-gradient(135deg,#F5EFE6 0%,#ECE3D2 100%);color:var(--ink)}
 .fc-tag{position:absolute;top:.5rem;left:.5rem;font-size:.6rem;font-weight:700;background:rgba(255,255,255,.95);color:var(--ink);padding:.2rem .55rem;border-radius:999px}
 .fc-t{font-size:.86rem;font-weight:700;color:var(--ink);margin-bottom:.25rem;letter-spacing:-.01em}
-.fc-m{font-size:.7rem;color:var(--ink-muted);display:flex;align-items:center;gap:.4rem}
-.fc-m::before{content:'⏱';opacity:.6}
+.fc-m{font-size:.7rem;color:var(--ink-muted);display:flex;align-items:center;gap:.35rem}
+.fc-stars .ms{color:var(--gold);font-variation-settings:'FILL' 1,'wght' 600,'GRAD' 0,'opsz' 20}
+.fc-m .ms{font-size:.85rem;opacity:.7;margin-left:2px}
 .fc-price{display:flex;align-items:center;justify-content:space-between;margin-top:.7rem;padding-top:.7rem;border-top:1px dashed var(--line)}
 .fc-p-v{font-size:1.05rem;font-weight:800;color:var(--ink)}
 .fc-p-c{font-size:.65rem;color:var(--ink-muted);font-weight:500}
@@ -169,8 +176,9 @@ nav.scrolled{padding:.55rem 0;box-shadow:var(--sh-xs)}
 .pillar:hover .pillar-arrow{background:rgba(255,255,255,.26);padding-right:1.4rem}
 
 .pillar-1{grid-row:span 2;background:linear-gradient(165deg,#0A2540 0%,#143869 60%,#1957C2 100%);min-height:520px}
-.pillar-1 .pillar-ic{background:rgba(46,124,246,.22);color:var(--sky-glow)}
-.pillar-1::before{content:'';position:absolute;top:-60px;left:-60px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(46,124,246,.4) 0%,transparent 70%);filter:blur(40px)}
+.pillar-1 .pillar-ic{background:rgba(46,124,246,.22);color:var(--sky-glow);width:64px;height:64px;border-radius:var(--r-md)}
+.pillar-1::before{content:'';position:absolute;top:-60px;left:-60px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(46,124,246,.45) 0%,transparent 70%);filter:blur(40px)}
+.pillar-1::after{content:'';position:absolute;top:2rem;right:0;width:3px;height:60px;background:linear-gradient(180deg,var(--sky-glow) 0%,transparent 100%);border-radius:3px 0 0 3px}
 .pillar-2{background:linear-gradient(145deg,#2E7CF6 0%,#1957C2 100%)}
 .pillar-2 .pillar-ic{background:rgba(255,255,255,.2);color:#fff}
 .pillar-3{background:linear-gradient(145deg,#F5EFE6 0%,#E5D9C2 100%);color:var(--ink)}
@@ -180,9 +188,11 @@ nav.scrolled{padding:.55rem 0;box-shadow:var(--sh-xs)}
 .pillar-3 .pillar-feats li{color:var(--ink-soft)}
 .pillar-3 .pillar-arrow{background:var(--ink);color:#fff;border-color:var(--ink)}
 .pillar-3:hover .pillar-arrow{background:#06192e}
-.pillar-4{grid-column:span 2;background:#fff;border:1px solid var(--line);min-height:auto;padding:1.6rem 2rem;flex-direction:row;align-items:center;justify-content:space-between;gap:1rem}
+.pillar-4{grid-column:span 2;background:linear-gradient(135deg,#fff 0%,var(--sky-soft) 100%);border:1px solid rgba(46,124,246,.14);min-height:auto;padding:1.7rem 2rem;flex-direction:row;align-items:center;justify-content:space-between;gap:1rem}
 .pillar-4 .pillar-t{color:var(--ink);font-size:1.1rem;margin-bottom:.2rem}
 .pillar-4 .pillar-s{color:var(--ink-muted);margin-bottom:0;font-size:.84rem}
+.pillar-4-row{display:flex;align-items:center;gap:1.1rem;flex:1}
+.pillar-4-ic{width:52px;height:52px;border-radius:var(--r-md);background:#fff;color:var(--sky);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(46,124,246,.18);box-shadow:var(--sh-xs)}
 .pillar-4 .pillar-arrow{background:var(--ink);color:#fff;border:none;margin-top:0;flex-shrink:0}
 .pillar-4:hover .pillar-arrow{background:#06192e}
 
@@ -262,7 +272,8 @@ nav.scrolled{padding:.55rem 0;box-shadow:var(--sh-xs)}
 .dest.featured .dest-bg{font-size:8rem}
 .dest.featured .dest-name{font-size:1.5rem;font-weight:800;margin-bottom:.5rem}
 .dest.featured .dest-meta{font-size:.82rem}
-.dest.featured .dest-content::before{content:'⭐ الوجهة المميّزة';display:inline-block;background:var(--sky);color:#fff;padding:.25rem .7rem;border-radius:999px;font-size:.65rem;font-weight:700;margin-bottom:.6rem}
+.dest.featured .dest-badge{display:inline-flex;align-items:center;gap:.3rem;background:var(--sky);color:#fff;padding:.28rem .75rem;border-radius:999px;font-size:.66rem;font-weight:700;margin-bottom:.6rem;box-shadow:0 4px 14px rgba(46,124,246,.4)}
+.dest.featured .dest-badge .ms{font-size:.85rem}
 @media(max-width:960px){.dest-bento{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:680px){.dest-bento{grid-template-columns:repeat(2,1fr);grid-auto-rows:140px}.dest.featured{grid-column:span 2;grid-row:span 2}.dest.featured .dest-bg{font-size:5rem}}
 
@@ -283,7 +294,8 @@ nav.scrolled{padding:.55rem 0;box-shadow:var(--sh-xs)}
 .pkg-badge{position:absolute;top:.85rem;right:.85rem;background:rgba(255,255,255,.95);color:var(--ink);padding:.25rem .7rem;border-radius:999px;font-size:.66rem;font-weight:700;backdrop-filter:blur(8px)}
 .pkg-body{padding:1.2rem 1.3rem;flex:1}
 .pkg-t{font-size:1.02rem;font-weight:700;color:var(--ink);margin-bottom:.35rem;letter-spacing:-.015em;line-height:1.3}
-.pkg-meta{font-size:.74rem;color:var(--ink-muted);display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem}
+.pkg-meta{font-size:.74rem;color:var(--ink-muted);display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem;flex-wrap:wrap}
+.pkg-meta span{display:inline-flex;align-items:center;gap:.3rem}
 .pkg-feats{list-style:none}
 .pkg-feat{display:flex;align-items:flex-start;gap:.45rem;font-size:.76rem;color:var(--ink-soft);padding:.2rem 0;line-height:1.55}
 .pkg-feat::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--sky);flex-shrink:0;margin-top:.5rem}
@@ -299,7 +311,8 @@ nav.scrolled{padding:.55rem 0;box-shadow:var(--sh-xs)}
 .tsm-viewport{overflow:hidden;margin-top:3rem;padding:1rem 0;position:relative}
 .tsm-track{display:flex;gap:1.25rem;transition:transform .6s var(--ease);will-change:transform}
 .tsm{flex:0 0 calc((100% - 2.5rem)/3);background:#fff;border-radius:var(--r-lg);padding:2rem 1.85rem;box-shadow:var(--sh-sm);display:flex;flex-direction:column;border:1px solid rgba(255,255,255,.6)}
-.tsm-stars{color:var(--gold);font-size:.95rem;letter-spacing:2px;margin-bottom:1rem}
+.tsm-stars{color:var(--gold);display:flex;gap:2px;margin-bottom:1.1rem}
+.tsm-stars .ms{font-size:1.15rem;font-variation-settings:'FILL' 1,'wght' 600,'GRAD' 0,'opsz' 20}
 .tsm-q{font-size:.92rem;color:var(--ink);line-height:1.75;font-weight:400;margin-bottom:1.5rem;flex:1}
 .tsm-q::before{content:'"';color:var(--sky);margin-left:.15rem;font-weight:700}
 .tsm-q::after{content:'"';color:var(--sky);margin-right:.15rem;font-weight:700}
@@ -308,7 +321,8 @@ nav.scrolled{padding:.55rem 0;box-shadow:var(--sh-xs)}
 .tsm-info{flex:1;min-width:0}
 .tsm-n{font-size:.88rem;font-weight:700;color:var(--ink);letter-spacing:-.01em}
 .tsm-r{font-size:.72rem;color:var(--ink-muted)}
-.tsm-dest{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:600;color:var(--sky);background:var(--sky-soft);padding:.22rem .55rem;border-radius:999px;margin-top:.3rem}
+.tsm-dest{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:600;color:var(--sky);background:var(--sky-soft);padding:.24rem .6rem;border-radius:999px;margin-top:.35rem}
+.tsm-dest .ms{color:var(--sky)}
 .tsm-nav{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:2rem}
 .tsm-dot{width:7px;height:7px;border-radius:50%;background:rgba(10,37,64,.18);transition:all .3s var(--ease);cursor:pointer}
 .tsm-dot.act{background:var(--sky);width:24px;border-radius:4px}
@@ -505,10 +519,10 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
 
         <div class="hero-chips">
           <a class="hero-chip" onclick="quickJump('local')">🇸🇦 داخلي</a>
-          <a class="hero-chip" onclick="quickJump('intl')">🌍 خارجي</a>
-          <a class="hero-chip" onclick="quickJump('study')">🎓 دراسة وابتعاث</a>
-          <a class="hero-chip" href="#itineraries">✈ جداول جاهزة</a>
-          <a class="hero-chip" href="#contact">✨ رحلة مخصصة</a>
+          <a class="hero-chip" onclick="quickJump('intl')"><span class="ms" style="font-size:.95rem">public</span> خارجي</a>
+          <a class="hero-chip" onclick="quickJump('study')"><span class="ms" style="font-size:.95rem">school</span> دراسة وابتعاث</a>
+          <a class="hero-chip" href="#itineraries"><span class="ms" style="font-size:.95rem">flight_takeoff</span> جداول جاهزة</a>
+          <a class="hero-chip" href="#contact"><span class="ms" style="font-size:.95rem">auto_awesome</span> رحلة مخصصة</a>
         </div>
 
         <div class="hero-stats">
@@ -523,20 +537,20 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
         <div class="float-card float-1" data-pll="0.02">
           <div class="fc-img fc-img-1">🏝️<span class="fc-tag">شهر عسل</span></div>
           <div class="fc-t">شهر عسل تايلاند</div>
-          <div class="fc-m">8 أيام · بوكيت وبانكوك</div>
-          <div class="fc-price"><div class="fc-stars">★★★★★</div><div><span class="fc-p-v">4,200</span><span class="fc-p-c"> ر.س</span></div></div>
+          <div class="fc-m"><span class="ms">schedule</span>8 أيام · بوكيت وبانكوك</div>
+          <div class="fc-price"><div class="fc-stars"><span class="ms" style="font-size:.9rem">star</span><span class="ms" style="font-size:.9rem">star</span><span class="ms" style="font-size:.9rem">star</span><span class="ms" style="font-size:.9rem">star</span><span class="ms" style="font-size:.9rem">star</span></div><div><span class="fc-p-v">4,200</span><span class="fc-p-c"> ر.س</span></div></div>
         </div>
         <div class="float-card float-2" data-pll="0.04">
           <div class="fc-img fc-img-2">🇰🇷<span class="fc-tag">جدول كامل</span></div>
           <div class="fc-t">كوريا الجنوبية</div>
-          <div class="fc-m">11 يوم · سيول + جيجو + بوسان</div>
-          <div class="fc-price"><div class="fc-stars">★★★★★</div><div><span class="fc-p-v">4,500</span><span class="fc-p-c"> ر.س</span></div></div>
+          <div class="fc-m"><span class="ms">schedule</span>11 يوم · سيول + جيجو + بوسان</div>
+          <div class="fc-price"><div class="fc-stars"><span class="ms" style="font-size:.9rem">star</span><span class="ms" style="font-size:.9rem">star</span><span class="ms" style="font-size:.9rem">star</span><span class="ms" style="font-size:.9rem">star</span><span class="ms" style="font-size:.9rem">star</span></div><div><span class="fc-p-v">4,500</span><span class="fc-p-c"> ر.س</span></div></div>
         </div>
         <div class="float-card float-3" data-pll="0.06">
           <div class="fc-img fc-img-3">🏜️<span class="fc-tag">الأكثر طلباً</span></div>
           <div class="fc-t">سحر العلا</div>
-          <div class="fc-m">4 أيام · العلا التاريخية</div>
-          <div class="fc-price"><div class="fc-stars">★★★★★</div><div><span class="fc-p-v">1,850</span><span class="fc-p-c"> ر.س</span></div></div>
+          <div class="fc-m"><span class="ms">schedule</span>4 أيام · العلا التاريخية</div>
+          <div class="fc-price"><div class="fc-stars"><span class="ms" style="font-size:.9rem">star</span><span class="ms" style="font-size:.9rem">star</span><span class="ms" style="font-size:.9rem">star</span><span class="ms" style="font-size:.9rem">star</span><span class="ms" style="font-size:.9rem">star</span></div><div><span class="fc-p-v">1,850</span><span class="fc-p-c"> ر.س</span></div></div>
         </div>
       </div>
 
@@ -566,7 +580,7 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
     <div class="pillars">
       <div class="pillar pillar-1" data-r style="--d:80ms" onclick="catJump('study')">
         <div class="pillar-content">
-          <div class="pillar-ic">🎓</div>
+          <div class="pillar-ic"><span class="ms" style="font-size:1.8rem">school</span></div>
           <h3 class="pillar-t">الدراسة والابتعاث</h3>
           <p class="pillar-s">برامج لغة معتمدة، قبول جامعي مضمون، ابتعاث حكومي وذاتي — كل ما يحتاجه الطالب لرحلة أكاديمية ناجحة</p>
           <ul class="pillar-feats">
@@ -583,7 +597,7 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
 
       <div class="pillar pillar-2" data-r style="--d:160ms" onclick="catJump('intl')">
         <div class="pillar-content">
-          <div class="pillar-ic">🌍</div>
+          <div class="pillar-ic"><span class="ms" style="font-size:1.7rem">public</span></div>
           <h3 class="pillar-t">السياحة الخارجية</h3>
           <p class="pillar-s">وجهات حول العالم — جولات مرشدة، شهر عسل، رحلات عائلية</p>
           <span class="pillar-arrow">استكشف الوجهات ←</span>
@@ -592,7 +606,7 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
 
       <div class="pillar pillar-3" data-r style="--d:240ms" onclick="catJump('local')">
         <div class="pillar-content">
-          <div class="pillar-ic">🇸🇦</div>
+          <div class="pillar-ic"><span class="ms" style="font-size:1.7rem">landscape</span></div>
           <h3 class="pillar-t">السياحة الداخلية</h3>
           <p class="pillar-s">اكتشف جمال المملكة — العلا، أبها، نيوم، والمزيد</p>
           <span class="pillar-arrow">استكشف المملكة ←</span>
@@ -600,9 +614,12 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
       </div>
 
       <div class="pillar pillar-4" data-r style="--d:320ms" onclick="location='#contact'">
-        <div class="pillar-content">
-          <h3 class="pillar-t">لست متأكداً؟ نساعدك تختار</h3>
-          <p class="pillar-s">احصل على استشارة مجانية من فريقنا — نبني لك رحلة مخصصة حسب احتياجك وميزانيتك</p>
+        <div class="pillar-4-row">
+          <div class="pillar-4-ic"><span class="ms" style="font-size:1.6rem">support_agent</span></div>
+          <div class="pillar-content">
+            <h3 class="pillar-t">لست متأكداً؟ نساعدك تختار</h3>
+            <p class="pillar-s">احصل على استشارة مجانية من فريقنا — نبني لك رحلة مخصصة حسب احتياجك وميزانيتك</p>
+          </div>
         </div>
         <span class="pillar-arrow">احجز استشارة مجانية ←</span>
       </div>
@@ -626,8 +643,8 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
         <div class="itin-glow"></div>
         <div class="itin-top">
           <div class="itin-meta">
-            <span class="itin-dur">⏱ 11 يوم / 10 ليالٍ</span>
-            <span class="itin-hot">✦ الأكثر حجزاً</span>
+            <span class="itin-dur"><span class="ms" style="font-size:.95rem">schedule</span> 11 يوم / 10 ليالٍ</span>
+            <span class="itin-hot"><span class="ms" style="font-size:.85rem">local_fire_department</span> الأكثر حجزاً</span>
           </div>
           <div class="itin-flag-row">
             <span class="itin-flag">🇰🇷</span>
@@ -646,7 +663,7 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
             <div class="itin-hl-i"><span class="itin-hl-ic">🌋</span><span class="itin-hl-t">جزيرة جيجو البركانية</span></div>
             <div class="itin-hl-i"><span class="itin-hl-ic">🌆</span><span class="itin-hl-t">أحياء سيول الكوزموبوليتية</span></div>
           </div>
-          <div class="itin-lock">🔒&nbsp; +7 تجارب وأنشطة مثيرة مخفية في الجدول الكامل</div>
+          <div class="itin-lock"><span class="ms" style="font-size:.95rem">lock</span> +7 تجارب وأنشطة مثيرة مخفية في الجدول الكامل</div>
         </div>
         <div class="itin-foot">
           <div>
@@ -672,8 +689,8 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
         <div class="itin-glow"></div>
         <div class="itin-top">
           <div class="itin-meta">
-            <span class="itin-dur">⏱ 10 أيام / 9 ليالٍ</span>
-            <span class="itin-rec">⭐ موصى به</span>
+            <span class="itin-dur"><span class="ms" style="font-size:.95rem">schedule</span> 10 أيام / 9 ليالٍ</span>
+            <span class="itin-rec"><span class="ms" style="font-size:.85rem">verified</span> موصى به</span>
           </div>
           <div class="itin-flag-row">
             <span class="itin-flag">🇬🇧</span>
@@ -692,7 +709,7 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
             <div class="itin-hl-i"><span class="itin-hl-ic">🎭</span><span class="itin-hl-t">المتاحف والمسارح العالمية</span></div>
             <div class="itin-hl-i"><span class="itin-hl-ic">🏟️</span><span class="itin-hl-t">تراث مانشستر الثقافي والرياضي</span></div>
           </div>
-          <div class="itin-lock">🔒&nbsp; +5 تجارب وأنشطة مثيرة مخفية في الجدول الكامل</div>
+          <div class="itin-lock"><span class="ms" style="font-size:.95rem">lock</span> +5 تجارب وأنشطة مثيرة مخفية في الجدول الكامل</div>
         </div>
         <div class="itin-foot">
           <div>
@@ -715,7 +732,7 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
 
     <div class="tc" style="margin-top:2.25rem" data-r>
       <p style="font-size:.86rem;color:var(--ink-muted);margin-bottom:1rem">هل وجهتك ليست هنا؟ نبني لك جدول سفر مخصص من الصفر</p>
-      <a href="#contact" class="btn btn-line">اطلب جدول مخصص ✨</a>
+      <a href="#contact" class="btn btn-line"><span class="ms" style="font-size:1rem">auto_awesome</span> اطلب جدول مخصص</a>
     </div>
   </div>
 </section>
@@ -760,7 +777,7 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
       <p class="lede">24+ وجهة داخلية وخارجية مختارة بعناية — كل واحدة بتجربتها الخاصة</p>
     </div>
     <div class="dest-tabs">
-      <button class="dest-tab act" onclick="showDest('international',this)"><span>🌍</span> خارجي</button>
+      <button class="dest-tab act" onclick="showDest('international',this)"><span class="ms">public</span> خارجي</button>
       <button class="dest-tab" onclick="showDest('domestic',this)"><span>🇸🇦</span> داخلي</button>
     </div>
     <div class="dest-bento" id="destBento"></div>
@@ -850,10 +867,10 @@ footer{background:var(--ink);padding:4rem 0 1.5rem;color:#fff}
             <div class="flbl">نوع الطلب</div>
             <div class="ftypes">
               <button class="ftype act" onclick="setFtype(this)">🇸🇦 سياحة داخلية</button>
-              <button class="ftype" onclick="setFtype(this)">🌍 سياحة خارجية</button>
-              <button class="ftype" onclick="setFtype(this)">🎓 دراسة وابتعاث</button>
-              <button class="ftype" onclick="setFtype(this)">💑 شهر عسل</button>
-              <button class="ftype" onclick="setFtype(this)">✨ مخصصة</button>
+              <button class="ftype" onclick="setFtype(this)"><span class="ms" style="font-size:.95rem;vertical-align:-2px">public</span> سياحة خارجية</button>
+              <button class="ftype" onclick="setFtype(this)"><span class="ms" style="font-size:.95rem;vertical-align:-2px">school</span> دراسة وابتعاث</button>
+              <button class="ftype" onclick="setFtype(this)"><span class="ms" style="font-size:.95rem;vertical-align:-2px">favorite</span> شهر عسل</button>
+              <button class="ftype" onclick="setFtype(this)"><span class="ms" style="font-size:.95rem;vertical-align:-2px">auto_awesome</span> مخصصة</button>
             </div>
           </div>
           <div class="frow">
@@ -1020,6 +1037,7 @@ function showDest(which, btn){
     <div class="dest ${i===0?'featured':''}" onclick="quickJump('${which==='domestic'?'local':'intl'}','${d.name}')">
       <div class="dest-bg">${d.icon}</div>
       <div class="dest-content">
+        ${i===0?`<span class="dest-badge"><span class="ms">star</span> الوجهة المميّزة</span>`:''}
         <div class="dest-name">${d.name}</div>
         <div class="dest-meta">
           <span>${d.trips} رحلة</span>
@@ -1071,7 +1089,7 @@ function renderPkg(){
       </div>
       <div class="pkg-body">
         <div class="pkg-t">${p.title}</div>
-        <div class="pkg-meta"><span>📍 ${p.location}</span> · <span>⏱ ${p.duration}</span></div>
+        <div class="pkg-meta"><span><span class="ms" style="font-size:.85rem;color:var(--sky)">location_on</span>${p.location}</span> · <span><span class="ms" style="font-size:.85rem;color:var(--sky)">schedule</span>${p.duration}</span></div>
         <ul class="pkg-feats">${p.features.slice(0,4).map(f=>`<li class="pkg-feat">${f}</li>`).join('')}</ul>
       </div>
       <div class="pkg-foot">
@@ -1099,7 +1117,7 @@ function renderWhy(){
   if(!D||!D.why) return;
   g.innerHTML = D.why.map((w,i)=>`
     <div class="why ${i===0?'why-1':''}" data-r style="--d:${i*60}ms">
-      <div class="why-ic">${w.icon}</div>
+      <div class="why-ic">${w.mi?`<span class="ms" style="font-size:1.35rem">${w.mi}</span>`:w.icon}</div>
       <h3 class="why-t">${w.title}</h3>
       <p class="why-d">${w.desc}</p>
     </div>
@@ -1115,14 +1133,14 @@ function renderTestimonials(){
   if(!D||!D.testimonials) return;
   t.innerHTML = D.testimonials.map(ts=>`
     <div class="tsm">
-      <div class="tsm-stars">${'★'.repeat(ts.rating||5)}</div>
+      <div class="tsm-stars">${'<span class="ms">star</span>'.repeat(ts.rating||5)}</div>
       <p class="tsm-q">${ts.quote}</p>
       <div class="tsm-author">
         <div class="tsm-av">${ts.avatar||ts.name[0]}</div>
         <div class="tsm-info">
           <div class="tsm-n">${ts.name}</div>
           <div class="tsm-r">${ts.role}</div>
-          <span class="tsm-dest">✦ ${ts.destination}</span>
+          <span class="tsm-dest"><span class="ms" style="font-size:.8rem">place</span> ${ts.destination}</span>
         </div>
       </div>
     </div>
