@@ -4680,103 +4680,101 @@ function makeTemplateItinerary() {
     { id: "t36", time: "22:00", text: "🚇 العودة للفندق — خط 3: Apgujeong → City Hall (~20 دقيقة) + تجهيز حقائب بوسان", type: "transport" }
   ]};
 
-  // ── يوم 4 (17 مايو، أحد): سيول → بوسان بالـKTX ──
-  it[3] = { ...it[3], title: "🚄 سيول → بوسان بالـKTX + Songdo + غوانغالي",
-    narrative: "KTX أسرع قطار في كوريا — سيول لبوسان في 2س 15د. بعد الوصول: Songdo Skywalk الممشى الزجاجي فوق البحر + تلفريك Songdo الملوّن. مساءً شاطئ غوانغالي وجسره المضيء. إن أردت إثارة: Busan International Circuit لعربات الكارتينغ على بُعد 20 دقيقة من المدينة.",
+  // ── يوم 4 (17 مايو، أحد): الوصول لبوسان + غروب هوانغنيونغسان + غوانغالي ──
+  it[3] = { ...it[3], title: "🚄 الوصول لبوسان — غروب الجبل ★ + عشاء غوانغالي",
+    narrative: "وصول هاوندي بعد رحلة KTX. بعد راحتين: تاكسي لجبل Hwangnyeongsan (427م) — أفضل مطل غروب في بوسان يطل على الجسر والمدينة والبحر دفعة واحدة. الغروب ~19:45، وبعده تنزل مباشرة لشاطئ Gwangalli الذي يقع عند قدم الجبل تماماً — الجسر يبدأ إضاءته بالألوان فور الغروب.",
     type: "transit",
     flight: { from: "Seoul Station", to: "Busan Station", depTime: "10:00", arrTime: "12:15", mode: "train" }, items: [
-    { id: "t37", time: "08:00", text: "⚔️ نصب الحرب War Memorial of Korea (إيتيوون)", type: "attraction", refId: "a43", lat: 37.5369, lng: 126.9774 },
-    { id: "t38", time: "09:30", text: "🏨 Check-out + إرسال الحقائب لمحطة سيول", type: "hotel" },
-    { id: "t39", time: "10:00", text: "🚄 KTX سيول → بوسان (2س 15د، ₩59,800)", type: "transport", refId: "tx3", lat: 37.5563, lng: 126.9723 },
-    { id: "t40", time: "12:15", text: "🏨 تسجيل في فندق بوسان (هاوندي)", type: "hotel" },
-    { id: "t41", time: "13:30", text: "🥩 غداء Cappadocia Turkish Halal", type: "food", refId: "f12", lat: 35.2196, lng: 129.0888 },
-    { id: "t42", time: "15:00", text: "🌉 Songdo Skywalk + تلفريك Songdo Beach", type: "entertainment", refId: "e19", lat: 35.0735, lng: 129.0231,
+    { id: "t37", time: "08:00", text: "🏨 Check-out سيول + إرسال الحقائب لمحطة سيول", type: "hotel" },
+    { id: "t38", time: "10:00", text: "🚄 KTX سيول → بوسان (2س 15د، ₩59,800)", type: "transport", refId: "tx3", lat: 37.5563, lng: 126.9723 },
+    { id: "t39", time: "12:15", text: "🚖 تاكسي من محطة بوسان → Shilla Stay Haeundae", type: "transport", lat: 35.1587, lng: 129.1604 },
+    { id: "t40", time: "13:00", text: "🥩 غداء Cappadocia Turkish Halal قرب الفندق", type: "food", refId: "f12", lat: 35.2196, lng: 129.0888 },
+    { id: "t41", time: "15:00", text: "🏨 تسجيل الدخول — Shilla Stay Haeundae", type: "hotel", lat: 35.1587, lng: 129.1604 },
+    { id: "t42", time: "15:00", text: "😴 راحة في الغرفة (ساعتان — تعويض رحلة KTX)", type: "hotel" },
+    { id: "t43", time: "17:10", text: "🚖 تاكسي → جبل Hwangnyeongsan (~22 دقيقة، ~15,000₩)", type: "transport", lat: 35.1403, lng: 129.0847 },
+    { id: "t44", time: "17:35", text: "⛰️ ★ جبل Hwangnyeongsan (427م) — منصة الغروب الأشهر في بوسان", type: "attraction", lat: 35.1403, lng: 129.0847,
       nearby: [
-        { icon: "🏄", name: "Songdo Beach Water Sports", dist: "شاطئ Songdo مباشرة", note: "SUP + kayak + ألعاب مائية موسمية", city: "Busan Korea" },
-        { icon: "🪂", name: "Songdo Ocean Park", dist: "5 دقائق", note: "ألعاب مائية + منزلقات على البحر", city: "Busan Korea" },
-        { icon: "🏎️", name: "Busan Indoor Karting", dist: "20 دقيقة بالسيارة", note: "عربات كارتينغ داخلية — تجربة سباق مثيرة للعائلة", city: "Busan Korea" }
+        { icon: "📸", name: "Hwangnyeongsan Observatory", dist: "قمة الجبل", note: "منصة معدنية تطل 360° على المدينة + البحر + جسر غوانغالي", city: "Busan Korea" },
+        { icon: "🌅", name: "Busan Panorama Trail", dist: "حول القمة", note: "ممشى دائري 30 دقيقة بمشاهد متغيرة على كل الاتجاهات", city: "Hwangnyeongsan Busan" }
       ]
     },
-    { id: "t43", time: "17:00", text: "🏖️ شاطئ غوانغالي (Gwangalli) + جسر غوانغان المضاء", type: "attraction", refId: "a21", lat: 35.1531, lng: 129.1187,
+    { id: "t45", time: "19:45", text: "🌅 لحظة الغروب — سيول وبوسان وجسر غوانغالي بألوان الذهب", type: "attraction", lat: 35.1403, lng: 129.0847 },
+    { id: "t46", time: "20:10", text: "🚖 تاكسي → شاطئ غوانغالي (~10 دقائق من الجبل مباشرة)", type: "transport", lat: 35.1531, lng: 129.1187 },
+    { id: "t47", time: "20:20", text: "🌉 غوانغالي ليلاً — الجسر يضيء بالألوان وأنت على الشاطئ", type: "attraction", refId: "a21", lat: 35.1531, lng: 129.1187,
       nearby: [
-        { icon: "🪁", name: "Gwangalli Beach Activities", dist: "على الشاطئ", note: "إيجار دراجات شاطئية + ألعاب رياضية + كافيهات بفيو البحر", city: "Gwangalli Busan" },
-        { icon: "🛥️", name: "Gwangan Bridge Night Cruise", dist: "مرسى صغير على الشاطئ", note: "جولة قارب ليلية تحت جسر غوانغان المضاء", city: "Gwangalli Busan" }
+        { icon: "🛥️", name: "Gwangan Bridge Night Cruise", dist: "مرسى الشاطئ", note: "جولة قارب ليلية تحت الجسر المضاء — ~30 دقيقة", city: "Gwangalli Busan" },
+        { icon: "☕", name: "Gwangalli Beach Cafes", dist: "على الشاطئ", note: "مقاهٍ بفيو مباشر على الجسر — الجلسة الليلية الأجمل في بوسان", city: "Gwangalli Busan" }
       ]
     },
-    { id: "t44", time: "19:30", text: "🥩 عشاء Namaste Haeundae (حلال)", type: "food", refId: "f13", lat: 35.1614, lng: 129.1652 }
+    { id: "t48", time: "21:00", text: "🥩 عشاء Namaste Haeundae (حلال) أو مطاعم غوانغالي", type: "food", refId: "f13", lat: 35.1531, lng: 129.1187 },
+    { id: "t49", time: "22:30", text: "🏨 العودة للفندق + نوم مبكر (غداً 9:30 كبسولات)", type: "hotel" }
   ]};
 
-  // ── يوم 5 (18 مايو، إثنين): معبد البحر + Sky Capsule + تجارب مميزة ──
-  it[4] = { ...it[4], title: "⛩️ معبد Haedong + Sky Capsule + زلاجات Skyline Luge",
-    narrative: "يوم التجارب الأكثر تنوعاً! ابدأ بأيقونة بوسان: معبد Haedong Yonggungsa على الصخور فوق البحر. ثم Sky Capsule الزجاجية فوق الشاطئ. بعد الظهر: Skyline Luge Busan — زلاجات مسارات متعددة تنحدر من الجبل بمنظر بحري مذهل، تجربة ممتعة لجميع الأعمار. مساءً قرية غامتشون الملونة وسوق جاغالتشي.",
+  // ── يوم 5 (18 مايو، إثنين): 9:30 كبسولات + معبد البحر + لوج + Busan X ──
+  it[4] = { ...it[4], title: "🚞 Sky Capsule ★ + معبد Haedong + لوج + برج السماء",
+    narrative: "يوم مكثف بتذكرة محجوزة! اخرج 9:10 مشياً لمحطة Mipo (15 دقيقة) — الكبسولة تنطلق 9:30 بالضبط. بعدها تاكسي مباشر لمعبد Haedong Yonggungsa على الصخور فوق البحر — الأقرب للكبسولة بسبب موقع محطة Songjeong الطرفية. بعد الظهر: Skyline Luge. مساءً: Busan X the Sky ليلاً — المشهد من أعلى مبنى في كوريا.",
     type: "normal", items: [
-    { id: "t45", time: "08:00", text: "⛩️ معبد Haedong Yonggungsa على البحر ✨", type: "attraction", refId: "a17", lat: 35.1884, lng: 129.2236,
+    { id: "t50", time: "08:30", text: "🥐 إفطار خفيف في الفندق أو كافيه هاوندي", type: "food" },
+    { id: "t51", time: "09:10", text: "🚶 مشي → محطة Mipo Blueline Park (15 دقيقة من الفندق)", type: "transport", lat: 35.1574, lng: 129.1684 },
+    { id: "t52", time: "09:30", text: "🚞 ★ Haeundae Sky Capsule — تذكرتك المحجوزة ⚠️", type: "entertainment", refId: "a19", lat: 35.1574, lng: 129.1684,
       nearby: [
-        { icon: "🌊", name: "Gijang Coastal Walk", dist: "قريب من المعبد", note: "ممشى ساحلي خلاب في منطقة Gijang الهادئة", city: "Gijang Busan" },
-        { icon: "🐠", name: "Gijang Seafood Market", dist: "10 دقائق", note: "سوق مأكولات بحرية طازجة مباشرة من الصيادين", city: "Gijang Busan" }
+        { icon: "🏖️", name: "Songjeong Beach", dist: "نهاية خط الكبسولة", note: "شاطئ هادئ أقل ازدحاماً من هاوندي — سباحة أو استراحة", city: "Songjeong Busan" },
+        { icon: "🐠", name: "Gijang Seafood Market", dist: "10 دقائق من Songjeong", note: "سوق مأكولات بحرية طازجة مباشرة من الصيادين", city: "Gijang Busan" }
       ]
     },
-    { id: "t46", time: "10:30", text: "🚞 Haeundae Sky Capsule + Blueline Park", type: "entertainment", refId: "a19", lat: 35.1574, lng: 129.1684,
+    { id: "t53", time: "11:00", text: "🚖 تاكسي من Songjeong → معبد Haedong Yonggungsa (~15 دقيقة، ~10,000₩)", type: "transport", lat: 35.1884, lng: 129.2236 },
+    { id: "t54", time: "11:20", text: "⛩️ ★ معبد Haedong Yonggungsa — على الصخور فوق البحر مباشرة", type: "attraction", refId: "a17", lat: 35.1884, lng: 129.2236,
       nearby: [
-        { icon: "🏖️", name: "Haeundae Beach", dist: "5 دقائق مشياً", note: "أشهر شواطئ كوريا — مثالي للسباحة والاسترخاء الصباحي", city: "Haeundae Busan" },
-        { icon: "🎰", name: "Paradise Hotel Casino (للغير مسلمين)", dist: "على الشاطئ", note: "للمعلومية فقط — متاح للأجانب", city: "Haeundae Busan" }
+        { icon: "🌊", name: "Gijang Coastal Walk", dist: "محيط المعبد", note: "ممشى صخري ساحلي — مشهد بحري خلاب", city: "Gijang Busan" }
       ]
     },
-    { id: "t47", time: "12:30", text: "🥩 غداء حلال في هاوندي", type: "food", refId: "f14", lat: 35.1620, lng: 129.1640 },
-    { id: "t48", time: "14:00", text: "🛷 ★ Skyline Luge Busan — زلاجات مسارات بمنظر بحري مذهل", type: "entertainment", lat: 35.1720, lng: 129.1280,
+    { id: "t55", time: "13:00", text: "🥩 غداء حلال في هاوندي", type: "food", refId: "f14", lat: 35.1620, lng: 129.1640 },
+    { id: "t56", time: "14:30", text: "🛷 ★ Skyline Luge Busan — زلاجات الجبل بمنظر بحري مذهل", type: "entertainment", lat: 35.1720, lng: 129.1280,
       nearby: [
-        { icon: "🏎️", name: "Go-Kart Racing (Haeundae area)", dist: "15 دقيقة", note: "عربات كارتينغ — تجربة سباق للعائلة والشباب", city: "Haeundae Busan" },
-        { icon: "🎢", name: "Lotte World Adventure Busan", dist: "20 دقيقة بالمترو", note: "مدينة ملاهي كبرى — خيار بديل للعائلات", city: "Busan Korea" }
+        { icon: "🏎️", name: "Haeundae Go-Kart", dist: "15 دقيقة", note: "كارتينغ — خيار إضافي إن بقي وقت", city: "Haeundae Busan" },
+        { icon: "🎢", name: "Lotte World Adventure Busan", dist: "20 دقيقة", note: "مدينة ملاهي — للعائلات والأطفال", city: "Busan Korea" }
       ]
     },
-    { id: "t49", time: "16:00", text: "🎨 قرية غامتشون الملونة", type: "attraction", refId: "a20", lat: 35.0972, lng: 129.0107,
+    { id: "t57", time: "16:30", text: "🛍️ Shinsegae Centum City — أكبر مجمع تجاري في العالم (غينيس)", type: "shop", lat: 35.1594, lng: 129.1328,
       nearby: [
-        { icon: "🎭", name: "Gamcheon Culture Village Art Shops", dist: "داخل القرية", note: "محلات فنون يدوية ومقاهٍ في المنازل المرممة", city: "Gamcheon Busan" },
-        { icon: "🚡", name: "Busan Tower + Yongdusan Park", dist: "10 دقائق", note: "برج بوسان بفيو 360 درجة + حديقة تاريخية", city: "Busan Korea" }
+        { icon: "🏊", name: "Spa Land Centum City", dist: "داخل Shinsegae", note: "أكبر سبا داخلي في كوريا — استرخاء فاخر بعد يوم مكثف", city: "Centum Busan" }
       ]
     },
-    { id: "t50", time: "18:00", text: "🐟 سوق Jagalchi (أكبر سوق أسماك) + BIFF Square", type: "shop", refId: "s5", lat: 35.0966, lng: 129.0306,
-      nearby: [
-        { icon: "🎬", name: "BIFF Square Film Walk", dist: "ملاصق للسوق", note: "أرضية بصمات النجوم + سينما هواء طلق موسمية", city: "Nampo Busan" },
-        { icon: "🛍️", name: "Gukje Market (International Market)", dist: "5 دقائق مشياً", note: "أكبر سوق شعبي في بوسان — كل شيء بأسعار مناسبة", city: "Nampo Busan" }
-      ]
-    },
-    { id: "t51", time: "20:00", text: "🌃 Busan X the Sky — أعلى منصة مراقبة في كوريا الجنوبية", type: "entertainment", refId: "e12", lat: 35.1591, lng: 129.1606 },
-    { id: "t52", time: "21:30", text: "🥩 عشاء في هاوندي + نزهة ليلية على الشاطئ", type: "food" }
+    { id: "t58", time: "19:30", text: "🌃 ★ Busan X the Sky — أعلى منصة مراقبة في كوريا (ليلاً)", type: "entertainment", refId: "e12", lat: 35.1591, lng: 129.1606 },
+    { id: "t59", time: "21:30", text: "🥩 عشاء ختامي في هاوندي + نزهة شاطئية", type: "food" }
   ]};
 
-  // ── يوم 6 (19 مايو، ثلاثاء): بوسان - Beomeosa + كارتينغ + فوانيس Samgwangsa ──
-  it[5] = { ...it[5], title: "⛩️ Beomeosa الجبلي + 🏎️ كارتينغ + 🏮 فوانيس Samgwangsa",
-    narrative: "يوم ثلاثي التجارب: صباح روحاني في معبد Beomeosa الجبلي (القرن 7م). بعد الظهر: تجربة كارتينغ سريعة وسوق Gukje الشعبي. مساءً ختام بوسان الأسطوري — مهرجان فوانيس Samgwangsa السنوي (40,000 فانوس). تجهيز الحقائب لجيجو غداً.",
+  // ── يوم 6 (19 مايو، ثلاثاء): Beomeosa + كارتينغ + غامتشون الذهبي + Samgwangsa ──
+  it[5] = { ...it[5], title: "⛩️ Beomeosa + 🏎️ كارتينغ + 🎨 غامتشون + 🏮 Samgwangsa",
+    narrative: "يوم ثلاثي الشخصية — روحاني ثم مثير ثم أسطوري. Beomeosa معبد القرن السابع على الجبل. بعد الظهر كارتينغ وأسواق بوسان الشعبية. قرية غامتشون في الساعة الذهبية قبيل المغادرة — ثم ختام بوسان: مهرجان الفوانيس Samgwangsa (40,000 فانوس). جهّز الحقائب الليلة لجيجو غداً.",
     type: "normal", items: [
-    { id: "t53", time: "08:30", text: "⛩️ معبد Beomeosa الجبلي (القرن السابع الميلادي)", type: "attraction", lat: 35.2940, lng: 129.0564,
+    { id: "t60", time: "08:00", text: "🚇 مترو → محطة Beomeosa (Haeundae → خط 2 → Seomyeon → خط 1، ~40 دقيقة)", type: "transport", lat: 35.2940, lng: 129.0564 },
+    { id: "t61", time: "09:00", text: "⛩️ معبد Beomeosa الجبلي (القرن 7م) + تلفريك Geumgang Park", type: "attraction", lat: 35.2940, lng: 129.0564,
       nearby: [
-        { icon: "🚡", name: "Geumgang Park Cable Car", dist: "عند قاعدة الجبل", note: "تلفريك يصعد للغابة — منظر رائع على بوسان", city: "Busan Korea" },
-        { icon: "🌲", name: "Geumjeong Fortress Trail", dist: "مجاور للمعبد", note: "قلعة تاريخية بجدران حجرية على قمة الجبل", city: "Busan Korea" }
+        { icon: "🚡", name: "Geumgang Park Cable Car", dist: "قاعدة الجبل", note: "تلفريك للغابة — منظر رائع على بوسان", city: "Busan Korea" },
+        { icon: "🏯", name: "Geumjeong Fortress Walls", dist: "مجاور", note: "قلعة حجرية تاريخية على القمة", city: "Busan Korea" }
       ]
     },
-    { id: "t54", time: "11:00", text: "🕌 مسجد Al-Fatah بوسان + صلاة الضحى", type: "mosque", refId: "mq2", lat: 35.2196, lng: 129.0888 },
-    { id: "t55", time: "12:30", text: "🥩 غداء Bombay Brau (حلال)", type: "food", refId: "f14", lat: 35.1620, lng: 129.1640 },
-    { id: "t56", time: "14:00", text: "🏎️ ★ كارتينغ Busan Racing Park — تجربة سباق مثيرة", type: "entertainment", lat: 35.1500, lng: 129.0600,
+    { id: "t62", time: "11:00", text: "🕌 مسجد Al-Fatah بوسان + صلاة الضحى", type: "mosque", refId: "mq2", lat: 35.2196, lng: 129.0888 },
+    { id: "t63", time: "12:30", text: "🥩 غداء Bombay Brau (حلال)", type: "food", refId: "f14", lat: 35.1620, lng: 129.1640 },
+    { id: "t64", time: "14:00", text: "🏎️ ★ كارتينغ Busan Racing — تجربة السباق", type: "entertainment", lat: 35.1500, lng: 129.0600,
       nearby: [
-        { icon: "⛷️", name: "Skyline Luge (if not done Day 5)", dist: "15 دقيقة", note: "زلاجات Skyline Luge بمنظر بحري — خيار بديل ممتاز", city: "Busan Korea" },
-        { icon: "🎮", name: "Bexco Entertainment Zone", dist: "15 دقيقة", note: "مركز ترفيه وألعاب إلكترونية + VR بالقرب من Bexco", city: "Bexco Busan" }
+        { icon: "🎮", name: "Bexco VR Zone", dist: "15 دقيقة", note: "ألعاب VR متطورة — بديل ممتاز إن لم يتوفر الكارتينغ", city: "Bexco Busan" }
       ]
     },
-    { id: "t57", time: "15:30", text: "🛍️ سوق Gukje + Bupyeong Tunnel Market", type: "shop", lat: 35.1009, lng: 129.0275,
+    { id: "t65", time: "15:30", text: "🛍️ سوق Gukje الشعبي + Bupyeong Tunnel Market", type: "shop", lat: 35.1009, lng: 129.0275,
       nearby: [
-        { icon: "🍜", name: "Bupyeong Kkangtong Market", dist: "ملاصق", note: "سوق ليلي شعبي — أكل كوري شعبي بأسعار رمزية", city: "Nampo Busan" }
+        { icon: "🎬", name: "BIFF Square", dist: "ملاصق", note: "بصمات نجوم مهرجان بوسان السينمائي", city: "Nampo Busan" },
+        { icon: "🍜", name: "Bupyeong Night Market", dist: "ملاصق", note: "أكل شعبي كوري رخيص وأصيل", city: "Nampo Busan" }
       ]
     },
-    { id: "t58", time: "17:00", text: "🗼 برج بوسان + حديقة Yongdusan", type: "attraction", lat: 35.0998, lng: 129.0316 },
-    { id: "t59", time: "18:30", text: "🏖️ شاطئ هاوندي — آخر جلسة بحر في بوسان", type: "attraction", lat: 35.1587, lng: 129.1604,
+    { id: "t66", time: "17:30", text: "🎨 قرية غامتشون الملونة — الساعة الذهبية للتصوير", type: "attraction", refId: "a20", lat: 35.0972, lng: 129.0107,
       nearby: [
-        { icon: "🎪", name: "Haeundae Traditional Market", dist: "خلف الشاطئ", note: "سوق شعبي هادئ + مطاعم محلية أصيلة", city: "Haeundae Busan" },
-        { icon: "🎡", name: "Aqua Palace Water Park", dist: "في الحي", note: "ملاهي مائية — خيار جيد للعائلات في فصل الصيف", city: "Haeundae Busan" }
+        { icon: "🚡", name: "Busan Tower + Yongdusan Park", dist: "10 دقائق", note: "برج بوسان + فيو 360° + حديقة تاريخية", city: "Busan Korea" }
       ]
     },
-    { id: "t60", time: "19:30", text: "🏮 ✨ مهرجان فوانيس Samgwangsa — 40,000 فانوس", type: "festival", refId: "fs3", lat: 35.1480, lng: 129.0411 },
-    { id: "t61", time: "21:30", text: "🏨 الفندق + تجهيز حقائب جيجو", type: "hotel" }
+    { id: "t67", time: "20:00", text: "🏮 ★ مهرجان فوانيس Samgwangsa — 40,000 فانوس — ختام بوسان", type: "festival", refId: "fs3", lat: 35.1480, lng: 129.0411 },
+    { id: "t68", time: "22:00", text: "🏨 الفندق + تجهيز الحقائب لجيجو غداً", type: "hotel" }
   ]};
 
   // ── يوم 7 (20 مايو، أربعاء): بوسان → جيجو بالطائرة + جنوب الجزيرة ──
@@ -4823,18 +4821,28 @@ function makeTemplateItinerary() {
   ]};
 
   // ── يوم 10 (23 مايو، سبت): جيجو → سيول + ختام ──
-  it[9] = { ...it[9], title: "✈️ جيجو → سيول Gimpo + Lotte Tower",
-    narrative: "رحلة Jeju→Gimpo (1س 15د). تسليم السيارة في مطار جيجو. بعد الوصول لسيول: Lotte World Tower + DDP + تسوق نهائي ميونغدونغ. آخر ليلة: نهر Cheonggyecheon المضاء ليلاً + عشاء الوداع.",
+  it[9] = { ...it[9], title: "✈️ جيجو → سيول + 🏎️ ماريو كارت هونغدي + ليلة الوداع",
+    narrative: "رحلة Jeju→Gimpo (1س 15د). بعد الوصول لسيول: الوجهة الأولى Hongdae — حي الجامعات الأكثر حيوية في سيول. هنا تجربة PlayKart Mario Kart الشهيرة: ترتدي زي ماريو وتقود كارتاً كهربائياً في الشوارع الحقيقية مع موسيقى اللعبة — احجز مسبقاً! ثم Lotte World Tower ليلاً وعشاء الوداع على نهر Cheonggyecheon.",
     type: "transit",
     flight: { from: "Jeju (CJU)", to: "Seoul Gimpo (GMP)", depTime: "10:00", arrTime: "11:15" }, items: [
-    { id: "t70", time: "08:30", text: "🚗 تسليم السيارة في مطار جيجو", type: "transport" },
+    { id: "t70", time: "08:30", text: "🚗 تسليم السيارة في مطار جيجو + الوجبة الأخيرة في جيجو", type: "transport" },
     { id: "t71", time: "10:00", text: "✈️ طيران Jeju (CJU) → Seoul Gimpo (GMP)", type: "transport", refId: "tx1", lat: 33.5113, lng: 126.4930 },
-    { id: "t72", time: "12:00", text: "🚇 المترو من Gimpo لمركز سيول", type: "transport" },
-    { id: "t73", time: "13:00", text: "🥩 غداء Petra (نكهة عربية في إيتيوون)", type: "food", refId: "f8", lat: 37.5344, lng: 126.9952 },
-    { id: "t74", time: "14:30", text: "🗼 برج Lotte World + Seoul Sky (أعلى مبنى)", type: "attraction", refId: "a32", lat: 37.5126, lng: 127.1025 },
-    { id: "t75", time: "16:30", text: "🛸 DDP - Dongdaemun Design Plaza المستقبلي", type: "attraction", refId: "a35", lat: 37.5673, lng: 127.0094 },
-    { id: "t76", time: "17:30", text: "🛍️ تسوق ختامي ميونغ‌دونغ + الهدايا الأخيرة", type: "shop", refId: "s1", lat: 37.5636, lng: 126.9826 },
-    { id: "t77", time: "20:00", text: "🌊 نهر Cheonggyecheon ليلاً + عشاء الوداع", type: "attraction", refId: "a33", lat: 37.5687, lng: 126.9783 }
+    { id: "t72", time: "11:30", text: "🚇 مترو من Gimpo → Hongdae (خط 9 أو AREX، ~25 دقيقة)", type: "transport", lat: 37.5580, lng: 126.9246 },
+    { id: "t73", time: "12:00", text: "🥩 غداء في Hongdae — حي الجامعات + مطاعم حلال متعددة", type: "food", lat: 37.5580, lng: 126.9246,
+      nearby: [
+        { icon: "🎨", name: "Hongdae Street Art & Busking", dist: "الشوارع المحيطة", note: "جداريات + عروض موسيقية حية — أجمل في عصر الجمعة/السبت", city: "Hongdae Seoul" },
+        { icon: "🎮", name: "Hongdae Arcade Zone", dist: "داخل الحي", note: "صالات ألعاب + VR + bowling — ترفيه شبابي متكامل", city: "Hongdae Seoul" }
+      ]
+    },
+    { id: "t74", time: "14:00", text: "🏎️ ★ PlayKart Mario Kart Hongdae — ترتدي زي ماريو وتقود في الشوارع الحقيقية", type: "entertainment", lat: 37.5580, lng: 126.9246,
+      nearby: [
+        { icon: "⚠️", name: "احجز مسبقاً!", dist: "playkart.co.kr", note: "التجربة تُحجز مسبقاً — الطلب عادةً أكثر من المتاح في الإجازات", city: "Hongdae Seoul" }
+      ]
+    },
+    { id: "t75", time: "16:30", text: "🛍️ تسوق Hongdae + Sinchon الختامي — هدايا + ملابس", type: "shop", lat: 37.5580, lng: 126.9246 },
+    { id: "t76", time: "18:30", text: "🚇 مترو → Jamsil / Lotte World Tower", type: "transport", lat: 37.5126, lng: 127.1025 },
+    { id: "t77", time: "19:00", text: "🗼 برج Lotte World ليلاً — Seoul Sky في الطابق 123", type: "attraction", refId: "a32", lat: 37.5126, lng: 127.1025 },
+    { id: "t78", time: "21:00", text: "🌊 نهر Cheonggyecheon ليلاً + عشاء الوداع الأخير", type: "attraction", refId: "a33", lat: 37.5687, lng: 126.9783 }
   ]};
 
   // ── يوم 11 (24 مايو، أحد): المغادرة 17:50 ──
