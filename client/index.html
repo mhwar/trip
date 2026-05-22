@@ -21,7 +21,7 @@
       --sand-deep:    #ECE3D2;
       --line:         rgba(10,37,64,.08);
       --glass:        rgba(255,255,255,.65);
-      --glass-strong: rgba(255,255,255,.88);
+      --glass-strong: rgba(255,255,255,.92);
       --sh-xs:  0 1px 2px rgba(10,37,64,.04);
       --sh-sm:  0 4px 12px rgba(10,37,64,.06);
       --sh-md:  0 20px 50px rgba(10,37,64,.07);
@@ -29,18 +29,23 @@
       --sh-glow:0 12px 40px rgba(46,124,246,.28);
       --r-sm: 12px; --r-md: 20px; --r-lg: 28px; --r-xl: 40px;
       --ease: cubic-bezier(.2,.7,.2,1);
+      --nav-h: 64px;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
-      font-family: 'Readex Pro', 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Readex Pro', sans-serif;
       background: var(--pearl);
       color: var(--ink);
+      font-size: 15px;
       line-height: 1.7;
-      min-height: 100vh;
+      min-height: 100dvh;
       direction: rtl;
     }
-    h1,h2,h3,h4,h5 { letter-spacing:-0.025em; font-weight:700; }
+    h1,h2,h3,h4 { letter-spacing:-0.025em; font-weight:800; }
+    .ms { font-family:'Material Symbols Rounded'; font-weight:400; font-style:normal;
+          font-size:20px; line-height:1; letter-spacing:normal; text-transform:none;
+          display:inline-block; white-space:nowrap; direction:ltr; -webkit-font-smoothing:antialiased; }
 
     /* ── HEADER ── */
     .site-header {
@@ -49,37 +54,69 @@
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
       border-bottom: 1px solid var(--line);
-      padding: 0.8rem 1.25rem;
+      padding: 0.75rem 1.25rem;
       display: flex; align-items: center; gap: 0.75rem;
-      transition: padding .3s var(--ease);
     }
-    .site-header.compact { padding: 0.45rem 1.25rem; }
     .logo {
       display: flex; align-items: center; gap: 0.45rem;
       font-weight: 800; font-size: 1rem; color: var(--ink);
       text-decoration: none; flex-shrink: 0;
     }
     .logo-mark {
-      width: 30px; height: 30px; background: var(--ink);
-      border-radius: 8px; display: flex; align-items: center;
-      justify-content: center; color: #fff; font-size: 0.85rem; font-weight: 800;
+      width: 32px; height: 32px; background: var(--ink);
+      border-radius: 9px; display: flex; align-items: center;
+      justify-content: center; color: #fff; font-size: 0.88rem; font-weight: 800;
     }
     .hdr-trip-name {
-      flex: 1; font-size: 0.85rem; font-weight: 600;
+      flex: 1; font-size: 0.88rem; font-weight: 600;
       color: var(--ink-soft); text-align: center;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
-    .hdr-share {
+    .hdr-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+    .hdr-btn {
       display: flex; align-items: center; gap: 0.3rem;
       background: var(--sky-soft); color: var(--sky-deep);
       border: none; border-radius: 999px; padding: 0.4rem 0.8rem;
       font-size: 0.78rem; font-weight: 600; cursor: pointer;
-      transition: all .2s var(--ease); font-family: inherit; flex-shrink: 0;
+      transition: all .2s var(--ease); font-family: inherit;
     }
-    .hdr-share:hover { background: var(--sky); color: #fff; box-shadow: var(--sh-glow); }
-    .hdr-share .ms { font-size: 15px; }
+    .hdr-btn:hover { background: var(--sky); color: #fff; box-shadow: var(--sh-glow); }
+    .hdr-btn .ms { font-size: 16px; }
 
-    /* ── LOADING / ERROR ── */
+    /* ── BOTTOM NAV (mobile ≤768) ── */
+    .bottom-nav {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
+      background: var(--glass-strong);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-top: 1px solid var(--line);
+      height: var(--nav-h);
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+    }
+    .bnav-item {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      background: none; border: none; cursor: pointer; padding: 0.5rem 0.25rem;
+      font-family: inherit; transition: all .2s var(--ease); position: relative;
+    }
+    .bnav-item .ms { font-size: 22px; color: var(--ink-muted); transition: color .2s; }
+    .bnav-item span:last-child { font-size: 0.6rem; font-weight: 600; color: var(--ink-muted); transition: color .2s; }
+    .bnav-item.active .ms,
+    .bnav-item.active span:last-child { color: var(--sky); }
+    .bnav-item::after {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 28px; height: 2.5px; background: var(--sky); border-radius: 999px;
+      opacity: 0; transition: opacity .2s;
+    }
+    .bnav-item.active::after { opacity: 1; }
+
+    @media (max-width: 768px) {
+      .bottom-nav { display: grid; }
+      body { padding-bottom: var(--nav-h); }
+    }
+
+    /* ── SCREEN STATES ── */
     .screen-center {
       min-height: 65vh; display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 1rem;
@@ -92,141 +129,170 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── MAIN LAYOUT ── */
-    .page-wrap { max-width: 1100px; margin: 0 auto; padding: 0 1rem 5rem; }
+    /* ── LAYOUT ── */
+    .page-wrap { max-width: 1140px; margin: 0 auto; padding: 0 1rem 2rem; }
 
+    /* ── TABS ── */
+    .tab-section {
+      display: none;
+      animation: fadeIn .25s var(--ease);
+    }
+    .tab-section.active { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+    /* Desktop sidebar layout */
     @media (min-width: 1024px) {
-      .client-layout { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; align-items: start; }
-      .budget-sidebar { position: sticky; top: 80px; }
+      .desktop-layout { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; align-items: start; }
+      .budget-sticky { position: sticky; top: 72px; }
     }
 
-    /* ── HERO ── */
-    .trip-hero {
-      background: linear-gradient(135deg, #0A2540 0%, #143456 55%, #1957C2 100%);
+    /* ── COUNTDOWN BANNER ── */
+    .countdown-banner {
+      background: linear-gradient(135deg, #0A2540 0%, #143456 50%, #1957C2 100%);
       border-radius: var(--r-xl); padding: 2rem 1.75rem 1.5rem;
-      margin: 1.25rem 0; color: #fff; position: relative; overflow: hidden;
+      margin: 1.25rem 0 0; color: #fff; position: relative; overflow: hidden;
     }
-    .trip-hero::before {
+    .countdown-banner::before {
       content:''; position:absolute; top:-80px; inset-inline-start:-80px;
       width:260px; height:260px;
       background: radial-gradient(circle, rgba(46,124,246,.25) 0%, transparent 70%);
       pointer-events:none;
     }
-    .hero-flag { font-size: 2.8rem; line-height: 1; margin-bottom: 0.5rem; }
-    .hero-title { font-size: clamp(1.5rem, 4.5vw, 2.2rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
-    .hero-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.25rem; }
-    .hero-chip {
+    .cb-flag { font-size: 2.8rem; line-height: 1; margin-bottom: 0.5rem; }
+    .cb-title { font-size: clamp(1.5rem, 4.5vw, 2.2rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.6rem; }
+    .cb-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.25rem; }
+    .cb-chip {
       background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
-      border-radius: 999px; padding: 0.22rem 0.65rem; font-size: 0.75rem; font-weight: 500;
-      display: flex; align-items: center; gap: 0.25rem;
+      border-radius: 999px; padding: 0.25rem 0.7rem; font-size: 0.76rem; font-weight: 500;
+      display: flex; align-items: center; gap: 0.3rem;
     }
-    .hero-chip .ms { font-size: 13px; }
-    .chip-status { font-weight: 700; }
-    .chip-active { background: rgba(34,197,94,.2); border-color: rgba(34,197,94,.4); }
-    .chip-done   { background: rgba(255,255,255,.08); }
-    .flights-strip { border-top: 1px solid rgba(255,255,255,.1); padding-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+    .cb-chip .ms { font-size: 13px; }
+    .cb-chip-status { font-weight: 700; }
+    .cb-chip-active { background: rgba(34,197,94,.25); border-color: rgba(34,197,94,.5); }
+    .cb-chip-done   { background: rgba(255,255,255,.08); }
+    .cb-countdown {
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);
+      border-radius: var(--r-md); padding: 1rem 1.25rem; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .cb-countdown .ms { font-size: 24px; opacity: .85; }
+    .cb-cd-text { font-size: 0.95rem; font-weight: 600; line-height: 1.4; }
+    .cb-cd-sub  { font-size: 0.72rem; opacity: .65; margin-top: 0.1rem; }
+    .cb-progress { height: 4px; background: rgba(255,255,255,.15); border-radius: 999px; overflow: hidden; }
+    .cb-progress-fill { height: 100%; background: rgba(255,255,255,.75); border-radius: 999px; transition: width 1s var(--ease); }
+    .flights-strip { border-top: 1px solid rgba(255,255,255,.12); padding-top: 1rem; margin-top: 0.25rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
     @media (max-width: 520px) { .flights-strip { grid-template-columns: 1fr; } }
-    .fl-row { background: rgba(255,255,255,.08); border-radius: var(--r-sm); padding: 0.55rem 0.7rem; }
-    .fl-label { font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; opacity: .6; margin-bottom: 0.15rem; display: flex; align-items: center; gap: 0.2rem; }
-    .fl-detail { font-size: 0.78rem; font-weight: 500; opacity: .9; }
+    .fl-row { background: rgba(255,255,255,.08); border-radius: var(--r-sm); padding: 0.6rem 0.75rem; }
+    .fl-label { font-size: 0.63rem; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; opacity: .6; margin-bottom: 0.15rem; display: flex; align-items: center; gap: 0.2rem; }
+    .fl-detail { font-size: 0.8rem; font-weight: 500; opacity: .9; }
 
-    /* ── DAY TABS ── */
-    .day-tabs-wrap {
-      position: sticky; top: 61px; z-index: 90;
-      background: var(--glass-strong);
-      backdrop-filter: blur(16px) saturate(160%);
-      -webkit-backdrop-filter: blur(16px) saturate(160%);
-      border-bottom: 1px solid var(--line);
-      margin: 0 -1rem; padding: 0 1rem;
+    /* ── QUICK ACTION BAR ── */
+    .qa-bar {
+      display: flex; gap: 0.5rem; padding: 0.75rem 0; overflow-x: auto; scrollbar-width: none;
     }
-    .day-tabs { display: flex; gap: 0.3rem; overflow-x: auto; padding: 0.55rem 0; scrollbar-width: none; }
-    .day-tabs::-webkit-scrollbar { display: none; }
-    .day-tab {
-      flex: 0 0 auto; background: none; border: 1.5px solid var(--line);
-      border-radius: 999px; padding: 0.3rem 0.8rem; font-size: 0.72rem;
-      font-weight: 600; color: var(--ink-muted); cursor: pointer;
-      white-space: nowrap; transition: all .2s var(--ease); font-family: inherit;
+    .qa-bar::-webkit-scrollbar { display: none; }
+    .qa-btn {
+      flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+      background: #fff; border: 1.5px solid var(--line); border-radius: var(--r-md);
+      padding: 0.65rem 1rem; cursor: pointer; font-family: inherit;
+      transition: all .2s var(--ease); min-width: 72px;
     }
-    .day-tab:hover { border-color: var(--sky); color: var(--sky); }
-    .day-tab.active { background: var(--sky); border-color: var(--sky); color: #fff; box-shadow: 0 4px 12px rgba(46,124,246,.3); }
+    .qa-btn:hover { border-color: var(--sky); box-shadow: var(--sh-sm); transform: translateY(-1px); }
+    .qa-btn .ms { font-size: 22px; color: var(--sky); }
+    .qa-btn span:last-child { font-size: 0.65rem; font-weight: 600; color: var(--ink-soft); }
 
-    /* ── DAY CARD ── */
-    .day-section { margin: 1.25rem 0; scroll-margin-top: 115px; }
-    .day-card { background: #fff; border-radius: var(--r-lg); box-shadow: var(--sh-sm); overflow: hidden; }
+    /* ── DAY CARDS (collapsible) ── */
+    .day-card {
+      background: #fff; border-radius: var(--r-lg); box-shadow: var(--sh-sm);
+      overflow: hidden; margin-bottom: 0.75rem;
+      border: 1.5px solid transparent; transition: border-color .2s;
+    }
+    .day-card.active-day { border-color: var(--sky); }
     .day-hdr {
       background: linear-gradient(135deg, #0A2540 0%, #2C3E5C 100%);
-      padding: 1.1rem 1.25rem 0.9rem; color: #fff;
-      display: flex; align-items: flex-start; gap: 0.85rem;
+      padding: 1rem 1.25rem; color: #fff;
+      display: flex; align-items: center; gap: 0.85rem;
+      cursor: pointer; user-select: none; -webkit-user-select: none;
     }
     .day-badge {
-      width: 44px; height: 44px; background: var(--sky); border-radius: 50%;
+      width: 46px; height: 46px; background: var(--sky); border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; font-weight: 800; flex-shrink: 0;
+      font-size: 1.05rem; font-weight: 800; flex-shrink: 0;
       box-shadow: 0 4px 14px rgba(46,124,246,.4);
     }
     .day-info { flex: 1; min-width: 0; }
     .day-wkday { font-size: 0.68rem; font-weight: 600; opacity: .6; text-transform: uppercase; letter-spacing: .05em; }
-    .day-name { font-size: 1.05rem; font-weight: 700; margin: 0.1rem 0; line-height: 1.3; }
+    .day-name { font-size: 1.15rem; font-weight: 700; margin: 0.1rem 0; line-height: 1.3; }
     .day-city-row { font-size: 0.75rem; opacity: .72; display: flex; align-items: center; gap: 0.25rem; }
-    .day-city-row .ms { font-size: 13px; }
+    .day-meta { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+    .day-count { font-size: 0.68rem; font-weight: 600; opacity: .6; }
+    .day-toggle { width: 26px; height: 26px; background: rgba(255,255,255,.12); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; transition: transform .3s var(--ease); }
+    .day-toggle .ms { font-size: 16px; }
+    .day-card.open .day-toggle { transform: rotate(180deg); }
+
+    .day-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height .4s var(--ease);
+    }
+    .day-card.open .day-body { max-height: 9999px; }
+
     .hotel-banner {
-      background: rgba(255,255,255,.09); border-radius: var(--r-sm);
-      margin: 0.6rem 1.25rem 0.9rem;
-      padding: 0.45rem 0.7rem; font-size: 0.73rem; font-weight: 500;
-      color: #fff; display: flex; align-items: center; gap: 0.4rem;
-      width: fit-content;
+      background: var(--sky-soft); margin: 0.85rem 1.25rem 0;
+      border-radius: var(--r-sm); padding: 0.5rem 0.75rem; font-size: 0.76rem; font-weight: 600;
+      color: var(--sky-deep); display: flex; align-items: center; gap: 0.4rem; width: fit-content;
     }
-    .hotel-banner .ms { font-size: 14px; opacity: .75; }
+    .hotel-banner .ms { font-size: 15px; }
     .day-narrative {
-      background: var(--sky-soft); margin: 0 1.25rem 0.75rem;
+      background: var(--sand); margin: 0.65rem 1.25rem 0;
       border-radius: var(--r-sm); padding: 0.55rem 0.75rem;
-      font-size: 0.76rem; color: var(--sky-deep); line-height: 1.6;
-      display: flex; gap: 0.35rem;
+      font-size: 0.8rem; color: var(--ink-soft); line-height: 1.6;
+      display: flex; gap: 0.4rem;
     }
-    .day-narrative .ms { font-size: 14px; flex-shrink: 0; margin-top: 2px; }
+    .day-narrative .ms { font-size: 15px; flex-shrink: 0; margin-top: 2px; color: var(--sky); }
 
     /* ── TIMELINE ── */
-    .timeline { padding: 0.5rem 0 0.75rem; }
+    .timeline { padding: 0.85rem 0 0.75rem; }
     .tl-item {
       display: flex; gap: 0; padding: 0 1.25rem;
-      opacity: 0; transform: translateY(10px);
+      opacity: 0; transform: translateY(8px);
       transition: opacity .4s var(--ease), transform .4s var(--ease);
     }
     .tl-item.vis { opacity: 1; transform: none; }
     .tl-time {
-      font-size: 0.68rem; font-weight: 700; color: var(--sky);
-      width: 42px; flex-shrink: 0; padding-top: 0.8rem;
+      font-size: 0.72rem; font-weight: 700; color: var(--sky);
+      width: 44px; flex-shrink: 0; padding-top: 0.85rem;
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
     .tl-pin {
-      width: 24px; flex-shrink: 0; display: flex;
-      flex-direction: column; align-items: center; padding-top: 0.75rem;
+      width: 26px; flex-shrink: 0; display: flex;
+      flex-direction: column; align-items: center; padding-top: 0.8rem;
     }
     .tl-dot {
-      width: 24px; height: 24px; border-radius: 50%;
+      width: 26px; height: 26px; border-radius: 50%;
       background: var(--sky-soft); border: 2px solid var(--sky);
-      display: flex; align-items: center; justify-content: center; z-index: 1;
+      display: flex; align-items: center; justify-content: center; z-index: 1; flex-shrink: 0;
     }
-    .tl-dot .ms { font-size: 11px; color: var(--sky); }
+    .tl-dot .ms { font-size: 13px; color: var(--sky); }
     .tl-item.done-item .tl-dot { background: var(--sky); }
     .tl-item.done-item .tl-dot .ms { color: #fff; }
     .tl-vline { width: 2px; background: var(--line); flex: 1; min-height: 16px; }
-    .tl-body { flex: 1; padding: 0.55rem 0 0.55rem 0.65rem; }
-    .tl-text { font-size: 0.85rem; font-weight: 500; color: var(--ink); line-height: 1.5; }
+    .tl-body { flex: 1; padding: 0.6rem 0 0.6rem 0.7rem; }
+    .tl-text { font-size: 0.93rem; font-weight: 500; color: var(--ink); line-height: 1.55; }
     .tl-item.done-item .tl-text { color: var(--ink-muted); text-decoration: line-through; }
-    .tl-tags { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.3rem; }
+    .tl-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; }
     .tag {
-      font-size: 0.65rem; font-weight: 600; padding: 0.12rem 0.5rem;
+      font-size: 0.67rem; font-weight: 600; padding: 0.14rem 0.55rem;
       border-radius: 999px; display: flex; align-items: center; gap: 0.2rem; cursor: pointer;
     }
-    .tag .ms { font-size: 10px; }
+    .tag .ms { font-size: 11px; }
     .tag-booked  { background: rgba(34,197,94,.1); color: #15803d; }
     .tag-note    { background: var(--sand); color: var(--ink-soft); }
     .tag-nearby  { background: var(--sky-soft); color: var(--sky-deep); }
     .tag-map     { background: rgba(10,37,64,.06); color: var(--ink-soft); text-decoration: none; }
     .tl-note-body {
-      background: var(--sand); border-radius: var(--r-sm); padding: 0.45rem 0.65rem;
-      font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.3rem;
+      background: var(--sand); border-radius: var(--r-sm); padding: 0.5rem 0.7rem;
+      font-size: 0.78rem; color: var(--ink-soft); margin-top: 0.35rem;
       line-height: 1.55; display: none;
     }
     .tl-note-body.open { display: block; }
@@ -240,53 +306,140 @@
       border-radius: var(--r-sm); padding: 0.45rem 0.65rem; margin-bottom: 0.3rem;
     }
     .nc-icon { font-size: 1rem; }
-    .nc-name { font-size: 0.76rem; font-weight: 600; color: var(--ink); }
-    .nc-meta { font-size: 0.65rem; color: var(--ink-muted); }
+    .nc-name { font-size: 0.78rem; font-weight: 600; }
+    .nc-meta { font-size: 0.67rem; color: var(--ink-muted); }
 
-    /* ── BUDGET PANEL ── */
-    .budget-section { margin-top: 1.5rem; }
+    /* ── MAP TAB ── */
+    #map-container { height: 60vh; min-height: 380px; border-radius: var(--r-lg); overflow: hidden; position: relative; }
+    .map-filters { display: flex; gap: 0.4rem; overflow-x: auto; scrollbar-width: none; padding-bottom: 0.5rem; margin-bottom: 0.75rem; }
+    .map-filters::-webkit-scrollbar { display: none; }
+    .map-filter-btn {
+      flex: 0 0 auto; background: #fff; border: 1.5px solid var(--line);
+      border-radius: 999px; padding: 0.3rem 0.75rem; font-size: 0.72rem;
+      font-weight: 600; color: var(--ink-muted); cursor: pointer; font-family: inherit;
+      transition: all .2s var(--ease);
+    }
+    .map-filter-btn.active { background: var(--sky); border-color: var(--sky); color: #fff; }
+    .map-placeholder {
+      height: 60vh; min-height: 380px; border-radius: var(--r-lg);
+      background: linear-gradient(135deg, #0A2540 0%, #1957C2 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 1rem; color: #fff; cursor: pointer;
+    }
+    .map-placeholder .ms { font-size: 3rem; }
+    .map-placeholder-text { font-size: 1rem; font-weight: 700; }
+    .map-placeholder-sub { font-size: 0.8rem; opacity: .65; }
+
+    /* ── BUDGET TAB ── */
     .sec-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
-    .sec-head h2 { font-size: 1.1rem; font-weight: 800; }
-    .sec-head .ms { font-size: 20px; color: var(--sky); }
-    .bcard { background: #fff; border-radius: var(--r-lg); box-shadow: var(--sh-sm); padding: 1.25rem; margin-bottom: 1rem; }
-    .donut-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 1rem; }
+    .sec-head h2 { font-size: 1.15rem; font-weight: 800; }
+    .sec-head .ms { font-size: 22px; color: var(--sky); }
+    .bcard { background: #fff; border-radius: var(--r-lg); box-shadow: var(--sh-sm); padding: 1.5rem; margin-bottom: 1rem; }
+    .donut-wrap { position: relative; width: 200px; height: 200px; margin: 0 auto 1.25rem; }
     .donut-svg { transform: rotate(-90deg); width: 100%; height: 100%; display: block; }
     .donut-center {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       text-align: center; pointer-events: none;
     }
-    .donut-lbl { font-size: 0.6rem; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .05em; }
-    .donut-val { font-size: 1.2rem; font-weight: 800; color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1.2; }
+    .donut-lbl { font-size: 0.62rem; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .05em; }
+    .donut-val { font-size: 1.4rem; font-weight: 800; color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1.2; }
     .donut-unit { font-size: 0.65rem; color: var(--ink-muted); }
     .bstatus {
       display: inline-flex; align-items: center; gap: 0.3rem;
-      border-radius: 999px; padding: 0.25rem 0.65rem;
-      font-size: 0.72rem; font-weight: 700; margin: 0 auto 0.75rem; display: flex; justify-content: center; width: fit-content; margin: 0 auto 0.6rem;
+      border-radius: 999px; padding: 0.3rem 0.85rem;
+      font-size: 0.75rem; font-weight: 700; margin: 0 auto 0.85rem; display: flex; justify-content: center; width: fit-content;
     }
-    .bstatus .ms { font-size: 13px; }
+    .bstatus .ms { font-size: 14px; }
     .bstatus.ok   { background: rgba(34,197,94,.1); color: #15803d; }
     .bstatus.over { background: rgba(239,68,68,.1); color: #dc2626; }
-    .bsum-row { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--ink-muted); margin-top: 0.2rem; }
-    .bsum-row strong { color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif; }
+    .bsum-row { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--ink-muted); margin-top: 0.3rem; }
+    .bsum-row strong { color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; }
     .bcat-list { background: #fff; border-radius: var(--r-lg); box-shadow: var(--sh-sm); overflow: hidden; }
-    .bcat-row-item { padding: 0.75rem 1rem; border-bottom: 1px solid var(--line); }
+    .bcat-row-item { padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--line); }
     .bcat-row-item:last-child { border-bottom: none; }
-    .bcat-top { display: flex; align-items: center; gap: 0.6rem; }
-    .bcat-ico { width: 32px; height: 32px; border-radius: 8px; background: var(--sky-soft); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
-    .bcat-meta-wrap { flex: 1; }
-    .bcat-name { font-size: 0.78rem; font-weight: 600; color: var(--ink); }
-    .bcat-vals { font-size: 0.68rem; color: var(--ink-muted); margin-top: 0.05rem; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .bcat-top { display: flex; align-items: center; gap: 0.65rem; }
+    .bcat-ico { width: 36px; height: 36px; border-radius: 10px; background: var(--sky-soft); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .bcat-meta-wrap { flex: 1; min-width: 0; }
+    .bcat-name { font-size: 0.82rem; font-weight: 600; }
+    .bcat-vals { font-size: 0.7rem; color: var(--ink-muted); margin-top: 0.05rem; font-family: 'Plus Jakarta Sans', sans-serif; }
     .bcat-vals .act { color: var(--sky-deep); font-weight: 700; }
     .bcat-vals .act-over { color: #dc2626; font-weight: 700; }
-    .bbar-wrap { height: 3px; background: var(--sand-deep); border-radius: 999px; margin-top: 0.4rem; overflow: hidden; }
+    .bcat-pct { font-size: 0.7rem; font-weight: 700; color: var(--ink-muted); flex-shrink: 0; }
+    .bbar-wrap { height: 4px; background: var(--sand-deep); border-radius: 999px; margin-top: 0.5rem; overflow: hidden; }
     .bbar { height: 100%; border-radius: 999px; background: var(--sky); width: 0; transition: width 1s var(--ease); }
     .bbar.over { background: #ef4444; }
+
+    /* ── CURRENCY WIDGET ── */
+    .cur-widget { background: #fff; border-radius: var(--r-lg); box-shadow: var(--sh-sm); padding: 1.25rem; margin-top: 1rem; }
+    .cur-title { font-size: 0.88rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.4rem; }
+    .cur-title .ms { font-size: 18px; color: var(--sky); }
+    .cur-base-row { display: flex; align-items: center; gap: 0.5rem; background: var(--sky-soft); border-radius: var(--r-md); padding: 0.6rem 0.85rem; margin-bottom: 0.85rem; }
+    .cur-flag { font-size: 1.3rem; flex-shrink: 0; }
+    .cur-base-input {
+      flex: 1; border: none; background: none; font-size: 1.15rem; font-weight: 700;
+      color: var(--sky-deep); outline: none; font-family: 'Plus Jakarta Sans', sans-serif;
+      min-width: 0; text-align: right; direction: ltr;
+    }
+    .cur-base-label { font-size: 0.7rem; font-weight: 700; color: var(--sky-deep); opacity: .7; flex-shrink: 0; }
+    .cur-results { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .cur-row {
+      background: var(--pearl); border: 1.5px solid var(--line); border-radius: var(--r-md);
+      padding: 0.6rem 0.75rem; display: flex; flex-direction: column; gap: 0.1rem;
+    }
+    .cur-row-top { display: flex; align-items: center; gap: 0.4rem; }
+    .cur-row-flag { font-size: 1rem; }
+    .cur-row-name { font-size: 0.65rem; color: var(--ink-muted); font-weight: 600; }
+    .cur-row-val { font-size: 1rem; font-weight: 800; color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif; direction: ltr; text-align: right; }
+
+    /* ── INFO TAB ── */
+    .info-section { margin-bottom: 1.5rem; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+    @media (max-width: 480px) { .info-grid { grid-template-columns: 1fr; } }
+    .info-card {
+      background: #fff; border-radius: var(--r-md); box-shadow: var(--sh-sm);
+      padding: 1rem; border: 1.5px solid var(--line);
+    }
+    .info-card-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .info-card-label { font-size: 0.68rem; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 0.2rem; }
+    .info-card-val { font-size: 0.88rem; font-weight: 700; color: var(--ink); }
+    .info-card-sub { font-size: 0.72rem; color: var(--ink-muted); margin-top: 0.1rem; }
+    .flight-card {
+      background: #fff; border-radius: var(--r-md); box-shadow: var(--sh-sm);
+      border: 1.5px solid var(--line); padding: 1rem 1.25rem; margin-bottom: 0.65rem;
+    }
+    .flight-card-dir { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-muted); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.3rem; }
+    .flight-card-dir .ms { font-size: 14px; color: var(--sky); }
+    .flight-route { display: flex; align-items: center; gap: 0.5rem; }
+    .fl-airport { text-align: center; }
+    .fl-code { font-size: 1.2rem; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .fl-city { font-size: 0.65rem; color: var(--ink-muted); }
+    .fl-time { font-size: 0.78rem; font-weight: 600; color: var(--sky); font-family: 'Plus Jakarta Sans', sans-serif; }
+    .fl-line { flex: 1; height: 2px; background: var(--line); position: relative; }
+    .fl-line::after { content: '✈'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: #fff; padding: 0 0.25rem; font-size: 0.8rem; color: var(--sky); }
+    .fl-airline { font-size: 0.72rem; color: var(--ink-muted); text-align: center; margin-top: 0.5rem; font-weight: 600; }
+    .emg-card {
+      display: flex; align-items: center; gap: 0.75rem;
+      background: #fff; border-radius: var(--r-md); box-shadow: var(--sh-sm);
+      border: 1.5px solid var(--line); padding: 0.85rem 1rem; margin-bottom: 0.5rem;
+    }
+    .emg-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .emg-name { font-size: 0.83rem; font-weight: 700; }
+    .emg-phone { font-size: 1rem; font-weight: 800; color: var(--sky); font-family: 'Plus Jakarta Sans', sans-serif; direction: ltr; display: inline-block; }
+    .emg-note { font-size: 0.7rem; color: var(--ink-muted); }
+    .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.65rem; }
+    .app-card {
+      background: #fff; border-radius: var(--r-md); border: 1.5px solid var(--line);
+      box-shadow: var(--sh-sm); padding: 0.85rem; text-align: center;
+    }
+    .app-card-icon { font-size: 1.8rem; margin-bottom: 0.35rem; }
+    .app-card-name { font-size: 0.78rem; font-weight: 700; }
+    .app-card-note { font-size: 0.65rem; color: var(--ink-muted); margin-top: 0.15rem; }
 
     /* ── POST-TRIP REPORT ── */
     .report-hero {
       background: linear-gradient(135deg, #0A2540 0%, #1957C2 100%);
       border-radius: var(--r-xl); padding: 2rem 1.75rem; color: #fff;
-      text-align: center; margin: 2rem 0 1.25rem;
+      text-align: center; margin: 1rem 0;
     }
     .report-emoji { font-size: 2.5rem; margin-bottom: 0.5rem; }
     .report-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.35rem; }
@@ -307,25 +460,26 @@
     .hlights-scroll::-webkit-scrollbar { display: none; }
     .hl-card { flex: 0 0 140px; background: #fff; border-radius: var(--r-md); padding: 0.85rem; box-shadow: var(--sh-sm); text-align: center; }
     .hl-card .hl-ico { font-size: 1.6rem; margin-bottom: 0.3rem; }
-    .hl-card .hl-txt { font-size: 0.72rem; font-weight: 600; color: var(--ink); line-height: 1.4; }
+    .hl-card .hl-txt { font-size: 0.72rem; font-weight: 600; line-height: 1.4; }
 
     /* ── FAB ── */
     .fab {
-      position: fixed; bottom: 1.5rem; inset-inline-start: 1.5rem; z-index: 80;
+      position: fixed; bottom: calc(var(--nav-h) + 1rem); inset-inline-start: 1.25rem; z-index: 85;
       background: var(--sky); color: #fff; border: none;
-      border-radius: 999px; padding: 0.7rem 1.15rem;
-      font-size: 0.82rem; font-weight: 700; cursor: pointer;
+      border-radius: 999px; padding: 0.7rem 1.2rem;
+      font-size: 0.83rem; font-weight: 700; cursor: pointer;
       box-shadow: var(--sh-glow); display: none;
       align-items: center; gap: 0.35rem; font-family: inherit;
       transition: transform .2s var(--ease), box-shadow .2s var(--ease);
     }
+    @media (min-width: 769px) { .fab { bottom: 1.5rem; } }
     .fab:hover { transform: translateY(-2px); box-shadow: 0 20px 50px rgba(46,124,246,.4); }
     .fab.show { display: flex; }
-    .fab .ms { font-size: 17px; }
+    .fab .ms { font-size: 18px; }
 
-    /* ── MODAL ── */
+    /* ── MODALS ── */
     .overlay {
-      position: fixed; inset: 0; background: rgba(10,37,64,.45);
+      position: fixed; inset: 0; background: rgba(10,37,64,.5);
       backdrop-filter: blur(4px); z-index: 200;
       display: flex; align-items: flex-end; justify-content: center;
       opacity: 0; pointer-events: none; transition: opacity .25s;
@@ -333,17 +487,18 @@
     .overlay.open { opacity: 1; pointer-events: all; }
     .sheet {
       background: #fff; border-radius: var(--r-xl) var(--r-xl) 0 0;
-      padding: 1.25rem 1.25rem 2rem; width: 100%; max-width: 500px;
+      padding: 1.25rem 1.25rem 2rem; width: 100%; max-width: 540px;
       transform: translateY(100%); transition: transform .35s var(--ease);
+      max-height: 90dvh; overflow-y: auto;
     }
     .overlay.open .sheet { transform: none; }
     .sheet-handle { width: 36px; height: 4px; background: var(--sand-deep); border-radius: 999px; margin: 0 auto 1rem; }
-    .sheet-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem; }
+    .sheet-title { font-size: 1.08rem; font-weight: 800; margin-bottom: 1rem; }
     .form-group { margin-bottom: 0.85rem; }
-    .form-label { font-size: 0.75rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 0.3rem; display: block; }
+    .form-label { font-size: 0.76rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 0.3rem; display: block; }
     .form-ctrl {
       width: 100%; border: 1.5px solid var(--line); border-radius: var(--r-sm);
-      padding: 0.6rem 0.8rem; font-size: 0.85rem; font-family: inherit;
+      padding: 0.65rem 0.85rem; font-size: 0.88rem; font-family: inherit;
       color: var(--ink); background: var(--pearl); outline: none;
       transition: border-color .2s;
     }
@@ -351,15 +506,16 @@
     select.form-ctrl { appearance: none; -webkit-appearance: none; }
     .btn-pri {
       width: 100%; background: var(--sky); color: #fff; border: none;
-      border-radius: var(--r-md); padding: 0.8rem; font-size: 0.9rem;
+      border-radius: var(--r-md); padding: 0.85rem; font-size: 0.92rem;
       font-weight: 700; cursor: pointer; font-family: inherit;
       transition: all .2s var(--ease); margin-top: 0.35rem;
+      display: flex; align-items: center; justify-content: center; gap: 0.4rem;
     }
     .btn-pri:hover { background: var(--sky-deep); box-shadow: var(--sh-glow); }
     .btn-sec {
       width: 100%; background: var(--pearl); color: var(--ink);
-      border: 1.5px solid var(--line); border-radius: var(--r-md); padding: 0.7rem;
-      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      border: 1.5px solid var(--line); border-radius: var(--r-md); padding: 0.75rem;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer;
       font-family: inherit; transition: all .2s var(--ease);
       display: flex; align-items: center; justify-content: center; gap: 0.45rem;
       margin-top: 0.5rem;
@@ -367,27 +523,68 @@
     .btn-sec:hover { border-color: var(--sky); color: var(--sky); }
     .url-box {
       background: var(--pearl); border: 1.5px solid var(--line); border-radius: var(--r-sm);
-      padding: 0.7rem 0.8rem; font-size: 0.75rem; direction: ltr;
+      padding: 0.75rem 0.85rem; font-size: 0.75rem; direction: ltr;
       word-break: break-all; cursor: pointer; margin-bottom: 0.75rem;
       transition: background .2s, border-color .2s;
       font-family: 'Plus Jakarta Sans', monospace;
     }
     .url-box:hover { background: var(--sky-soft); border-color: var(--sky); }
 
+    /* ── TASKS MODAL ── */
+    .tasks-progress { background: var(--sand-deep); border-radius: 999px; height: 6px; margin-bottom: 1rem; overflow: hidden; }
+    .tasks-progress-fill { height: 100%; background: var(--sky); border-radius: 999px; transition: width .5s var(--ease); }
+    .tasks-progress-label { font-size: 0.72rem; color: var(--ink-muted); font-weight: 600; margin-bottom: 0.5rem; }
+    .task-cat-head { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-muted); margin: 1rem 0 0.5rem; display: flex; align-items: center; gap: 0.35rem; }
+    .task-cat-head .ms { font-size: 15px; color: var(--sky); }
+    .task-item {
+      display: flex; align-items: flex-start; gap: 0.65rem;
+      padding: 0.6rem 0; border-bottom: 1px solid var(--line); cursor: pointer;
+    }
+    .task-item:last-child { border-bottom: none; }
+    .task-check {
+      width: 22px; height: 22px; border: 2px solid var(--line); border-radius: 6px;
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      transition: all .2s; margin-top: 1px; background: #fff;
+    }
+    .task-check .ms { font-size: 14px; color: transparent; }
+    .task-item.done .task-check { background: var(--sky); border-color: var(--sky); }
+    .task-item.done .task-check .ms { color: #fff; }
+    .task-text { font-size: 0.83rem; font-weight: 500; flex: 1; }
+    .task-item.done .task-text { text-decoration: line-through; color: var(--ink-muted); }
+    .task-priority {
+      font-size: 0.6rem; font-weight: 700; padding: 0.1rem 0.45rem;
+      border-radius: 999px; flex-shrink: 0;
+    }
+    .task-priority.high { background: rgba(239,68,68,.1); color: #dc2626; }
+    .task-priority.med  { background: rgba(245,158,11,.1); color: #d97706; }
+    .task-priority.low  { background: rgba(34,197,94,.1); color: #16a34a; }
+
+    /* ── PRINT MODAL ── */
+    .print-day-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; }
+    .print-day-btn {
+      background: var(--pearl); border: 1.5px solid var(--line); border-radius: var(--r-md);
+      padding: 0.65rem; text-align: center; cursor: pointer; font-family: inherit;
+      transition: all .2s var(--ease);
+    }
+    .print-day-btn:hover { border-color: var(--sky); background: var(--sky-soft); }
+    .print-day-btn .pd-num { font-size: 0.65rem; color: var(--ink-muted); font-weight: 600; }
+    .print-day-btn .pd-city { font-size: 0.82rem; font-weight: 700; }
+
     /* ── TOAST ── */
     .toast {
-      position: fixed; bottom: 5rem; left: 50%;
+      position: fixed; bottom: calc(var(--nav-h) + 1.25rem); left: 50%;
       transform: translateX(-50%) translateY(16px);
       background: var(--ink); color: #fff; border-radius: 999px;
-      padding: 0.45rem 1.1rem; font-size: 0.8rem; font-weight: 600;
+      padding: 0.5rem 1.2rem; font-size: 0.82rem; font-weight: 600;
       opacity: 0; transition: all .3s var(--ease); pointer-events: none; z-index: 300;
       white-space: nowrap;
     }
+    @media (min-width: 769px) { .toast { bottom: 1.5rem; } }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* ── FOOTER ── */
     .site-footer { background: var(--ink); color: rgba(255,255,255,.6); text-align: center; padding: 2.5rem 1rem; font-size: 0.78rem; margin-top: 3rem; }
-    .footer-brand { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem; }
+    .footer-brand { font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem; }
     .site-footer a { color: var(--sky); text-decoration: none; }
 
     /* ── REVEAL ── */
@@ -396,6 +593,11 @@
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration:.01ms!important; transition-duration:.01ms!important; }
+    }
+
+    @media print {
+      .site-header, .bottom-nav, .fab, .overlay, .toast { display: none !important; }
+      body { background: #fff; padding: 0; }
     }
   </style>
 </head>
@@ -408,51 +610,92 @@
     <span>خطّار</span>
   </a>
   <div class="hdr-trip-name" id="hdr-trip-name">جدول رحلتك</div>
-  <button class="hdr-share" onclick="openShareModal()">
-    <span class="material-symbols-rounded ms">share</span>مشاركة
-  </button>
+  <div class="hdr-actions">
+    <button class="hdr-btn" onclick="openModal('share-modal')">
+      <span class="ms">share</span><span class="hdr-btn-lbl">مشاركة</span>
+    </button>
+  </div>
 </header>
 
 <!-- App Root -->
 <div id="app">
-
-  <!-- Loading -->
   <div class="screen-center" id="scr-loading">
     <div class="spinner"></div>
-    <div style="color:var(--ink-muted);font-size:0.85rem">جاري تحميل جدول رحلتك…</div>
+    <div style="color:var(--ink-muted);font-size:0.88rem">جاري تحميل جدول رحلتك…</div>
   </div>
-
-  <!-- Error -->
   <div class="screen-center" id="scr-error" style="display:none">
-    <span class="material-symbols-rounded" style="font-size:3rem;color:var(--ink-muted)">error_outline</span>
-    <div style="font-weight:700;font-size:1.05rem">تعذّر تحميل الرحلة</div>
-    <div style="color:var(--ink-muted);font-size:0.82rem;max-width:300px" id="err-msg">تأكد من الرابط أو تواصل مع منظّم رحلتك</div>
+    <span class="ms" style="font-size:3rem;color:var(--ink-muted)">error_outline</span>
+    <div style="font-weight:800;font-size:1.05rem">تعذّر تحميل الرحلة</div>
+    <div style="color:var(--ink-muted);font-size:0.83rem;max-width:300px" id="err-msg">تأكد من الرابط أو تواصل مع منظّم رحلتك</div>
     <a href="../" style="background:var(--sky);color:#fff;border-radius:999px;padding:0.55rem 1.4rem;text-decoration:none;font-weight:700;font-size:0.88rem;margin-top:0.5rem">الرئيسية</a>
   </div>
 
   <!-- Trip Content -->
   <div id="trip-wrap" style="display:none">
     <div class="page-wrap">
+      <!-- Hero / Countdown Banner -->
       <div id="hero-slot"></div>
 
-      <!-- Sticky day tabs -->
-      <div class="day-tabs-wrap" id="tabs-wrap">
-        <div class="day-tabs" id="day-tabs"></div>
+      <!-- Quick Action Bar -->
+      <div class="qa-bar" id="qa-bar">
+        <button class="qa-btn" onclick="openModal('cur-modal')">
+          <span class="ms">currency_exchange</span>
+          <span>العملات</span>
+        </button>
+        <button class="qa-btn" onclick="openModal('print-modal')">
+          <span class="ms">print</span>
+          <span>طباعة</span>
+        </button>
+        <button class="qa-btn" onclick="openModal('tasks-modal')">
+          <span class="ms">task_alt</span>
+          <span>المهام</span>
+        </button>
+        <button class="qa-btn" onclick="openModal('share-modal')">
+          <span class="ms">share</span>
+          <span>مشاركة</span>
+        </button>
       </div>
 
-      <!-- Main layout -->
-      <div class="client-layout" style="margin-top:1.25rem">
-        <!-- Days column -->
-        <div id="days-col"></div>
-        <!-- Budget sidebar -->
-        <div class="budget-sidebar" id="budget-sidebar"></div>
-      </div>
+      <!-- Desktop layout: schedule + budget sidebar -->
+      <div class="desktop-layout">
+        <!-- LEFT: Tab sections -->
+        <div>
+          <!-- Tab 1: Schedule -->
+          <section class="tab-section active" id="tab-schedule">
+            <div id="days-col"></div>
+            <div id="report-slot"></div>
+          </section>
 
-      <!-- Post-trip report (shown after trip end) -->
-      <div id="report-slot"></div>
+          <!-- Tab 2: Map -->
+          <section class="tab-section" id="tab-map">
+            <div style="padding: 0.5rem 0">
+              <div class="map-filters" id="map-filters"></div>
+              <div id="map-placeholder" class="map-placeholder" onclick="loadMap()">
+                <span class="ms">map</span>
+                <div class="map-placeholder-text">عرض الخريطة التفاعلية</div>
+                <div class="map-placeholder-sub">انقر لتحميل الخريطة</div>
+              </div>
+              <div id="map-container" style="display:none"></div>
+            </div>
+          </section>
+
+          <!-- Tab 3: Budget (mobile primary, desktop hidden — shown in sidebar) -->
+          <section class="tab-section" id="tab-budget">
+            <div id="budget-main"></div>
+            <div id="currency-main"></div>
+          </section>
+
+          <!-- Tab 4: Info -->
+          <section class="tab-section" id="tab-info">
+            <div id="info-slot"></div>
+          </section>
+        </div>
+
+        <!-- RIGHT: Sticky budget sidebar (desktop only) -->
+        <div class="budget-sticky" id="budget-sidebar" style="display:none"></div>
+      </div>
     </div>
 
-    <!-- Footer -->
     <footer class="site-footer">
       <div class="footer-brand">خطّار</div>
       <div>صُمِّمت رحلتك بعناية بواسطة خطّار</div>
@@ -463,8 +706,30 @@
   </div>
 </div>
 
+<!-- Bottom Nav (mobile) -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bnav-item active" onclick="switchTab('schedule',0)" id="bnav-0">
+    <span class="ms">calendar_month</span>
+    <span>الجدول</span>
+  </button>
+  <button class="bnav-item" onclick="switchTab('map',1)" id="bnav-1">
+    <span class="ms">map</span>
+    <span>الخريطة</span>
+  </button>
+  <button class="bnav-item" onclick="switchTab('budget',2)" id="bnav-2">
+    <span class="ms">account_balance_wallet</span>
+    <span>الميزانية</span>
+  </button>
+  <button class="bnav-item" onclick="switchTab('info',3)" id="bnav-3">
+    <span class="ms">info</span>
+    <span>معلومات</span>
+  </button>
+</nav>
+
+<!-- ── MODALS ── -->
+
 <!-- Expense Modal -->
-<div class="overlay" id="exp-modal" onclick="if(event.target===this)closeExp()">
+<div class="overlay" id="exp-modal" onclick="if(event.target===this)closeModal('exp-modal')">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">إضافة مصروف فعلي</div>
@@ -481,21 +746,21 @@
       <input type="text" class="form-ctrl" id="exp-note" placeholder="مثال: عشاء مطعم البحر">
     </div>
     <button class="btn-pri" onclick="saveExp()">
-      <span class="material-symbols-rounded" style="font-size:17px;vertical-align:middle">add_circle</span>
+      <span class="ms" style="font-size:18px">add_circle</span>
       إضافة المصروف
     </button>
   </div>
 </div>
 
 <!-- Share Modal -->
-<div class="overlay" id="share-modal" onclick="if(event.target===this)closeShareModal()">
+<div class="overlay" id="share-modal" onclick="if(event.target===this)closeModal('share-modal')">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">مشاركة جدول الرحلة</div>
-    <p style="font-size:0.8rem;color:var(--ink-muted);margin-bottom:0.85rem">أرسل هذا الرابط لمرافقيك</p>
+    <p style="font-size:0.82rem;color:var(--ink-muted);margin-bottom:0.85rem">أرسل هذا الرابط لمرافقيك</p>
     <div class="url-box" id="share-url" onclick="copyUrl()"></div>
     <button class="btn-pri" onclick="copyUrl()">
-      <span class="material-symbols-rounded" style="font-size:17px;vertical-align:middle">content_copy</span>
+      <span class="ms" style="font-size:18px">content_copy</span>
       نسخ الرابط
     </button>
     <button class="btn-sec" onclick="shareWA()">
@@ -504,9 +769,40 @@
   </div>
 </div>
 
-<!-- Expense FAB -->
-<button class="fab" id="fab" onclick="openExp()">
-  <span class="material-symbols-rounded ms">add</span>
+<!-- Currency Modal -->
+<div class="overlay" id="cur-modal" onclick="if(event.target===this)closeModal('cur-modal')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">محوّل العملات</div>
+    <div id="cur-modal-body"></div>
+  </div>
+</div>
+
+<!-- Tasks Modal -->
+<div class="overlay" id="tasks-modal" onclick="if(event.target===this)closeModal('tasks-modal')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">✅ مهام ما قبل الرحلة</div>
+    <div class="tasks-progress-label" id="tasks-prog-label">٠ من ٠</div>
+    <div class="tasks-progress"><div class="tasks-progress-fill" id="tasks-prog-fill" style="width:0"></div></div>
+    <div id="tasks-body"></div>
+  </div>
+</div>
+
+<!-- Print Modal -->
+<div class="overlay" id="print-modal" onclick="if(event.target===this)closeModal('print-modal')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🖨️ طباعة يوم من الرحلة</div>
+    <p style="font-size:0.82rem;color:var(--ink-muted);margin-bottom:1rem">اختر اليوم الذي تريد طباعته</p>
+    <div class="print-day-list" id="print-day-list"></div>
+    <button class="btn-sec" onclick="closeModal('print-modal')">إلغاء</button>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="openModal('exp-modal')">
+  <span class="ms">add</span>
   أضف مصروف
 </button>
 
@@ -514,12 +810,71 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ─────────────────────────────────────────────
-//  STATE
-// ─────────────────────────────────────────────
-let _data = null;   // { itinerary, budget, tripInfo, … }
+// ─── STATE ───
+let _data = null;
 let _code = null;
-let _cExp = [];     // client-entered expenses
+let _cExp = [];
+let _mapLoaded = false;
+let _leafletMap = null;
+let _mapData = [];
+let _currentMapDay = -1;
+let _itin = [];
+let _tasks = [];
+
+const CUR_RATES = { SAR:1, KRW:354.67, USD:0.2667, EUR:0.2453, AED:0.9798 };
+const CUR_INFO = {
+  SAR:{ flag:'🇸🇦', name:'ريال سعودي', sym:'ر.س' },
+  KRW:{ flag:'🇰🇷', name:'وون كوري',  sym:'₩' },
+  USD:{ flag:'🇺🇸', name:'دولار',       sym:'$' },
+  EUR:{ flag:'🇪🇺', name:'يورو',         sym:'€' },
+  AED:{ flag:'🇦🇪', name:'درهم إماراتي',sym:'د.إ' }
+};
+
+const EMERGENCY = [
+  { name:'الشرطة', phone:'112', icon:'👮', note:'خط الشرطة' },
+  { name:'الإسعاف والإطفاء', phone:'119', icon:'🚑', note:'طوارئ' },
+  { name:'خط الترجمة السياحي', phone:'1330', icon:'🌐', note:'24/7 متعدد اللغات' },
+  { name:'السفارة السعودية في سيول', phone:'+82-2-739-0631', icon:'🏛️', note:'Yongsan-gu' }
+];
+
+const APPS = [
+  { name:'Naver Map', note:'ملاحة وخرائط', icon:'🗺️' },
+  { name:'Papago', note:'مترجم كوري ممتاز', icon:'🌐' },
+  { name:'Kakao T', note:'طلب تاكسي', icon:'🚕' },
+  { name:'KakaoTalk', note:'تواصل مع الفنادق', icon:'💬' },
+  { name:'Korail Talk', note:'حجز قطارات KTX', icon:'🚄' },
+  { name:'Subway Korea', note:'خرائط المترو', icon:'🚇' },
+  { name:'Muslim Pro', note:'أوقات الصلاة والقبلة', icon:'🕌' },
+  { name:'KakaoMap', note:'خرائط بديلة', icon:'📍' }
+];
+
+const TASK_CATS = [
+  { id:'docs', label:'الوثائق الرسمية', icon:'description', tasks:[
+    { id:'passport', text:'جواز السفر (صلاحية 6 أشهر+)', priority:'high' },
+    { id:'visa', text:'التأشيرة / تصريح الدخول', priority:'high' },
+    { id:'insurance', text:'وثيقة التأمين الصحي', priority:'high' },
+    { id:'booking', text:'تأكيدات الحجز (طيران + فندق)', priority:'high' },
+    { id:'photos', text:'صور جواز السفر احتياطية', priority:'med' }
+  ]},
+  { id:'health', label:'الصحة والأدوية', icon:'medical_services', tasks:[
+    { id:'meds', text:'الأدوية الدورية (كمية كافية)', priority:'high' },
+    { id:'firstaid', text:'حقيبة إسعافات أولية صغيرة', priority:'med' },
+    { id:'mask', text:'كمامات طبية', priority:'low' }
+  ]},
+  { id:'bags', label:'الحقيبة والمتعلقات', icon:'luggage', tasks:[
+    { id:'charger', text:'شاحن الهاتف وباور بانك', priority:'high' },
+    { id:'adapter', text:'مهايئ الكهرباء (كوريا: نوع F)', priority:'high' },
+    { id:'clothes', text:'الملابس المناسبة للجو', priority:'med' },
+    { id:'camera', text:'الكاميرا وبطاريات إضافية', priority:'low' },
+    { id:'sim', text:'شريحة إنترنت دولية / Pocket WiFi', priority:'high' }
+  ]},
+  { id:'travel', label:'قبيل المغادرة', icon:'flight_takeoff', tasks:[
+    { id:'checkin', text:'تسجيل الدخول الإلكتروني (24 ساعة قبل)', priority:'high' },
+    { id:'currency', text:'صرف عملة محلية', priority:'med' },
+    { id:'transport', text:'ترتيب المواصلات للمطار', priority:'high' },
+    { id:'notify', text:'إخبار البنك بسفرك', priority:'med' }
+  ]}
+];
 
 const ICONS = {
   flight:'flight', hotel:'hotel', food:'restaurant', transport:'directions_car',
@@ -529,27 +884,27 @@ const ICONS = {
   check_in:'hotel', check_out:'logout', default:'location_on'
 };
 
-const BCOLORS = [
-  '#2E7CF6','#1957C2','#0EA5E9','#7C3AED',
-  '#EC4899','#F59E0B','#10B981','#EF4444','#6366F1','#14B8A6','#F97316'
-];
+const PIN_COLORS = {
+  food:'#F59E0B', hotel:'#7C3AED', attraction:'#2E7CF6', shop:'#EC4899',
+  transport:'#6366F1', activity:'#10B981', prayer:'#0EA5E9', default:'#2E7CF6'
+};
 
-// ─────────────────────────────────────────────
-//  BOOT
-// ─────────────────────────────────────────────
+const BCOLORS = ['#2E7CF6','#1957C2','#0EA5E9','#7C3AED','#EC4899','#F59E0B','#10B981','#EF4444','#6366F1','#14B8A6','#F97316'];
+
+// ─── BOOT ───
 window.addEventListener('DOMContentLoaded', async () => {
   const p = new URLSearchParams(location.search);
   const preview = p.get('preview');
   _code = p.get('code');
 
-  // ── Preview mode: read from localStorage written by the dashboard ──
   if (preview) {
     try {
       const raw = localStorage.getItem('kt2_preview_' + preview);
       if (raw) {
         _data = JSON.parse(raw);
-        _code = preview; // use trip id as key for client expenses
+        _code = preview;
         try { _cExp = JSON.parse(localStorage.getItem('kt2_cexp_' + _code) || '[]'); } catch { _cExp = []; }
+        loadTasks();
         render();
         return;
       }
@@ -558,19 +913,19 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // ── Code mode: fetch from cloud ──
-  if (!_code) { showErr('لم يتم تحديد رمز الرحلة. تأكد من الرابط.'); return; }
+  if (!_code) { showErr('لم يتم تحديد رمز الرحلة.'); return; }
   try { _cExp = JSON.parse(localStorage.getItem('kt2_cexp_' + _code) || '[]'); } catch { _cExp = []; }
+  loadTasks();
   await loadData();
 });
 
-window.addEventListener('scroll', () => {
-  document.getElementById('hdr').classList.toggle('compact', scrollY > 36);
-}, { passive: true });
+function loadTasks() {
+  try { _tasks = JSON.parse(localStorage.getItem('kt2_tasks_' + (_code||'x')) || '[]'); } catch { _tasks = []; }
+}
+function saveTasks() {
+  try { localStorage.setItem('kt2_tasks_' + (_code||'x'), JSON.stringify(_tasks)); } catch {}
+}
 
-// ─────────────────────────────────────────────
-//  LOAD
-// ─────────────────────────────────────────────
 async function loadData() {
   try {
     const r = await fetch('/.netlify/functions/load?code=' + encodeURIComponent(_code));
@@ -579,7 +934,7 @@ async function loadData() {
     if (!j.data) throw new Error('empty');
     _data = j.data;
     render();
-  } catch (e) {
+  } catch {
     showErr('تعذّر تحميل بيانات الرحلة. تحقق من الرابط أو تواصل مع المنظّم.');
   }
 }
@@ -590,55 +945,114 @@ function showErr(msg) {
   if (msg) document.getElementById('err-msg').textContent = msg;
 }
 
-// ─────────────────────────────────────────────
-//  RENDER
-// ─────────────────────────────────────────────
+// ─── RENDER ───
 function render() {
   document.getElementById('scr-loading').style.display = 'none';
   document.getElementById('trip-wrap').style.display = 'block';
 
-  const ti   = _data.tripInfo   || {};
-  const itin = _data.itinerary  || [];
-  const bud  = _data.budget     || [];
+  const ti   = _data.tripInfo  || {};
+  _itin      = _data.itinerary || [];
+  const bud  = _data.budget    || [];
 
-  // Header name
-  const hn = document.getElementById('hdr-trip-name');
-  if (hn) hn.textContent = ti.destination || 'جدول الرحلة';
-
-  // Share URL placeholder
+  document.getElementById('hdr-trip-name').textContent = ti.destination || 'جدول الرحلة';
   document.getElementById('share-url').textContent = location.href;
 
   // Hero
-  document.getElementById('hero-slot').innerHTML = buildHero(ti, itin);
+  document.getElementById('hero-slot').innerHTML = buildCountdown(ti, _itin);
 
-  // Tabs
-  buildTabs(itin);
+  // Days
+  const now = new Date(); now.setHours(0,0,0,0);
+  const sd  = ti.startDate ? new Date(ti.startDate + 'T00:00:00') : null;
+  let activeDay = 0;
+  if (sd) {
+    const diff = Math.floor((now - sd) / 86400000);
+    if (diff >= 0 && diff < _itin.length) activeDay = diff;
+  }
+  document.getElementById('days-col').innerHTML = _itin.map((d, i) => buildDay(d, i, i === activeDay)).join('');
 
-  // Day cards
-  document.getElementById('days-col').innerHTML = itin.map((d,i) => buildDay(d,i)).join('');
+  // Build map data
+  _mapData = [];
+  _itin.forEach((d, di) => {
+    (d.items || []).forEach(it => {
+      if (it.lat && it.lng) {
+        _mapData.push({ lat: +it.lat, lng: +it.lng, text: noEmoji(it.text||''), type: it.type||'default', day: di, city: d.city||'' });
+      }
+    });
+  });
+  buildMapFilters();
 
-  // Budget sidebar
-  document.getElementById('budget-sidebar').innerHTML = buildBudget(bud);
+  // Budget
+  const budHtml = buildBudget(bud);
+  document.getElementById('budget-main').innerHTML = budHtml;
+  document.getElementById('currency-main').innerHTML = buildCurrencyWidget();
 
-  // FAB — always show once data loaded
-  document.getElementById('fab').classList.add('show');
+  // Desktop sidebar
+  const sb = document.getElementById('budget-sidebar');
+  if (window.innerWidth >= 1024) {
+    sb.style.display = 'block';
+    sb.innerHTML = budHtml + buildCurrencyWidget();
+  }
+  window.addEventListener('resize', () => {
+    const w = window.innerWidth;
+    if (w >= 1024) {
+      sb.style.display = 'block';
+      sb.innerHTML = buildBudget(bud) + buildCurrencyWidget();
+      initBars();
+      bindCurrencyInputs();
+    } else {
+      sb.style.display = 'none';
+    }
+  });
+
+  // Info
+  document.getElementById('info-slot').innerHTML = buildInfoTab(ti, _itin);
+
+  // Print day list
+  document.getElementById('print-day-list').innerHTML = _itin.map((d, i) => `
+    <button class="print-day-btn" onclick="printDay(${i});closeModal('print-modal')">
+      <div class="pd-num">يوم ${d.day||i+1}</div>
+      <div class="pd-city">${noEmoji(d.city||d.title||'').split(' ')[0]}</div>
+    </button>`).join('');
+
+  // Currency modal
+  document.getElementById('cur-modal-body').innerHTML = buildCurrencyWidget('modal');
 
   // Post-trip report
   const ed = ti.endDate ? new Date(ti.endDate + 'T00:00:00') : null;
-  const now = new Date(); now.setHours(0,0,0,0);
   if (ed && ed < now) {
-    document.getElementById('report-slot').innerHTML = buildReport(ti, itin, bud);
+    document.getElementById('report-slot').innerHTML = buildReport(ti, _itin, bud);
   }
+
+  // FAB
+  document.getElementById('fab').classList.add('show');
 
   initReveal();
   initBars();
-  initTabsObs(itin);
+  bindCurrencyInputs();
+  buildTasksBody();
 }
 
-// ─────────────────────────────────────────────
-//  HERO
-// ─────────────────────────────────────────────
-function buildHero(ti, itin) {
+// ─── TAB SWITCHING ───
+let _activeTab = 'schedule';
+function switchTab(id, navIdx) {
+  _activeTab = id;
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  const tab = document.getElementById('tab-' + id);
+  if (tab) tab.classList.add('active');
+
+  document.querySelectorAll('.bnav-item').forEach((b, i) => b.classList.toggle('active', i === navIdx));
+
+  if (id === 'map' && !_mapLoaded) {
+    // Show placeholder hint
+  }
+  if (id === 'budget') {
+    setTimeout(() => initBars(), 50);
+    setTimeout(() => bindCurrencyInputs(), 50);
+  }
+}
+
+// ─── COUNTDOWN BANNER ───
+function buildCountdown(ti, itin) {
   const dest = ti.destination || 'رحلتك';
   const flag = destFlag(dest);
   const dur  = (ti.startDate && ti.endDate) ? daysBetween(ti.startDate, ti.endDate) : itin.length;
@@ -646,10 +1060,46 @@ function buildHero(ti, itin) {
   const now = new Date(); now.setHours(0,0,0,0);
   const sd  = ti.startDate ? new Date(ti.startDate + 'T00:00:00') : null;
   const ed  = ti.endDate   ? new Date(ti.endDate   + 'T00:00:00') : null;
-  let stxt = 'قادمة ✦', scls = '';
+
+  let statusChip = '', cdHtml = '', progressHtml = '';
   if (sd && ed) {
-    if (now >= sd && now <= ed) { stxt = 'جارية الآن 🟢'; scls = 'chip-active'; }
-    else if (now > ed)          { stxt = 'مكتملة ✓';     scls = 'chip-done';   }
+    if (now < sd) {
+      const days = Math.round((sd - now) / 86400000);
+      statusChip = `<span class="cb-chip cb-chip-status">قادمة ✦</span>`;
+      cdHtml = `<div class="cb-countdown">
+        <span class="ms">schedule</span>
+        <div>
+          <div class="cb-cd-text">باقٍ <strong>${days}</strong> يوم على انطلاق رحلتك</div>
+          <div class="cb-cd-sub">${fmtDate(ti.startDate)}</div>
+        </div>
+      </div>`;
+    } else if (now >= sd && now <= ed) {
+      const dayNum = Math.round((now - sd) / 86400000) + 1;
+      const totalDays = Math.round((ed - sd) / 86400000) + 1;
+      const pct = Math.round((dayNum / totalDays) * 100);
+      const todayCity = itin[dayNum - 1] ? (itin[dayNum - 1].city || '') : '';
+      statusChip = `<span class="cb-chip cb-chip-status cb-chip-active">جارية الآن 🟢</span>`;
+      cdHtml = `<div class="cb-countdown">
+        <span class="ms">location_on</span>
+        <div>
+          <div class="cb-cd-text">اليوم ${dayNum} من ${totalDays}${todayCity ? ' · أنت الآن في ' + todayCity : ''}</div>
+          <div class="cb-cd-sub">${fmtDate(ti.startDate)} — ${fmtDate(ti.endDate)}</div>
+        </div>
+      </div>
+      <div class="cb-progress" style="margin-bottom:1rem">
+        <div class="cb-progress-fill" style="width:${pct}%"></div>
+      </div>`;
+    } else {
+      const days = Math.round((now - ed) / 86400000);
+      statusChip = `<span class="cb-chip cb-chip-status cb-chip-done">مكتملة ✓</span>`;
+      cdHtml = `<div class="cb-countdown">
+        <span class="ms">celebration</span>
+        <div>
+          <div class="cb-cd-text">انتهت رحلتك قبل ${days} يوم</div>
+          <div class="cb-cd-sub">نتمنى أنك استمتعت بكل لحظة 🎉</div>
+        </div>
+      </div>`;
+    }
   }
 
   const out = (ti.outboundFlights || []).filter(f => f.airline || f.from);
@@ -657,120 +1107,92 @@ function buildHero(ti, itin) {
   const flHtml = (out.length || ret.length) ? `
     <div class="flights-strip">
       <div class="fl-row">
-        <div class="fl-label"><span class="material-symbols-rounded ms" style="font-size:11px">flight_takeoff</span> الذهاب</div>
+        <div class="fl-label"><span class="ms" style="font-size:12px">flight_takeoff</span> الذهاب</div>
         ${out.slice(0,1).map(f=>`<div class="fl-detail">${f.airline||''}${f.depTime?' · '+f.depTime:''}</div>`).join('')}
-        ${out.length>1?`<div style="font-size:.62rem;opacity:.6">+${out.length-1} رحلة</div>`:''}
       </div>
       <div class="fl-row">
-        <div class="fl-label"><span class="material-symbols-rounded ms" style="font-size:11px">flight_land</span> العودة</div>
+        <div class="fl-label"><span class="ms" style="font-size:12px">flight_land</span> العودة</div>
         ${ret.slice(0,1).map(f=>`<div class="fl-detail">${f.airline||''}${f.depTime?' · '+f.depTime:''}</div>`).join('')}
-        ${ret.length>1?`<div style="font-size:.62rem;opacity:.6">+${ret.length-1} رحلة</div>`:''}
       </div>
-    </div>
-  ` : '';
+    </div>` : '';
 
   return `
-    <div class="trip-hero" data-r>
-      <div class="hero-flag">${flag}</div>
-      <div class="hero-title">${dest}</div>
-      <div class="hero-chips">
-        ${ti.startDate?`<span class="hero-chip"><span class="material-symbols-rounded ms">calendar_today</span>${fmtDate(ti.startDate)}${ti.endDate?' — '+fmtDate(ti.endDate):''}</span>`:''}
-        ${dur?`<span class="hero-chip"><span class="material-symbols-rounded ms">schedule</span>${dur} يوم</span>`:''}
-        ${ti.travelers?`<span class="hero-chip"><span class="material-symbols-rounded ms">group</span>${ti.travelers} مسافر</span>`:''}
-        ${ti.ticketRef?`<span class="hero-chip"><span class="material-symbols-rounded ms">confirmation_number</span>${ti.ticketRef}</span>`:''}
-        <span class="hero-chip chip-status ${scls}">${stxt}</span>
+    <div class="countdown-banner" data-r>
+      <div class="cb-flag">${flag}</div>
+      <div class="cb-title">${dest}</div>
+      <div class="cb-chips">
+        ${ti.startDate?`<span class="cb-chip"><span class="ms" style="font-size:13px">calendar_today</span>${fmtDate(ti.startDate)}${ti.endDate?' — '+fmtDate(ti.endDate):''}</span>`:''}
+        ${dur?`<span class="cb-chip"><span class="ms" style="font-size:13px">schedule</span>${dur} يوم</span>`:''}
+        ${ti.travelers?`<span class="cb-chip"><span class="ms" style="font-size:13px">group</span>${ti.travelers} مسافر</span>`:''}
+        ${ti.ticketRef?`<span class="cb-chip"><span class="ms" style="font-size:13px">confirmation_number</span>${ti.ticketRef}</span>`:''}
+        ${statusChip}
       </div>
+      ${cdHtml}
       ${flHtml}
     </div>`;
 }
 
-// ─────────────────────────────────────────────
-//  TABS
-// ─────────────────────────────────────────────
-function buildTabs(itin) {
-  document.getElementById('day-tabs').innerHTML = itin.map((d,i)=>`
-    <button class="day-tab${i===0?' active':''}" data-i="${i}" onclick="goDay(${i})">
-      ${d.day?'يوم '+d.day:'يوم '+(i+1)} · ${(d.city||d.title||'').replace(/[\u{1F000}-\u{1FFFF}]|[\u{2600}-\u{27BF}]/gu,'').trim().split(/\s/)[0]}
-    </button>`).join('');
-}
-
-function goDay(i) {
-  const el = document.getElementById('ds-' + i);
-  if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
-  document.querySelectorAll('.day-tab').forEach((t,j) => t.classList.toggle('active', j===i));
-  const tab = document.querySelector(`.day-tab[data-i="${i}"]`);
-  if (tab) tab.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
-}
-
-function initTabsObs(itin) {
-  if (!('IntersectionObserver' in window)) return;
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        const i = +e.target.dataset.di;
-        document.querySelectorAll('.day-tab').forEach((t,j) => t.classList.toggle('active', j===i));
-        const tab = document.querySelector(`.day-tab[data-i="${i}"]`);
-        if (tab) tab.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
-      }
-    });
-  }, { threshold:.25, rootMargin:'-100px 0px -45% 0px' });
-  itin.forEach((_,i) => {
-    const el = document.getElementById('ds-'+i);
-    if (el) { el.dataset.di = i; obs.observe(el); }
-  });
-}
-
-// ─────────────────────────────────────────────
-//  DAY CARD
-// ─────────────────────────────────────────────
-function buildDay(d, i) {
-  const num   = d.day || (i+1);
+// ─── DAY CARDS ───
+function buildDay(d, i, isActive) {
+  const num   = d.day || (i + 1);
   const hotel = d.hotel || {};
   const items = d.items || [];
+  const itemCount = items.length;
 
   const hotelBanner = hotel.name ? `
     <div class="hotel-banner">
-      <span class="material-symbols-rounded ms">hotel</span>
+      <span class="ms">hotel</span>
       ${hotel.name}${hotel.area?' · '+hotel.area:''}${hotel.checkIn?' · دخول '+hotel.checkIn:''}
     </div>` : '';
 
   const narr = (d.narrative||'').replace(/💡\s*/g,'').trim();
   const narrHtml = narr ? `
     <div class="day-narrative">
-      <span class="material-symbols-rounded ms">lightbulb</span>
-      <span>${narr.substring(0,220)}${narr.length>220?'…':''}</span>
+      <span class="ms">lightbulb</span>
+      <span>${narr.substring(0,240)}${narr.length>240?'…':''}</span>
     </div>` : '';
 
   return `
-    <div class="day-section" id="ds-${i}">
-      <div class="day-card" data-r style="--rd:${Math.min(i*50,300)}ms">
-        <div class="day-hdr">
-          <div class="day-badge">${num}</div>
-          <div class="day-info">
-            <div class="day-wkday">${d.weekday||''}${d.dateLabel?' · '+d.dateLabel:d.date?' · '+d.date:''}</div>
-            <div class="day-name">${noEmoji(d.title||d.city||'')}</div>
-            ${d.city?`<div class="day-city-row"><span class="material-symbols-rounded ms">location_on</span>${d.city}</div>`:''}
-          </div>
+    <div class="day-card${isActive?' open active-day':''}" id="dc-${i}" data-r style="--rd:${Math.min(i*40,280)}ms">
+      <div class="day-hdr" onclick="toggleDay(${i})">
+        <div class="day-badge">${num}</div>
+        <div class="day-info">
+          <div class="day-wkday">${d.weekday||''}${d.dateLabel?' · '+d.dateLabel:d.date?' · '+d.date:''}</div>
+          <div class="day-name">${noEmoji(d.title||d.city||'')}</div>
+          ${d.city&&d.title?`<div class="day-city-row"><span class="ms" style="font-size:13px">location_on</span>${d.city}</div>`:''}
         </div>
+        <div class="day-meta">
+          <span class="day-count">${itemCount} نشاط</span>
+          <div class="day-toggle"><span class="ms">expand_more</span></div>
+        </div>
+      </div>
+      <div class="day-body">
         ${hotelBanner}
         ${narrHtml}
         <div class="timeline">
-          ${items.map((it,j) => buildItem(it, j, items.length)).join('')}
+          ${items.map((it, j) => buildItem(it, j, items.length)).join('')}
         </div>
       </div>
     </div>`;
 }
 
+function toggleDay(i) {
+  const card = document.getElementById('dc-' + i);
+  if (!card) return;
+  card.classList.toggle('open');
+}
+
+// ─── TIMELINE ITEM ───
 function buildItem(it, j, total) {
-  const icon  = ICONS[it.type] || ICONS.default;
-  const last  = j === total - 1;
-  const done  = !!it.done;
+  const icon = ICONS[it.type] || ICONS.default;
+  const last = j === total - 1;
+  const done = !!it.done;
 
   const tags = [
-    it.bookingLink ? `<span class="tag tag-booked"><span class="material-symbols-rounded ms">check_circle</span>محجوز</span>` : '',
-    it.notes       ? `<span class="tag tag-note" onclick="tNote(this)"><span class="material-symbols-rounded ms">sticky_note_2</span>ملاحظة</span>` : '',
-    it.nearby?.length ? `<span class="tag tag-nearby" onclick="tNear(this)"><span class="material-symbols-rounded ms">explore</span>في المنطقة (${it.nearby.length})</span>` : '',
-    (it.lat && it.lng) ? `<a class="tag tag-map" href="https://maps.google.com/?q=${it.lat},${it.lng}" target="_blank"><span class="material-symbols-rounded ms">map</span>خريطة</a>` : ''
+    it.bookingLink ? `<span class="tag tag-booked"><span class="ms">check_circle</span>محجوز</span>` : '',
+    it.notes ? `<span class="tag tag-note" onclick="tNote(this)"><span class="ms">sticky_note_2</span>ملاحظة</span>` : '',
+    it.nearby?.length ? `<span class="tag tag-nearby" onclick="tNear(this)"><span class="ms">explore</span>في المنطقة (${it.nearby.length})</span>` : '',
+    (it.lat && it.lng) ? `<a class="tag tag-map" href="https://maps.google.com/?q=${it.lat},${it.lng}" target="_blank"><span class="ms">map</span>خريطة</a>` : ''
   ].filter(Boolean).join('');
 
   const nearCards = (it.nearby||[]).map(n=>`
@@ -783,10 +1205,10 @@ function buildItem(it, j, total) {
     </div>`).join('');
 
   return `
-    <div class="tl-item${done?' done-item':''}" style="--d:${j*45}ms">
+    <div class="tl-item${done?' done-item':''}" style="--d:${j*40}ms">
       <div class="tl-time">${it.time||''}</div>
       <div class="tl-pin">
-        <div class="tl-dot"><span class="material-symbols-rounded ms">${done?'check':icon}</span></div>
+        <div class="tl-dot"><span class="ms">${done?'check':icon}</span></div>
         ${!last?'<div class="tl-vline"></div>':''}
       </div>
       <div class="tl-body">
@@ -795,49 +1217,109 @@ function buildItem(it, j, total) {
         ${it.notes?`<div class="tl-note-body">${it.notes}</div>`:''}
         ${it.nearby?.length?`
           <div class="tl-nearby-panel">
-            <div class="nearby-head"><span class="material-symbols-rounded ms">explore</span>اقتراحات في المنطقة</div>
-            <div>${nearCards}</div>
+            <div class="nearby-head"><span class="ms">explore</span>اقتراحات في المنطقة</div>
+            ${nearCards}
           </div>`:''}
       </div>
     </div>`;
 }
 
-// ─────────────────────────────────────────────
-//  BUDGET
-// ─────────────────────────────────────────────
+// ─── MAP ───
+function buildMapFilters() {
+  const dayNames = _itin.map((d, i) => `يوم ${d.day||i+1}`);
+  document.getElementById('map-filters').innerHTML = `
+    <button class="map-filter-btn active" onclick="filterMap(-1, this)">كل الأيام</button>
+    ${dayNames.map((n, i) => `<button class="map-filter-btn" onclick="filterMap(${i}, this)">${n}</button>`).join('')}`;
+}
+
+function filterMap(dayIdx, btn) {
+  _currentMapDay = dayIdx;
+  document.querySelectorAll('.map-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (_mapLoaded && _leafletMap) drawMapMarkers();
+}
+
+function loadMap() {
+  if (_mapLoaded) return;
+  const ph = document.getElementById('map-placeholder');
+  if (ph) { ph.innerHTML = '<div class="spinner" style="border-color:rgba(255,255,255,.3);border-top-color:#fff"></div>'; }
+  loadLeaflet().then(() => {
+    _mapLoaded = true;
+    document.getElementById('map-placeholder').style.display = 'none';
+    const mc = document.getElementById('map-container');
+    mc.style.display = 'block';
+    const center = _mapData.length ? [_mapData[0].lat, _mapData[0].lng] : [37.5665, 126.9780];
+    _leafletMap = L.map('map-container').setView(center, 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap',
+      maxZoom: 18
+    }).addTo(_leafletMap);
+    drawMapMarkers();
+  }).catch(() => {
+    document.getElementById('map-placeholder').innerHTML = `<div style="text-align:center;color:#fff"><div style="font-size:1.8rem">⚠️</div><div>تعذّر تحميل الخريطة</div><div style="font-size:0.75rem;opacity:.6;margin-top:0.3rem">تحقق من الاتصال</div></div>`;
+  });
+}
+
+function drawMapMarkers() {
+  if (!_leafletMap) return;
+  _leafletMap.eachLayer(l => { if (l instanceof L.Marker) _leafletMap.removeLayer(l); });
+  const visible = _currentMapDay === -1 ? _mapData : _mapData.filter(p => p.day === _currentMapDay);
+  visible.forEach(p => {
+    const color = PIN_COLORS[p.type] || PIN_COLORS.default;
+    const icon = L.divIcon({
+      html: `<div style="width:32px;height:32px;background:${color};border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>`,
+      className: '', iconSize: [32,32], iconAnchor: [16,32], popupAnchor: [0,-36]
+    });
+    const mapsUrl = `https://maps.google.com/?q=${p.lat},${p.lng}`;
+    L.marker([p.lat, p.lng], { icon })
+      .addTo(_leafletMap)
+      .bindPopup(`<div style="font-family:inherit;direction:rtl;max-width:180px"><strong style="font-size:0.82rem">${p.text}</strong><br><a href="${mapsUrl}" target="_blank" style="color:#2E7CF6;font-size:0.72rem">فتح في الخريطة ↗</a></div>`);
+  });
+  if (visible.length) {
+    const bounds = L.latLngBounds(visible.map(p => [p.lat, p.lng]));
+    _leafletMap.fitBounds(bounds, { padding: [40, 40] });
+  }
+}
+
+function loadLeaflet() {
+  if (window.L) return Promise.resolve();
+  return new Promise((res, rej) => {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(css);
+    const s = document.createElement('script');
+    s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    s.onload = res;
+    s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+
+// ─── BUDGET ───
 function buildBudget(bud) {
   if (!bud || !bud.length) return '';
-
-  const cats = bud.map((b,i) => {
-    const ce  = _cExp.filter(e => e.catId===b.id).reduce((s,e)=>s+e.amount,0);
-    const act = (b.actual||0) + ce;
-    return { ...b, act, color: BCOLORS[i % BCOLORS.length] };
+  const cats = bud.map((b, i) => {
+    const ce = _cExp.filter(e => e.catId === b.id).reduce((s, e) => s + e.amount, 0);
+    return { ...b, act: (b.actual||0) + ce, color: BCOLORS[i % BCOLORS.length] };
   });
+  const totEst = cats.reduce((s, c) => s + (c.estimated||0), 0);
+  const totAct = cats.reduce((s, c) => s + c.act, 0);
+  const over = totAct > totEst;
 
-  const totEst = cats.reduce((s,c)=>s+(c.estimated||0),0);
-  const totAct = cats.reduce((s,c)=>s+c.act,0);
-  const over   = totAct > totEst;
-
-  // Donut
-  const R = 62, CX = 80, CY = 80, circ = 2*Math.PI*R;
+  const R = 78, CX = 100, CY = 100, circ = 2 * Math.PI * R;
   let off = 0;
   const segs = cats.map(c => {
-    const frac = totEst>0 ? (c.estimated||0)/totEst : 0;
-    const len  = frac * circ;
-    const s    = { da:`${len.toFixed(2)} ${(circ-len).toFixed(2)}`, off:off.toFixed(2), color:c.color };
+    const frac = totEst > 0 ? (c.estimated||0) / totEst : 0;
+    const len = frac * circ;
+    const s = { da: `${len.toFixed(2)} ${(circ - len).toFixed(2)}`, off: off.toFixed(2), color: c.color };
     off += len;
     return s;
   });
 
-  const donutSvg = `
-    <svg class="donut-svg" viewBox="0 0 160 160">
-      <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="var(--sand-deep)" stroke-width="14"/>
-      ${segs.map(s=>`<circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="${s.color}" stroke-width="14"
-        stroke-dasharray="${s.da}" stroke-dashoffset="-${s.off}"/>`).join('')}
-    </svg>`;
-
   const catRows = cats.map(c => {
-    const pBar  = c.estimated>0 ? Math.min(c.act/c.estimated*100,100) : 0;
+    const pBar = c.estimated > 0 ? Math.min(c.act / c.estimated * 100, 100) : 0;
+    const pct  = totEst > 0 ? Math.round((c.estimated||0) / totEst * 100) : 0;
     const isOvr = c.act > c.estimated;
     return `
       <div class="bcat-row-item">
@@ -847,24 +1329,28 @@ function buildBudget(bud) {
             <div class="bcat-name">${c.category}</div>
             <div class="bcat-vals">
               <span class="${isOvr?'act-over':'act'}">${c.act.toLocaleString('ar-SA')}</span>
-              <span style="color:var(--ink-muted)"> / ${(c.estimated||0).toLocaleString('ar-SA')} ر.س</span>
+              <span> / ${(c.estimated||0).toLocaleString('ar-SA')} ر.س</span>
             </div>
           </div>
+          <div class="bcat-pct">${pct}%</div>
         </div>
         <div class="bbar-wrap"><div class="bbar${isOvr?' over':''}" style="width:0" data-w="${pBar.toFixed(1)}"></div></div>
       </div>`;
   }).join('');
 
   return `
-    <div class="budget-section">
-      <div class="sec-head">
-        <span class="material-symbols-rounded ms">account_balance_wallet</span>
+    <div>
+      <div class="sec-head" style="margin-top:1rem">
+        <span class="ms">account_balance_wallet</span>
         <h2>ميزانية الرحلة</h2>
       </div>
-
       <div class="bcard" data-r>
         <div class="donut-wrap">
-          ${donutSvg}
+          <svg class="donut-svg" viewBox="0 0 200 200">
+            <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="var(--sand-deep)" stroke-width="16"/>
+            ${segs.map(s=>`<circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="${s.color}" stroke-width="16"
+              stroke-dasharray="${s.da}" stroke-dashoffset="-${s.off}"/>`).join('')}
+          </svg>
           <div class="donut-center">
             <div class="donut-lbl">المتوقع</div>
             <div class="donut-val">${totEst.toLocaleString('ar-SA')}</div>
@@ -872,44 +1358,253 @@ function buildBudget(bud) {
           </div>
         </div>
         <div class="bstatus ${over?'over':'ok'}">
-          <span class="material-symbols-rounded ms">${over?'trending_up':'check_circle'}</span>
+          <span class="ms">${over?'trending_up':'check_circle'}</span>
           ${over?'تجاوزت الميزانية':'ضمن الميزانية'}
         </div>
-        <div class="bsum-row">
-          <span>المتوقع</span>
-          <strong>${totEst.toLocaleString('ar-SA')} ر.س</strong>
-        </div>
-        <div class="bsum-row">
-          <span>الفعلي</span>
-          <strong>${totAct.toLocaleString('ar-SA')} ر.س</strong>
-        </div>
+        <div class="bsum-row"><span>الإجمالي المتوقع</span><strong>${totEst.toLocaleString('ar-SA')} ر.س</strong></div>
+        <div class="bsum-row"><span>الفعلي حتى الآن</span><strong>${totAct.toLocaleString('ar-SA')} ر.س</strong></div>
+        ${totAct>0?`<div class="bsum-row"><span>المتبقي</span><strong style="color:${over?'#dc2626':'#16a34a'}">${Math.abs(totEst-totAct).toLocaleString('ar-SA')} ر.س</strong></div>`:''}
       </div>
+      <div class="bcat-list" data-r>${catRows}</div>
+    </div>`;
+}
 
-      <div class="bcat-list" data-r>
-        ${catRows}
+// ─── CURRENCY WIDGET ───
+function buildCurrencyWidget(mode) {
+  const id = mode === 'modal' ? 'cur-m' : 'cur-w';
+  return `
+    <div class="cur-widget" ${mode==='modal'?'style="box-shadow:none;padding:0"':''}>
+      ${mode!=='modal'?`<div class="cur-title"><span class="ms">currency_exchange</span>محوّل العملات</div>`:''}
+      <div class="cur-base-row">
+        <span class="cur-flag">🇸🇦</span>
+        <input class="cur-base-input" type="number" id="${id}-input" value="100" min="0" placeholder="0" oninput="calcCurrency('${id}')">
+        <span class="cur-base-label">ريال سعودي</span>
+      </div>
+      <div class="cur-results">
+        <div class="cur-row">
+          <div class="cur-row-top"><span class="cur-row-flag">🇰🇷</span><span class="cur-row-name">وون كوري</span></div>
+          <div class="cur-row-val" id="${id}-KRW">—</div>
+        </div>
+        <div class="cur-row">
+          <div class="cur-row-top"><span class="cur-row-flag">🇺🇸</span><span class="cur-row-name">دولار</span></div>
+          <div class="cur-row-val" id="${id}-USD">—</div>
+        </div>
+        <div class="cur-row">
+          <div class="cur-row-top"><span class="cur-row-flag">🇪🇺</span><span class="cur-row-name">يورو</span></div>
+          <div class="cur-row-val" id="${id}-EUR">—</div>
+        </div>
+        <div class="cur-row">
+          <div class="cur-row-top"><span class="cur-row-flag">🇦🇪</span><span class="cur-row-name">درهم</span></div>
+          <div class="cur-row-val" id="${id}-AED">—</div>
+        </div>
       </div>
     </div>`;
 }
 
-// ─────────────────────────────────────────────
-//  POST-TRIP REPORT
-// ─────────────────────────────────────────────
+function calcCurrency(id) {
+  const input = document.getElementById(id + '-input');
+  if (!input) return;
+  const sar = parseFloat(input.value) || 0;
+  ['KRW','USD','EUR','AED'].forEach(c => {
+    const el = document.getElementById(id + '-' + c);
+    if (!el) return;
+    const val = sar * CUR_RATES[c];
+    const sym = CUR_INFO[c].sym;
+    el.textContent = c === 'KRW'
+      ? sym + ' ' + Math.round(val).toLocaleString('en')
+      : sym + ' ' + val.toFixed(2);
+  });
+}
+
+function bindCurrencyInputs() {
+  ['cur-w-input','cur-m-input'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) calcCurrency(id.replace('-input',''));
+  });
+}
+
+// ─── INFO TAB ───
+function buildInfoTab(ti, itin) {
+  const out = (ti.outboundFlights || []).filter(f => f.airline || f.from || f.to);
+  const ret = (ti.returnFlights   || []).filter(f => f.airline || f.from || f.to);
+  const allHotels = [...new Map(
+    itin.flatMap(d => d.hotel && d.hotel.name ? [d.hotel] : []).map(h => [h.name, h])
+  ).values()];
+
+  const flightCard = (f, label, icon) => `
+    <div class="flight-card">
+      <div class="flight-card-dir"><span class="ms">${icon}</span>${label}</div>
+      <div class="flight-route">
+        <div class="fl-airport">
+          <div class="fl-code">${f.from||'—'}</div>
+          <div class="fl-time">${f.depTime||''}</div>
+        </div>
+        <div class="fl-line"></div>
+        <div class="fl-airport">
+          <div class="fl-code">${f.to||'—'}</div>
+          <div class="fl-time">${f.arrTime||''}</div>
+        </div>
+      </div>
+      ${f.airline?`<div class="fl-airline">${f.airline}${f.flightNo?' · '+f.flightNo:''}</div>`:''}
+    </div>`;
+
+  const flightsHtml = (out.length || ret.length) ? `
+    <div class="info-section">
+      <div class="sec-head"><span class="ms">flight</span><h2>رحلات الطيران</h2></div>
+      ${out.map(f => flightCard(f, 'رحلة الذهاب', 'flight_takeoff')).join('')}
+      ${ret.map(f => flightCard(f, 'رحلة العودة', 'flight_land')).join('')}
+    </div>` : '';
+
+  const hotelsHtml = allHotels.length ? `
+    <div class="info-section">
+      <div class="sec-head"><span class="ms">hotel</span><h2>الفنادق</h2></div>
+      <div class="info-grid">
+        ${allHotels.map(h => `
+          <div class="info-card">
+            <div class="info-card-icon">🏨</div>
+            <div class="info-card-label">فندق</div>
+            <div class="info-card-val">${h.name}</div>
+            ${h.area?`<div class="info-card-sub">${h.area}</div>`:''}
+          </div>`).join('')}
+      </div>
+    </div>` : '';
+
+  const emgHtml = `
+    <div class="info-section">
+      <div class="sec-head"><span class="ms">emergency</span><h2>أرقام الطوارئ</h2></div>
+      ${EMERGENCY.map(e => `
+        <div class="emg-card">
+          <div class="emg-icon">${e.icon}</div>
+          <div>
+            <div class="emg-name">${e.name}</div>
+            <div class="emg-phone">${e.phone}</div>
+            <div class="emg-note">${e.note}</div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+
+  const appsHtml = `
+    <div class="info-section">
+      <div class="sec-head"><span class="ms">apps</span><h2>تطبيقات موصى بها</h2></div>
+      <div class="app-grid">
+        ${APPS.map(a => `
+          <div class="app-card">
+            <div class="app-card-icon">${a.icon}</div>
+            <div class="app-card-name">${a.name}</div>
+            <div class="app-card-note">${a.note}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  const tripInfoHtml = `
+    <div class="info-section">
+      <div class="sec-head"><span class="ms">info</span><h2>بيانات الرحلة</h2></div>
+      <div class="info-grid">
+        ${ti.destination?`<div class="info-card"><div class="info-card-icon">${destFlag(ti.destination)}</div><div class="info-card-label">الوجهة</div><div class="info-card-val">${ti.destination}</div></div>`:''}
+        ${ti.travelers?`<div class="info-card"><div class="info-card-icon">👥</div><div class="info-card-label">المسافرون</div><div class="info-card-val">${ti.travelers} شخص</div></div>`:''}
+        ${ti.startDate?`<div class="info-card"><div class="info-card-icon">📅</div><div class="info-card-label">تاريخ المغادرة</div><div class="info-card-val">${fmtDate(ti.startDate)}</div></div>`:''}
+        ${ti.endDate?`<div class="info-card"><div class="info-card-icon">🏠</div><div class="info-card-label">تاريخ العودة</div><div class="info-card-val">${fmtDate(ti.endDate)}</div></div>`:''}
+        ${ti.ticketRef?`<div class="info-card"><div class="info-card-icon">🎫</div><div class="info-card-label">رقم الحجز</div><div class="info-card-val" style="direction:ltr;font-family:'Plus Jakarta Sans',sans-serif">${ti.ticketRef}</div></div>`:''}
+      </div>
+    </div>`;
+
+  return tripInfoHtml + flightsHtml + hotelsHtml + emgHtml + appsHtml;
+}
+
+// ─── TASKS ───
+function buildTasksBody() {
+  let total = 0, done = 0;
+  const html = TASK_CATS.map(cat => {
+    const rows = cat.tasks.map(t => {
+      total++;
+      const isDone = _tasks.includes(t.id);
+      if (isDone) done++;
+      return `
+        <div class="task-item${isDone?' done':''}" id="ti-${t.id}" onclick="toggleTask('${t.id}')">
+          <div class="task-check"><span class="ms">check</span></div>
+          <div class="task-text">${t.text}</div>
+          <div class="task-priority ${t.priority}">${{high:'مهم',med:'متوسط',low:'اختياري'}[t.priority]||''}</div>
+        </div>`;
+    }).join('');
+    return `
+      <div class="task-cat-head"><span class="ms">${cat.icon}</span>${cat.label}</div>
+      ${rows}`;
+  }).join('');
+
+  document.getElementById('tasks-body').innerHTML = html;
+  updateTasksProgress(done, total);
+}
+
+function toggleTask(id) {
+  const idx = _tasks.indexOf(id);
+  if (idx === -1) _tasks.push(id); else _tasks.splice(idx, 1);
+  saveTasks();
+  const el = document.getElementById('ti-' + id);
+  if (el) el.classList.toggle('done', _tasks.includes(id));
+  const total = TASK_CATS.reduce((s, c) => s + c.tasks.length, 0);
+  updateTasksProgress(_tasks.length, total);
+}
+
+function updateTasksProgress(done, total) {
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  const fill = document.getElementById('tasks-prog-fill');
+  const lbl  = document.getElementById('tasks-prog-label');
+  if (fill) fill.style.width = pct + '%';
+  if (lbl)  lbl.textContent = `${done} من ${total} مهمة مكتملة (${pct}%)`;
+}
+
+// ─── PRINT DAY ───
+function printDay(di) {
+  const d = _itin[di];
+  if (!d) return;
+  const ti = (_data && _data.tripInfo) || {};
+  const w = window.open('', '_blank');
+  const items = (d.items || []).map(it => `
+    <tr>
+      <td style="padding:6px 8px;font-size:12px;color:#2E7CF6;font-weight:700;white-space:nowrap;vertical-align:top">${it.time||''}</td>
+      <td style="padding:6px 8px;font-size:13px;border-bottom:1px solid #eee">${noEmoji(it.text||'')}</td>
+    </tr>`).join('');
+  w.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar">
+<head><meta charset="UTF-8"><title>يوم ${d.day||di+1} - ${ti.destination||''}</title>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Readex Pro',sans-serif;margin:0;padding:2cm;direction:rtl;color:#0A2540}
+  .header{background:linear-gradient(135deg,#0A2540,#1957C2);color:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem}
+  .brand{font-size:1.4rem;font-weight:800;margin-bottom:0.3rem}
+  .day-num{font-size:2rem;font-weight:800;margin-bottom:0.2rem}
+  .day-city{font-size:1rem;opacity:.8}
+  table{width:100%;border-collapse:collapse}
+  @media print{body{padding:1cm}}
+</style></head><body>
+<div class="header">
+  <div class="brand">خطّار · ${ti.destination||''}</div>
+  <div class="day-num">اليوم ${d.day||di+1}</div>
+  <div class="day-city">${noEmoji(d.title||d.city||'')}${d.date?' · '+d.date:''}</div>
+</div>
+${d.hotel&&d.hotel.name?`<p style="background:#E7F0FE;border-radius:8px;padding:.6rem 1rem;font-size:.85rem;font-weight:600;color:#1957C2">🏨 ${d.hotel.name}${d.hotel.area?' · '+d.hotel.area:''}</p>`:''}
+<table>${items}</table>
+<p style="margin-top:1.5rem;font-size:.72rem;color:#6B7C93;text-align:center">خطّار · جدول رحلتك</p>
+<script>window.onload=()=>{window.print();window.close()}<\/script>
+</body></html>`);
+  w.document.close();
+}
+
+// ─── POST-TRIP REPORT ───
 function buildReport(ti, itin, bud) {
   const cats = (bud||[]).map(b => {
-    const ce = _cExp.filter(e=>e.catId===b.id).reduce((s,e)=>s+e.amount,0);
-    return { ...b, act:(b.actual||0)+ce };
+    const ce = _cExp.filter(e => e.catId === b.id).reduce((s, e) => s + e.amount, 0);
+    return { ...b, act: (b.actual||0) + ce };
   });
-  const totEst = cats.reduce((s,c)=>s+(c.estimated||0),0);
-  const totAct = cats.reduce((s,c)=>s+c.act,0);
-  const diff   = totEst - totAct;
-
-  const allItems = itin.flatMap(d=>d.items||[]);
-  const done     = allItems.filter(it=>it.done).length;
-  const dests    = [...new Set(itin.map(d=>d.city).filter(Boolean))].length;
-  const hls      = itin.flatMap(d=>(d.items||[]).filter(it=>it.type==='attraction'||it.type==='activity')).slice(0,8);
+  const totEst = cats.reduce((s, c) => s + (c.estimated||0), 0);
+  const totAct = cats.reduce((s, c) => s + c.act, 0);
+  const diff = totEst - totAct;
+  const allItems = itin.flatMap(d => d.items || []);
+  const done = allItems.filter(it => it.done).length;
+  const dests = [...new Set(itin.map(d => d.city).filter(Boolean))].length;
+  const hls = itin.flatMap(d => (d.items||[]).filter(it => it.type==='attraction'||it.type==='activity')).slice(0,8);
 
   return `
-    <div data-r>
+    <div data-r style="margin-top:2rem">
       <div class="report-hero">
         <div class="report-emoji">🎉</div>
         <div class="report-title">رحلتك مكتملة!</div>
@@ -920,153 +1615,133 @@ function buildReport(ti, itin, bud) {
           <div><div class="rstat-val">${done}</div><div class="rstat-lbl">تجربة مكتملة</div></div>
         </div>
       </div>
-
-      <div class="sec-head">
-        <span class="material-symbols-rounded ms">summarize</span>
-        <h2>التقرير المالي</h2>
-      </div>
+      <div class="sec-head" style="margin-top:1.5rem"><span class="ms">summarize</span><h2>التقرير المالي</h2></div>
       <div class="fin-card">
         <div class="fin-grid">
           <div class="fin-col">
-            <div class="fin-lbl">الميزانية المتوقعة</div>
+            <div class="fin-lbl">المتوقع</div>
             <div class="fin-val">${totEst.toLocaleString('ar-SA')}</div>
             <div class="fin-unit">ر.س</div>
           </div>
           <div class="fin-col">
-            <div class="fin-lbl">المصاريف الفعلية</div>
+            <div class="fin-lbl">الفعلي</div>
             <div class="fin-val">${totAct.toLocaleString('ar-SA')}</div>
             <div class="fin-unit">ر.س</div>
           </div>
         </div>
-        ${Math.abs(diff)>0?`
-          <div class="savings ${diff>0?'good':'bad'}">
-            ${diff>0
-              ?`🎯 وفّرت ${diff.toLocaleString('ar-SA')} ر.س عن الميزانية`
-              :`⚠️ تجاوزت الميزانية بـ ${Math.abs(diff).toLocaleString('ar-SA')} ر.س`}
-          </div>` : ''}
+        ${Math.abs(diff)>0?`<div class="savings ${diff>0?'good':'bad'}">${diff>0?'🎯 وفّرت':'⚠️ تجاوزت الميزانية بـ'} ${Math.abs(diff).toLocaleString('ar-SA')} ر.س</div>`:''}
       </div>
-
       ${hls.length?`
-        <div class="sec-head">
-          <span class="material-symbols-rounded ms">star</span>
-          <h2>أبرز اللحظات</h2>
-        </div>
+        <div class="sec-head"><span class="ms">star</span><h2>أبرز اللحظات</h2></div>
         <div class="hlights-scroll">
-          ${hls.map(it=>`
-            <div class="hl-card">
-              <div class="hl-ico">${itEmoji(it)}</div>
-              <div class="hl-txt">${noEmoji(it.text||'').substring(0,55)}</div>
-            </div>`).join('')}
-        </div>` : ''}
+          ${hls.map(it=>`<div class="hl-card"><div class="hl-ico">${itEmoji(it)}</div><div class="hl-txt">${noEmoji(it.text||'').substring(0,55)}</div></div>`).join('')}
+        </div>`:''}
     </div>`;
 }
 
-// ─────────────────────────────────────────────
-//  EXPENSE MODAL
-// ─────────────────────────────────────────────
-function openExp() {
-  const bud = (_data&&_data.budget)||[];
-  const sel = document.getElementById('exp-cat');
-  if (sel) sel.innerHTML = bud.map(b=>`<option value="${b.id}">${b.icon||''} ${b.category}</option>`).join('');
-  document.getElementById('exp-amount').value = '';
-  document.getElementById('exp-note').value = '';
-  document.getElementById('exp-modal').classList.add('open');
-}
-function closeExp() { document.getElementById('exp-modal').classList.remove('open'); }
-
+// ─── EXPENSE ───
 function saveExp() {
   const catId  = document.getElementById('exp-cat').value;
-  const amount = parseFloat(document.getElementById('exp-amount').value)||0;
+  const amount = parseFloat(document.getElementById('exp-amount').value) || 0;
   const note   = document.getElementById('exp-note').value.trim();
-  if (!amount||amount<=0) { toast('أدخل مبلغاً صحيحاً'); return; }
-  _cExp.push({ catId, amount, note, date:new Date().toISOString().split('T')[0], ts:Date.now() });
-  try { localStorage.setItem('kt2_cexp_'+_code, JSON.stringify(_cExp)); } catch {}
-  closeExp();
-  document.getElementById('budget-sidebar').innerHTML = buildBudget((_data&&_data.budget)||[]);
+  if (!amount || amount <= 0) { toast('أدخل مبلغاً صحيحاً'); return; }
+  _cExp.push({ catId, amount, note, date: new Date().toISOString().split('T')[0], ts: Date.now() });
+  try { localStorage.setItem('kt2_cexp_' + _code, JSON.stringify(_cExp)); } catch {}
+  closeModal('exp-modal');
+  const bud = (_data && _data.budget) || [];
+  const budHtml = buildBudget(bud);
+  document.getElementById('budget-main').innerHTML = budHtml;
+  if (document.getElementById('budget-sidebar').style.display !== 'none') {
+    document.getElementById('budget-sidebar').innerHTML = budHtml + buildCurrencyWidget();
+    bindCurrencyInputs();
+  }
   initBars();
   toast('تم إضافة المصروف ✓');
 }
 
-// ─────────────────────────────────────────────
-//  SHARE MODAL
-// ─────────────────────────────────────────────
-function openShareModal() {
-  document.getElementById('share-url').textContent = location.href;
-  document.getElementById('share-modal').classList.add('open');
-}
-function closeShareModal() { document.getElementById('share-modal').classList.remove('open'); }
-
+// ─── SHARE ───
 async function copyUrl() {
   try { await navigator.clipboard.writeText(location.href); toast('تم نسخ الرابط ✓'); }
   catch { toast('انسخ الرابط يدوياً'); }
-  closeShareModal();
+  closeModal('share-modal');
 }
 
 function shareWA() {
-  const dest = (_data&&_data.tripInfo&&_data.tripInfo.destination)||'';
-  window.open('https://wa.me/?text='+encodeURIComponent('جدول رحلة '+dest+' 📋\n'+location.href),'_blank');
-  closeShareModal();
+  const dest = (_data && _data.tripInfo && _data.tripInfo.destination) || '';
+  window.open('https://wa.me/?text=' + encodeURIComponent('جدول رحلة ' + dest + ' 📋\n' + location.href), '_blank');
+  closeModal('share-modal');
 }
 
-// ─────────────────────────────────────────────
-//  TOGGLE HELPERS
-// ─────────────────────────────────────────────
-function tNote(btn) {
-  btn.closest('.tl-body').querySelector('.tl-note-body')?.classList.toggle('open');
-}
-function tNear(btn) {
-  btn.closest('.tl-body').querySelector('.tl-nearby-panel')?.classList.toggle('open');
+// ─── MODALS ───
+function openModal(id) {
+  if (id === 'exp-modal') {
+    const bud = (_data && _data.budget) || [];
+    document.getElementById('exp-cat').innerHTML = bud.map(b => `<option value="${b.id}">${b.icon||''} ${b.category}</option>`).join('');
+    document.getElementById('exp-amount').value = '';
+    document.getElementById('exp-note').value = '';
+  }
+  if (id === 'share-modal') {
+    document.getElementById('share-url').textContent = location.href;
+  }
+  if (id === 'cur-modal') {
+    document.getElementById('cur-modal-body').innerHTML = buildCurrencyWidget('modal');
+    setTimeout(() => bindCurrencyInputs(), 50);
+  }
+  if (id === 'tasks-modal') {
+    buildTasksBody();
+  }
+  document.getElementById(id).classList.add('open');
 }
 
-// ─────────────────────────────────────────────
-//  ANIMATIONS
-// ─────────────────────────────────────────────
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ─── TOGGLE HELPERS ───
+function tNote(btn) { btn.closest('.tl-body').querySelector('.tl-note-body')?.classList.toggle('open'); }
+function tNear(btn) { btn.closest('.tl-body').querySelector('.tl-nearby-panel')?.classList.toggle('open'); }
+
+// ─── ANIMATIONS ───
 function initReveal() {
   if (!('IntersectionObserver' in window)) {
-    document.querySelectorAll('[data-r], .tl-item').forEach(el => {
-      el.classList.add(el.classList.contains('tl-item') ? 'vis' : 'rv');
-    });
+    document.querySelectorAll('[data-r],.tl-item').forEach(el => el.classList.add(el.classList.contains('tl-item')?'vis':'rv'));
     return;
   }
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (!e.isIntersecting) return;
       const isTl = e.target.classList.contains('tl-item');
-      const d    = parseInt(e.target.style.getPropertyValue('--d')||e.target.style.getPropertyValue('--rd')||'0');
-      setTimeout(() => e.target.classList.add(isTl?'vis':'rv'), d||0);
+      const d = parseInt(e.target.style.getPropertyValue('--d') || e.target.style.getPropertyValue('--rd') || '0');
+      setTimeout(() => e.target.classList.add(isTl ? 'vis' : 'rv'), d || 0);
       obs.unobserve(e.target);
     });
-  }, { threshold:.06 });
-  document.querySelectorAll('[data-r], .tl-item').forEach(el => obs.observe(el));
+  }, { threshold: .05 });
+  document.querySelectorAll('[data-r],.tl-item').forEach(el => obs.observe(el));
 }
 
 function initBars() {
   if (!('IntersectionObserver' in window)) {
-    document.querySelectorAll('.bbar').forEach(b => b.style.width = (b.dataset.w||0)+'%');
+    document.querySelectorAll('.bbar').forEach(b => { b.style.width = (b.dataset.w || 0) + '%'; });
     return;
   }
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (!e.isIntersecting) return;
-      e.target.querySelectorAll('.bbar').forEach(b => { setTimeout(() => b.style.width=(b.dataset.w||0)+'%', 150); });
+      e.target.querySelectorAll('.bbar').forEach(b => setTimeout(() => { b.style.width = (b.dataset.w || 0) + '%'; }, 150));
       obs.unobserve(e.target);
     });
-  }, { threshold:.15 });
+  }, { threshold: .1 });
   document.querySelectorAll('.bcat-list').forEach(el => obs.observe(el));
 }
 
-// ─────────────────────────────────────────────
-//  TOAST
-// ─────────────────────────────────────────────
+// ─── TOAST ───
 function toast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-// ─────────────────────────────────────────────
-//  UTILS
-// ─────────────────────────────────────────────
+// ─── UTILS ───
 function destFlag(d) {
   if (!d) return '✈️';
   const s = d.toLowerCase();
@@ -1077,16 +1752,18 @@ function destFlag(d) {
   if (s.includes('فرنس')||s.includes('france')) return '🇫🇷';
   if (s.includes('إيطال')||s.includes('italy')) return '🇮🇹';
   if (s.includes('دبي')||s.includes('امار')) return '🇦🇪';
+  if (s.includes('مصر')||s.includes('egypt')) return '🇪🇬';
+  if (s.includes('تايلاند')||s.includes('thailand')) return '🇹🇭';
   return '✈️';
 }
 
 function fmtDate(ds) {
-  try { return new Date(ds+'T00:00:00').toLocaleDateString('ar-SA',{day:'numeric',month:'long',year:'numeric'}); }
+  try { return new Date(ds + 'T00:00:00').toLocaleDateString('ar-SA', { day:'numeric', month:'long', year:'numeric' }); }
   catch { return ds; }
 }
 
-function daysBetween(a,b) {
-  try { return Math.round((new Date(b)-new Date(a))/86400000)+1; } catch { return 0; }
+function daysBetween(a, b) {
+  try { return Math.round((new Date(b) - new Date(a)) / 86400000) + 1; } catch { return 0; }
 }
 
 function noEmoji(s) {
@@ -1096,7 +1773,7 @@ function noEmoji(s) {
 function itEmoji(it) {
   const m = (it.text||'').match(/^([\p{Emoji_Presentation}\p{Extended_Pictographic}])/u);
   if (m) return m[1];
-  return {flight:'✈️',hotel:'🏨',food:'🍽️',attraction:'⭐',shop:'🛍️',transport:'🚗',activity:'🎯'}[it.type]||'📍';
+  return { flight:'✈️', hotel:'🏨', food:'🍽️', attraction:'⭐', shop:'🛍️', transport:'🚗', activity:'🎯' }[it.type] || '📍';
 }
 </script>
 </body>
