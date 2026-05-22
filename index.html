@@ -3136,6 +3136,10 @@ body.perms-view, body.perms-tasks { padding-top: 0 !important; }
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
           مشاركة
         </button>
+        <button class="hdr-share-btn" onclick="openClientShare()" title="عرض جدول العميل" style="background:var(--accent);color:#fff" id="hdr-client-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          عرض العميل
+        </button>
         <button class="hdr-back-btn" id="hdr-back-btn" onclick="navTo({dashboard:true})" hidden title="لوحة التحكم">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
           الداشبورد
@@ -14107,6 +14111,56 @@ async function openShareModal() {
         <div style="font-size:1.4rem;margin-bottom:0.4rem">⚠️</div>
         تعذّر الاتصال بالسحابة. استخدم تصدير ملف بدلاً من ذلك.
         <button class="btn btn-out" style="width:100%;margin-top:0.75rem" onclick="exportTripFile();closeModal()">⬇️ تصدير ملف الرحلة</button>
+      </div>
+    `;
+  }
+}
+
+async function openClientShare() {
+  openModal(`
+    <div class="modal-h">
+      <h3>👤 عرض رحلة العميل</h3>
+      <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="sync-box">
+      <div id="_client-share-body" style="text-align:center;padding:1.5rem 0;color:var(--muted);font-size:0.85rem">
+        <div style="font-size:1.5rem;margin-bottom:0.5rem">⏳</div>
+        جاري إعداد رابط العميل...
+      </div>
+    </div>
+  `);
+
+  const code = syncGetCode();
+  const ok   = await syncSave(code);
+  const base = location.origin + location.pathname.replace(/\/[^/]*$/, '');
+  const clientUrl = base + '/client/?code=' + code;
+  const safeUrl   = clientUrl.replace(/'/g, "\\'");
+  const waText    = encodeURIComponent('جدول رحلتك من خطّار 📋\n' + clientUrl);
+  const body = document.getElementById('_client-share-body');
+  if (!body) return;
+
+  if (ok) {
+    body.parentElement.innerHTML = `
+      <div style="padding:0.25rem 0 0.5rem">
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem">أرسل هذا الرابط مباشرةً لعميلك — يعرض جدول الرحلة والميزانية</div>
+        <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-md);padding:0.65rem 0.75rem;font-family:monospace;font-size:0.75rem;direction:ltr;word-break:break-all;cursor:pointer;margin-bottom:0.75rem"
+             onclick="navigator.clipboard?.writeText('${safeUrl}');this.style.background='rgba(34,197,94,0.08)';this.style.borderColor='var(--ok)';setTimeout(()=>{this.style.background='';this.style.borderColor=''},1500)">${clientUrl}</div>
+        <button class="btn btn-pri" style="width:100%;font-size:0.95rem;padding:0.65rem;margin-bottom:0.5rem"
+                onclick="navigator.clipboard?.writeText('${safeUrl}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='📋 نسخ رابط العميل',2000)">
+          📋 نسخ رابط العميل
+        </button>
+        <a class="btn btn-out" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;text-decoration:none;padding:0.6rem"
+           href="https://wa.me/?text=${waText}" target="_blank">
+          📱 إرسال عبر واتساب
+        </a>
+        <div style="font-size:0.65rem;color:var(--muted);margin-top:0.65rem">الرابط للقراءة فقط · يتحدث تلقائياً</div>
+      </div>
+    `;
+  } else {
+    body.innerHTML = `
+      <div style="color:var(--err)">
+        <div style="font-size:1.3rem;margin-bottom:0.35rem">⚠️</div>
+        تعذّر الاتصال بالسحابة. احفظ الرحلة أولاً ثم أعد المحاولة.
       </div>
     `;
   }
