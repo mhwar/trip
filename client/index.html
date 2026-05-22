@@ -539,11 +539,28 @@ const BCOLORS = [
 // ─────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
   const p = new URLSearchParams(location.search);
+  const preview = p.get('preview');
   _code = p.get('code');
+
+  // ── Preview mode: read from localStorage written by the dashboard ──
+  if (preview) {
+    try {
+      const raw = localStorage.getItem('kt2_preview_' + preview);
+      if (raw) {
+        _data = JSON.parse(raw);
+        _code = preview; // use trip id as key for client expenses
+        try { _cExp = JSON.parse(localStorage.getItem('kt2_cexp_' + _code) || '[]'); } catch { _cExp = []; }
+        render();
+        return;
+      }
+    } catch {}
+    showErr('تعذّر تحميل بيانات العرض. أعد فتح الرابط من الداشبورد.');
+    return;
+  }
+
+  // ── Code mode: fetch from cloud ──
   if (!_code) { showErr('لم يتم تحديد رمز الرحلة. تأكد من الرابط.'); return; }
-
   try { _cExp = JSON.parse(localStorage.getItem('kt2_cexp_' + _code) || '[]'); } catch { _cExp = []; }
-
   await loadData();
 });
 

@@ -14116,54 +14116,45 @@ async function openShareModal() {
   }
 }
 
-async function openClientShare() {
+function openClientShare() {
+  // Save current trip state to localStorage so the client page can read it instantly
+  const preview = {
+    itinerary: state.itinerary || [],
+    budget:    state.budget    || [],
+    tripInfo:  state.tripInfo  || {}
+  };
+  const previewKey = 'kt2_preview_' + Trip.current;
+  try { localStorage.setItem(previewKey, JSON.stringify(preview)); } catch(e) {}
+
+  // Build URLs
+  const base       = location.origin + location.pathname.replace(/\/[^/]*$/, '');
+  const previewUrl = base + '/client/?preview=' + encodeURIComponent(Trip.current);
+  const safePreview = previewUrl.replace(/'/g, "\\'");
+  const waText     = encodeURIComponent('جدول رحلتك من خطّار 📋\n' + previewUrl);
+
   openModal(`
     <div class="modal-h">
       <h3>👤 عرض رحلة العميل</h3>
       <button class="modal-x" onclick="closeModal()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div class="sync-box">
-      <div id="_client-share-body" style="text-align:center;padding:1.5rem 0;color:var(--muted);font-size:0.85rem">
-        <div style="font-size:1.5rem;margin-bottom:0.5rem">⏳</div>
-        جاري إعداد رابط العميل...
+    <div class="sync-box" style="padding-top:0.25rem">
+      <a class="btn btn-pri" href="${previewUrl}" target="_blank"
+         style="display:flex;align-items:center;justify-content:center;gap:0.4rem;text-decoration:none;font-size:0.95rem;padding:0.7rem;margin-bottom:0.5rem">
+        👁️ فتح عرض العميل الآن
+      </a>
+      <button class="btn btn-sec" style="width:100%;margin-bottom:0.5rem"
+              onclick="navigator.clipboard?.writeText('${safePreview}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='📋 نسخ الرابط',2000)">
+        📋 نسخ الرابط
+      </button>
+      <a class="btn btn-out" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;text-decoration:none;padding:0.6rem"
+         href="https://wa.me/?text=${waText}" target="_blank">
+        📱 إرسال عبر واتساب
+      </a>
+      <div style="font-size:0.65rem;color:var(--muted);margin-top:0.75rem;text-align:center">
+        ⚡ يعمل فوراً على نفس الجهاز · للمشاركة مع آخرين استخدم "مشاركة" أولاً
       </div>
     </div>
   `);
-
-  const code = syncGetCode();
-  const ok   = await syncSave(code);
-  const base = location.origin + location.pathname.replace(/\/[^/]*$/, '');
-  const clientUrl = base + '/client/?code=' + code;
-  const safeUrl   = clientUrl.replace(/'/g, "\\'");
-  const waText    = encodeURIComponent('جدول رحلتك من خطّار 📋\n' + clientUrl);
-  const body = document.getElementById('_client-share-body');
-  if (!body) return;
-
-  if (ok) {
-    body.parentElement.innerHTML = `
-      <div style="padding:0.25rem 0 0.5rem">
-        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem">أرسل هذا الرابط مباشرةً لعميلك — يعرض جدول الرحلة والميزانية</div>
-        <div style="background:var(--cream);border:1px solid var(--border);border-radius:var(--r-md);padding:0.65rem 0.75rem;font-family:monospace;font-size:0.75rem;direction:ltr;word-break:break-all;cursor:pointer;margin-bottom:0.75rem"
-             onclick="navigator.clipboard?.writeText('${safeUrl}');this.style.background='rgba(34,197,94,0.08)';this.style.borderColor='var(--ok)';setTimeout(()=>{this.style.background='';this.style.borderColor=''},1500)">${clientUrl}</div>
-        <button class="btn btn-pri" style="width:100%;font-size:0.95rem;padding:0.65rem;margin-bottom:0.5rem"
-                onclick="navigator.clipboard?.writeText('${safeUrl}');this.textContent='✓ تم النسخ!';setTimeout(()=>this.textContent='📋 نسخ رابط العميل',2000)">
-          📋 نسخ رابط العميل
-        </button>
-        <a class="btn btn-out" style="display:flex;align-items:center;justify-content:center;gap:0.4rem;text-decoration:none;padding:0.6rem"
-           href="https://wa.me/?text=${waText}" target="_blank">
-          📱 إرسال عبر واتساب
-        </a>
-        <div style="font-size:0.65rem;color:var(--muted);margin-top:0.65rem">الرابط للقراءة فقط · يتحدث تلقائياً</div>
-      </div>
-    `;
-  } else {
-    body.innerHTML = `
-      <div style="color:var(--err)">
-        <div style="font-size:1.3rem;margin-bottom:0.35rem">⚠️</div>
-        تعذّر الاتصال بالسحابة. احفظ الرحلة أولاً ثم أعد المحاولة.
-      </div>
-    `;
-  }
 }
 
 function _showShareUrlModal(url, tripId) {
