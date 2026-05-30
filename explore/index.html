@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>استكشف الجداول · خطّار</title>
+  <meta name="description" content="تصفح جداول سفر احترافية معدّة من خبراء خطّار — احجز رحلتك في دقائق">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20,400,1,0" rel="stylesheet">
+  <style>
+    :root {
+      --ink:          #0A2540;
+      --ink-soft:     #2C3E5C;
+      --ink-muted:    #6B7C93;
+      --sky:          #2E7CF6;
+      --sky-deep:     #1957C2;
+      --sky-soft:     #E7F0FE;
+      --pearl:        #FAFAF7;
+      --sand:         #F5EFE6;
+      --sand-deep:    #ECE3D2;
+      --line:         rgba(10,37,64,.08);
+      --glass:        rgba(255,255,255,.65);
+      --glass-strong: rgba(255,255,255,.92);
+      --sh-sm:  0 4px 12px rgba(10,37,64,.06);
+      --sh-md:  0 16px 40px rgba(10,37,64,.08);
+      --sh-glow:0 12px 40px rgba(46,124,246,.25);
+      --r-sm: 12px; --r-md: 20px; --r-lg: 28px; --r-xl: 40px;
+      --ease: cubic-bezier(.2,.7,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Readex Pro', sans-serif;
+      background: var(--pearl);
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.7;
+      direction: rtl;
+    }
+    .ms { font-family:'Material Symbols Rounded'; font-weight:400; font-style:normal;
+          font-size:20px; line-height:1; letter-spacing:normal; text-transform:none;
+          display:inline-block; white-space:nowrap; direction:ltr; -webkit-font-smoothing:antialiased; }
+
+    /* ── HEADER ── */
+    .site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--glass-strong);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--line);
+      padding: 0.75rem 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-weight: 800; font-size: 1.05rem; color: var(--ink);
+      text-decoration: none; flex-shrink: 0;
+    }
+    .logo-mark {
+      width: 34px; height: 34px; background: var(--ink);
+      border-radius: 10px; display: flex; align-items: center;
+      justify-content: center; color: #fff; font-size: 0.9rem; font-weight: 800;
+    }
+    .hdr-nav { display: flex; gap: 0.25rem; flex: 1; }
+    .nav-link {
+      padding: 0.35rem 0.75rem; border-radius: 999px; font-size: 0.82rem;
+      font-weight: 600; color: var(--ink-muted); text-decoration: none;
+      transition: all .2s var(--ease);
+    }
+    .nav-link:hover { color: var(--sky); background: var(--sky-soft); }
+    .nav-link.active { color: var(--sky); background: var(--sky-soft); }
+    .hdr-cta {
+      background: var(--sky); color: #fff; border: none; border-radius: 999px;
+      padding: 0.45rem 1.1rem; font-size: 0.82rem; font-weight: 700;
+      cursor: pointer; font-family: inherit; text-decoration: none;
+      transition: all .2s var(--ease); display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0;
+    }
+    .hdr-cta:hover { background: var(--sky-deep); box-shadow: var(--sh-glow); }
+
+    /* ── HERO ── */
+    .explore-hero {
+      background: linear-gradient(135deg, #0A2540 0%, #143456 55%, #1957C2 100%);
+      padding: 4rem 1.5rem 3rem; text-align: center; color: #fff;
+      position: relative; overflow: hidden;
+    }
+    .explore-hero::before {
+      content: ''; position: absolute; top: -100px; right: -100px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(46,124,246,.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .explore-hero::after {
+      content: ''; position: absolute; bottom: -80px; left: -80px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(46,124,246,.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px; padding: 0.3rem 0.85rem; font-size: 0.75rem; font-weight: 600;
+      margin-bottom: 1.25rem;
+    }
+    .hero-eyebrow .ms { font-size: 14px; }
+    .hero-title {
+      font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 800;
+      letter-spacing: -0.03em; margin-bottom: 0.75rem; line-height: 1.2;
+    }
+    .hero-sub {
+      font-size: 1rem; opacity: .75; max-width: 540px; margin: 0 auto 2rem; line-height: 1.6;
+    }
+    .hero-stats {
+      display: flex; justify-content: center; gap: 2.5rem; flex-wrap: wrap;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat-val { font-size: 1.6rem; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .hero-stat-lbl { font-size: 0.72rem; opacity: .65; margin-top: 0.1rem; }
+
+    /* ── FILTERS ── */
+    .filters-bar {
+      background: #fff; border-bottom: 1px solid var(--line);
+      padding: 0.85rem 1.5rem; position: sticky; top: 65px; z-index: 90;
+    }
+    .filters-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+    .filter-group { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+    .filter-chip {
+      background: var(--pearl); border: 1.5px solid var(--line); border-radius: 999px;
+      padding: 0.3rem 0.8rem; font-size: 0.75rem; font-weight: 600; color: var(--ink-muted);
+      cursor: pointer; font-family: inherit; transition: all .18s var(--ease);
+    }
+    .filter-chip:hover { border-color: var(--sky); color: var(--sky); }
+    .filter-chip.active { background: var(--sky); border-color: var(--sky); color: #fff; }
+    .filter-sep { width: 1px; height: 28px; background: var(--line); flex-shrink: 0; }
+    .sort-select {
+      background: var(--pearl); border: 1.5px solid var(--line); border-radius: 999px;
+      padding: 0.3rem 0.85rem; font-size: 0.75rem; font-weight: 600; color: var(--ink-soft);
+      cursor: pointer; font-family: inherit; outline: none; appearance: none;
+    }
+    .results-count { font-size: 0.78rem; color: var(--ink-muted); margin-inline-start: auto; font-weight: 600; }
+
+    /* ── MAIN ── */
+    .page-wrap { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+    /* ── GRID ── */
+    .listings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+    @media (max-width: 640px) { .listings-grid { grid-template-columns: 1fr; } }
+
+    /* ── TRIP CARD ── */
+    .trip-card {
+      background: #fff; border-radius: var(--r-lg); box-shadow: var(--sh-sm);
+      border: 1.5px solid var(--line); overflow: hidden;
+      transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s;
+      display: flex; flex-direction: column;
+      opacity: 0; transform: translateY(12px);
+      animation: cardIn .4s var(--ease) forwards;
+    }
+    @keyframes cardIn { to { opacity: 1; transform: none; } }
+    .trip-card:hover { transform: translateY(-3px); box-shadow: var(--sh-md); border-color: rgba(46,124,246,.2); }
+    .card-cover {
+      height: 160px; position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #0A2540, #1957C2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card-cover-img { width: 100%; height: 100%; object-fit: cover; }
+    .card-cover-flag { font-size: 4rem; filter: drop-shadow(0 4px 12px rgba(0,0,0,.2)); }
+    .card-cover-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(10,37,64,.6) 0%, transparent 50%);
+    }
+    .card-cat-badge {
+      position: absolute; top: 10px; inset-inline-end: 10px;
+      background: rgba(255,255,255,.15); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.2); color: #fff;
+      font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+      padding: 0.2rem 0.55rem; border-radius: 999px;
+    }
+    .card-price-badge {
+      position: absolute; bottom: 10px; inset-inline-end: 10px;
+      background: var(--sky); color: #fff;
+      font-size: 0.78rem; font-weight: 800;
+      padding: 0.25rem 0.65rem; border-radius: 999px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .card-price-badge.free { background: rgba(16,185,129,.9); }
+    .card-body { padding: 1rem 1.1rem; flex: 1; display: flex; flex-direction: column; }
+    .card-dest { font-size: 0.7rem; font-weight: 700; color: var(--sky); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 0.2rem; }
+    .card-title { font-size: 1rem; font-weight: 800; color: var(--ink); line-height: 1.35; margin-bottom: 0.5rem; }
+    .card-desc { font-size: 0.78rem; color: var(--ink-muted); line-height: 1.55; flex: 1; margin-bottom: 0.75rem;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-meta { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
+    .card-meta-item {
+      display: flex; align-items: center; gap: 0.25rem;
+      font-size: 0.7rem; font-weight: 600; color: var(--ink-muted);
+    }
+    .card-meta-item .ms { font-size: 14px; color: var(--sky); }
+    .card-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
+    .card-tag {
+      font-size: 0.63rem; font-weight: 700; padding: 0.15rem 0.5rem;
+      border-radius: 999px; background: var(--sky-soft); color: var(--sky-deep);
+    }
+    .card-footer { display: flex; align-items: center; gap: 0.5rem; border-top: 1px solid var(--line); padding-top: 0.85rem; }
+    .card-agency { display: flex; align-items: center; gap: 0.4rem; flex: 1; min-width: 0; }
+    .card-agency-avatar {
+      width: 28px; height: 28px; background: var(--ink); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.65rem; font-weight: 800; flex-shrink: 0;
+    }
+    .card-agency-name { font-size: 0.72rem; font-weight: 600; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .card-stats { display: flex; gap: 0.65rem; flex-shrink: 0; }
+    .card-stat { font-size: 0.65rem; color: var(--ink-muted); display: flex; align-items: center; gap: 0.15rem; }
+    .card-stat .ms { font-size: 12px; }
+    .card-btn {
+      width: 100%; background: var(--sky); color: #fff; border: none;
+      border-radius: var(--r-md); padding: 0.7rem; font-size: 0.85rem;
+      font-weight: 700; cursor: pointer; font-family: inherit;
+      transition: all .2s var(--ease); margin-top: 0.75rem;
+      display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+    }
+    .card-btn:hover { background: var(--sky-deep); box-shadow: var(--sh-glow); }
+    .card-btn .ms { font-size: 18px; }
+
+    /* ── EMPTY / LOADING ── */
+    .empty-state {
+      grid-column: 1/-1; text-align: center; padding: 4rem 1rem;
+    }
+    .empty-state .ms { font-size: 3rem; color: var(--ink-muted); }
+    .empty-title { font-size: 1.1rem; font-weight: 700; margin: 0.75rem 0 0.35rem; }
+    .empty-sub { font-size: 0.82rem; color: var(--ink-muted); }
+    .skeleton {
+      background: linear-gradient(90deg, var(--sand-deep) 25%, var(--sand) 50%, var(--sand-deep) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s ease-in-out infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .sk-card { background: #fff; border-radius: var(--r-lg); border: 1.5px solid var(--line); overflow: hidden; }
+    .sk-cover { height: 160px; }
+    .sk-body { padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .sk-line { height: 14px; }
+    .sk-line.w60 { width: 60%; }
+    .sk-line.w80 { width: 80%; }
+    .sk-line.w40 { width: 40%; }
+
+    /* ── INQUIRY SHEET ── */
+    .overlay {
+      position: fixed; inset: 0; background: rgba(10,37,64,.5);
+      backdrop-filter: blur(4px); z-index: 200;
+      display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .overlay.open { opacity: 1; pointer-events: all; }
+    .sheet {
+      background: #fff; border-radius: var(--r-xl) var(--r-xl) 0 0;
+      padding: 1.5rem 1.5rem 2.5rem; width: 100%; max-width: 520px;
+      transform: translateY(100%); transition: transform .35s var(--ease);
+    }
+    .overlay.open .sheet { transform: none; }
+    .sheet-handle { width: 36px; height: 4px; background: var(--sand-deep); border-radius: 999px; margin: 0 auto 1.25rem; }
+    .sheet-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.4rem; }
+    .sheet-sub { font-size: 0.82rem; color: var(--ink-muted); margin-bottom: 1.5rem; }
+    .inq-listing { background: var(--sky-soft); border-radius: var(--r-md); padding: 0.85rem 1rem; margin-bottom: 1.25rem; display: flex; gap: 0.75rem; align-items: center; }
+    .inq-flag { font-size: 1.8rem; flex-shrink: 0; }
+    .inq-name { font-size: 0.9rem; font-weight: 700; }
+    .inq-price { font-size: 0.78rem; color: var(--sky-deep); font-weight: 600; margin-top: 0.15rem; }
+    .inq-steps { margin-bottom: 1.5rem; }
+    .inq-step { display: flex; gap: 0.75rem; align-items: flex-start; margin-bottom: 0.85rem; }
+    .inq-step-num {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--sky); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; flex-shrink: 0;
+    }
+    .inq-step-text { font-size: 0.82rem; color: var(--ink-soft); padding-top: 4px; line-height: 1.5; }
+    .btn-wa {
+      width: 100%; background: #25D366; color: #fff; border: none; border-radius: var(--r-md);
+      padding: 0.9rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: inherit;
+      transition: all .2s var(--ease); display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .btn-wa:hover { background: #128C7E; box-shadow: 0 8px 24px rgba(37,211,102,.3); }
+    .btn-close {
+      width: 100%; background: none; border: 1.5px solid var(--line); border-radius: var(--r-md);
+      padding: 0.7rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: inherit;
+      color: var(--ink-muted); transition: all .2s; margin-top: 0.5rem;
+    }
+    .btn-close:hover { border-color: var(--sky); color: var(--sky); }
+
+    /* ── FOOTER ── */
+    .site-footer { background: var(--ink); color: rgba(255,255,255,.6); text-align: center; padding: 2.5rem 1rem; font-size: 0.78rem; }
+    .footer-brand { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem; }
+    .site-footer a { color: var(--sky); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .hdr-nav { display: none; }
+      .explore-hero { padding: 3rem 1rem 2rem; }
+      .filters-bar { padding: 0.65rem 1rem; top: 57px; }
+      .page-wrap { padding: 1.25rem 1rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="../" class="logo">
+    <div class="logo-mark">خ</div>
+    <span>خطّار</span>
+  </a>
+  <nav class="hdr-nav">
+    <a href="../" class="nav-link">الرئيسية</a>
+    <a href="../landing/" class="nav-link">الباقات</a>
+    <a href="../explore/" class="nav-link active">استكشف</a>
+  </nav>
+  <a href="https://wa.me/966553377001" target="_blank" class="hdr-cta">
+    <span class="ms" style="font-size:16px">chat</span>
+    تواصل معنا
+  </a>
+</header>
+
+<!-- Hero -->
+<div class="explore-hero">
+  <div class="hero-eyebrow">
+    <span class="ms">explore</span>
+    جداول احترافية جاهزة
+  </div>
+  <h1 class="hero-title">استكشف رحلات مُصمَّمة باحتراف</h1>
+  <p class="hero-sub">جداول سفر مُعدَّة بعناية من خبراء خطّار — تصفح واطلب نسختك في دقائق</p>
+  <div class="hero-stats" id="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-val">—</div><div class="hero-stat-lbl">جدول متاح</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">+٥</div><div class="hero-stat-lbl">وجهة</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">٤.٩</div><div class="hero-stat-lbl">تقييم العملاء</div></div>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="filters-bar">
+  <div class="filters-inner">
+    <div class="filter-group" id="cat-filters">
+      <button class="filter-chip active" onclick="filterBy('cat','')">الكل</button>
+      <button class="filter-chip" onclick="filterBy('cat','tourism')">🌏 سياحة</button>
+      <button class="filter-chip" onclick="filterBy('cat','study')">🎓 دراسة</button>
+      <button class="filter-chip" onclick="filterBy('cat','umrah')">🕋 عمرة</button>
+    </div>
+    <div class="filter-sep"></div>
+    <div class="filter-group" id="price-filters">
+      <button class="filter-chip active" onclick="filterBy('price','')">كل الأسعار</button>
+      <button class="filter-chip" onclick="filterBy('price','free')">مجاني</button>
+      <button class="filter-chip" onclick="filterBy('price','paid')">مدفوع</button>
+    </div>
+    <div class="filter-sep"></div>
+    <select class="sort-select" onchange="sortBy(this.value)">
+      <option value="newest">الأحدث</option>
+      <option value="popular">الأكثر طلباً</option>
+      <option value="price_asc">السعر: الأقل</option>
+      <option value="price_desc">السعر: الأعلى</option>
+    </select>
+    <span class="results-count" id="results-count"></span>
+  </div>
+</div>
+
+<!-- Main -->
+<main class="page-wrap">
+  <div class="listings-grid" id="listings-grid">
+    <!-- Skeleton cards -->
+    ${[1,2,3,4,5,6].map(() => `
+    <div class="sk-card">
+      <div class="sk-cover skeleton"></div>
+      <div class="sk-body">
+        <div class="sk-line w40 skeleton"></div>
+        <div class="sk-line w80 skeleton"></div>
+        <div class="sk-line w60 skeleton"></div>
+      </div>
+    </div>`).join('')}
+  </div>
+</main>
+
+<!-- Inquiry Sheet -->
+<div class="overlay" id="inq-overlay" onclick="if(event.target===this)closeInquiry()">
+  <div class="sheet" id="inq-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🌟 اطلب نسختك من هذا الجدول</div>
+    <div class="sheet-sub">سيتواصل معك فريق خطّار خلال ساعات لتأكيد التفاصيل وإرسال جدولك</div>
+    <div class="inq-listing" id="inq-listing-preview"></div>
+    <div class="inq-steps">
+      <div class="inq-step">
+        <div class="inq-step-num">١</div>
+        <div class="inq-step-text">انقر على زر واتساب — ستُفتح رسالة جاهزة تلقائياً مع اسم الجدول</div>
+      </div>
+      <div class="inq-step">
+        <div class="inq-step-num">٢</div>
+        <div class="inq-step-text">سيتواصل معك فريق خطّار لتخصيص الجدول حسب تواريخك وعدد المسافرين</div>
+      </div>
+      <div class="inq-step">
+        <div class="inq-step-num">٣</div>
+        <div class="inq-step-text">بعد التأكيد تحصل على رابط جدول رحلتك الكامل مع خريطة وميزانية وكل الأدوات</div>
+      </div>
+    </div>
+    <button class="btn-wa" id="inq-wa-btn" onclick="sendInquiry()">
+      <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      تواصل عبر واتساب
+    </button>
+    <button class="btn-close" onclick="closeInquiry()">إغلاق</button>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand">خطّار</div>
+  <div>جداول سفر احترافية مُصمَّمة بعناية</div>
+  <div style="margin-top:0.5rem">
+    <a href="https://wa.me/966553377001" target="_blank">📱 تواصل معنا عبر واتساب</a>
+  </div>
+</footer>
+
+<script>
+// ─── STATE ───
+let _allListings  = [];
+let _filtered     = [];
+let _catFilter    = '';
+let _priceFilter  = '';
+let _sort         = 'newest';
+let _activeInq    = null;
+const DEFAULT_WA  = '+966553377001';
+
+const CAT_LABELS = { tourism:'سياحة', study:'دراسة', umrah:'عمرة', work:'عمل', other:'أخرى' };
+
+// ─── LOAD ───
+window.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const r = await fetch('/.netlify/functions/marketplace?action=list');
+    if (!r.ok) throw new Error();
+    const j = await r.json();
+    _allListings = j.listings || [];
+  } catch {
+    _allListings = getShowcaseListings();
+  }
+  applyFilters();
+  updateHeroStats();
+});
+
+// ─── SHOWCASE (fallback when no listings yet) ───
+function getShowcaseListings() {
+  return [
+    {
+      listingId: 'showcase-1',
+      title: 'رحلة كوريا الجنوبية الشاملة',
+      description: 'جدول مُعدّ باحتراف يغطي سيول وجيجو وبوسان — فنادق حلال، مطاعم موصى بها، أماكن صلاة.',
+      destination: 'كوريا الجنوبية',
+      destinationFlag: '🇰🇷',
+      duration: 11,
+      price: 149,
+      currency: 'SAR',
+      category: 'tourism',
+      tags: ['عائلي', 'حلال', 'شامل'],
+      agencyName: 'خطّار',
+      agencyWA: DEFAULT_WA,
+      views: 142,
+      inquiries: 23,
+      published: true,
+      showcase: true
+    },
+    {
+      listingId: 'showcase-2',
+      title: 'رحلة سيول ٥ أيام',
+      description: 'جدول مُكثّف لاستكشاف أفضل ما في سيول — الثقافة والتسوق والمطبخ الكوري بنكهة عربية.',
+      destination: 'كوريا الجنوبية',
+      destinationFlag: '🇰🇷',
+      duration: 5,
+      price: 79,
+      currency: 'SAR',
+      category: 'tourism',
+      tags: ['ثنائي', 'سياحة', 'تسوق'],
+      agencyName: 'خطّار',
+      agencyWA: DEFAULT_WA,
+      views: 89,
+      inquiries: 11,
+      published: true,
+      showcase: true
+    },
+    {
+      listingId: 'showcase-3',
+      title: 'الجولة البريطانية — لندن وإدنبرة',
+      description: 'رحلة أوروبية متكاملة: معالم لندن الكلاسيكية + بلاد الهايلاندز السكوتلندية.',
+      destination: 'المملكة المتحدة',
+      destinationFlag: '🇬🇧',
+      duration: 10,
+      price: 199,
+      currency: 'SAR',
+      category: 'tourism',
+      tags: ['عائلي', 'أوروبا', 'ثقافة'],
+      agencyName: 'خطّار',
+      agencyWA: DEFAULT_WA,
+      views: 67,
+      inquiries: 9,
+      published: true,
+      showcase: true
+    },
+    {
+      listingId: 'showcase-4',
+      title: 'مخيم دراسي — إدنبرة الصيف',
+      description: 'برنامج دراسي لـ 3 أسابيع في إدنبرة مع جدول يوميات متوازن بين الدراسة والترفيه.',
+      destination: 'المملكة المتحدة',
+      destinationFlag: '🇬🇧',
+      duration: 21,
+      price: 0,
+      currency: 'SAR',
+      category: 'study',
+      tags: ['طلاب', 'دراسة', 'مجاني'],
+      agencyName: 'خطّار',
+      agencyWA: DEFAULT_WA,
+      views: 204,
+      inquiries: 38,
+      published: true,
+      showcase: true
+    },
+    {
+      listingId: 'showcase-5',
+      title: 'جولة تركيا — إسطنبول وكابادوكيا',
+      description: 'أفضل ما في تركيا: السحر العثماني في إسطنبول + بالون الفجر في كابادوكيا.',
+      destination: 'تركيا',
+      destinationFlag: '🇹🇷',
+      duration: 8,
+      price: 129,
+      currency: 'SAR',
+      category: 'tourism',
+      tags: ['رومانسي', 'تاريخ', 'مغامرة'],
+      agencyName: 'خطّار',
+      agencyWA: DEFAULT_WA,
+      views: 55,
+      inquiries: 7,
+      published: true,
+      showcase: true
+    },
+    {
+      listingId: 'showcase-6',
+      title: 'عمرة + سياحة المدينة',
+      description: 'برنامج روحاني كامل: مناسك العمرة مع جدول زيارة المواقع الإسلامية التاريخية.',
+      destination: 'المملكة العربية السعودية',
+      destinationFlag: '🇸🇦',
+      duration: 7,
+      price: 89,
+      currency: 'SAR',
+      category: 'umrah',
+      tags: ['عمرة', 'عائلي', 'روحاني'],
+      agencyName: 'خطّار',
+      agencyWA: DEFAULT_WA,
+      views: 183,
+      inquiries: 41,
+      published: true,
+      showcase: true
+    }
+  ];
+}
+
+// ─── FILTERS ───
+function filterBy(type, val) {
+  if (type === 'cat') {
+    _catFilter = val;
+    document.querySelectorAll('#cat-filters .filter-chip').forEach(b => b.classList.toggle('active', b.textContent.trim() === val || (val === '' && b.textContent.includes('الكل'))));
+  } else if (type === 'price') {
+    _priceFilter = val;
+    document.querySelectorAll('#price-filters .filter-chip').forEach(b => {
+      const bVal = b.onclick?.toString().includes("'free'") ? 'free' : b.onclick?.toString().includes("'paid'") ? 'paid' : '';
+      b.classList.toggle('active', bVal === val || (val === '' && b.textContent.includes('كل')));
+    });
+  }
+  applyFilters();
+}
+
+function sortBy(val) {
+  _sort = val;
+  applyFilters();
+}
+
+function applyFilters() {
+  let items = [..._allListings];
+  if (_catFilter) items = items.filter(l => l.category === _catFilter);
+  if (_priceFilter === 'free') items = items.filter(l => l.price === 0);
+  if (_priceFilter === 'paid') items = items.filter(l => l.price > 0);
+
+  if (_sort === 'popular') items.sort((a, b) => (b.views + b.inquiries * 3) - (a.views + a.inquiries * 3));
+  else if (_sort === 'price_asc') items.sort((a, b) => a.price - b.price);
+  else if (_sort === 'price_desc') items.sort((a, b) => b.price - a.price);
+  else items.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+  _filtered = items;
+  renderGrid();
+}
+
+function renderGrid() {
+  const grid = document.getElementById('listings-grid');
+  const count = document.getElementById('results-count');
+  count.textContent = _filtered.length + ' نتيجة';
+
+  if (_filtered.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <span class="ms">search_off</span>
+        <div class="empty-title">لا توجد نتائج</div>
+        <div class="empty-sub">جرّب تغيير الفلتر أو تصفح كل الجداول</div>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = _filtered.map((l, i) => buildCard(l, i)).join('');
+}
+
+function buildCard(l, idx) {
+  const price = l.price > 0
+    ? `${l.price.toLocaleString('ar-SA')} ر.س`
+    : 'مجاني';
+  const priceClass = l.price === 0 ? 'free' : '';
+  const catLabel = CAT_LABELS[l.category] || l.category;
+  const initials = (l.agencyName || 'خ').split('')[0];
+  const delay = Math.min(idx * 60, 400);
+  const tags = (l.tags || []).slice(0, 3).map(t => `<span class="card-tag">${t}</span>`).join('');
+
+  const cover = l.coverImage
+    ? `<img class="card-cover-img" src="${l.coverImage}" alt="${l.title}" loading="lazy">`
+    : `<div class="card-cover-flag">${l.destinationFlag || '✈️'}</div>`;
+
+  return `
+    <article class="trip-card" style="animation-delay:${delay}ms">
+      <div class="card-cover">
+        ${cover}
+        <div class="card-cover-overlay"></div>
+        <span class="card-cat-badge">${catLabel}</span>
+        <span class="card-price-badge ${priceClass}">${price}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-dest">${l.destinationFlag || ''} ${l.destination}</div>
+        <div class="card-title">${l.title}</div>
+        ${l.description ? `<div class="card-desc">${l.description}</div>` : ''}
+        <div class="card-meta">
+          <span class="card-meta-item"><span class="ms">calendar_month</span>${l.duration} يوم</span>
+          <span class="card-meta-item"><span class="ms">visibility</span>${l.views || 0}</span>
+          <span class="card-meta-item"><span class="ms">chat_bubble</span>${l.inquiries || 0} طلب</span>
+        </div>
+        ${tags ? `<div class="card-tags">${tags}</div>` : ''}
+        <div class="card-footer">
+          <div class="card-agency">
+            <div class="card-agency-avatar">${initials}</div>
+            <span class="card-agency-name">${l.agencyName || 'خطّار'}</span>
+          </div>
+        </div>
+        <button class="card-btn" onclick="openInquiry(${JSON.stringify(l).replace(/"/g, '&quot;')})">
+          <span class="ms">chat</span>
+          ${l.price > 0 ? 'اطلب نسختك' : 'احصل عليه مجاناً'}
+        </button>
+      </div>
+    </article>`;
+}
+
+// ─── HERO STATS ───
+function updateHeroStats() {
+  const total = _allListings.length;
+  const stat = document.querySelector('.hero-stat-val');
+  if (stat && total > 0) stat.textContent = '+' + total;
+}
+
+// ─── INQUIRY ───
+function openInquiry(listing) {
+  _activeInq = listing;
+  const preview = document.getElementById('inq-listing-preview');
+  const priceText = listing.price > 0 ? listing.price.toLocaleString('ar-SA') + ' ر.س' : 'مجاني';
+  preview.innerHTML = `
+    <div class="inq-flag">${listing.destinationFlag || '✈️'}</div>
+    <div>
+      <div class="inq-name">${listing.title}</div>
+      <div class="inq-price">${listing.destination} · ${listing.duration} يوم · ${priceText}</div>
+    </div>`;
+
+  document.getElementById('inq-overlay').classList.add('open');
+
+  // Register interest (non-blocking)
+  if (!listing.showcase) {
+    fetch('/.netlify/functions/marketplace?action=inquire', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ listingId: listing.listingId })
+    }).catch(() => {});
+  }
+}
+
+function closeInquiry() {
+  document.getElementById('inq-overlay').classList.remove('open');
+  _activeInq = null;
+}
+
+function sendInquiry() {
+  if (!_activeInq) return;
+  const wa = (_activeInq.agencyWA || DEFAULT_WA).replace(/[^\d+]/g, '');
+  const msg = encodeURIComponent(
+    `أهلاً، أريد الاستفسار عن جدول رحلة:\n` +
+    `📋 ${_activeInq.title}\n` +
+    `📍 ${_activeInq.destination} · ${_activeInq.duration} يوم\n` +
+    (_activeInq.price > 0 ? `💰 السعر: ${_activeInq.price} ر.س\n` : '') +
+    `\nأرجو إرسال التفاصيل والتواريخ المتاحة. شكراً 🙏`
+  );
+  window.open(`https://wa.me/${wa}?text=${msg}`, '_blank');
+  closeInquiry();
+}
+</script>
+</body>
+</html>
