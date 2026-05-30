@@ -1508,7 +1508,22 @@ function buildInfoTab(ti, itin) {
       </div>
     </div>`;
 
-  return tripInfoHtml + flightsHtml + hotelsHtml + emgHtml + appsHtml;
+  // Marketplace CTA — shown when trip has a listingId
+  const listingId = ti._listingId;
+  const marketplaceCta = listingId ? `
+    <div class="info-section">
+      <div style="background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(46,124,246,.08));border:1.5px solid rgba(124,58,237,.2);border-radius:var(--r-lg);padding:1.25rem;text-align:center">
+        <div style="font-size:1.8rem;margin-bottom:0.5rem">🌟</div>
+        <div style="font-size:1rem;font-weight:800;margin-bottom:0.3rem">هذا الجدول متاح للحصول عليه</div>
+        <div style="font-size:0.8rem;color:var(--ink-muted);margin-bottom:1rem;line-height:1.6">شارك هذا الجدول مع من تحب أو من يبحث عن رحلة مشابهة</div>
+        <button onclick="_openMarketplaceInquiry()" style="background:linear-gradient(135deg,#7C3AED,#2E7CF6);color:#fff;border:none;border-radius:var(--r-md);padding:0.75rem 1.5rem;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;width:100%">
+          اطلب نسخة من هذا الجدول
+        </button>
+        <a href="../explore/" target="_blank" style="display:block;margin-top:0.5rem;font-size:0.75rem;color:var(--sky);text-decoration:none">تصفح جداول خطّار ←</a>
+      </div>
+    </div>` : '';
+
+  return tripInfoHtml + flightsHtml + hotelsHtml + emgHtml + appsHtml + marketplaceCta;
 }
 
 // ─── TASKS ───
@@ -1774,6 +1789,16 @@ function itEmoji(it) {
   const m = (it.text||'').match(/^([\p{Emoji_Presentation}\p{Extended_Pictographic}])/u);
   if (m) return m[1];
   return { flight:'✈️', hotel:'🏨', food:'🍽️', attraction:'⭐', shop:'🛍️', transport:'🚗', activity:'🎯' }[it.type] || '📍';
+}
+
+function _openMarketplaceInquiry() {
+  const ti   = (_data && _data.tripInfo) || {};
+  const dest = ti.destination || 'هذه الرحلة';
+  const dur  = (_data && _data.itinerary || []).length;
+  const msg  = encodeURIComponent(
+    `أهلاً، أريد الحصول على جدول رحلة:\n📋 ${dest}${dur ? ' · ' + dur + ' يوم' : ''}\nأرجو إرسال التفاصيل والتواريخ المتاحة 🙏`
+  );
+  window.open('https://wa.me/966553377001?text=' + msg, '_blank');
 }
 </script>
 </body>
